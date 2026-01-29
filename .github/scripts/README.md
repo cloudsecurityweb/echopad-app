@@ -51,10 +51,10 @@ cd .github/scripts
 ```
 
 Features:
-- ✅ Interactive prompts
-- ✅ Supports all environments (PROD, DEV, STAGING)
-- ✅ Can add for all environments at once
-- ✅ Checks if secrets already exist
+-  Interactive prompts
+-  Supports all environments (PROD, DEV, STAGING)
+-  Can add for all environments at once
+-  Checks if secrets already exist
 
 ### 2. From File Script (GitHub CLI)
 
@@ -193,7 +193,7 @@ The script will skip or update existing secrets
 
 ## Security Notes
 
-- ⚠️ Never commit secrets files to the repository
-- ⚠️ Add `secrets-*.txt` to `.gitignore`
-- ⚠️ Delete secrets files after use
-- ⚠️ Use secure methods to share secret values
+-  Never commit secrets files to the repository
+-  Add `secrets-*.txt` to `.gitignore`
+-  Delete secrets files after use
+-  Use secure methods to share secret values

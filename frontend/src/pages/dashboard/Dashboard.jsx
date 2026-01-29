@@ -27,7 +27,7 @@ function Dashboard() {
       let roleToUse = currentRole;
 
       // Debug logging
-      console.log('🔍 [DASHBOARD] Role detection:', {
+      console.log(' [DASHBOARD] Role detection:', {
         currentRole,
         userProfileRole: userProfile?.user?.role,
         userEmail: userProfile?.user?.email,
@@ -38,16 +38,16 @@ function Dashboard() {
       // If we have userProfile, use its role (most reliable)
       if (userProfile?.user?.role) {
         const backendRole = userProfile.user.role;
-        console.log(`🔍 [DASHBOARD] Backend role from userProfile: ${backendRole}`);
+        console.log(` [DASHBOARD] Backend role from userProfile: ${backendRole}`);
         if (backendRole === 'superAdmin') {
           roleToUse = ROLES.SUPER_ADMIN;
-          console.log('✅ [DASHBOARD] Setting role to SUPER_ADMIN');
+          console.log(' [DASHBOARD] Setting role to SUPER_ADMIN');
         } else if (backendRole === 'clientAdmin') {
           roleToUse = ROLES.CLIENT_ADMIN;
-          console.log('✅ [DASHBOARD] Setting role to CLIENT_ADMIN');
+          console.log(' [DASHBOARD] Setting role to CLIENT_ADMIN');
         } else if (backendRole === 'user') {
           roleToUse = ROLES.USER_ADMIN;
-          console.log('✅ [DASHBOARD] Setting role to USER_ADMIN');
+          console.log(' [DASHBOARD] Setting role to USER_ADMIN');
         }
       }
 
@@ -87,7 +87,7 @@ function Dashboard() {
         }
 
         // Navigate immediately (replace: true to avoid back button issues)
-        console.log('🚀 [DASHBOARD] Redirecting to:', targetRoute, '| Role:', roleToUse);
+        console.log(' [DASHBOARD] Redirecting to:', targetRoute, '| Role:', roleToUse);
         navigate(targetRoute, { replace: true });
       } catch (error) {
         console.error('Error navigating to role-specific dashboard:', error);

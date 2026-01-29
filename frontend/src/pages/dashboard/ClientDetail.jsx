@@ -63,7 +63,7 @@ function ClientDetail() {
   // Overview stats
   const overviewStats = [
     { label: 'Total Users', value: '156', change: '+8%', icon: '👥' },
-    { label: 'Active Subscriptions', value: '1', change: 'Active', icon: '📊' },
+    { label: 'Active Subscriptions', value: '1', change: 'Active', icon: '' },
     { label: 'Total Licenses', value: '45', change: '87% used', icon: '🔑' },
     { label: 'Monthly Revenue', value: '$2,499', change: 'Enterprise', icon: '💰' },
   ];

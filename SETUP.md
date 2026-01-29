@@ -2,14 +2,14 @@
 
 Complete guide to set up and deploy the Echopad application.
 
-## 📋 Prerequisites
+##  Prerequisites
 
 1. **Infrastructure Deployed**: Ensure infrastructure is deployed via `echopad-infra` repository
 2. **GitHub Repository**: Application code repository created
 3. **Node.js 18+**: Installed locally
 4. **Git**: Installed
 
-## 🚀 Quick Start
+##  Quick Start
 
 ### 1. Clone Repository
 
@@ -50,7 +50,7 @@ npm run dev
 
 Frontend runs on: `http://localhost:5173`
 
-## 🔧 Environment Variables
+##  Environment Variables
 
 ### Backend (.env)
 
@@ -77,7 +77,7 @@ VITE_API_BASE_URL=http://localhost:3000
 VITE_GOOGLE_CLIENT_ID=your-google-client-id
 ```
 
-## 🚀 Deployment
+##  Deployment
 
 ### Automatic Deployment (GitHub Actions)
 
@@ -127,7 +127,7 @@ Before first deployment, configure GitHub Secrets:
 - `VITE_API_ENDPOINT` - Whisper API endpoint (optional)
 - `VITE_API_ROUTE` - Whisper API route (optional)
 
-## 📦 Project Structure
+##  Project Structure
 
 ```
 echopad/
@@ -160,7 +160,7 @@ echopad/
    - Triggers on: Push to `main`
    - Deploys both backend and frontend
 
-## 🧪 Testing
+##  Testing
 
 ### Backend Tests
 
@@ -184,7 +184,7 @@ npm test
 - `backend/README.md` - Backend API documentation
 - `frontend/README.md` - Frontend documentation
 
-## 🔗 Related Repositories
+##  Related Repositories
 
 - **Infrastructure**: [echopad-infra](https://github.com/your-org/echopad-infra)
 

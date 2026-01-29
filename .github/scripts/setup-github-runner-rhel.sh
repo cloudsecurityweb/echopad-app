@@ -8,18 +8,18 @@ set -e
 REPO="cloudsecurityweb/echopad-website"
 RUNNER_NAME="echopad-prod-runner"
 
-echo "🚀 GitHub Actions Runner Setup for RHEL"
+echo " GitHub Actions Runner Setup for RHEL"
 echo "Repository: $REPO"
 echo "Runner Name: $RUNNER_NAME"
 echo ""
 
 # Check if running as root or with sudo
 if [ "$EUID" -eq 0 ]; then
-    echo "⚠️  Running as root. Some commands will run without sudo."
+    echo "  Running as root. Some commands will run without sudo."
     SUDO=""
 else
     SUDO="sudo"
-    echo "✅ Running as regular user (will use sudo when needed)"
+    echo " Running as regular user (will use sudo when needed)"
 fi
 
 echo ""
@@ -52,9 +52,9 @@ fi
 
 # Verify Node.js version
 NODE_VERSION=$(node --version)
-echo "✅ Node.js version: $NODE_VERSION"
+echo " Node.js version: $NODE_VERSION"
 if [[ ! "$NODE_VERSION" =~ ^v20\. ]]; then
-    echo "⚠️  Warning: Node.js 20 is recommended, but found $NODE_VERSION"
+    echo "  Warning: Node.js 20 is recommended, but found $NODE_VERSION"
 fi
 
 # Install Azure CLI
@@ -91,7 +91,7 @@ echo ""
 # Create actions-runner directory
 RUNNER_DIR="$HOME/actions-runner"
 if [ -d "$RUNNER_DIR" ]; then
-    echo "⚠️  Runner directory already exists: $RUNNER_DIR"
+    echo "  Runner directory already exists: $RUNNER_DIR"
     read -p "Remove and reinstall? (y/n): " reinstall
     if [ "$reinstall" = "y" ]; then
         $SUDO rm -rf "$RUNNER_DIR"
@@ -142,7 +142,7 @@ echo ""
 read -p "Enter the registration token from GitHub: " REGISTRATION_TOKEN
 
 if [ -z "$REGISTRATION_TOKEN" ]; then
-    echo "❌ Registration token is required"
+    echo " Registration token is required"
     exit 1
 fi
 
@@ -174,7 +174,7 @@ if [ "$install_service" = "y" ]; then
     $SUDO ./svc.sh status
     
     echo ""
-    echo "✅ Runner installed as service!"
+    echo " Runner installed as service!"
     echo ""
     echo "Service commands:"
     echo "  sudo ./svc.sh start    - Start the runner"
@@ -190,7 +190,7 @@ fi
 
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "✅ Setup Complete!"
+echo " Setup Complete!"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 echo "Runner directory: $RUNNER_DIR"

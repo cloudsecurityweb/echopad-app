@@ -507,18 +507,18 @@ export function AuthProvider({ children }) {
       if (userOID && tokenRoles.length === 0 && !userProfile && accessToken && authProvider === 'microsoft' && fetchedOIDRef.current !== userOID) {
         // Mark this OID as fetched to prevent repeated calls
         fetchedOIDRef.current = userOID;
-        console.log('🔍 [AUTH] OID available but no roles in token. Fetching role from database using OID...');
+        console.log(' [AUTH] OID available but no roles in token. Fetching role from database using OID...');
         try {
           // Fetch user profile from backend (uses OID-first lookup)
           const profile = await fetchCurrentUser();
           if (profile?.user?.role) {
-            console.log('✅ [AUTH] Role fetched from database using OID:', profile.user.role);
+            console.log(' [AUTH] Role fetched from database using OID:', profile.user.role);
             console.log('   User:', profile.user.email, '| Role:', profile.user.role);
           } else {
-            console.warn('⚠️ [AUTH] User profile fetched but no role found. User may need to be created in database.');
+            console.warn(' [AUTH] User profile fetched but no role found. User may need to be created in database.');
           }
         } catch (fetchError) {
-          console.warn('⚠️ [AUTH] Failed to fetch user profile by OID:', fetchError);
+          console.warn(' [AUTH] Failed to fetch user profile by OID:', fetchError);
           // Reset the guard on error so we can retry if needed
           fetchedOIDRef.current = null;
           // User might not exist in database yet - this is OK for first-time login
@@ -645,7 +645,7 @@ export function AuthProvider({ children }) {
           autoSyncAttemptedRef.current = false;
           // Silently fail - user might not exist in DB yet, will be created on first sign-in/sign-up
           if (import.meta.env.DEV) {
-            console.warn('⚠️ [AUTH] Auto-sync failed (user may not exist yet):', syncError.message);
+            console.warn(' [AUTH] Auto-sync failed (user may not exist yet):', syncError.message);
           }
         }
       }
@@ -806,7 +806,7 @@ export function AuthProvider({ children }) {
         // For email/password users, we don't have a token, so we can't call /api/auth/me
         // The sign-in response already contains the upgraded role (if upgrade happened)
         // So we just use the response directly - no need to fetch again
-        console.log('✅ [AUTH] Email/password sign-in complete, using response directly (no token for /api/auth/me)');
+        console.log(' [AUTH] Email/password sign-in complete, using response directly (no token for /api/auth/me)');
         return data.data;
       } else {
         throw new Error(data.message || 'Failed to sign in');

@@ -58,7 +58,7 @@ jobs:
           zip -r ../../backend-deploy.zip . > /dev/null
           cd ../..
           rm -rf "$TEMP_DIR"
-          echo "✅ Deployment package created"
+          echo " Deployment package created"
 
       - name: Azure Login
         uses: azure/login@v2

@@ -72,5 +72,5 @@ jobs:
 
       - name: Verify Deployment
         run: |
-          echo "✅ Frontend deployed successfully"
+          echo " Frontend deployed successfully"
           echo "🌐 URL: ${{ secrets.PROD_FRONTEND_URL }}"

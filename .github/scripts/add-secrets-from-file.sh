@@ -24,13 +24,13 @@ SECRETS_FILE=$2
 REPO="cloudsecurityweb/echopad-website"
 
 if [ ! -f "$SECRETS_FILE" ]; then
-    echo "❌ Secrets file not found: $SECRETS_FILE"
+    echo " Secrets file not found: $SECRETS_FILE"
     exit 1
 fi
 
 # Check if GitHub CLI is installed
 if ! command -v gh &> /dev/null; then
-    echo "❌ GitHub CLI (gh) is not installed."
+    echo " GitHub CLI (gh) is not installed."
     echo ""
     echo "Install it with:"
     echo "  macOS: brew install gh"
@@ -40,7 +40,7 @@ fi
 
 # Check if authenticated
 if ! gh auth status &> /dev/null; then
-    echo "❌ Not authenticated with GitHub CLI"
+    echo " Not authenticated with GitHub CLI"
     echo ""
     echo "Authenticate with:"
     echo "  gh auth login"
@@ -81,16 +81,16 @@ while IFS= read -r line || [ -n "$line" ]; do
     
     # Check if secret already exists
     if gh secret list --repo "$REPO" 2>/dev/null | grep -q "^$full_name"; then
-        echo "⚠️  Already exists (updating...)"
+        echo "  Already exists (updating...)"
         echo -n "$secret_value" | gh secret set "$full_name" --repo "$REPO"
-        echo " ✅ Updated"
+        echo "  Updated"
     else
         echo -n "$secret_value" | gh secret set "$full_name" --repo "$REPO"
-        echo " ✅ Added"
+        echo "  Added"
     fi
 done < "$SECRETS_FILE"
 
 echo ""
-echo "✅ All secrets processed!"
+echo " All secrets processed!"
 echo ""
 echo "Verify at: https://github.com/$REPO/settings/secrets/actions"

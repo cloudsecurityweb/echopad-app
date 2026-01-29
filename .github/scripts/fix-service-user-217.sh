@@ -7,7 +7,7 @@ set -e
 
 SERVICE_FILE="/etc/systemd/system/actions.runner.cloudsecurityweb-echopad-website.echopad-prod-runner.service"
 
-echo "🔧 Fixing service error 217/USER"
+echo " Fixing service error 217/USER"
 echo ""
 
 # Check current user
@@ -27,9 +27,9 @@ echo "Detected username: $ACTUAL_USER"
 
 # Check if user exists
 if id "$ACTUAL_USER" &>/dev/null; then
-    echo "✅ User $ACTUAL_USER exists"
+    echo " User $ACTUAL_USER exists"
 else
-    echo "❌ User $ACTUAL_USER does not exist"
+    echo " User $ACTUAL_USER does not exist"
     echo "Checking all users..."
     getent passwd | grep -E "(sandeepd|azureuser)" || echo "No matching users found"
 fi

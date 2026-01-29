@@ -51,7 +51,7 @@ jobs:
             -x "*.ps1" \
             -x "create-*.ps1" \
             > /dev/null 2>&1
-          echo "✅ Deployment package created"
+          echo " Deployment package created"
 
       - name: Azure Login
         uses: azure/login@v2
@@ -102,9 +102,9 @@ jobs:
           sleep 30
           STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://${{ env.AZURE_WEBAPP_NAME }}.azurewebsites.net/health || echo "000")
           if [ "$STATUS" = "200" ]; then
-            echo "✅ Backend is healthy (HTTP $STATUS)"
+            echo " Backend is healthy (HTTP $STATUS)"
           else
-            echo "⚠️  Backend status: HTTP $STATUS (may still be starting)"
+            echo "  Backend status: HTTP $STATUS (may still be starting)"
           fi
 
       - name: Cleanup

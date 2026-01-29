@@ -75,7 +75,7 @@ sudo ./svc.sh status
 
 ## Key Difference
 
-- ❌ **Wrong**: `actions-runner-linux-x64-*.tar.gz` (for x64/amd64)
-- ✅ **Correct**: `actions-runner-linux-arm64-*.tar.gz` (for ARM64)
+-  **Wrong**: `actions-runner-linux-x64-*.tar.gz` (for x64/amd64)
+-  **Correct**: `actions-runner-linux-arm64-*.tar.gz` (for ARM64)
 
 The updated script now auto-detects the architecture and downloads the correct version.

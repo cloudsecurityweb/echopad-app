@@ -49,8 +49,8 @@ function Users() {
   // Placeholder data - to be replaced with API calls
   const summaryStats = [
     { label: 'Total Users', value: '156', change: '+8%', icon: '👥' },
-    { label: 'Active', value: '142', change: '+5%', icon: '✅' },
-    { label: 'Inactive', value: '14', change: '-3%', icon: '⏸️' },
+    { label: 'Active', value: '142', change: '+5%', icon: '' },
+    { label: 'Inactive', value: '14', change: '-3%', icon: '⏸' },
     { label: 'New This Month', value: '12', change: '+20%', icon: '🆕' },
   ];
 

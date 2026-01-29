@@ -6,7 +6,7 @@ set -e
 
 RUNNER_DIR="$HOME/actions-runner"
 
-echo "🔧 Fixing execution permissions for GitHub Actions Runner"
+echo " Fixing execution permissions for GitHub Actions Runner"
 echo ""
 
 cd "$RUNNER_DIR"
@@ -42,7 +42,7 @@ if command -v getenforce &> /dev/null; then
     SELINUX_STATUS=$(getenforce)
     echo "SELinux status: $SELINUX_STATUS"
     if [ "$SELINUX_STATUS" = "Enforcing" ]; then
-        echo "⚠️  SELinux is enforcing - might need to set context"
+        echo "  SELinux is enforcing - might need to set context"
         echo "Trying to fix SELinux context..."
         sudo chcon -t bin_t runsvc.sh 2>/dev/null || echo "Could not set SELinux context"
     fi
@@ -52,14 +52,14 @@ fi
 echo ""
 echo "Testing if runsvc.sh can execute..."
 if bash -n runsvc.sh; then
-    echo "✅ runsvc.sh syntax is valid"
+    echo " runsvc.sh syntax is valid"
 else
-    echo "❌ runsvc.sh has syntax errors"
+    echo " runsvc.sh has syntax errors"
 fi
 
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "✅ Permissions fixed!"
+echo " Permissions fixed!"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 echo "Now try:"

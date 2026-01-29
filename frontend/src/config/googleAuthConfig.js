@@ -6,7 +6,7 @@
  * Configuration is loaded from .env.js file (via window.ENV) with fallback to Vite environment variables
  * (import.meta.env) and then default values.
  * 
- * ⚠️ SECURITY WARNING:
+ *  SECURITY WARNING:
  * Authentication credentials should be configured in .env.js, which is excluded from version control.
  * Never commit .env.js with real Client IDs.
  * 

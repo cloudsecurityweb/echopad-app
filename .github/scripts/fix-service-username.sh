@@ -7,7 +7,7 @@ set -e
 
 SERVICE_FILE="/etc/systemd/system/actions.runner.cloudsecurityweb-echopad-website.echopad-prod-runner.service"
 
-echo "🔧 Fixing service username"
+echo " Fixing service username"
 echo ""
 
 # Get current username (without domain)
@@ -24,7 +24,7 @@ echo ""
 echo "Fixing service file..."
 sudo sed -i "s/^User=.*/User=$CURRENT_USER/" "$SERVICE_FILE"
 
-echo "✅ Updated service file"
+echo " Updated service file"
 echo ""
 echo "New User setting:"
 grep "^User=" "$SERVICE_FILE"

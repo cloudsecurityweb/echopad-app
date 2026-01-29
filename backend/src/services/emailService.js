@@ -18,7 +18,7 @@ let emailClient = null;
  */
 function getEmailClient() {
   if (!CONNECTION_STRING) {
-    console.warn("⚠️  AZURE_COMMUNICATION_CONNECTION_STRING not set. Email service will not work.");
+    console.warn("  AZURE_COMMUNICATION_CONNECTION_STRING not set. Email service will not work.");
     return null;
   }
 

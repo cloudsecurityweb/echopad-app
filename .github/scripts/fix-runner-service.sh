@@ -7,12 +7,12 @@ set -e
 
 RUNNER_DIR="$HOME/actions-runner"
 
-echo "🔧 Fixing GitHub Actions Runner Service"
+echo " Fixing GitHub Actions Runner Service"
 echo ""
 
 # Check if runner directory exists
 if [ ! -d "$RUNNER_DIR" ]; then
-    echo "❌ Runner directory not found: $RUNNER_DIR"
+    echo " Runner directory not found: $RUNNER_DIR"
     exit 1
 fi
 
@@ -20,7 +20,7 @@ cd "$RUNNER_DIR"
 
 # Check if runsvc.sh exists
 if [ ! -f "runsvc.sh" ]; then
-    echo "❌ runsvc.sh not found in $RUNNER_DIR"
+    echo " runsvc.sh not found in $RUNNER_DIR"
     exit 1
 fi
 
@@ -46,13 +46,13 @@ if [ -f "$SERVICE_FILE" ]; then
     
     # Check if the path is correct
     if grep -q "ExecStart=$RUNNER_DIR/runsvc.sh" "$SERVICE_FILE"; then
-        echo "✅ Service file path looks correct"
+        echo " Service file path looks correct"
     else
-        echo "⚠️  Service file path might be incorrect"
+        echo "  Service file path might be incorrect"
         echo "Expected: ExecStart=$RUNNER_DIR/runsvc.sh"
     fi
 else
-    echo "⚠️  Service file not found: $SERVICE_FILE"
+    echo "  Service file not found: $SERVICE_FILE"
 fi
 
 # Check if runsvc.sh has correct shebang
@@ -86,7 +86,7 @@ sudo ./svc.sh status
 
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "✅ Service fix complete!"
+echo " Service fix complete!"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 echo "If still having issues, check:"

@@ -12,7 +12,7 @@ const MAGIC_LINK_SECRET = process.env.MAGIC_LINK_JWT_SECRET;
 const MAGIC_LINK_TTL_MINUTES = parseInt(process.env.MAGIC_LINK_TTL_MINUTES || '1440', 10); // Default 24 hours
 
 if (!MAGIC_LINK_SECRET) {
-  console.warn('⚠️  MAGIC_LINK_JWT_SECRET not set. Magic link auth will fail.');
+  console.warn('  MAGIC_LINK_JWT_SECRET not set. Magic link auth will fail.');
 }
 
 /**
@@ -172,7 +172,7 @@ export async function attachMagicUserFromDb(req, res, next) {
     }
 
     if (!user) {
-      console.warn(`⚠️ [MAGIC-AUTH] User not found for magic token: ${oid.substring(0, 8)}...`);
+      console.warn(` [MAGIC-AUTH] User not found for magic token: ${oid.substring(0, 8)}...`);
       return res.status(401).json({
         success: false,
         error: 'User not registered',

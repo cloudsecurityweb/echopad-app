@@ -29,7 +29,7 @@ async function test() {
     console.log(`Response:`, JSON.stringify(data, null, 2));
 
     if (response.ok) {
-      console.log("\n✅ Success! Data should be in CosmosDB.");
+      console.log("\n Success! Data should be in CosmosDB.");
       console.log(`   Container: ${getContainerName(ENDPOINT)}`);
       console.log(`   Item ID: ${data.data?.id}`);
       console.log(`   Tenant ID: ${data.data?.tenantId}`);
@@ -38,7 +38,7 @@ async function test() {
       console.log(`   2. Select container: ${getContainerName(ENDPOINT)}`);
       console.log(`   3. Run query: SELECT * FROM c WHERE c.tenantId = "tenant_demo"`);
     } else {
-      console.log("\n❌ Failed!");
+      console.log("\n Failed!");
       if (response.status === 403) {
         console.log("   Error: Endpoint is blocked (NODE_ENV is 'production')");
       } else if (response.status === 503) {
@@ -47,7 +47,7 @@ async function test() {
       }
     }
   } catch (error) {
-    console.error("❌ Request failed:", error.message);
+    console.error(" Request failed:", error.message);
     console.log("\nMake sure:");
     console.log("  1. Server is running (npm start)");
     console.log("  2. Server is accessible at", BASE_URL);

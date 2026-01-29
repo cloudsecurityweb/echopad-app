@@ -39,7 +39,7 @@ function Clients() {
   // Placeholder data - to be replaced with API calls
   const summaryStats = [
     { label: 'Total Clients', value: '247', change: '+12%', icon: '👥' },
-    { label: 'Active Clients', value: '189', change: '+8%', icon: '✅' },
+    { label: 'Active Clients', value: '189', change: '+8%', icon: '' },
     { label: 'Trial Clients', value: '32', change: '+5%', icon: '🆓' },
     { label: 'New This Month', value: '18', change: '+23%', icon: '🆕' },
   ];

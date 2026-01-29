@@ -5,8 +5,8 @@ function BeforeAfterSlider({
   subtitle = "Compare how providers documented before AI Scribe to how they do it now",
   beforeLabel = "Without EchoPad",
   afterLabel = "With EchoPad AI Scribe",
-  beforeTitle = "❌ Traditional Way",
-  afterTitle = "✅ With AI Scribe",
+  beforeTitle = " Traditional Way",
+  afterTitle = " With AI Scribe",
   beforeItems = [
     { icon: 'bi-clock', text: '<strong>15-20 minutes</strong> per patient note' },
     { icon: 'bi-keyboard', text: 'Manual typing after each visit' },

@@ -37,13 +37,13 @@ export function CosmosProvider({ children }) {
           setContainer(cosmosContainer);
           setIsInitialized(true);
           setConnectionError(null);
-          console.log('✅ Cosmos DB initialized successfully');
+          console.log(' Cosmos DB initialized successfully');
         } else {
           setIsInitialized(false);
           setConnectionError(new Error('Failed to initialize Cosmos DB client'));
         }
       } catch (error) {
-        console.error('❌ Cosmos DB initialization error:', error);
+        console.error(' Cosmos DB initialization error:', error);
         setConnectionError(error);
         setIsInitialized(false);
         setClient(null);

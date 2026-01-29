@@ -32,8 +32,8 @@ function Licenses() {
   // Placeholder data - to be replaced with API calls
   const summaryStats = [
     { label: 'Total Licenses', value: '1,234', change: '+15%', icon: '🔑' },
-    { label: 'Allocated', value: '1,156', change: '+12%', icon: '📦' },
-    { label: 'Used', value: '1,086', change: '+18%', icon: '✅' },
+    { label: 'Allocated', value: '1,156', change: '+12%', icon: '' },
+    { label: 'Used', value: '1,086', change: '+18%', icon: '' },
     { label: 'Available', value: '148', change: '-5%', icon: '🆓' },
   ];
 

@@ -40,7 +40,7 @@ export async function verifyEmail(req, res) {
     // Decode URL-encoded token (Express should auto-decode, but ensure it's decoded)
     const normalizedToken = decodeURIComponent(token);
 
-    console.log(`🔍 [VERIFY-EMAIL] Verification attempt:`, {
+    console.log(` [VERIFY-EMAIL] Verification attempt:`, {
       email: normalizedEmail,
       tokenReceived: normalizedToken.substring(0, 50) + '...',
       tokenLength: normalizedToken.length,
@@ -66,7 +66,7 @@ export async function verifyEmail(req, res) {
         if (verifications.length > 0) {
           verificationRecord = verifications[0];
           userTenantId = verificationRecord.tenantId;
-          console.log(`✅ [VERIFY-EMAIL] Found verification record for ${normalizedEmail}`);
+          console.log(` [VERIFY-EMAIL] Found verification record for ${normalizedEmail}`);
         }
       }
     } catch (error) {
@@ -119,25 +119,25 @@ export async function verifyEmail(req, res) {
               const matchingUser = resources.find(u => u.tenantId === userTenantId);
               if (matchingUser) {
                 user = matchingUser;
-                console.log(`✅ [VERIFY-EMAIL] Found user with matching tenantId: ${user.id}`);
+                console.log(` [VERIFY-EMAIL] Found user with matching tenantId: ${user.id}`);
                 break;
               }
             }
             // If multiple users, prefer the one that's not verified (most recent sign-up)
             if (resources.length > 1) {
-              console.warn(`⚠️  [VERIFY-EMAIL] Multiple users found with email ${normalizedEmail} in ${role} container: ${resources.length}`);
+              console.warn(`  [VERIFY-EMAIL] Multiple users found with email ${normalizedEmail} in ${role} container: ${resources.length}`);
               // Prefer unverified user (most recent sign-up)
               const unverifiedUser = resources.find(u => !u.emailVerified);
               if (unverifiedUser) {
                 user = unverifiedUser;
-                console.log(`✅ [VERIFY-EMAIL] Using unverified user: ${user.id}`);
+                console.log(` [VERIFY-EMAIL] Using unverified user: ${user.id}`);
                 break;
               }
             }
             // Otherwise, use the first one found
             if (!user) {
               user = resources[0];
-              console.log(`✅ [VERIFY-EMAIL] Using first user found: ${user.id}`);
+              console.log(` [VERIFY-EMAIL] Using first user found: ${user.id}`);
               break;
             }
           }
@@ -149,7 +149,7 @@ export async function verifyEmail(req, res) {
     }
 
     if (!user) {
-      console.log(`❌ [VERIFY-EMAIL] User not found: ${normalizedEmail}`);
+      console.log(` [VERIFY-EMAIL] User not found: ${normalizedEmail}`);
       return res.status(404).json({
         success: false,
         error: 'User not found',
@@ -159,7 +159,7 @@ export async function verifyEmail(req, res) {
 
     // Check if already verified
     if (user.emailVerified) {
-      console.log(`✅ [VERIFY-EMAIL] Email already verified: ${normalizedEmail}`);
+      console.log(` [VERIFY-EMAIL] Email already verified: ${normalizedEmail}`);
       return res.status(200).json({
         success: true,
         message: 'Email already verified',
@@ -175,7 +175,7 @@ export async function verifyEmail(req, res) {
                         (verificationRecord && verificationRecord.token === normalizedToken);
 
     // Log token comparison for debugging
-    console.log(`🔍 [VERIFY-EMAIL] Token comparison:`, {
+    console.log(` [VERIFY-EMAIL] Token comparison:`, {
       storedToken: user.verificationToken ? user.verificationToken.substring(0, 50) + '...' : 'null',
       verificationRecordToken: verificationRecord ? verificationRecord.token.substring(0, 50) + '...' : 'null',
       receivedToken: normalizedToken.substring(0, 50) + '...',
@@ -186,7 +186,7 @@ export async function verifyEmail(req, res) {
 
     // Verify token matches
     if (!tokenMatches) {
-      console.log(`❌ [VERIFY-EMAIL] Token mismatch for ${normalizedEmail}`);
+      console.log(` [VERIFY-EMAIL] Token mismatch for ${normalizedEmail}`);
       return res.status(400).json({
         success: false,
         error: 'Invalid token',
@@ -220,9 +220,9 @@ export async function verifyEmail(req, res) {
         verificationTokenExpiresAt: null,
         status: USER_STATUS.ACTIVE, // Activate account after verification
       }, user.id, userRole);
-      console.log(`✅ [VERIFY-EMAIL] User updated successfully: ${normalizedEmail}`);
+      console.log(` [VERIFY-EMAIL] User updated successfully: ${normalizedEmail}`);
     } catch (updateError) {
-      console.error(`❌ [VERIFY-EMAIL] Failed to update user:`, updateError.message);
+      console.error(` [VERIFY-EMAIL] Failed to update user:`, updateError.message);
       throw updateError;
     }
 

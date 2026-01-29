@@ -6,7 +6,7 @@ set -e
 
 REPO="cloudsecurityweb/echopad-website"
 
-echo "🔧 Fixing GitHub Actions Runner for ARM64"
+echo " Fixing GitHub Actions Runner for ARM64"
 echo ""
 
 # Remove old x64 runner
@@ -14,7 +14,7 @@ echo "Removing old x64 runner..."
 cd ~
 if [ -d "actions-runner" ]; then
     rm -rf actions-runner
-    echo "✅ Removed old runner"
+    echo " Removed old runner"
 fi
 
 # Create new directory
@@ -37,7 +37,7 @@ rm actions-runner.tar.gz
 
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "✅ ARM64 runner downloaded!"
+echo " ARM64 runner downloaded!"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 echo "Now configure the runner:"

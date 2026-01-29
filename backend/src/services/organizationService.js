@@ -34,7 +34,7 @@ async function retryOperation(operation, maxRetries = 3, initialDelay = 1000) {
       
       if (attempt < maxRetries) {
         const delay = initialDelay * Math.pow(2, attempt);
-        console.log(`⚠️  Retrying operation (attempt ${attempt + 1}/${maxRetries}) after ${delay}ms...`);
+        console.log(`  Retrying operation (attempt ${attempt + 1}/${maxRetries}) after ${delay}ms...`);
         await new Promise(resolve => setTimeout(resolve, delay));
       }
     }
@@ -77,7 +77,7 @@ export async function createOrg(orgData, actorUserId) {
         const result = await container.items.create(org);
         const duration = Date.now() - startTime;
         if (duration > 5000) {
-          console.warn(`⚠️  Slow Cosmos DB operation: ${duration}ms (likely cold start)`);
+          console.warn(`  Slow Cosmos DB operation: ${duration}ms (likely cold start)`);
         }
         return result;
       },
@@ -86,7 +86,7 @@ export async function createOrg(orgData, actorUserId) {
     );
   } catch (error) {
     const duration = Date.now() - startTime;
-    console.error(`❌ Failed to create organization after ${duration}ms:`, error.message);
+    console.error(` Failed to create organization after ${duration}ms:`, error.message);
     if (error.code === 'TimeoutError') {
       throw new Error(`Cosmos DB timeout after ${duration}ms. This may be due to serverless cold start. Please try again.`);
     }

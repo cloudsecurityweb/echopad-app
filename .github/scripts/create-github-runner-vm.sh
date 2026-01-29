@@ -22,19 +22,19 @@ echo ""
 
 # Check if logged in
 if ! az account show &> /dev/null; then
-    echo "❌ Not logged in to Azure"
+    echo " Not logged in to Azure"
     echo "Run: az login"
     exit 1
 fi
 
 # Switch to correct subscription
-echo "📋 Switching to subscription: $SUBSCRIPTION"
+echo " Switching to subscription: $SUBSCRIPTION"
 az account set --subscription "$SUBSCRIPTION"
 az account show --query "{name:name, id:id}" -o json
 echo ""
 
 # Create resource group
-echo "📦 Creating resource group..."
+echo " Creating resource group..."
 az group create \
   --name "$RESOURCE_GROUP" \
   --location "$LOCATION" \
@@ -57,17 +57,17 @@ for SIZE in "${VM_SIZES[@]}"; do
       --public-ip-sku Standard \
       --location "$LOCATION" \
       --query "{name:name, publicIp:publicIpAddress, privateIp:privateIpAddress, powerState:powerState}" -o json 2>&1; then
-        echo "✅ VM created successfully with size: $SIZE"
+        echo " VM created successfully with size: $SIZE"
         break
     else
-        echo "⚠️  Failed with size $SIZE, trying next..."
+        echo "  Failed with size $SIZE, trying next..."
         continue
     fi
 done
 
 # Get VM details
 echo ""
-echo "📋 VM Details:"
+echo " VM Details:"
 az vm show \
   --resource-group "$RESOURCE_GROUP" \
   --name "$VM_NAME" \
@@ -81,7 +81,7 @@ PUBLIC_IP=$(az vm show -d \
 
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "✅ VM Created Successfully!"
+echo " VM Created Successfully!"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 echo "Public IP: $PUBLIC_IP"

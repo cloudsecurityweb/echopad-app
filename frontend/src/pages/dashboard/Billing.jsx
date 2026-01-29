@@ -32,7 +32,7 @@ function Billing() {
   // Placeholder data - to be replaced with API calls
   // Client Admin sees organization-specific billing data
   const summaryStats = [
-    { label: 'Current Plan', value: 'Enterprise', change: 'Active', icon: '📦' },
+    { label: 'Current Plan', value: 'Enterprise', change: 'Active', icon: '' },
     { label: 'Monthly Cost', value: '$2,499', change: 'Auto-renew', icon: '💰' },
     { label: 'Pending', value: '$0', change: '0', icon: '⏳' },
     { label: 'Next Billing', value: 'Jul 15', change: '2024', icon: '📅' },

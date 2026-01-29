@@ -8,7 +8,7 @@ If you don't see workflows in the Actions tab, check these:
 
 1. Go to: https://github.com/cloudsecurityweb/echopad-website/settings/actions
 2. Under "Actions permissions", select:
-   - ✅ "Allow all actions and reusable workflows"
+   -  "Allow all actions and reusable workflows"
 3. Click "Save"
 
 ### 2. Check Workflow Files Location

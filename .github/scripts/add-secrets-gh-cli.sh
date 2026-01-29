@@ -13,7 +13,7 @@ echo ""
 
 # Check if GitHub CLI is installed
 if ! command -v gh &> /dev/null; then
-    echo "❌ GitHub CLI (gh) is not installed."
+    echo " GitHub CLI (gh) is not installed."
     echo ""
     echo "Install it with:"
     echo "  macOS: brew install gh"
@@ -25,7 +25,7 @@ fi
 
 # Check if authenticated
 if ! gh auth status &> /dev/null; then
-    echo "❌ Not authenticated with GitHub CLI"
+    echo " Not authenticated with GitHub CLI"
     echo ""
     echo "Authenticate with:"
     echo "  gh auth login"
@@ -33,7 +33,7 @@ if ! gh auth status &> /dev/null; then
     exit 1
 fi
 
-echo "✅ GitHub CLI is installed and authenticated"
+echo " GitHub CLI is installed and authenticated"
 echo ""
 
 # Function to add secret
@@ -52,10 +52,10 @@ add_secret() {
     
     # Check if secret already exists
     if gh secret list --repo "$REPO" | grep -q "^$full_name"; then
-        echo "⚠️  Already exists (skipping)"
+        echo "  Already exists (skipping)"
     else
         echo "$secret_value" | gh secret set "$full_name" --repo "$REPO"
-        echo "✅ Added"
+        echo " Added"
     fi
 }
 
@@ -100,7 +100,7 @@ case $env_choice in
 esac
 
 echo ""
-echo "📝 Adding secrets for: $ENV_PREFIX"
+echo " Adding secrets for: $ENV_PREFIX"
 echo ""
 
 if [ "$ENV_PREFIX" = "ALL" ]; then
@@ -174,6 +174,6 @@ else
 fi
 
 echo ""
-echo "✅ All secrets added successfully!"
+echo " All secrets added successfully!"
 echo ""
 echo "Verify at: https://github.com/$REPO/settings/secrets/actions"

@@ -66,12 +66,12 @@ export async function signIn(req, res) {
 
     // OID-FIRST LOOKUP: Use OID to find user across all containers
     // This is more efficient and doesn't require guessing the role first
-    console.log(`🔍 [SIGN-IN] OID-first lookup for user: ${oid.substring(0, 8)}...`);
+    console.log(` [SIGN-IN] OID-first lookup for user: ${oid.substring(0, 8)}...`);
     let user = await getUserByOIDAnyRole(oid, tid);
     
     // If not found by OID, fallback to email search (for edge cases)
     if (!user) {
-      console.log(`⚠️ [SIGN-IN] User not found by OID, trying email lookup: ${email}`);
+      console.log(` [SIGN-IN] User not found by OID, trying email lookup: ${email}`);
       user = await getUserByEmailAnyRole(email, tid);
     }
 
@@ -94,7 +94,7 @@ export async function signIn(req, res) {
       // UserAdmin users are invited by ClientAdmin after they sign up
       const newUserRole = backendRole !== null ? backendRole : USER_ROLES.CLIENT_ADMIN;
       
-      console.log('📝 [SIGN-IN] Creating new user with OID as user ID:', {
+      console.log(' [SIGN-IN] Creating new user with OID as user ID:', {
         oid: oid.substring(0, 8) + '...',
         email: email,
         tokenRoles: roles,
@@ -118,7 +118,7 @@ export async function signIn(req, res) {
         entraRoleId: entraRoleId || null, // Store Entra ID role UUID
       }, oid);
       
-      console.log('✅ [SIGN-IN] User created with OID:', {
+      console.log(' [SIGN-IN] User created with OID:', {
         id: user.id.substring(0, 8) + '...',
         role: user.role,
         email: user.email,
@@ -133,11 +133,11 @@ export async function signIn(req, res) {
         // Token has roles - override DB role with token role
         user.role = backendRole;
         if (originalDbRole !== backendRole) {
-          console.log(`✅ Sign-in role override: DB role (${originalDbRole}) → Token role (${backendRole}) from Entra ID`);
+          console.log(` Sign-in role override: DB role (${originalDbRole}) → Token role (${backendRole}) from Entra ID`);
         }
       } else {
         // Token has no roles - preserve existing DB role
-        console.log(`ℹ️ Sign-in preserving DB role (no token roles): ${originalDbRole}`);
+        console.log(`ℹ Sign-in preserving DB role (no token roles): ${originalDbRole}`);
       }
       
       // Update user info if needed (e.g., name changed in Entra)
@@ -162,7 +162,7 @@ export async function signIn(req, res) {
       backendRole: backendRole,
       organizationId: user.organizationId,
       roleSource: 'Entra ID token (overridden)',
-      oidConsistent: user.id === oid ? '✓ OID used as user ID' : '⚠ OID mismatch'
+      oidConsistent: user.id === oid ? '✓ OID used as user ID' : ' OID mismatch'
     });
 
     res.status(200).json({
@@ -241,12 +241,12 @@ export async function signUp(req, res) {
 
     // OID-FIRST LOOKUP: Use OID to find user across all containers
     // This is more efficient and doesn't require guessing the role first
-    console.log(`🔍 [SIGN-UP] OID-first lookup for user: ${oid.substring(0, 8)}...`);
+    console.log(` [SIGN-UP] OID-first lookup for user: ${oid.substring(0, 8)}...`);
     let user = await getUserByOIDAnyRole(oid, tid);
     
     // If not found by OID, fallback to email search (for edge cases)
     if (!user) {
-      console.log(`⚠️ [SIGN-UP] User not found by OID, trying email lookup: ${tokenEmail}`);
+      console.log(` [SIGN-UP] User not found by OID, trying email lookup: ${tokenEmail}`);
       user = await getUserByEmailAnyRole(tokenEmail, tid);
     }
 
@@ -262,11 +262,11 @@ export async function signUp(req, res) {
         // Token has roles - override DB role with token role (Entra ID is source of truth)
         user.role = backendRole;
         if (originalDbRole !== backendRole) {
-          console.log(`✅ Sign-up role override: DB role (${originalDbRole}) → Token role (${backendRole}) from Entra ID`);
+          console.log(` Sign-up role override: DB role (${originalDbRole}) → Token role (${backendRole}) from Entra ID`);
         }
       } else {
         // Token has no roles - preserve existing DB role
-        console.log(`ℹ️ Sign-up preserving DB role (no token roles): ${originalDbRole}`);
+        console.log(`ℹ Sign-up preserving DB role (no token roles): ${originalDbRole}`);
       }
       
       let organization = null;
@@ -274,7 +274,7 @@ export async function signUp(req, res) {
         organization = await getOrgById(user.organizationId, tid);
       }
 
-      console.log('📝 [SIGN-UP] User already exists:', {
+      console.log(' [SIGN-UP] User already exists:', {
         email: user.email,
         role: user.role,
         tokenRoles: roles,
@@ -341,7 +341,7 @@ export async function signUp(req, res) {
 
     const { entraRoleId } = req.auth;
     
-    console.log('📝 [SIGN-UP] Creating new user with OID as user ID:', {
+    console.log(' [SIGN-UP] Creating new user with OID as user ID:', {
       oid: oid.substring(0, 8) + '...',
       email: tokenEmail,
       tokenRoles: roles,
@@ -364,7 +364,7 @@ export async function signUp(req, res) {
       entraRoleId: entraRoleId || null, // Store Entra ID role UUID
     }, oid);
 
-    console.log('✅ [SIGN-UP] User registered with OID:', {
+    console.log(' [SIGN-UP] User registered with OID:', {
       id: user.id.substring(0, 8) + '...',
       email: user.email,
       role: user.role,
@@ -437,12 +437,12 @@ export async function getCurrentUser(req, res) {
 
       // OID-FIRST LOOKUP: Use OID to find user across all containers
       // This is more efficient and doesn't require guessing the role first
-      console.log(`🔍 [CURRENT-USER] OID-first lookup for user: ${oid.substring(0, 8)}...`);
+      console.log(` [CURRENT-USER] OID-first lookup for user: ${oid.substring(0, 8)}...`);
       user = await getUserByOIDAnyRole(oid, tid);
       
       // If not found by OID, fallback to email search (for edge cases)
       if (!user && req.auth?.email) {
-        console.log(`⚠️ [CURRENT-USER] User not found by OID, trying email lookup: ${req.auth.email}`);
+        console.log(` [CURRENT-USER] User not found by OID, trying email lookup: ${req.auth.email}`);
         user = await getUserByEmailAnyRole(req.auth.email, tid);
       }
 
@@ -457,10 +457,10 @@ export async function getCurrentUser(req, res) {
       // If user was loaded directly (not from middleware), ensure role is set
       // When token roles are empty, keep database role
       if (!user.role) {
-        console.error(`❌ [CURRENT-USER] CRITICAL: User ${user.email} has no role in database`);
+        console.error(` [CURRENT-USER] CRITICAL: User ${user.email} has no role in database`);
         // Default to 'user' as fallback
         user.role = 'user';
-        console.warn('   ⚠️ Defaulting to "user" role as fallback');
+        console.warn('    Defaulting to "user" role as fallback');
       }
     }
 
@@ -473,9 +473,9 @@ export async function getCurrentUser(req, res) {
         const { updateUserRole } = await import('../services/userService.js');
         const updatedUser = await updateUserRole(user.id, user.tenantId, user.role, USER_ROLES.SUPER_ADMIN, user.id);
         user = updatedUser; // Use updated user for response
-        console.log(`✅ [CURRENT-USER] User upgraded to SUPER_ADMIN: ${normalizedEmail}`);
+        console.log(` [CURRENT-USER] User upgraded to SUPER_ADMIN: ${normalizedEmail}`);
       } catch (error) {
-        console.error(`❌ [CURRENT-USER] Failed to upgrade user to SUPER_ADMIN:`, error.message);
+        console.error(` [CURRENT-USER] Failed to upgrade user to SUPER_ADMIN:`, error.message);
         // Continue with existing role if upgrade fails
       }
     }

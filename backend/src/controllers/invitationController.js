@@ -274,7 +274,7 @@ export async function acceptInvitationRoute(req, res) {
       : (userId || `user_${randomUUID()}`); // For other auth methods, use provided userId or generate
     
     if (authMethod === 'microsoft' && req.auth?.oid) {
-      console.log('📝 [INVITATION] Accepting invitation with OID as user ID:', {
+      console.log(' [INVITATION] Accepting invitation with OID as user ID:', {
         oid: req.auth.oid.substring(0, 8) + '...',
         email: normalizedEmail,
         role: invite.role,
@@ -290,7 +290,7 @@ export async function acceptInvitationRoute(req, res) {
     });
     
     if (authMethod === 'microsoft' && req.auth?.oid) {
-      console.log('✅ [INVITATION] User created with OID:', {
+      console.log(' [INVITATION] User created with OID:', {
         id: user.id.substring(0, 8) + '...',
         email: user.email,
         role: user.role,

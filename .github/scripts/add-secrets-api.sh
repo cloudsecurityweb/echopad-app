@@ -16,7 +16,7 @@ echo ""
 
 # Check for GitHub token
 if [ -z "$GITHUB_TOKEN" ]; then
-    echo "❌ GITHUB_TOKEN environment variable not set"
+    echo " GITHUB_TOKEN environment variable not set"
     echo ""
     echo "Set it with:"
     echo "  export GITHUB_TOKEN=your_personal_access_token"
@@ -69,7 +69,7 @@ add_secret_api() {
     KEY_ID=$(echo "$KEY_RESPONSE" | grep -o '"key_id":"[^"]*' | cut -d'"' -f4)
     
     if [ -z "$PUBLIC_KEY" ] || [ -z "$KEY_ID" ]; then
-        echo "❌ Failed to get public key"
+        echo " Failed to get public key"
         return 1
     fi
     
@@ -102,7 +102,7 @@ EOF
     fi
     
     if [ -z "$ENCRYPTED_VALUE" ]; then
-        echo "⚠️  Encryption failed (install pynacl: pip3 install pynacl)"
+        echo "  Encryption failed (install pynacl: pip3 install pynacl)"
         echo "   Or use GitHub CLI method instead"
         return 1
     fi
@@ -118,9 +118,9 @@ EOF
     HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
     
     if [ "$HTTP_CODE" = "201" ] || [ "$HTTP_CODE" = "204" ]; then
-        echo "✅ Added"
+        echo " Added"
     else
-        echo "❌ Failed (HTTP $HTTP_CODE)"
+        echo " Failed (HTTP $HTTP_CODE)"
         echo "$RESPONSE" | head -n-1
     fi
 }
@@ -179,12 +179,12 @@ case $env_choice in
 esac
 
 echo ""
-echo "📝 Adding secrets for: $ENV_PREFIX"
+echo " Adding secrets for: $ENV_PREFIX"
 echo ""
 
 # Check if pynacl is installed (required for encryption)
 if ! python3 -c "import nacl" 2>/dev/null; then
-    echo "⚠️  Warning: pynacl not installed"
+    echo "  Warning: pynacl not installed"
     echo "Install with: pip3 install pynacl"
     echo ""
     read -p "Continue anyway? (y/n): " continue_choice
@@ -215,6 +215,6 @@ prompt_secret "AZURE_COMMUNICATION_CONNECTION_STRING" "$ENV_PREFIX"
 prompt_secret "AZURE_COMMUNICATION_SENDER_EMAIL" "$ENV_PREFIX"
 
 echo ""
-echo "✅ All secrets added successfully!"
+echo " All secrets added successfully!"
 echo ""
 echo "Verify at: https://github.com/$REPO/settings/secrets/actions"

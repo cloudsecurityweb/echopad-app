@@ -33,10 +33,10 @@ function Activity() {
 
   // Placeholder data - to be replaced with API calls
   const summaryStats = [
-    { label: 'Total Activities', value: '2,847', change: '+12%', icon: '📊' },
+    { label: 'Total Activities', value: '2,847', change: '+12%', icon: '' },
     { label: 'Today', value: '142', change: '+8%', icon: '📅' },
     { label: 'This Week', value: '856', change: '+15%', icon: '📆' },
-    { label: 'This Month', value: '2,847', change: '+23%', icon: '🗓️' },
+    { label: 'This Month', value: '2,847', change: '+23%', icon: '🗓' },
   ];
 
   const activities = [

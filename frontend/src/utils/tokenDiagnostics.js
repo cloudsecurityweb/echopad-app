@@ -103,7 +103,7 @@ export async function diagnoseTokenIssue(msalInstance, account, loginRequest) {
  * @param {Object} diagnostics - Diagnostic object from diagnoseTokenIssue
  */
 export function logTokenDiagnostics(diagnostics) {
-  console.group('🔍 Token Diagnostics');
+  console.group(' Token Diagnostics');
   
   console.log('Account:', diagnostics.account);
   
@@ -125,7 +125,7 @@ export function logTokenDiagnostics(diagnostics) {
     console.log('Payload keys:', Object.keys(diagnostics.accessToken.payload));
     console.groupEnd();
   } else {
-    console.error('❌ No access token found!');
+    console.error(' No access token found!');
   }
 
   console.group('Comparison');

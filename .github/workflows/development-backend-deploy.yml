@@ -70,7 +70,7 @@ jobs:
             -x "*.ps1" \
             -x "create-*.ps1" \
             > /dev/null 2>&1
-          echo "✅ Deployment package created"
+          echo " Deployment package created"
 
       - name: Azure Login
         uses: azure/login@v2

@@ -31,8 +31,8 @@ function UserAdminDashboard() {
 
   // Placeholder data - to be replaced with API calls
   const overviewStats = [
-    { label: 'Assigned AI Agents', value: '3', change: 'Active', icon: '📦' },
-    { label: 'Usage This Month', value: '1,247', change: '+15%', icon: '📊' },
+    { label: 'Assigned AI Agents', value: '3', change: 'Active', icon: '' },
+    { label: 'Usage This Month', value: '1,247', change: '+15%', icon: '' },
     { label: 'Active Sessions', value: '2', change: 'Now', icon: '🟢' },
     { label: 'Team Members', value: '12', change: 'In Org', icon: '👥' },
     { label: 'Available AI Agents', value: '5', change: 'To Purchase', icon: '🛒' },

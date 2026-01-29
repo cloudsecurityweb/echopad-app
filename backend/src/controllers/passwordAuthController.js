@@ -68,7 +68,7 @@ export async function signUpEmail(req, res) {
     
     // Check if user already exists across ALL tenants (prevent duplicate sign-ups)
     // Email/password users are CLIENT_ADMIN, search across all tenants
-    console.log(`🔍 [SIGN-UP] Checking for existing user with email: ${normalizedEmail}`);
+    console.log(` [SIGN-UP] Checking for existing user with email: ${normalizedEmail}`);
     
     let existingUser = null;
     const roles = [USER_ROLES.CLIENT_ADMIN, USER_ROLES.SUPER_ADMIN, USER_ROLES.USER];
@@ -87,7 +87,7 @@ export async function signUpEmail(req, res) {
           
           if (resources.length > 0) {
             existingUser = resources[0];
-            console.log(`⚠️  [SIGN-UP] User already exists: ${normalizedEmail} (found ${resources.length} user(s))`);
+            console.log(`  [SIGN-UP] User already exists: ${normalizedEmail} (found ${resources.length} user(s))`);
             break;
           }
         }
@@ -104,7 +104,7 @@ export async function signUpEmail(req, res) {
       });
     }
     
-    console.log(`✅ [SIGN-UP] No existing user found, proceeding with sign-up: ${normalizedEmail}`);
+    console.log(` [SIGN-UP] No existing user found, proceeding with sign-up: ${normalizedEmail}`);
     
     // Determine user role based on email domain
     // @cloudsecurityweb.com emails get SUPER_ADMIN role
@@ -263,7 +263,7 @@ export async function signInEmail(req, res) {
           if (resources.length > 0) {
             // If multiple users found, try to find the correct one by password
             if (resources.length > 1) {
-              console.warn(`⚠️  [SIGN-IN] Multiple users found with email ${normalizedEmail} in ${role} container: ${resources.length}`);
+              console.warn(`  [SIGN-IN] Multiple users found with email ${normalizedEmail} in ${role} container: ${resources.length}`);
               
               // Try each user until we find one with matching password
               // Prefer verified and active users first
@@ -288,7 +288,7 @@ export async function signInEmail(req, res) {
                   if (passwordValid) {
                     user = candidateUser;
                     user._passwordAlreadyVerified = true; // Mark as already verified
-                    console.log(`✅ [SIGN-IN] Found matching password for user: ${user.id}, tenant: ${user.tenantId}`);
+                    console.log(` [SIGN-IN] Found matching password for user: ${user.id}, tenant: ${user.tenantId}`);
                     break;
                   }
                 }
@@ -301,7 +301,7 @@ export async function signInEmail(req, res) {
             } else {
               // Single user found
               user = resources[0];
-              console.log(`✅ [SIGN-IN] Found user in ${role} container: ${user.id}, tenant: ${user.tenantId}`);
+              console.log(` [SIGN-IN] Found user in ${role} container: ${user.id}, tenant: ${user.tenantId}`);
               break; // Found user, stop searching
             }
           }
@@ -313,7 +313,7 @@ export async function signInEmail(req, res) {
     }
 
     if (!user) {
-      console.log(`❌ [SIGN-IN] User not found: ${normalizedEmail}`);
+      console.log(` [SIGN-IN] User not found: ${normalizedEmail}`);
       return res.status(401).json({
         success: false,
         error: 'Invalid credentials',
@@ -321,11 +321,11 @@ export async function signInEmail(req, res) {
       });
     }
 
-    console.log(`🔍 [SIGN-IN] User found: ${normalizedEmail}, status: ${user.status}, emailVerified: ${user.emailVerified}, hasPassword: ${!!user.passwordHash}`);
+    console.log(` [SIGN-IN] User found: ${normalizedEmail}, status: ${user.status}, emailVerified: ${user.emailVerified}, hasPassword: ${!!user.passwordHash}`);
 
     // Check if user has password (email/password user)
     if (!user.passwordHash) {
-      console.log(`❌ [SIGN-IN] User has no password hash: ${normalizedEmail}`);
+      console.log(` [SIGN-IN] User has no password hash: ${normalizedEmail}`);
       return res.status(401).json({
         success: false,
         error: 'Invalid authentication method',
@@ -338,27 +338,27 @@ export async function signInEmail(req, res) {
     let passwordValid = false;
     if (user._passwordAlreadyVerified) {
       passwordValid = true;
-      console.log(`✅ [SIGN-IN] Password already verified during user lookup: ${normalizedEmail}`);
+      console.log(` [SIGN-IN] Password already verified during user lookup: ${normalizedEmail}`);
     } else {
-      console.log(`🔍 [SIGN-IN] Verifying password for: ${normalizedEmail}`);
-      console.log(`🔍 [SIGN-IN] Password hash exists: ${!!user.passwordHash}, hash length: ${user.passwordHash ? user.passwordHash.length : 0}`);
+      console.log(` [SIGN-IN] Verifying password for: ${normalizedEmail}`);
+      console.log(` [SIGN-IN] Password hash exists: ${!!user.passwordHash}, hash length: ${user.passwordHash ? user.passwordHash.length : 0}`);
       
       passwordValid = await verifyPassword(password, user.passwordHash);
       if (!passwordValid) {
-        console.log(`❌ [SIGN-IN] Password verification failed: ${normalizedEmail}`);
-        console.log(`🔍 [SIGN-IN] User details: id=${user.id}, tenantId=${user.tenantId}, role=${user.role}, status=${user.status}`);
+        console.log(` [SIGN-IN] Password verification failed: ${normalizedEmail}`);
+        console.log(` [SIGN-IN] User details: id=${user.id}, tenantId=${user.tenantId}, role=${user.role}, status=${user.status}`);
         return res.status(401).json({
           success: false,
           error: 'Invalid credentials',
           message: 'Invalid email or password',
         });
       }
-      console.log(`✅ [SIGN-IN] Password verified for: ${normalizedEmail}`);
+      console.log(` [SIGN-IN] Password verified for: ${normalizedEmail}`);
     }
 
     // Check if email is verified
     if (!user.emailVerified) {
-      console.log(`❌ [SIGN-IN] Email not verified: ${normalizedEmail}`);
+      console.log(` [SIGN-IN] Email not verified: ${normalizedEmail}`);
       return res.status(403).json({
         success: false,
         error: 'Email not verified',
@@ -368,7 +368,7 @@ export async function signInEmail(req, res) {
 
     // Check if user is active
     if (user.status !== USER_STATUS.ACTIVE) {
-      console.log(`❌ [SIGN-IN] User not active: ${normalizedEmail}, status: ${user.status}`);
+      console.log(` [SIGN-IN] User not active: ${normalizedEmail}, status: ${user.status}`);
       return res.status(403).json({
         success: false,
         error: 'Account not active',
@@ -376,7 +376,7 @@ export async function signInEmail(req, res) {
       });
     }
 
-    console.log(`✅ [SIGN-IN] All checks passed for: ${normalizedEmail}`);
+    console.log(` [SIGN-IN] All checks passed for: ${normalizedEmail}`);
 
     // Upgrade @cloudsecurityweb.com users to SUPER_ADMIN if they're not already
     if (normalizedEmail.endsWith('@cloudsecurityweb.com') && user.role !== USER_ROLES.SUPER_ADMIN) {
@@ -385,9 +385,9 @@ export async function signInEmail(req, res) {
         const { updateUserRole } = await import('../services/userService.js');
         const updatedUser = await updateUserRole(user.id, user.tenantId, user.role, USER_ROLES.SUPER_ADMIN, user.id);
         user = updatedUser; // Use updated user for response
-        console.log(`✅ [SIGN-IN] User upgraded to SUPER_ADMIN: ${normalizedEmail}`);
+        console.log(` [SIGN-IN] User upgraded to SUPER_ADMIN: ${normalizedEmail}`);
       } catch (error) {
-        console.error(`❌ [SIGN-IN] Failed to upgrade user to SUPER_ADMIN:`, error.message);
+        console.error(` [SIGN-IN] Failed to upgrade user to SUPER_ADMIN:`, error.message);
         // Continue with existing role if upgrade fails
       }
     }

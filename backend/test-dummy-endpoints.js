@@ -34,25 +34,25 @@ async function testEndpoint(endpoint) {
     const data = await response.json();
 
     if (response.ok) {
-      console.log(`✅ ${endpoint.name}: Created successfully`);
+      console.log(` ${endpoint.name}: Created successfully`);
       console.log(`   ID: ${data.data?.id}`);
       console.log(`   Tenant: ${data.data?.tenantId}`);
       return { success: true, data: data.data };
     } else {
-      console.error(`❌ ${endpoint.name}: Failed`);
+      console.error(` ${endpoint.name}: Failed`);
       console.error(`   Status: ${response.status}`);
       console.error(`   Error: ${data.error || data.message}`);
       return { success: false, error: data };
     }
   } catch (error) {
-    console.error(`❌ ${endpoint.name}: Request failed`);
+    console.error(` ${endpoint.name}: Request failed`);
     console.error(`   Error: ${error.message}`);
     return { success: false, error: error.message };
   }
 }
 
 async function testAllEndpoints() {
-  console.log("🧪 Testing dummy data endpoints...\n");
+  console.log(" Testing dummy data endpoints...\n");
   console.log(`Base URL: ${BASE_URL}\n`);
 
   const results = [];
@@ -63,20 +63,20 @@ async function testAllEndpoints() {
   }
 
   // Summary
-  console.log("📊 Summary:");
+  console.log(" Summary:");
   const successful = results.filter((r) => r.success).length;
   const failed = results.filter((r) => !r.success).length;
-  console.log(`   ✅ Successful: ${successful}/${results.length}`);
-  console.log(`   ❌ Failed: ${failed}/${results.length}`);
+  console.log(`    Successful: ${successful}/${results.length}`);
+  console.log(`    Failed: ${failed}/${results.length}`);
 
   if (failed > 0) {
-    console.log("\n⚠️  Some endpoints failed. Check:");
+    console.log("\n  Some endpoints failed. Check:");
     console.log("   1. Server is running (node src/server.js)");
     console.log("   2. NODE_ENV is not set to 'production'");
     console.log("   3. CosmosDB is configured (COSMOS_ENDPOINT and COSMOS_KEY)");
     console.log("   4. Containers exist in CosmosDB");
   } else {
-    console.log("\n✅ All endpoints working! Check CosmosDB for the created data.");
+    console.log("\n All endpoints working! Check CosmosDB for the created data.");
     console.log("   Look in containers: organizations, users, products, licenses, invites, auditEvents");
     console.log("   Filter by tenantId: 'tenant_demo'");
   }

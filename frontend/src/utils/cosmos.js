@@ -25,7 +25,7 @@ export function initializeCosmosDB() {
       "VITE_COSMOS_CONNECTION_STRING environment variable is not set. " +
       "Please create a .env file with your connection string."
     );
-    console.warn("⚠️ Cosmos DB:", error.message);
+    console.warn(" Cosmos DB:", error.message);
     initializationError = error;
     isInitialized = true;
     return { client: null, database: null, container: null, error };
@@ -39,7 +39,7 @@ export function initializeCosmosDB() {
     initializationError = null;
     return { client, database, container, error: null };
   } catch (error) {
-    console.error("❌ Failed to initialize Cosmos DB client:", error.message);
+    console.error(" Failed to initialize Cosmos DB client:", error.message);
     initializationError = error;
     isInitialized = true;
     return { client: null, database: null, container: null, error };
@@ -56,16 +56,16 @@ export async function testConnection() {
   }
 
   if (!database || initializationError) {
-    console.error("❌ Cosmos DB not initialized:", initializationError?.message || "Unknown error");
+    console.error(" Cosmos DB not initialized:", initializationError?.message || "Unknown error");
     return false;
   }
 
   try {
     const { resource: db } = await database.read();
-    console.log("✅ Successfully connected to database:", db.id);
+    console.log(" Successfully connected to database:", db.id);
     return true;
   } catch (error) {
-    console.error("❌ Connection test failed:", error.message);
+    console.error(" Connection test failed:", error.message);
     return false;
   }
 }

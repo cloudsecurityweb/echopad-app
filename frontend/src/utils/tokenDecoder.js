@@ -79,8 +79,8 @@ export function getOIDFromToken(token) {
   if (oid) {
     console.log('🔐 [TOKEN] OID extracted:', oid);
   } else {
-    console.warn('⚠️ [TOKEN] No OID found in token payload');
-    console.log('📋 [TOKEN] Token payload keys:', Object.keys(payload));
+    console.warn(' [TOKEN] No OID found in token payload');
+    console.log(' [TOKEN] Token payload keys:', Object.keys(payload));
   }
 
   return oid || null;
@@ -103,7 +103,7 @@ export function getUserInfoFromToken(token) {
   if (oid) {
     console.log('🔐 [TOKEN] User info extracted - OID:', oid);
   } else {
-    console.warn('⚠️ [TOKEN] No OID found in token payload');
+    console.warn(' [TOKEN] No OID found in token payload');
   }
 
   return {

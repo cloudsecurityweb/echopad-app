@@ -378,7 +378,7 @@ function ReferCare() {
               beforeLabel="Old Manual Methods"
               afterLabel="Modern ReferCare System"
               beforeTitle="📠 Fax, Phone & Paper Era"
-              afterTitle="☁️ Digital Health Records Era"
+              afterTitle="☁ Digital Health Records Era"
               beforeItems={[
                 { icon: 'bi-printer', text: '<strong>Fax machines</strong> - wait hours for confirmation' },
                 { icon: 'bi-telephone', text: '<strong>Phone tag</strong> - 5+ calls per referral' },

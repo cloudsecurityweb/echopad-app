@@ -7,7 +7,7 @@ set -e
 
 REPO="cloudsecurityweb/echopad-website"
 
-echo "🚀 Quick GitHub Actions Runner Setup"
+echo " Quick GitHub Actions Runner Setup"
 echo ""
 
 # Step 1: Update and install prerequisites
@@ -62,7 +62,7 @@ rm actions-runner.tar.gz
 
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "✅ Prerequisites installed!"
+echo " Prerequisites installed!"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 echo "Next steps:"

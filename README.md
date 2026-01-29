@@ -12,7 +12,7 @@ echopad/
     └── workflows/     # GitHub Actions CI/CD
 ```
 
-## 🚀 Quick Start
+##  Quick Start
 
 ### Prerequisites
 
@@ -42,7 +42,7 @@ npm run dev
 
 Frontend runs on: `http://localhost:5173`
 
-## 🔧 Environment Variables
+##  Environment Variables
 
 ### Backend
 
@@ -70,7 +70,7 @@ VITE_API_BASE_URL=http://localhost:3000
 # ... see ENV_VARIABLES.md for complete list
 ```
 
-## 🚀 Deployment
+##  Deployment
 
 ### Automatic (GitHub Actions)
 
@@ -83,7 +83,7 @@ Push to `main` branch triggers automatic deployment:
 
 See `DEPLOYMENT.md` for manual deployment instructions.
 
-## 📋 CI/CD Pipeline
+##  CI/CD Pipeline
 
 GitHub Actions workflows:
 
@@ -110,7 +110,7 @@ GitHub Actions workflows:
 - `VITE_API_ENDPOINT` - Whisper API endpoint (optional)
 - `VITE_API_ROUTE` - Whisper API route (optional)
 
-## 🏗️ Infrastructure
+## 🏗 Infrastructure
 
 Infrastructure is managed separately in the `echopad-infra` repository using Terraform.
 
@@ -123,10 +123,10 @@ See: https://github.com/your-org/echopad-infra
 - `backend/README.md` - Backend API documentation
 - `frontend/README.md` - Frontend documentation
 
-## 🔗 Related Repositories
+##  Related Repositories
 
 - **Infrastructure**: [echopad-infra](https://github.com/your-org/echopad-infra) - Terraform infrastructure code
 
-## 📝 License
+##  License
 
 [Your License Here]

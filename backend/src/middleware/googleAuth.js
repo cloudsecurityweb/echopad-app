@@ -7,7 +7,7 @@
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 
 if (!GOOGLE_CLIENT_ID) {
-  console.warn('⚠️  GOOGLE_CLIENT_ID not set. Google auth middleware will fail.');
+  console.warn('  GOOGLE_CLIENT_ID not set. Google auth middleware will fail.');
 }
 
 /**

@@ -44,7 +44,7 @@ const TENANT_ID = process.env.AZURE_TENANT_ID;
 const CLIENT_ID = process.env.AZURE_CLIENT_ID;
 
 if (!TENANT_ID || !CLIENT_ID) {
-  console.warn('⚠️  AZURE_TENANT_ID or AZURE_CLIENT_ID not set. Entra auth middleware will fail.');
+  console.warn('  AZURE_TENANT_ID or AZURE_CLIENT_ID not set. Entra auth middleware will fail.');
 }
 
 // Create JWKS client for token verification
@@ -186,11 +186,11 @@ export async function attachUserFromDb(req, res, next) {
     
     // OID-FIRST LOOKUP: Use OID to find user across all containers
     // This is more efficient and doesn't require guessing the role first
-    console.log(`🔍 [OID-LOOKUP] Searching for user with OID: ${oid.substring(0, 8)}...`);
+    console.log(` [OID-LOOKUP] Searching for user with OID: ${oid.substring(0, 8)}...`);
     let user = await getUserByOIDAnyRole(oid, tid);
 
     if (!user) {
-      console.warn(`⚠️ [OID-LOOKUP] User with OID ${oid.substring(0, 8)}... not found in database`);
+      console.warn(` [OID-LOOKUP] User with OID ${oid.substring(0, 8)}... not found in database`);
       return res.status(401).json({
         success: false,
         error: 'User not registered',
@@ -199,7 +199,7 @@ export async function attachUserFromDb(req, res, next) {
     }
 
     // Log successful OID lookup
-    console.log(`✅ [OID-LOOKUP] Found user with OID ${oid.substring(0, 8)}... | Email: ${user.email} | DB Role: ${user.role}`);
+    console.log(` [OID-LOOKUP] Found user with OID ${oid.substring(0, 8)}... | Email: ${user.email} | DB Role: ${user.role}`);
 
     // OVERRIDE DB role with fresh Entra ID token role (Entra ID is source of truth)
     // This ensures roles always reflect current Entra ID assignment
@@ -223,11 +223,11 @@ export async function attachUserFromDb(req, res, next) {
       
       // Log role override for debugging
       if (originalDbRole !== tokenRole) {
-        console.log(`✅ [OID-LOOKUP] Role override: DB role (${originalDbRole}) → Token role (${tokenRole}) from Entra ID`);
+        console.log(` [OID-LOOKUP] Role override: DB role (${originalDbRole}) → Token role (${tokenRole}) from Entra ID`);
       }
     } else {
       // If no token roles, keep DB role but log warning
-      console.warn(`⚠️ [OID-LOOKUP] No roles in token for OID ${oid.substring(0, 8)}..., using DB role:`, user.role);
+      console.warn(` [OID-LOOKUP] No roles in token for OID ${oid.substring(0, 8)}..., using DB role:`, user.role);
       console.log('👤 [USER] Using DB role (no token roles):', {
         oid: oid.substring(0, 8) + '...',
         email: user.email,
@@ -237,11 +237,11 @@ export async function attachUserFromDb(req, res, next) {
 
     // Ensure role is always set (safety check)
     if (!user.role) {
-      console.error(`❌ [OID-LOOKUP] CRITICAL: No role found in database for user ${user.email} (OID: ${oid.substring(0, 8)}...)`);
+      console.error(` [OID-LOOKUP] CRITICAL: No role found in database for user ${user.email} (OID: ${oid.substring(0, 8)}...)`);
       console.error('   User record exists but has no role field. This should not happen.');
       // Default to 'user' as fallback, but this is an error condition
       user.role = 'user';
-      console.warn('   ⚠️ Defaulting to "user" role as fallback');
+      console.warn('    Defaulting to "user" role as fallback');
     }
 
     // Attach user to request (with overridden role from token, or DB role if token roles empty)
@@ -315,7 +315,7 @@ export function requireRole(allowedEntraRoles = [], allowedDbRoles = []) {
 
     // Both checks should pass (token role is authoritative, or DB role for magic tokens)
     if (!hasEntraAccess || !hasRoleAccess) {
-      console.warn('❌ [AUTHZ] Access denied:', {
+      console.warn(' [AUTHZ] Access denied:', {
         userEmail: req.currentUser?.email,
         userEntraRoles: entraRoles,
         userRole: userRole,
@@ -331,7 +331,7 @@ export function requireRole(allowedEntraRoles = [], allowedDbRoles = []) {
       });
     }
 
-    console.log('✅ [AUTHZ] Access granted');
+    console.log(' [AUTHZ] Access granted');
     next();
   };
 }

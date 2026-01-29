@@ -100,7 +100,7 @@ export function getClient() {
  */
 export async function testConnection() {
   if (!isConfigured()) {
-    console.warn("⚠️  CosmosDB not configured. COSMOS_ENDPOINT and COSMOS_KEY environment variables are required.");
+    console.warn("  CosmosDB not configured. COSMOS_ENDPOINT and COSMOS_KEY environment variables are required.");
     return false;
   }
   
@@ -110,10 +110,10 @@ export async function testConnection() {
       return false;
     }
     const { resource } = await db.read();
-    console.log(`✅ Successfully connected to database: ${resource.id}`);
+    console.log(` Successfully connected to database: ${resource.id}`);
     return true;
   } catch (error) {
-    console.error("❌ Connection test failed:", error.message);
+    console.error(" Connection test failed:", error.message);
     return false;
   }
 }
@@ -125,7 +125,7 @@ export async function testConnection() {
  */
 export async function ensureContainers() {
   if (!isConfigured()) {
-    console.warn("⚠️  CosmosDB not configured. Cannot ensure containers.");
+    console.warn("  CosmosDB not configured. Cannot ensure containers.");
     return { success: false, message: "CosmosDB not configured" };
   }
   
@@ -146,7 +146,7 @@ export async function ensureContainers() {
     await db.read().catch(async () => {
       // Database doesn't exist, create it
       await db.createIfNotExists();
-      console.log(`✅ Created database: ${databaseId}`);
+      console.log(` Created database: ${databaseId}`);
     });
     
     // Create all containers
@@ -162,19 +162,19 @@ export async function ensureContainers() {
           await container.read();
           exists = true;
           results.existing.push(containerId);
-          console.log(`✅ Container exists: ${containerId}`);
+          console.log(` Container exists: ${containerId}`);
         } catch (readError) {
           // Container doesn't exist (404), create it
           if (readError.code === 404) {
             await db.containers.create(containerConfig);
             results.created.push(containerId);
-            console.log(`✅ Created container: ${containerId}`);
+            console.log(` Created container: ${containerId}`);
           } else {
             throw readError;
           }
         }
       } catch (error) {
-        console.error(`❌ Error ensuring container ${containerId}:`, error.message);
+        console.error(` Error ensuring container ${containerId}:`, error.message);
         results.errors.push({ container: containerId, error: error.message });
       }
     }
@@ -185,7 +185,7 @@ export async function ensureContainers() {
     
     return results;
   } catch (error) {
-    console.error("❌ Error ensuring containers:", error.message);
+    console.error(" Error ensuring containers:", error.message);
     return { success: false, message: error.message, errors: [error.message] };
   }
 }

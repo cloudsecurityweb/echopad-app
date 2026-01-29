@@ -40,12 +40,12 @@ async function performWarmup() {
  */
 export function startWarmup(intervalMinutes = 5) {
   if (warmupInterval) {
-    console.log('⚠️  Warmup already running');
+    console.log('  Warmup already running');
     return;
   }
 
   if (!isConfigured()) {
-    console.log('⚠️  Cosmos DB not configured, skipping warmup');
+    console.log('  Cosmos DB not configured, skipping warmup');
     return;
   }
 

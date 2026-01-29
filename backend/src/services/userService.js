@@ -221,19 +221,19 @@ export async function getUserByOIDAnyRole(oid, tenantId) {
       // Cosmos DB uses OID as the id field, tenantId as partition key
       const { resource } = await container.item(oid, tenantId).read();
       if (resource) {
-        console.log(`✅ [OID-LOOKUP] Found user with OID ${oid.substring(0, 8)}... in ${role} container`);
+        console.log(` [OID-LOOKUP] Found user with OID ${oid.substring(0, 8)}... in ${role} container`);
         return resource; // Found user with role
       }
     } catch (error) {
       if (error.code !== 404) {
         // Only log non-404 errors (404 is expected when user not in that container)
-        console.warn(`⚠️ [OID-LOOKUP] Error searching ${role} container for OID ${oid.substring(0, 8)}...:`, error.message);
+        console.warn(` [OID-LOOKUP] Error searching ${role} container for OID ${oid.substring(0, 8)}...:`, error.message);
       }
       // Continue to next container
     }
   }
   
-  console.log(`⚠️ [OID-LOOKUP] User with OID ${oid.substring(0, 8)}... not found in any container`);
+  console.log(` [OID-LOOKUP] User with OID ${oid.substring(0, 8)}... not found in any container`);
   return null; // User not found in any container
 }
 

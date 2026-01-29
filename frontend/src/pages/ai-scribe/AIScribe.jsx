@@ -129,7 +129,7 @@ function AIScribe() {
                   </div>
                   <div className="flex items-center justify-center gap-3 md:gap-4 flex-wrap">
                     <div className="flex flex-col items-center gap-1 bg-white px-3 py-2 rounded-lg shadow-md border border-blue-200">
-                      <div className="text-2xl">🗣️</div>
+                      <div className="text-2xl">🗣</div>
                       <div className="text-center">
                         <div className="text-xs font-bold text-gray-900">You Speak</div>
                       </div>
@@ -145,7 +145,7 @@ function AIScribe() {
                     </div>
                     <div className="text-xl text-green-600 font-bold">→</div>
                     <div className="flex flex-col items-center gap-1 bg-white px-3 py-2 rounded-lg shadow-md border border-green-200">
-                      <div className="text-2xl">📋</div>
+                      <div className="text-2xl"></div>
                       <div className="text-center">
                         <div className="text-xs font-bold text-gray-900">Note Ready</div>
                       </div>

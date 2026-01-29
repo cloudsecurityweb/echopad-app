@@ -31,8 +31,8 @@ function Subscriptions() {
 
   // Placeholder data - to be replaced with API calls
   const summaryStats = [
-    { label: 'Total Subscriptions', value: '189', change: '+8%', icon: '📊' },
-    { label: 'Active', value: '165', change: '+5%', icon: '✅' },
+    { label: 'Total Subscriptions', value: '189', change: '+8%', icon: '' },
+    { label: 'Active', value: '165', change: '+5%', icon: '' },
     { label: 'Expiring Soon', value: '12', change: '-2%', icon: '⏰' },
     { label: 'Monthly Revenue', value: '$124.5K', change: '+23%', icon: '💰' },
   ];

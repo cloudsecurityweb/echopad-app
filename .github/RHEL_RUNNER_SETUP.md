@@ -254,10 +254,10 @@ sudo ./svc.sh start
 
 Once the runner is set up:
 
-1. ✅ Add GitHub Secrets (see `.github/GITHUB_SECRETS_SETUP.md`)
-2. ✅ Push code to `Production` branch
-3. ✅ Workflows will automatically use the self-hosted runner
-4. ✅ Monitor deployments in GitHub Actions tab
+1.  Add GitHub Secrets (see `.github/GITHUB_SECRETS_SETUP.md`)
+2.  Push code to `Production` branch
+3.  Workflows will automatically use the self-hosted runner
+4.  Monitor deployments in GitHub Actions tab
 
 ## Useful Commands Reference
 
