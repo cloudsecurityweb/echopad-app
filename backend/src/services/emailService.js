@@ -8,7 +8,7 @@
 import { EmailClient } from "@azure/communication-email";
 
 const CONNECTION_STRING = process.env.AZURE_COMMUNICATION_CONNECTION_STRING;
-const SENDER_EMAIL = process.env.AZURE_COMMUNICATION_SENDER_EMAIL || "DoNotReply@echopad.ai";
+const SENDER_EMAIL = process.env.AZURE_COMMUNICATION_SENDER_EMAIL;
 const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
 
 let emailClient = null;
@@ -133,6 +133,10 @@ export async function sendInvitationEmail(email, token, inviterName, organizatio
   const client = getEmailClient();
   if (!client) {
     throw new Error("Email service not configured");
+  }
+
+  if (!SENDER_EMAIL) {
+    throw new Error("AZURE_COMMUNICATION_SENDER_EMAIL environment variable is required");
   }
 
   const invitationLink = `${FRONTEND_URL}/accept-invitation?email=${encodeURIComponent(email)}&token=${encodeURIComponent(token)}`;
