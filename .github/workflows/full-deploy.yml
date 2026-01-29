@@ -1,0 +1,17 @@
+name: Full Stack Deployment
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+jobs:
+  backend:
+    name: Deploy Backend
+    uses: ./.github/workflows/backend-deploy.yml
+
+  frontend:
+    name: Deploy Frontend
+    uses: ./.github/workflows/frontend-deploy.yml

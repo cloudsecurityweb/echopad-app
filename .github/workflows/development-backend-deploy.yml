@@ -1,0 +1,120 @@
+name: Development Backend Deployment
+
+on:
+  push:
+    branches:
+      - develop
+      - dev
+    paths:
+      - 'backend/**'
+      - '.github/workflows/development-backend-deploy.yml'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+          - dev
+          - staging
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  build-and-deploy:
+    name: Build and Deploy Backend to ${{ github.event.inputs.environment || 'dev' }}
+    runs-on: self-hosted
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Determine Environment
+        id: env
+        run: |
+          if [ "${{ github.event.inputs.environment }}" = "staging" ]; then
+            echo "env_prefix=STAGING" >> $GITHUB_OUTPUT
+            echo "env_name=staging" >> $GITHUB_OUTPUT
+          else
+            echo "env_prefix=DEV" >> $GITHUB_OUTPUT
+            echo "env_name=dev" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Install dependencies
+        working-directory: ./backend
+        run: npm ci
+
+      - name: Create deployment package
+        working-directory: ./backend
+        run: |
+          zip -r ../../backend-deploy.zip . \
+            -x "node_modules/*" \
+            -x ".git/*" \
+            -x "*.log" \
+            -x "*.md" \
+            -x ".env*" \
+            -x "test-*.js" \
+            -x "*.spec.js" \
+            -x ".DS_Store" \
+            -x "*.zip" \
+            -x "*.sh" \
+            -x "*.ps1" \
+            -x "create-*.ps1" \
+            > /dev/null 2>&1
+          echo "✅ Deployment package created"
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets[format('{0}_AZURE_CLIENT_ID', steps.env.outputs.env_prefix)] }}
+          tenant-id: ${{ secrets[format('{0}_AZURE_TENANT_ID', steps.env.outputs.env_prefix)] }}
+          subscription-id: ${{ secrets[format('{0}_AZURE_SUBSCRIPTION_ID', steps.env.outputs.env_prefix)] }}
+
+      - name: Deploy to Azure App Service
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ secrets[format('{0}_AZURE_WEBAPP_NAME', steps.env.outputs.env_prefix)] }}
+          package: ./backend-deploy.zip
+          startup-command: 'npm start'
+
+      - name: Configure App Service Settings
+        run: |
+          az webapp config appsettings set \
+            --name ${{ secrets[format('{0}_AZURE_WEBAPP_NAME', steps.env.outputs.env_prefix)] }} \
+            --resource-group ${{ secrets[format('{0}_AZURE_RESOURCE_GROUP', steps.env.outputs.env_prefix)] }} \
+            --settings \
+              NODE_ENV="${{ steps.env.outputs.env_name }}" \
+              PORT="8080" \
+              FRONTEND_URL="${{ secrets[format('{0}_FRONTEND_URL', steps.env.outputs.env_prefix)] }}" \
+              AZURE_TENANT_ID="${{ secrets[format('{0}_AZURE_TENANT_ID', steps.env.outputs.env_prefix)] }}" \
+              AZURE_CLIENT_ID="${{ secrets[format('{0}_AZURE_CLIENT_ID', steps.env.outputs.env_prefix)] }}" \
+              COSMOS_ENDPOINT="${{ secrets[format('{0}_COSMOS_ENDPOINT', steps.env.outputs.env_prefix)] }}" \
+              COSMOS_KEY="${{ secrets[format('{0}_COSMOS_KEY', steps.env.outputs.env_prefix)] }}" \
+              COSMOS_DATABASE="${{ secrets[format('{0}_COSMOS_DATABASE', steps.env.outputs.env_prefix)] }}" \
+              GOOGLE_CLIENT_ID="${{ secrets[format('{0}_GOOGLE_CLIENT_ID', steps.env.outputs.env_prefix)] }}" \
+              MAGIC_LINK_JWT_SECRET="${{ secrets[format('{0}_MAGIC_LINK_JWT_SECRET', steps.env.outputs.env_prefix)] }}" \
+              MAGIC_LINK_TTL_MINUTES="1440" \
+              AZURE_COMMUNICATION_CONNECTION_STRING="${{ secrets[format('{0}_AZURE_COMMUNICATION_CONNECTION_STRING', steps.env.outputs.env_prefix)] }}" \
+              AZURE_COMMUNICATION_SENDER_EMAIL="${{ secrets[format('{0}_AZURE_COMMUNICATION_SENDER_EMAIL', steps.env.outputs.env_prefix)] }}" \
+              SCM_DO_BUILD_DURING_DEPLOYMENT="true" \
+              WEBSITES_ENABLE_APP_SERVICE_STORAGE="false" \
+            --output none
+
+      - name: Restart App Service
+        run: |
+          az webapp restart \
+            --name ${{ secrets[format('{0}_AZURE_WEBAPP_NAME', steps.env.outputs.env_prefix)] }} \
+            --resource-group ${{ secrets[format('{0}_AZURE_RESOURCE_GROUP', steps.env.outputs.env_prefix)] }}
+
+      - name: Cleanup
+        if: always()
+        run: rm -f backend-deploy.zip

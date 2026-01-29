@@ -1,0 +1,66 @@
+import { Link } from 'react-router-dom';
+
+function ProductCard({ icon, title, description, link, featured = false, comingSoon = false }) {
+  // Check if link is an internal route (starts with /) or external
+  const isInternalLink = link && link.startsWith('/') && !link.startsWith('http');
+
+  const linkContent = (
+    <>
+      Learn More
+      <i className="bi bi-arrow-right group-hover:translate-x-1 transition-transform"></i>
+    </>
+  );
+
+  return (
+    <div className={`glass-card rounded-2xl p-6 hover-lift relative overflow-hidden group shadow-sm ${featured ? 'ring-2 ring-cyan-500/50' : ''} ${comingSoon ? 'opacity-90' : ''}`}>
+      {/* Gradient overlay on hover */}
+      <div className="absolute inset-0 bg-gradient-to-br from-cyan-50 to-blue-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+
+      <div className="relative z-10">
+        <div className={`w-16 h-16 rounded-xl flex items-center justify-center mb-5 transition-transform group-hover:scale-110 group-hover:rotate-6 ${featured ? 'bg-gradient-to-br from-cyan-500 to-blue-600 shadow-lg shadow-cyan-500/50' : comingSoon ? 'bg-gradient-to-br from-gray-200 to-gray-300' : 'bg-gradient-to-br from-gray-100 to-gray-200'}`}>
+          <i className={`bi ${icon} ${featured ? 'text-white' : 'text-cyan-600'} text-2xl`}></i>
+        </div>
+        <h4 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-cyan-600 transition-colors">{title}</h4>
+        <p className="text-gray-600 mb-6 leading-relaxed">{description}</p>
+        {!comingSoon ? (
+          isInternalLink ? (
+            <Link
+              to={link}
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-5 py-2.5 rounded-lg hover:from-cyan-400 hover:to-blue-500 font-medium group/link transition-all hover:scale-105 shadow-lg"
+            >
+              {linkContent}
+            </Link>
+          ) : (
+            <a
+              href={link}
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-5 py-2.5 rounded-lg hover:from-cyan-400 hover:to-blue-500 font-medium group/link transition-all hover:scale-105 shadow-lg"
+            >
+              {linkContent}
+            </a>
+          )
+        ) : (
+          <div className="inline-flex items-center gap-2 bg-gray-300 text-gray-600 px-5 py-2.5 rounded-lg font-medium cursor-not-allowed">
+            Coming Soon
+          </div>
+        )}
+      </div>
+
+      {/* Featured badge */}
+      {featured && (
+        <div className="absolute top-4 right-4 bg-gradient-to-r from-purple-500 to-pink-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
+          FEATURED
+        </div>
+      )}
+      
+      {/* Coming Soon badge */}
+      {comingSoon && (
+        <div className="absolute top-4 right-4 bg-gradient-to-r from-amber-500 to-orange-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
+          COMING SOON
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default ProductCard;
+

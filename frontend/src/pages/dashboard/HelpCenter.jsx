@@ -1,0 +1,165 @@
+import { useMemo, useState } from 'react';
+import HelpDocCard from '../../components/help/HelpDocCard';
+import HelpEditorModal from '../../components/help/HelpEditorModal';
+import { useHelpCenterDocs } from '../../hooks/useHelpCenterDocs';
+import { createHelpDoc, updateHelpDoc } from '../../api/helpCenter.api';
+
+const SYSTEM_TENANT_ID = "system";
+
+export default function HelpCenter() {
+  const [editorOpen, setEditorOpen] = useState(false);
+  const [activeDoc, setActiveDoc] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [isSaving, setIsSaving] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const { docs, loading, error } = useHelpCenterDocs({
+    tenantId: SYSTEM_TENANT_ID,
+    refreshKey,
+  });
+
+  const categories = useMemo(() => {
+    const unique = new Set(docs.map(doc => doc.category).filter(Boolean));
+    return Array.from(unique).sort();
+  }, [docs]);
+
+  const filteredDocs = useMemo(() => {
+    return docs.filter(doc => {
+      const matchesSearch = !searchTerm.trim()
+        ? true
+        : doc.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          doc.content?.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesCategory = categoryFilter === "all" || doc.category === categoryFilter;
+      const matchesStatus = statusFilter === "all" || doc.status === statusFilter;
+      return matchesSearch && matchesCategory && matchesStatus;
+    });
+  }, [docs, searchTerm, categoryFilter, statusFilter]);
+
+  const openCreate = () => {
+    setActiveDoc(null);
+    setEditorOpen(true);
+  };
+
+  const openEdit = (doc) => {
+    setActiveDoc(doc);
+    setEditorOpen(true);
+  };
+
+  const handleSave = async (payload) => {
+    try {
+      setIsSaving(true);
+      if (activeDoc) {
+        await updateHelpDoc(activeDoc.id, {
+          tenantId: activeDoc.tenantId || SYSTEM_TENANT_ID,
+          ...payload,
+        });
+      } else {
+        await createHelpDoc({
+          tenantId: SYSTEM_TENANT_ID,
+          ...payload,
+        });
+      }
+      setRefreshKey((prev) => prev + 1);
+      setActiveDoc(null);
+      setEditorOpen(false);
+    } catch (err) {
+      console.error("Failed to save help doc:", err);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  return (
+    <div className="space-y-8">
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Help Center</h1>
+          <p className="text-gray-600">
+            Manage documentation and support content for Echopad users
+          </p>
+        </div>
+
+        <button
+          onClick={openCreate}
+          className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-lg font-medium shadow hover:from-cyan-400 hover:to-blue-500 transition"
+        >
+          <i className="bi bi-plus-circle-fill"></i>
+          New Article
+        </button>
+      </div>
+
+      {/* Search + Filters */}
+      <div className="bg-white border-2 border-gray-200 rounded-xl p-4 flex flex-col md:flex-row gap-4">
+        <input
+          type="text"
+          placeholder="Search articles..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="flex-1 border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+
+        <select
+          className="border border-gray-300 rounded-lg px-4 py-2 text-sm"
+          value={categoryFilter}
+          onChange={(e) => setCategoryFilter(e.target.value)}
+        >
+          <option value="all">All Categories</option>
+          {categories.map(category => (
+            <option key={category} value={category}>{category}</option>
+          ))}
+        </select>
+
+        <select
+          className="border border-gray-300 rounded-lg px-4 py-2 text-sm"
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+        >
+          <option value="all">All Status</option>
+          <option value="published">Published</option>
+          <option value="draft">Draft</option>
+          <option value="archived">Archived</option>
+        </select>
+      </div>
+
+      {/* Docs Grid */}
+      {loading && (
+        <div className="bg-white border border-gray-200 rounded-xl p-6 text-gray-600">
+          Loading help docs...
+        </div>
+      )}
+
+      {!loading && error && (
+        <div className="bg-red-50 border border-red-200 rounded-xl p-6 text-red-700">
+          {error}
+        </div>
+      )}
+
+      {!loading && !error && (
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+          {filteredDocs.length === 0 ? (
+            <div className="col-span-full bg-white border border-gray-200 rounded-xl p-6 text-gray-600">
+              No documentation found.
+            </div>
+          ) : (
+            filteredDocs.map((doc) => (
+              <HelpDocCard key={doc.id} doc={doc} onEdit={openEdit} />
+            ))
+          )}
+        </div>
+      )}
+
+      {/* Editor Modal */}
+      {editorOpen && (
+        <HelpEditorModal
+          doc={activeDoc}
+          onClose={() => setEditorOpen(false)}
+          onSave={handleSave}
+          isSaving={isSaving}
+        />
+      )}
+    </div>
+  );
+}

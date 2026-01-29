@@ -1,0 +1,445 @@
+import { useState, useEffect, useRef } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { handleIntercomAction } from '../../utils/intercom';
+import { useAuth } from '../../contexts/AuthContext';
+import echopadLogo from '../../assets/images/logos/echopad-logo.svg';
+
+function Navigation() {
+  const { isAuthenticated, account, googleUser, authProvider, logout, isLoading } = useAuth();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  const handleIntercomClick = (e, action) => {
+    e.preventDefault();
+    handleIntercomAction(action);
+  };
+
+  const handleLogout = async () => {
+    try {
+      setIsDropdownOpen(false);
+      await logout('popup');
+      setIsMobileMenuOpen(false);
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  };
+
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
+
+  const handleDashboardClick = () => {
+    setIsDropdownOpen(false);
+    navigate('/dashboard');
+  };
+
+  // Handle logo click - navigate to home and scroll to hero section
+  const handleLogoClick = (e) => {
+    e.preventDefault();
+    if (isHomePage) {
+      // On home page, just scroll to the hero section
+      const element = document.querySelector('#hero');
+      if (element) {
+        const headerOffset = 80;
+        const elementPosition = element.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth'
+        });
+      }
+    } else {
+      // Navigate to home page, then scroll to hero section
+      navigate('/');
+      // Use setTimeout to ensure navigation completes before scrolling
+      setTimeout(() => {
+        const element = document.querySelector('#hero');
+        if (element) {
+          const headerOffset = 80;
+          const elementPosition = element.getBoundingClientRect().top;
+          const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
+          });
+        }
+      }, 100);
+    }
+  };
+
+  // Close dropdown when clicking outside or pressing Escape
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    const handleEscapeKey = (e) => {
+      if (e.key === 'Escape') {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    if (isDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('keydown', handleEscapeKey);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleEscapeKey);
+    };
+  }, [isDropdownOpen]);
+
+  // For hash links, use regular anchor tags, for routes use Link
+  const isHomePage = location.pathname === '/';
+
+  // Get user info based on provider
+  const userInfo = authProvider === 'google' 
+    ? { 
+        name: googleUser?.name, 
+        email: googleUser?.email, 
+        picture: googleUser?.picture 
+      }
+    : { 
+        name: account?.name, 
+        email: account?.username 
+      };
+
+  return (
+    <nav className={`fixed top-0 left-0 right-0 z-50 transition-colors ${isMobileMenuOpen ? 'bg-white' : 'bg-gradient-to-b from-white to-transparent'}`}>
+      <div className="container mx-auto px-4">
+        <div className="flex items-center justify-between h-24">
+          {/* Logo */}
+          <a 
+            href="/" 
+            onClick={handleLogoClick}
+            className="flex items-center gap-3 text-3xl font-bold group cursor-pointer"
+          >
+            <img 
+              src={echopadLogo} 
+              alt="Echopad AI Logo" 
+              className="w-14 h-14 transition-transform group-hover:scale-110"
+            />
+            <span className="text-gray-900">
+              Echopad <span className="bg-gradient-to-r from-cyan-500 to-blue-600 bg-clip-text text-transparent">AI</span>
+            </span>
+          </a>
+
+          <div className="flex items-center gap-2">
+            {/* Mobile Menu Toggle - Right burger (always visible on mobile) */}
+            <button
+              className="md:hidden flex flex-col gap-1.5 p-2 relative"
+              onClick={toggleMobileMenu}
+              aria-label="Toggle mobile menu"
+            >
+              <span className={`block w-6 h-0.5 bg-gray-900 transition-all duration-300 ${isMobileMenuOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
+              <span className={`block w-6 h-0.5 bg-gray-900 transition-all duration-300 ${isMobileMenuOpen ? 'opacity-0' : ''}`}></span>
+              <span className={`block w-6 h-0.5 bg-gray-900 transition-all duration-300 ${isMobileMenuOpen ? '-rotate-45 -translate-y-2' : ''}`}></span>
+            </button>
+          </div>
+
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center gap-8">
+            {isHomePage ? (
+              <>
+                <a href="#agents" className="text-gray-700 hover:text-gray-900 font-semibold text-lg relative group transition-colors">
+                  Products
+                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-cyan-500 to-blue-600 transition-all group-hover:w-full"></span>
+                </a>
+                <a href="#platform" className="text-gray-700 hover:text-gray-900 font-semibold text-lg relative group transition-colors">
+                  Platform
+                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-cyan-500 to-blue-600 transition-all group-hover:w-full"></span>
+                </a>
+                <a href="#roi" className="text-gray-700 hover:text-gray-900 font-semibold text-lg relative group transition-colors">
+                  ROI
+                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-cyan-500 to-blue-600 transition-all group-hover:w-full"></span>
+                </a>
+              </>
+            ) : (
+              <>
+                <Link to="/#agents" className="text-gray-700 hover:text-gray-900 font-semibold text-lg relative group transition-colors">
+                  Products
+                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-cyan-500 to-blue-600 transition-all group-hover:w-full"></span>
+                </Link>
+                <Link to="/#platform" className="text-gray-700 hover:text-gray-900 font-semibold text-lg relative group transition-colors">
+                  Platform
+                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-cyan-500 to-blue-600 transition-all group-hover:w-full"></span>
+                </Link>
+                <Link to="/#roi" className="text-gray-700 hover:text-gray-900 font-semibold text-lg relative group transition-colors">
+                  ROI
+                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-cyan-500 to-blue-600 transition-all group-hover:w-full"></span>
+                </Link>
+              </>
+            )}
+            {isAuthenticated && !isLoading ? (
+              <>
+                {/* User Dropdown */}
+                <div className="relative" ref={dropdownRef}>
+                  <button
+                    onClick={toggleDropdown}
+                    className="flex items-center gap-2 text-gray-700 hover:text-gray-900 font-medium focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 rounded-lg p-1 transition-all hover:bg-gray-50/50"
+                    aria-expanded={isDropdownOpen}
+                    aria-haspopup="true"
+                    aria-label="User menu"
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        toggleDropdown();
+                      }
+                    }}
+                  >
+                    {userInfo.picture ? (
+                      <img 
+                        src={userInfo.picture} 
+                        alt={userInfo.name || 'User'} 
+                        className="w-8 h-8 rounded-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-8 h-8 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full flex items-center justify-center text-white text-sm font-bold">
+                        {(userInfo.name || userInfo.email || 'U').charAt(0).toUpperCase()}
+                      </div>
+                    )}
+                    <span className="hidden lg:inline text-base font-semibold">{userInfo.name || userInfo.email || 'User'}</span>
+                    <svg 
+                      className={`w-4 h-4 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`}
+                      fill="none" 
+                      stroke="currentColor" 
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+
+                  {/* Dropdown Menu */}
+                  {isDropdownOpen && (
+                    <div 
+                      className="absolute right-0 mt-2 w-64 glass-card rounded-xl py-2 z-50 animate-fade-in-scale"
+                      role="menu"
+                      aria-orientation="vertical"
+                    >
+                      {/* User Info */}
+                      <div className="px-4 py-3 border-b border-gray-200">
+                        <p className="text-sm font-semibold text-gray-900 truncate">
+                          {userInfo.name || 'User'}
+                        </p>
+                        {userInfo.email && (
+                          <p className="text-xs text-gray-500 truncate mt-1">
+                            {userInfo.email}
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Dashboard Link */}
+                      <button
+                        onClick={handleDashboardClick}
+                        className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-50/80 transition-colors flex items-center gap-3 focus:outline-none focus:bg-gray-50/80 focus:ring-2 focus:ring-cyan-500 focus:ring-inset"
+                        role="menuitem"
+                        tabIndex={0}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            handleDashboardClick();
+                          }
+                        }}
+                      >
+                        <svg className="w-5 h-5 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                        </svg>
+                        <span>Dashboard</span>
+                      </button>
+
+                      {/* Sign Out Button */}
+                      <button
+                        onClick={handleLogout}
+                        className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-50/80 transition-colors flex items-center gap-3 focus:outline-none focus:bg-gray-50/80 focus:ring-2 focus:ring-cyan-500 focus:ring-inset border-t border-gray-200"
+                        role="menuitem"
+                        tabIndex={0}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            handleLogout();
+                          }
+                        }}
+                      >
+                        <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                        </svg>
+                        <span>Sign out</span>
+                      </button>
+                    </div>
+                  )}
+                </div>
+                <a 
+                  href="#" 
+                  className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-6 py-3 rounded-lg hover:from-cyan-400 hover:to-blue-500 transition-all font-semibold text-base shadow-lg hover:shadow-cyan-500/50 hover:scale-105"
+                  onClick={(e) => handleIntercomClick(e, 'request-demo')}
+                >
+                  Request Demo
+                </a>
+              </>
+            ) : (
+              <>
+                <Link 
+                  to="/sign-in" 
+                  className="border-2 border-gray-300 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-50 transition-all font-semibold text-base"
+                >
+                  Sign in
+                </Link>
+                <a 
+                  href="#" 
+                  className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-6 py-3 rounded-lg hover:from-cyan-400 hover:to-blue-500 transition-all font-semibold text-base shadow-lg hover:shadow-cyan-500/50 hover:scale-105"
+                  onClick={(e) => handleIntercomClick(e, 'request-demo')}
+                >
+                  Request Demo
+                </a>
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* Mobile Menu */}
+        <div className={`md:hidden overflow-hidden transition-all duration-500 ease-in-out ${isMobileMenuOpen ? 'max-h-[600px] pb-6' : 'max-h-0'}`}>
+          <div className="flex flex-col gap-4 pt-6 animate-slide-in-left">
+            {isHomePage ? (
+              <>
+                <a 
+                  href="#agents" 
+                  className="text-gray-700 hover:text-gray-900 transition-colors font-medium py-2 border-b border-gray-200 hover:border-cyan-500"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Products
+                </a>
+                <a 
+                  href="#platform" 
+                  className="text-gray-700 hover:text-gray-900 transition-colors font-medium py-2 border-b border-gray-200 hover:border-cyan-500"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Platform
+                </a>
+                <a 
+                  href="#roi" 
+                  className="text-gray-700 hover:text-gray-900 transition-colors font-medium py-2 border-b border-gray-200 hover:border-cyan-500"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  ROI
+                </a>
+              </>
+            ) : (
+              <>
+                <Link 
+                  to="/#agents" 
+                  className="text-gray-700 hover:text-gray-900 transition-colors font-medium py-2 border-b border-gray-200 hover:border-cyan-500"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Products
+                </Link>
+                <Link 
+                  to="/#platform" 
+                  className="text-gray-700 hover:text-gray-900 transition-colors font-medium py-2 border-b border-gray-200 hover:border-cyan-500"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Platform
+                </Link>
+                <Link 
+                  to="/#roi" 
+                  className="text-gray-700 hover:text-gray-900 transition-colors font-medium py-2 border-b border-gray-200 hover:border-cyan-500"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  ROI
+                </Link>
+              </>
+            )}
+            {isAuthenticated && !isLoading ? (
+              <>
+                <Link 
+                  to="/dashboard" 
+                  className="flex items-center gap-3 text-gray-700 hover:text-gray-900 transition-colors font-medium py-2 border-b border-gray-200 hover:border-cyan-500"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  {userInfo.picture ? (
+                    <img 
+                      src={userInfo.picture} 
+                      alt={userInfo.name || 'User'} 
+                      className="w-10 h-10 rounded-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-10 h-10 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full flex items-center justify-center text-white font-bold">
+                      {(userInfo.name || userInfo.email || 'U').charAt(0).toUpperCase()}
+                    </div>
+                  )}
+                  <div>
+                    <p className="font-semibold">{userInfo.name || 'User'}</p>
+                    <p className="text-sm text-gray-500">{userInfo.email}</p>
+                  </div>
+                </Link>
+                {/* Dashboard Button - Show for all authenticated users */}
+                <Link 
+                  to="/dashboard" 
+                  className="flex items-center gap-3 text-gray-700 hover:text-gray-900 transition-colors font-medium py-2 border-b border-gray-200 hover:border-cyan-500"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <svg className="w-5 h-5 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                  </svg>
+                  <span>Dashboard</span>
+                </Link>
+                <button
+                  onClick={() => {
+                    handleLogout();
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className="border border-gray-300 text-gray-700 px-5 py-3 rounded-lg hover:bg-gray-50 transition-all font-medium text-center w-full"
+                >
+                  Sign out
+                </button>
+                <a 
+                  href="#" 
+                  className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-5 py-3 rounded-lg hover:from-cyan-400 hover:to-blue-500 transition-all font-medium text-center shadow-lg"
+                  onClick={(e) => {
+                    handleIntercomClick(e, 'request-demo');
+                    setIsMobileMenuOpen(false);
+                  }}
+                >
+                  Request Demo
+                </a>
+              </>
+            ) : (
+              <>
+                <Link 
+                  to="/sign-in" 
+                  className="border border-gray-300 text-gray-700 px-5 py-3 rounded-lg hover:bg-gray-50 transition-all font-medium text-center"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Sign in
+                </Link>
+                <a 
+                  href="#" 
+                  className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-5 py-3 rounded-lg hover:from-cyan-400 hover:to-blue-500 transition-all font-medium text-center shadow-lg"
+                  onClick={(e) => {
+                    handleIntercomClick(e, 'request-demo');
+                    setIsMobileMenuOpen(false);
+                  }}
+                >
+                  Request Demo
+                </a>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+    </nav>
+  );
+}
+
+export default Navigation;
+

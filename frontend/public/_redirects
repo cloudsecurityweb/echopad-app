@@ -1,0 +1,3 @@
+# Netlify redirects configuration for SPA routing
+# All routes should serve index.html to enable client-side routing
+/*    /index.html   200

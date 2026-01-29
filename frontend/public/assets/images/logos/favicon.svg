@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Background -->
+  <circle cx="50" cy="50" r="48" fill="#14B8A6"/>
+  
+  <!-- Hexagon (simplified for favicon) -->
+  <path d="M 50,25 L 67.32,35 L 67.32,55 L 50,65 L 32.68,55 L 32.68,35 Z" 
+        fill="#0EA5E9" opacity="0.3"/>
+  
+  <!-- Echo-Pulse center (simplified) -->
+  <g opacity="0.9">
+    <!-- Subtle sound waves -->
+    <path d="M 35,50 Q 38,47 41,50 T 47,50 T 53,50 T 59,50 Q 62,47 65,50" 
+          stroke="white" stroke-width="1.5" fill="none" opacity="0.4"/>
+    
+    <!-- Main pulse line -->
+    <path d="M 32,50 L 38,50 L 40,42 L 42,56 L 44,50 L 48,50 L 50,45 L 52,54 L 54,50 L 58,50 L 60,44 L 62,56 L 68,50" 
+          stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/>
+    
+    <!-- Pulse peaks -->
+    <circle cx="42" cy="56" r="1.5" fill="white"/>
+    <circle cx="52" cy="54" r="1.5" fill="white"/>
+    <circle cx="62" cy="56" r="1.5" fill="white"/>
+  </g>
+  
+  <!-- AI nodes (smaller for favicon) -->
+  <circle cx="50" cy="25" r="3" fill="white" opacity="0.7"/>
+  <circle cx="67.32" cy="35" r="3" fill="white" opacity="0.7"/>
+  <circle cx="67.32" cy="55" r="3" fill="white" opacity="0.7"/>
+  <circle cx="50" cy="65" r="3" fill="white" opacity="0.7"/>
+  <circle cx="32.68" cy="55" r="3" fill="white" opacity="0.7"/>
+  <circle cx="32.68" cy="35" r="3" fill="white" opacity="0.7"/>
+</svg>
+
+
+
+
+

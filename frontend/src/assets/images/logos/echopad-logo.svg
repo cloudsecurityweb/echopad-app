@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!-- Background circle -->
+  <circle cx="100" cy="100" r="95" fill="#14B8A6" opacity="0.1"/>
+  
+  <!-- Main hexagon shape (representing modular AI agents) -->
+  <g transform="translate(100, 100)">
+    <!-- Center hexagon -->
+    <path d="M 0,-40 L 34.64,-20 L 34.64,20 L 0,40 L -34.64,20 L -34.64,-20 Z" 
+          fill="#14B8A6" stroke="#0D9488" stroke-width="2"/>
+    
+    <!-- Small connecting nodes (representing AI agents working together) -->
+    <circle cx="0" cy="-55" r="8" fill="#0EA5E9" stroke="#0284C7" stroke-width="2"/>
+    <circle cx="47.6" cy="-27.5" r="8" fill="#0EA5E9" stroke="#0284C7" stroke-width="2"/>
+    <circle cx="47.6" cy="27.5" r="8" fill="#0EA5E9" stroke="#0284C7" stroke-width="2"/>
+    <circle cx="0" cy="55" r="8" fill="#0EA5E9" stroke="#0284C7" stroke-width="2"/>
+    <circle cx="-47.6" cy="27.5" r="8" fill="#0EA5E9" stroke="#0284C7" stroke-width="2"/>
+    <circle cx="-47.6" cy="-27.5" r="8" fill="#0EA5E9" stroke="#0284C7" stroke-width="2"/>
+    
+    <!-- Connection lines -->
+    <line x1="0" y1="-40" x2="0" y2="-55" stroke="#0EA5E9" stroke-width="2" opacity="0.5"/>
+    <line x1="34.64" y1="-20" x2="47.6" y2="-27.5" stroke="#0EA5E9" stroke-width="2" opacity="0.5"/>
+    <line x1="34.64" y1="20" x2="47.6" y2="27.5" stroke="#0EA5E9" stroke-width="2" opacity="0.5"/>
+    <line x1="0" y1="40" x2="0" y2="55" stroke="#0EA5E9" stroke-width="2" opacity="0.5"/>
+    <line x1="-34.64" y1="20" x2="-47.6" y2="27.5" stroke="#0EA5E9" stroke-width="2" opacity="0.5"/>
+    <line x1="-34.64" y1="-20" x2="-47.6" y2="-27.5" stroke="#0EA5E9" stroke-width="2" opacity="0.5"/>
+    
+    <!-- Echo-Pulse: Sound waves with integrated heartbeat -->
+    <g opacity="0.95">
+      <!-- Background sound waves (subtle) -->
+      <path d="M -28,0 Q -24,-3 -20,0 T -12,0 T -4,0 T 4,0 T 12,0 T 20,0 Q 24,-3 28,0" 
+            stroke="white" stroke-width="1.5" fill="none" opacity="0.4"/>
+      <path d="M -28,6 Q -24,3 -20,6 T -12,6 T -4,6 T 4,6 T 12,6 T 20,6 Q 24,3 28,6" 
+            stroke="white" stroke-width="1.5" fill="none" opacity="0.4"/>
+      <path d="M -28,-6 Q -24,-9 -20,-6 T -12,-6 T -4,-6 T 4,-6 T 12,-6 T 20,-6 Q 24,-9 28,-6" 
+            stroke="white" stroke-width="1.5" fill="none" opacity="0.4"/>
+      
+      <!-- Main pulse/heartbeat line (EKG style) -->
+      <path d="M -30,0 L -22,0 L -18,-12 L -14,15 L -10,0 L -2,0 L 2,-8 L 6,10 L 10,0 L 18,0 L 22,-10 L 26,12 L 30,0" 
+            stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      
+      <!-- Accent glow on pulse peaks -->
+      <circle cx="-14" cy="15" r="2" fill="white" opacity="0.8"/>
+      <circle cx="6" cy="10" r="2" fill="white" opacity="0.8"/>
+      <circle cx="26" cy="12" r="2" fill="white" opacity="0.8"/>
+    </g>
+  </g>
+</svg>
