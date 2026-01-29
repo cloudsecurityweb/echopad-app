@@ -5,6 +5,10 @@ on:
     branches:
       - main
       - master
+    paths:
+      - 'backend/**'
+      - 'frontend/**'
+      - '.github/workflows/full-deploy.yml'
   workflow_dispatch:
 
 jobs:
