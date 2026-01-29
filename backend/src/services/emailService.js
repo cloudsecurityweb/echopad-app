@@ -50,6 +50,10 @@ export async function sendVerificationEmail(email, token, name = "User") {
     throw new Error("Email service not configured");
   }
 
+  if (!SENDER_EMAIL) {
+    throw new Error("AZURE_COMMUNICATION_SENDER_EMAIL environment variable is required");
+  }
+
   const verificationLink = `${FRONTEND_URL}/verify-email?email=${encodeURIComponent(email)}&token=${encodeURIComponent(token)}`;
 
   const emailContent = {
