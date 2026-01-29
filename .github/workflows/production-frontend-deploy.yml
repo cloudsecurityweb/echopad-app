@@ -45,6 +45,7 @@ jobs:
         uses: azure/login@v2
         with:
           client-id: ${{ secrets.PROD_AZURE_CLIENT_ID }}
+          client-secret: ${{ secrets.PROD_AZURE_CLIENT_SECRET }}
           tenant-id: ${{ secrets.PROD_AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.PROD_AZURE_SUBSCRIPTION_ID }}
 
@@ -72,5 +73,5 @@ jobs:
 
       - name: Verify Deployment
         run: |
-          echo " Frontend deployed successfully"
+          echo "✅ Frontend deployed successfully"
           echo "🌐 URL: ${{ secrets.PROD_FRONTEND_URL }}"
