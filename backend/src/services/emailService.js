@@ -8,7 +8,7 @@
 import { EmailClient } from "@azure/communication-email";
 
 const CONNECTION_STRING = process.env.AZURE_COMMUNICATION_CONNECTION_STRING;
-const SENDER_EMAIL = process.env.AZURE_COMMUNICATION_SENDER_EMAIL || "DoNotReply@cloudsecurityweb.com";
+const SENDER_EMAIL = process.env.AZURE_COMMUNICATION_SENDER_EMAIL || "DoNotReply@echopad.ai";
 const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
 
 let emailClient = null;
