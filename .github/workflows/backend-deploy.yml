@@ -39,6 +39,8 @@ jobs:
         run: |
           # Create clean deployment package
           TEMP_DIR=$(mktemp -d)
+          BACKEND_DIR=$(pwd)
+          
           rsync -av \
             --exclude 'node_modules' \
             --exclude '.git' \
@@ -51,13 +53,13 @@ jobs:
             --exclude '*.zip' \
             --exclude '*.sh' \
             --exclude '*.ps1' \
-            . "$TEMP_DIR/"
+            . "$TEMP_DIR/" || exit 1
           
-          cd "$TEMP_DIR"
-          zip -r ../../backend-deploy.zip . > /dev/null
-          cd ../..
+          cd "$TEMP_DIR" || exit 1
+          zip -r "$BACKEND_DIR/../backend-deploy.zip" . > /dev/null || exit 1
+          cd "$BACKEND_DIR" || exit 1
           rm -rf "$TEMP_DIR"
-          echo " Deployment package created"
+          echo "✅ Deployment package created"
 
       - name: Azure Login
         uses: azure/login@v2
