@@ -51,12 +51,13 @@ jobs:
             -x "*.ps1" \
             -x "create-*.ps1" \
             > /dev/null 2>&1
-          echo " Deployment package created"
+          echo "✅ Deployment package created"
 
       - name: Azure Login
         uses: azure/login@v2
         with:
           client-id: ${{ secrets.PROD_AZURE_CLIENT_ID }}
+          client-secret: ${{ secrets.PROD_AZURE_CLIENT_SECRET }}
           tenant-id: ${{ secrets.PROD_AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.PROD_AZURE_SUBSCRIPTION_ID }}
 
@@ -130,6 +131,7 @@ jobs:
         uses: azure/login@v2
         with:
           client-id: ${{ secrets.PROD_AZURE_CLIENT_ID }}
+          client-secret: ${{ secrets.PROD_AZURE_CLIENT_SECRET }}
           tenant-id: ${{ secrets.PROD_AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.PROD_AZURE_SUBSCRIPTION_ID }}
 
