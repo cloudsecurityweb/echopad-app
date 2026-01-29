@@ -39,7 +39,7 @@ export const msalConfig = {
     clientId: (typeof window !== 'undefined' && window.ENV?.MSAL_CLIENT_ID) || 
               import.meta.env.VITE_MSAL_CLIENT_ID || 
               'd4ea5537-8b2a-4b88-9dbd-80bf02596c1a', // Frontend SPA Client ID
-    authority: "https://login.microsoftonline.com/organizations", // Allow any organizational account (multi-tenant)
+    authority: "https://login.microsoftonline.com/common", // Allow both work/school and personal Microsoft accounts
     redirectUri: typeof window !== 'undefined' ? window.location.origin : 'http://localhost:5173',
   },
   cache: {
@@ -94,7 +94,7 @@ export const msalConfig = {
  * No prompt parameter - allows SSO for sign-in flows.
  */
 export const loginRequest = {
-  authority: "https://login.microsoftonline.com/organizations", // Allow any organizational account (multi-tenant)
+  authority: "https://login.microsoftonline.com/common", // Allow both work/school and personal Microsoft accounts
   // Request standard Microsoft Graph scopes - roles are included automatically from app registration
   // No custom API scope needed - app roles come from the app registration itself
   scopes: ["User.Read", "openid", "profile", "email"],
@@ -115,7 +115,7 @@ export const loginRequest = {
  * which Microsoft account to use.
  */
 export const signUpRequest = {
-  authority: "https://login.microsoftonline.com/organizations", // Allow any organizational account (multi-tenant)
+  authority: "https://login.microsoftonline.com/common", // Allow both work/school and personal Microsoft accounts
   scopes: ["User.Read", "openid", "profile", "email"],
   prompt: "select_account" // Force account selection
 };
@@ -128,7 +128,7 @@ export const signUpRequest = {
  * which Microsoft account to use instead of automatically using the last logged-in account.
  */
 export const loginSelectAccountRequest = {
-  authority: "https://login.microsoftonline.com/organizations", // Allow any organizational account (multi-tenant)
+  authority: "https://login.microsoftonline.com/common", // Allow both work/school and personal Microsoft accounts
   scopes: ["User.Read", "openid", "profile", "email"],
   prompt: "select_account" // Force account selection
 };
