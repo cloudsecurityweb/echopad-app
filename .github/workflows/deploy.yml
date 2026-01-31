@@ -15,6 +15,19 @@ jobs:
     runs-on: self-hosted
     
     steps:
+      - name: Test Runner
+        run: |
+          echo "✅ Runner is working!"
+          echo "OS: $(uname -a)"
+          echo "User: $(whoami)"
+          echo "PWD: $(pwd)"
+          echo "Git version: $(git --version 2>&1 || echo 'Git not found')"
+          echo "Node version: $(node --version 2>&1 || echo 'Node not found')"
+          echo "NPM version: $(npm --version 2>&1 || echo 'NPM not found')"
+          echo "Azure CLI: $(az --version 2>&1 | head -1 || echo 'Azure CLI not found')"
+          ls -la
+          echo "✅ Test step completed"
+
       - name: Checkout code
         uses: actions/checkout@v4
         with:
