@@ -4,7 +4,6 @@ on:
   workflow_dispatch:
 
 env:
-env:
   NODE_VERSION: '20'
   AZURE_STATIC_WEB_APP_NAME: ${{ secrets.PROD_AZURE_STATIC_WEB_APP_NAME }}
   AZURE_RESOURCE_GROUP: ${{ secrets.PROD_AZURE_RESOURCE_GROUP }}
@@ -12,7 +11,7 @@ env:
 jobs:
   build-and-deploy:
     name: Build and Deploy Frontend to Production
-    runs-on: self-hosted  # Self-hosted runner in sandeepd@deepikachavala2015outlook.onmicrosoft.com account
+    runs-on: self-hosted
     
     steps:
       - name: Checkout code
@@ -21,7 +20,9 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
 
       - name: Install dependencies
         working-directory: ./frontend
@@ -42,14 +43,15 @@ jobs:
           creds: ${{ secrets.PROD_AZURE_CREDS }}
 
       - name: Deploy to Azure Static Web Apps
-        uses: Azure/static-web-apps-deploy@v1
-        with:
-          azure_static_web_apps_api_token: ${{ secrets.PROD_AZURE_STATIC_WEB_APP_DEPLOYMENT_TOKEN }}
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          action: "upload"
-          app_location: "frontend"
-          output_location: "dist"
-          skip_app_build: true # We already built above
+        run: |
+          az staticwebapp deploy \
+            --name ${{ env.AZURE_STATIC_WEB_APP_NAME }} \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+            --source-location frontend/dist \
+            --app-location frontend \
+            --output-location dist \
+            --no-wait
+          echo "✅ Frontend deployment initiated"
 
       - name: Configure Static Web App Settings
         run: |
