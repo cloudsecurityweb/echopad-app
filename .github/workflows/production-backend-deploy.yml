@@ -1,6 +1,4 @@
 name: Production Backend Deployment
-on:
-  workflow_dispatch:
 
 on:
 
