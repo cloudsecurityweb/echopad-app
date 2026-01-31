@@ -4,7 +4,6 @@ on:
   workflow_dispatch:
 
 env:
-env:
   NODE_VERSION: '20'
   AZURE_WEBAPP_NAME: ${{ secrets.PROD_AZURE_WEBAPP_NAME }}
   AZURE_RESOURCE_GROUP: ${{ secrets.PROD_AZURE_RESOURCE_GROUP }}
@@ -12,7 +11,7 @@ env:
 jobs:
   build-and-deploy:
     name: Build and Deploy Backend to Production
-    runs-on: self-hosted  # Self-hosted runner in sandeepd@deepikachavala2015outlook.onmicrosoft.com account
+    runs-on: self-hosted
     
     steps:
       - name: Checkout code
@@ -21,7 +20,9 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
 
       - name: Install dependencies
         working-directory: ./backend
@@ -30,8 +31,6 @@ jobs:
       - name: Create deployment package
         working-directory: ./backend
         run: |
-          # Create clean deployment package (without node_modules)
-          # Azure will build node_modules on Linux during deployment
           zip -r ../../backend-deploy.zip . \
             -x "node_modules/*" \
             -x ".git/*" \
