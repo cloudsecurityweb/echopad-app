@@ -17,6 +17,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Determine Environment
         id: env
@@ -24,10 +26,14 @@ jobs:
           if [ "${{ github.ref }}" = "refs/heads/main" ]; then
             echo "env=production" >> $GITHUB_OUTPUT
             echo "prefix=PROD" >> $GITHUB_OUTPUT
+            echo "✅ Deploying to PRODUCTION"
           else
             echo "env=development" >> $GITHUB_OUTPUT
             echo "prefix=DEV" >> $GITHUB_OUTPUT
+            echo "✅ Deploying to DEVELOPMENT"
           fi
+          echo "Branch: ${{ github.ref_name }}"
+          echo "Ref: ${{ github.ref }}"
 
       # Deploy Backend
       - name: Setup Node.js for Backend
@@ -57,6 +63,22 @@ jobs:
             -x "create-*.ps1" \
             > /dev/null 2>&1
           echo "✅ Backend package created"
+
+      - name: Verify Secrets
+        run: |
+          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            if [ -z "${{ secrets.PROD_AZURE_CREDS }}" ]; then
+              echo "❌ ERROR: PROD_AZURE_CREDS secret is missing!"
+              exit 1
+            fi
+            echo "✅ PROD secrets verified"
+          else
+            if [ -z "${{ secrets.DEV_AZURE_CREDS }}" ]; then
+              echo "❌ ERROR: DEV_AZURE_CREDS secret is missing!"
+              exit 1
+            fi
+            echo "✅ DEV secrets verified"
+          fi
 
       - name: Azure Login
         uses: azure/login@v2
