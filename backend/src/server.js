@@ -130,3 +130,4 @@ app.listen(PORT, '0.0.0.0', () => {
     console.warn("  CosmosDB not configured. Set COSMOS_ENDPOINT and COSMOS_KEY environment variables to enable database features.");
   }
 });
+// Test deployment - Sat Jan 31 15:10:26 IST 2026
