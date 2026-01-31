@@ -1,0 +1,27 @@
+name: Test Runner
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Simple Test
+    runs-on: self-hosted
+    steps:
+      - name: Echo Test
+        run: echo "✅ Runner can execute commands!"
+      
+      - name: Show Environment
+        run: |
+          echo "OS: $(uname -a)"
+          echo "User: $(whoami)"
+          echo "PWD: $(pwd)"
+          echo "PATH: $PATH"
+      
+      - name: Check Tools
+        run: |
+          echo "Git: $(git --version 2>&1 || echo 'NOT FOUND')"
+          echo "Node: $(node --version 2>&1 || echo 'NOT FOUND')"
+          echo "NPM: $(npm --version 2>&1 || echo 'NOT FOUND')"
+          echo "Azure CLI: $(az --version 2>&1 | head -1 || echo 'NOT FOUND')"
+          echo "✅ All checks complete"
