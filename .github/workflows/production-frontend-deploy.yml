@@ -1,7 +1,9 @@
 name: Production Frontend Deployment
 
 on:
+  workflow_dispatch:
 
+env:
 env:
   NODE_VERSION: '20'
   AZURE_STATIC_WEB_APP_NAME: ${{ secrets.PROD_AZURE_STATIC_WEB_APP_NAME }}

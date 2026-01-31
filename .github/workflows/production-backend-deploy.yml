@@ -1,7 +1,9 @@
 name: Production Backend Deployment
 
 on:
+  workflow_dispatch:
 
+env:
 env:
   NODE_VERSION: '20'
   AZURE_WEBAPP_NAME: ${{ secrets.PROD_AZURE_WEBAPP_NAME }}
