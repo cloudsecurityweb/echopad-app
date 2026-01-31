@@ -3,7 +3,7 @@ name: Production Frontend Deployment
 on:
   push:
     branches:
-      - Production
+      - main
     paths:
       - 'frontend/**'
       - '.github/workflows/production-frontend-deploy.yml'

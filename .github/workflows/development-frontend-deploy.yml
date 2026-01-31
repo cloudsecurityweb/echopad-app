@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - develop
-      - dev
     paths:
       - 'frontend/**'
       - '.github/workflows/development-frontend-deploy.yml'
@@ -16,7 +15,6 @@ on:
         default: 'dev'
         type: choice
         options:
-          - dev
           - staging
 
 env:
