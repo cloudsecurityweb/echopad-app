@@ -1,0 +1,156 @@
+name: Deploy Application
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  deploy:
+    name: Deploy to ${{ github.ref == 'refs/heads/main' && 'Production' || 'Development' }}
+    runs-on: self-hosted
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Determine Environment
+        id: env
+        run: |
+          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            echo "env=production" >> $GITHUB_OUTPUT
+            echo "prefix=PROD" >> $GITHUB_OUTPUT
+          else
+            echo "env=development" >> $GITHUB_OUTPUT
+            echo "prefix=DEV" >> $GITHUB_OUTPUT
+          fi
+
+      # Deploy Backend
+      - name: Setup Node.js for Backend
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install Backend Dependencies
+        working-directory: ./backend
+        run: npm ci
+
+      - name: Create Backend Deployment Package
+        working-directory: ./backend
+        run: |
+          zip -r ../../backend-deploy.zip . \
+            -x "node_modules/*" \
+            -x ".git/*" \
+            -x "*.log" \
+            -x "*.md" \
+            -x ".env*" \
+            -x "test-*.js" \
+            -x "*.spec.js" \
+            -x ".DS_Store" \
+            -x "*.zip" \
+            -x "*.sh" \
+            -x "*.ps1" \
+            -x "create-*.ps1" \
+            > /dev/null 2>&1
+          echo "✅ Backend package created"
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          creds: ${{ github.ref == 'refs/heads/main' && secrets.PROD_AZURE_CREDS || secrets.DEV_AZURE_CREDS }}
+
+      - name: Deploy Backend
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ github.ref == 'refs/heads/main' && secrets.PROD_AZURE_WEBAPP_NAME || secrets.DEV_AZURE_WEBAPP_NAME }}
+          package: ./backend-deploy.zip
+          startup-command: 'npm start'
+
+      - name: Configure Backend Settings
+        run: |
+          az webapp config appsettings set \
+            --name ${{ github.ref == 'refs/heads/main' && secrets.PROD_AZURE_WEBAPP_NAME || secrets.DEV_AZURE_WEBAPP_NAME }} \
+            --resource-group ${{ github.ref == 'refs/heads/main' && secrets.PROD_AZURE_RESOURCE_GROUP || secrets.DEV_AZURE_RESOURCE_GROUP }} \
+            --settings \
+              NODE_ENV="${{ steps.env.outputs.env }}" \
+              PORT="8080" \
+              FRONTEND_URL="${{ github.ref == 'refs/heads/main' && secrets.PROD_FRONTEND_URL || secrets.DEV_FRONTEND_URL }}" \
+              AZURE_TENANT_ID="${{ github.ref == 'refs/heads/main' && secrets.PROD_AZURE_TENANT_ID || secrets.DEV_AZURE_TENANT_ID }}" \
+              AZURE_CLIENT_ID="${{ github.ref == 'refs/heads/main' && secrets.PROD_AZURE_CLIENT_ID || secrets.DEV_AZURE_CLIENT_ID }}" \
+              COSMOS_ENDPOINT="${{ github.ref == 'refs/heads/main' && secrets.PROD_COSMOS_ENDPOINT || secrets.DEV_COSMOS_ENDPOINT }}" \
+              COSMOS_KEY="${{ github.ref == 'refs/heads/main' && secrets.PROD_COSMOS_KEY || secrets.DEV_COSMOS_KEY }}" \
+              COSMOS_DATABASE="${{ github.ref == 'refs/heads/main' && secrets.PROD_COSMOS_DATABASE || secrets.DEV_COSMOS_DATABASE }}" \
+              GOOGLE_CLIENT_ID="${{ github.ref == 'refs/heads/main' && secrets.PROD_GOOGLE_CLIENT_ID || secrets.DEV_GOOGLE_CLIENT_ID }}" \
+              MAGIC_LINK_JWT_SECRET="${{ github.ref == 'refs/heads/main' && secrets.PROD_MAGIC_LINK_JWT_SECRET || secrets.DEV_MAGIC_LINK_JWT_SECRET }}" \
+              MAGIC_LINK_TTL_MINUTES="1440" \
+              AZURE_COMMUNICATION_CONNECTION_STRING="${{ github.ref == 'refs/heads/main' && secrets.PROD_AZURE_COMMUNICATION_CONNECTION_STRING || secrets.DEV_AZURE_COMMUNICATION_CONNECTION_STRING }}" \
+              AZURE_COMMUNICATION_SENDER_EMAIL="${{ github.ref == 'refs/heads/main' && secrets.PROD_AZURE_COMMUNICATION_SENDER_EMAIL || secrets.DEV_AZURE_COMMUNICATION_SENDER_EMAIL }}" \
+              SCM_DO_BUILD_DURING_DEPLOYMENT="true" \
+              WEBSITES_ENABLE_APP_SERVICE_STORAGE="false" \
+            --output none
+
+      - name: Restart Backend
+        run: |
+          az webapp restart \
+            --name ${{ github.ref == 'refs/heads/main' && secrets.PROD_AZURE_WEBAPP_NAME || secrets.DEV_AZURE_WEBAPP_NAME }} \
+            --resource-group ${{ github.ref == 'refs/heads/main' && secrets.PROD_AZURE_RESOURCE_GROUP || secrets.DEV_AZURE_RESOURCE_GROUP }}
+
+      # Deploy Frontend
+      - name: Setup Node.js for Frontend
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install Frontend Dependencies
+        working-directory: ./frontend
+        run: npm ci
+
+      - name: Build Frontend
+        working-directory: ./frontend
+        env:
+          VITE_MSAL_CLIENT_ID: ${{ github.ref == 'refs/heads/main' && secrets.PROD_VITE_MSAL_CLIENT_ID || secrets.DEV_VITE_MSAL_CLIENT_ID }}
+          VITE_MSAL_TENANT_ID: ${{ github.ref == 'refs/heads/main' && secrets.PROD_VITE_MSAL_TENANT_ID || secrets.DEV_VITE_MSAL_TENANT_ID }}
+          VITE_GOOGLE_CLIENT_ID: ${{ github.ref == 'refs/heads/main' && secrets.PROD_VITE_GOOGLE_CLIENT_ID || secrets.DEV_VITE_GOOGLE_CLIENT_ID }}
+          VITE_API_BASE_URL: ${{ github.ref == 'refs/heads/main' && secrets.PROD_VITE_API_BASE_URL || secrets.DEV_VITE_API_BASE_URL }}
+        run: npm run build
+
+      - name: Deploy Frontend
+        run: |
+          az staticwebapp deploy \
+            --name ${{ github.ref == 'refs/heads/main' && secrets.PROD_AZURE_STATIC_WEB_APP_NAME || secrets.DEV_AZURE_STATIC_WEB_APP_NAME }} \
+            --resource-group ${{ github.ref == 'refs/heads/main' && secrets.PROD_AZURE_RESOURCE_GROUP || secrets.DEV_AZURE_RESOURCE_GROUP }} \
+            --source-location frontend/dist \
+            --app-location frontend \
+            --output-location dist \
+            --no-wait
+          echo "✅ Frontend deployment initiated"
+
+      - name: Configure Frontend Settings
+        run: |
+          az staticwebapp appsettings set \
+            --name ${{ github.ref == 'refs/heads/main' && secrets.PROD_AZURE_STATIC_WEB_APP_NAME || secrets.DEV_AZURE_STATIC_WEB_APP_NAME }} \
+            --resource-group ${{ github.ref == 'refs/heads/main' && secrets.PROD_AZURE_RESOURCE_GROUP || secrets.DEV_AZURE_RESOURCE_GROUP }} \
+            --setting-names \
+              VITE_MSAL_CLIENT_ID="${{ github.ref == 'refs/heads/main' && secrets.PROD_VITE_MSAL_CLIENT_ID || secrets.DEV_VITE_MSAL_CLIENT_ID }}" \
+              VITE_MSAL_TENANT_ID="${{ github.ref == 'refs/heads/main' && secrets.PROD_VITE_MSAL_TENANT_ID || secrets.DEV_VITE_MSAL_TENANT_ID }}" \
+              VITE_GOOGLE_CLIENT_ID="${{ github.ref == 'refs/heads/main' && secrets.PROD_VITE_GOOGLE_CLIENT_ID || secrets.DEV_VITE_GOOGLE_CLIENT_ID }}" \
+              VITE_API_BASE_URL="${{ github.ref == 'refs/heads/main' && secrets.PROD_VITE_API_BASE_URL || secrets.DEV_VITE_API_BASE_URL }}" \
+            --output none
+
+      - name: Cleanup
+        if: always()
+        run: rm -f backend-deploy.zip
+
+      - name: Deployment Complete
+        run: |
+          echo "✅✅✅ Deployment Complete! ✅✅✅"
+          echo "Environment: ${{ steps.env.outputs.env }}"
+          echo "Branch: ${{ github.ref_name }}"
