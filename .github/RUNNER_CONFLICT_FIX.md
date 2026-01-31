@@ -12,19 +12,25 @@ This happens when there are duplicate runner sessions or stale connections.
 sudo systemctl stop actions.runner.*
 ```
 
-### Step 2: Remove Stale Configuration
+### Step 2: Uninstall the Service
+```bash
+cd /opt/actions-runner
+sudo ./svc.sh uninstall
+```
+
+### Step 3: Remove Stale Configuration
 ```bash
 cd /opt/actions-runner
 ./config.sh remove
 ```
 
-### Step 3: Get New Token from GitHub
+### Step 4: Get New Token from GitHub
 1. Go to: https://github.com/cloudsecurityweb/echopad-app/settings/actions/runners
 2. Click "New self-hosted runner"
 3. Select Linux and ARM64
 4. Copy the configuration token
 
-### Step 4: Reconfigure Runner
+### Step 5: Reconfigure Runner
 ```bash
 cd /opt/actions-runner
 ./config.sh --url https://github.com/cloudsecurityweb/echopad-app --token <NEW_TOKEN> --name github-runner --replace
@@ -32,13 +38,13 @@ cd /opt/actions-runner
 
 **Important:** Use `--replace` flag to replace any existing configuration.
 
-### Step 5: Restart Service
+### Step 6: Reinstall and Start Service
 ```bash
 sudo systemctl restart actions.runner.*
 sudo systemctl status actions.runner.*
 ```
 
-### Step 6: Verify Connection
+### Step 7: Verify Connection
 ```bash
 sudo journalctl -u actions.runner.* -f
 ```
