@@ -1,13 +1,8 @@
 name: Production Frontend Deployment
+on:
+  workflow_dispatch:
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - 'frontend/**'
-      - '.github/workflows/production-frontend-deploy.yml'
-  workflow_dispatch:
 
 env:
   NODE_VERSION: '20'
