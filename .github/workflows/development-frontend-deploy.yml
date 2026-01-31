@@ -63,9 +63,7 @@ jobs:
       - name: Azure Login
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets[format('{0}_AZURE_CLIENT_ID', steps.env.outputs.env_prefix)] }}
-          tenant-id: ${{ secrets[format('{0}_AZURE_TENANT_ID', steps.env.outputs.env_prefix)] }}
-          subscription-id: ${{ secrets[format('{0}_AZURE_SUBSCRIPTION_ID', steps.env.outputs.env_prefix)] }}
+          creds: ${{ secrets[format('{0}_AZURE_CREDS', steps.env.outputs.env_prefix)] }}
 
       - name: Deploy to Azure Static Web Apps
         uses: Azure/static-web-apps-deploy@v1
