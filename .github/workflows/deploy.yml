@@ -165,10 +165,25 @@ jobs:
           echo "✅ Build completed"
           echo "📋 Build output size: $(du -sh dist | cut -f1)"
 
+      - name: Verify Build Output
+        working-directory: ./frontend
+        run: |
+          echo "📋 Verifying build output..."
+          echo "Build timestamp: $(date -u +"%Y-%m-%d %H:%M:%S UTC")"
+          echo "Commit: ${{ github.sha }}"
+          echo "Branch: ${{ github.ref_name }}"
+          echo ""
+          echo "Build files:"
+          find dist -type f -name "*.js" -o -name "*.css" -o -name "*.html" | head -10
+          echo ""
+          echo "Total build size: $(du -sh dist | cut -f1)"
+          echo "✅ Build verification complete"
+
       - name: Deploy Frontend
         working-directory: ./frontend
         run: |
           echo "🚀 Deploying to Azure Static Web App using npx..."
+          echo "Deployment timestamp: $(date -u +"%Y-%m-%d %H:%M:%S UTC")"
           npx --yes @azure/static-web-apps-cli deploy ./dist \
             --deployment-token "${{ github.ref == 'refs/heads/main' && secrets.PROD_AZURE_STATIC_WEB_APP_DEPLOYMENT_TOKEN || secrets.DEV_AZURE_STATIC_WEB_APP_DEPLOYMENT_TOKEN }}" \
             --env production \
