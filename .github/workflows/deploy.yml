@@ -163,18 +163,7 @@ jobs:
             --no-use-keychain
           echo "✅ Frontend deployment completed"
 
-      - name: Configure Frontend Settings
-        continue-on-error: true
-        run: |
-          APP_NAME="${{ github.ref == 'refs/heads/main' && secrets.PROD_AZURE_STATIC_WEB_APP_NAME || secrets.DEV_AZURE_STATIC_WEB_APP_NAME }}"
-          RESOURCE_GROUP="${{ github.ref == 'refs/heads/main' && secrets.PROD_AZURE_RESOURCE_GROUP || secrets.DEV_AZURE_RESOURCE_GROUP }}"
-          MSAL_CLIENT_ID="${{ github.ref == 'refs/heads/main' && secrets.PROD_VITE_MSAL_CLIENT_ID || secrets.DEV_VITE_MSAL_CLIENT_ID }}"
-          MSAL_TENANT_ID="${{ github.ref == 'refs/heads/main' && secrets.PROD_VITE_MSAL_TENANT_ID || secrets.DEV_VITE_MSAL_TENANT_ID }}"
-          GOOGLE_CLIENT_ID="${{ github.ref == 'refs/heads/main' && secrets.PROD_VITE_GOOGLE_CLIENT_ID || secrets.DEV_VITE_GOOGLE_CLIENT_ID }}"
-          API_BASE_URL="${{ github.ref == 'refs/heads/main' && secrets.PROD_VITE_API_BASE_URL || secrets.DEV_VITE_API_BASE_URL }}"
-          az staticwebapp appsettings set --name "$APP_NAME" --resource-group "$RESOURCE_GROUP" --setting-names VITE_MSAL_CLIENT_ID="$MSAL_CLIENT_ID" VITE_MSAL_TENANT_ID="$MSAL_TENANT_ID" VITE_GOOGLE_CLIENT_ID="$GOOGLE_CLIENT_ID" VITE_API_BASE_URL="$API_BASE_URL" --output none || echo "⚠️  App settings configuration failed - may already be set in Azure Portal"
-
-            - name: Cleanup Deployment Files
+      - name: Cleanup Deployment Files
               if: always()
               run: rm -f backend-deploy.zip
 
