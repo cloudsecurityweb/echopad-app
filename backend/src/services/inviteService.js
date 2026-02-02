@@ -9,11 +9,10 @@ import { getContainer } from "../config/cosmosClient.js";
 import { createInvite, validateInvite, isInviteExpired, INVITE_STATUS } from "../models/invite.js";
 import { createAuditEvent, AUDIT_EVENT_TYPES } from "../models/auditEvent.js";
 import { createUser, USER_STATUS } from "../models/user.js";
-import { getUserByEmail } from "./userService.js";
+import { getUserByEmailAnyRole } from "./userService.js";
 
 const CONTAINER_NAME = "invites";
 const AUDIT_CONTAINER_NAME = "auditEvents";
-const USERS_CONTAINER_NAME = "users";
 
 /**
  * Generate a unique invitation token
@@ -27,9 +26,10 @@ function generateInviteToken() {
  * Create a new invitation
  * @param {Object} inviteData - Invite data
  * @param {string} actorUserId - User ID creating the invite
+ * @param {Object} [options] - Optional: { tempPassword } to include in email for sign-in
  * @returns {Promise<Object>} Created invite
  */
-export async function createInvitation(inviteData, actorUserId) {
+export async function createInvitation(inviteData, actorUserId, options = {}) {
   const validation = validateInvite({
     ...inviteData,
     token: inviteData.token || generateInviteToken(),
@@ -67,43 +67,90 @@ export async function createInvitation(inviteData, actorUserId) {
     console.warn("Failed to create audit event:", auditError);
   }
 
-  // Send invitation email
+  // Send invitation email - track success/failure (same pattern as email verification)
+  let emailSent = false;
+  let emailError = null;
+  
   try {
-    const { sendInvitationEmail } = await import('./emailService.js');
+    const { sendInvitationEmail, isEmailConfigured } = await import('./emailService.js');
     const { getUserById } = await import('./userService.js');
     
-    // Get inviter name
-    let inviterName = 'A team member';
-    try {
-      const inviter = await getUserById(actorUserId, invite.tenantId);
-      if (inviter) {
-        inviterName = inviter.displayName || inviter.email;
-      }
-    } catch (error) {
-      console.warn('Failed to get inviter name:', error);
-    }
-
-    // Get organization name
-    let organizationName = 'the organization';
-    if (invite.organizationId) {
+    // Check if email service is configured
+    if (!isEmailConfigured()) {
+      emailError = 'Email service is not configured. Please contact support to enable invitation emails.';
+      console.warn(`⚠️  [INVITE] Email service not configured. Invitation created but email not sent to: ${invite.email}`);
+    } else {
+      // Get inviter name
+      let inviterName = 'A team member';
       try {
-        const { getOrgById } = await import('./organizationService.js');
-        const org = await getOrgById(invite.organizationId, invite.tenantId);
-        if (org) {
-          organizationName = org.name;
+        const inviter = await getUserById(actorUserId, invite.tenantId);
+        if (inviter) {
+          inviterName = inviter.displayName || inviter.email || inviterName;
         }
       } catch (error) {
-        console.warn('Failed to get organization name:', error);
+        console.warn('⚠️  [INVITE] Failed to get inviter name:', error.message);
       }
-    }
 
-    await sendInvitationEmail(invite.email, invite.token, inviterName, organizationName);
+      // Get organization name
+      let organizationName = 'the organization';
+      if (invite.organizationId) {
+        try {
+          const { getOrgById } = await import('./organizationService.js');
+          const org = await getOrgById(invite.organizationId, invite.tenantId);
+          if (org) {
+            organizationName = org.name || organizationName;
+          }
+        } catch (error) {
+          console.warn('⚠️  [INVITE] Failed to get organization name:', error.message);
+        }
+      }
+
+      console.log(`📧 [INVITE] Sending invitation email to: ${invite.email}`);
+      const emailResult = await sendInvitationEmail(invite.email, invite.token, inviterName, organizationName, options.tempPassword);
+      emailSent = true;
+      console.log(`✅ [INVITE] Invitation email sent successfully. Message ID: ${emailResult.messageId || 'N/A'}`);
+    }
   } catch (emailError) {
-    console.error('Failed to send invitation email:', emailError);
-    // Don't fail invitation creation if email fails, but log it
+    emailSent = false;
+    emailError = emailError.message || 'Failed to send invitation email';
+    console.error(`❌ [INVITE] Failed to send invitation email to ${invite.email}:`, emailError);
+    console.error('   Error details:', {
+      message: emailError.message,
+      stack: emailError.stack,
+      email: invite.email,
+      tokenLength: invite.token.length,
+    });
+    // Don't fail invitation creation if email fails, but track it for user feedback
   }
   
+  // Attach email status to the invite resource for response tracking
+  resource.emailSent = emailSent;
+  resource.emailError = emailError;
+  
   return resource;
+}
+
+/**
+ * Mark an invite as accepted by token and email (e.g. after user signs in with temp password)
+ * @param {string} token - Invitation token
+ * @param {string} email - Invite email (must match signed-in user)
+ * @param {string} tenantId - Tenant ID
+ * @returns {Promise<boolean>} True if invite was found and marked accepted
+ */
+export async function markInviteAcceptedByToken(token, email, tenantId) {
+  const container = getContainer(CONTAINER_NAME);
+  if (!container) return false;
+  const invite = await getInviteByToken(token, tenantId);
+  if (!invite || invite.email?.toLowerCase() !== email.toLowerCase() || invite.status !== INVITE_STATUS.PENDING) {
+    return false;
+  }
+  await container.item(invite.id, tenantId).replace({
+    ...invite,
+    status: INVITE_STATUS.ACCEPTED,
+    acceptedAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  });
+  return true;
 }
 
 /**
@@ -166,9 +213,8 @@ export async function getInvitesByTenant(tenantId, status = null) {
  */
 export async function acceptInvitation(token, tenantId, userData) {
   const container = getContainer(CONTAINER_NAME);
-  const usersContainer = getContainer(USERS_CONTAINER_NAME);
   
-  if (!container || !usersContainer) {
+  if (!container) {
     throw new Error("Cosmos DB container not available");
   }
   
@@ -192,29 +238,84 @@ export async function acceptInvitation(token, tenantId, userData) {
     throw new Error("Invitation has expired");
   }
   
-  // Check if user already exists
-  const existingUser = await getUserByEmail(invite.email, tenantId);
+  // Check if user already exists (e.g. created with temp password at invite time)
+  const existingUser = await getUserByEmailAnyRole(invite.email, tenantId);
   if (existingUser) {
-    throw new Error("User with this email already exists");
+    // Mark invite as accepted and return existing user (no duplicate creation)
+    await container.item(invite.id, tenantId).replace({
+      ...invite,
+      status: INVITE_STATUS.ACCEPTED,
+      acceptedAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    });
+    return existingUser;
   }
   
   // Create user
-  // OAuth users (Microsoft/Google) are auto-verified, email/password users need verification
-  const emailVerified = userData.authMethod && ['microsoft', 'google'].includes(userData.authMethod);
+  // OAuth users (Microsoft/Google) and magic link users are auto-verified
+  // Email/password users need verification, but invitations are considered trusted
+  // For invitations: magic link and OAuth are auto-verified, email/password still needs verification
+  const emailVerified = userData.authMethod && ['microsoft', 'google', 'magic'].includes(userData.authMethod);
+  
+  // Invited users are always UserAdmin (USER role) and linked to the inviting organization
+  // Ensure role is 'user' (UserAdmin) for all invitations - invitations always create UserAdmin users
+  const userRole = 'user'; // Always USER (UserAdmin) for invitations, regardless of invite.role
   
   const user = createUser({
     id: userData.id,
     tenantId,
     email: invite.email,
     displayName: userData.displayName || invite.email.split("@")[0],
-    role: invite.role,
-    status: USER_STATUS.ACTIVE,
-    organizationId: invite.organizationId,
-    emailVerified: emailVerified, // Auto-verify OAuth users
+    role: userRole, // Always USER (UserAdmin) for invitations
+    status: emailVerified ? USER_STATUS.ACTIVE : USER_STATUS.PENDING, // Active if verified, pending if not
+    organizationId: invite.organizationId, // Always link to inviting organization
+    emailVerified: emailVerified, // Auto-verify OAuth and magic link users
   });
   
-  const { resource: createdUser } = await usersContainer.items.create(user);
+  // Use the role-specific container for user creation
+  const { getContainerNameByRole } = await import('../models/user.js');
+  const userContainerName = getContainerNameByRole(userRole);
+  const userContainer = getContainer(userContainerName);
   
+  if (!userContainer) {
+    throw new Error(`Cosmos DB container '${userContainerName}' not available`);
+  }
+  
+  const { resource: createdUser } = await userContainer.items.create(user);
+
+  // If this invitation is tied to a specific product, automatically assign
+  // the user to an active license for that product (when available).
+  // This links the invited user to the product at acceptance time so that
+  // their dashboard can immediately reflect product access.
+  if (invite.productId && invite.organizationId) {
+    try {
+      const { getLicensesByTenant, assignLicenseToUser } = await import("./licenseService.js");
+
+      // Find licenses for this tenant, organization, and product
+      const licenses = await getLicensesByTenant(tenantId, invite.organizationId, invite.productId);
+
+      // Try to assign the user to the first license that can accept them.
+      // assignLicenseToUser internally validates status, expiry, and seat availability.
+      for (const license of licenses) {
+        try {
+          await assignLicenseToUser(license.id, tenantId, createdUser.id, invite.createdBy || createdUser.id);
+          // Successfully assigned; no need to try additional licenses
+          break;
+        } catch (assignError) {
+          // If assignment fails for this license (no seats, expired, etc.),
+          // log and continue to the next one.
+          console.warn("Failed to auto-assign license on invite acceptance:", {
+            licenseId: license.id,
+            error: assignError.message,
+          });
+        }
+      }
+    } catch (licenseError) {
+      // Never fail invitation acceptance because of license issues.
+      console.warn("License auto-assignment skipped on invite acceptance:", licenseError);
+    }
+  }
+
   // Mark invite as accepted
   await container.item(invite.id, tenantId).replace({
     ...invite,

@@ -76,6 +76,27 @@ export async function getHelpDocs({
   };
 }
 
+
+export async function getHelpDocById(docId) {
+  const container = getContainer(CONTAINER_NAME);
+  if (!container) {
+    throw new Error("Cosmos DB container not available");
+  }
+
+  // Help docs are stored with tenantId "system"
+  const tenantId = "system";
+
+  try {
+    const { resource } = await container.item(docId, tenantId).read();
+    return resource;
+  } catch (error) {
+    if (error.code === 404) {
+      return null;
+    }
+    throw error;
+  }
+}
+
 export async function createHelpDocEntry(payload) {
   const container = getContainer(CONTAINER_NAME);
   if (!container) {

@@ -1,13 +1,13 @@
 import http from "./http";
 
 export const fetchProducts = () =>
-  http.get("/products");
+  http.get("/api/products");
 
 export const fetchProductByCode = productCode =>
-  http.get(`/products/${productCode}`);
+  http.get(`/api/products/${productCode}`);
 
 export const createProduct = payload =>
-  http.post("/products", payload);
+  http.post("/api/products", payload);
 
 export const updateProduct = (productCode, payload) =>
-  http.patch(`/products/${productCode}`, payload);
+  http.patch(`/api/products/${productCode}`, payload);

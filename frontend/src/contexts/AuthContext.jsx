@@ -6,7 +6,26 @@ import { loginRequest, signUpRequest, loginSelectAccountRequest } from '../confi
 import { googleScopes } from '../config/googleAuthConfig';
 import { getRolesFromToken, getUserInfoFromToken, getOIDFromToken } from '../utils/tokenDecoder';
 
+import { authRef } from '../api/auth';
+
 const AuthContext = createContext(null);
+
+/**
+ * Detect "user not registered" / "sign up first" API error for consistent handling.
+ * @param {Response} response - Fetch response
+ * @param {Object} errorData - Parsed JSON body
+ * @returns {boolean}
+ */
+function isUserNotRegisteredError(response, errorData) {
+  if (!response || (response.status !== 401 && response.status !== 404)) return false;
+  const err = errorData?.error?.toLowerCase?.() || '';
+  const msg = (errorData?.message || '').toLowerCase();
+  return (
+    err === 'user not registered' ||
+    err === 'user not found' ||
+    msg.includes('sign up first')
+  );
+}
 
 export function AuthProvider({ children }) {
   const { instance, accounts, inProgress } = useMsal();
@@ -31,15 +50,27 @@ export function AuthProvider({ children }) {
   
   // Magic link authentication state
   const [magicToken, setMagicToken] = useState(null);
+  
+  // Email/password authentication state
+  const [emailPasswordToken, setEmailPasswordToken] = useState(null);
+
+  // When true, app should redirect to sign-up (e.g. Google user not in DB)
+  const [userNotRegisteredRedirect, setUserNotRegisteredRedirect] = useState(false);
 
   // Guard to prevent repeated OID-based profile fetches
   const fetchedOIDRef = useRef(null);
+  const googleProfileFetchedRef = useRef(false);
+  // Token set in onSuccess before state flushes; syncGoogleUserProfile can use it when SignIn calls sync right after login
+  const pendingGoogleTokenRef = useRef(null);
 
   const hasMicrosoftAccount = accounts.length > 0;
   const isMsalIdle = inProgress === InteractionStatus.None;
 
   // Check if user is authenticated (Microsoft, Google, Email/Password, or Magic Link)
   const isAuthenticated = isMicrosoftAuthenticated || hasMicrosoftAccount || (googleToken !== null && googleUser !== null) || (userProfile !== null && authProvider === 'email') || (magicToken !== null && authProvider === 'magic');
+
+  // Key for persisting non-token-based auth (email/password) across refreshes
+  const EMAIL_SESSION_KEY = 'echopad_email_auth_session';
 
   // Initialize - check if user is already authenticated
   useEffect(() => {
@@ -88,6 +119,30 @@ export function AuthProvider({ children }) {
           }
         }
         
+        // Check for Email/Password authentication in localStorage
+        // This is a lightweight, non-token-based session used only for client-side routing
+        try {
+          const storedEmailSession = localStorage.getItem(EMAIL_SESSION_KEY);
+          if (storedEmailSession) {
+            const parsedSession = JSON.parse(storedEmailSession);
+            if (parsedSession?.authProvider === 'email' && parsedSession?.userProfile) {
+              setUserProfile(parsedSession.userProfile);
+              setAuthProvider('email');
+              if (parsedSession.userOID) {
+                setUserOID(parsedSession.userOID);
+              }
+              console.log('🔐 [AUTH] Restored email/password session from localStorage for:', parsedSession.userProfile?.user?.email);
+            }
+          }
+        } catch (error) {
+          console.warn('Failed to restore email/password authentication:', error);
+          try {
+            localStorage.removeItem(EMAIL_SESSION_KEY);
+          } catch {
+            // ignore storage cleanup errors
+          }
+        }
+        
         // Check for Magic link authentication in sessionStorage
         const storedMagicToken = sessionStorage.getItem('magic_token');
         if (storedMagicToken) {
@@ -97,6 +152,30 @@ export function AuthProvider({ children }) {
           } catch (error) {
             console.warn('Failed to restore Magic authentication:', error);
             sessionStorage.removeItem('magic_token');
+          }
+        }
+        
+        // Check for Email/password authentication token in sessionStorage
+        const storedEmailPasswordToken = sessionStorage.getItem('email_password_token');
+        if (storedEmailPasswordToken) {
+          try {
+            setEmailPasswordToken(storedEmailPasswordToken);
+            // Only set authProvider to 'email' if we also have userProfile
+            // Otherwise, we'll restore it from localStorage session
+            const storedEmailSession = localStorage.getItem(EMAIL_SESSION_KEY);
+            if (storedEmailSession) {
+              const parsedSession = JSON.parse(storedEmailSession);
+              if (parsedSession?.authProvider === 'email' && parsedSession?.userProfile) {
+                setUserProfile(parsedSession.userProfile);
+                setAuthProvider('email');
+                if (parsedSession.userOID) {
+                  setUserOID(parsedSession.userOID);
+                }
+              }
+            }
+          } catch (error) {
+            console.warn('Failed to restore Email/password token:', error);
+            sessionStorage.removeItem('email_password_token');
           }
         }
       } catch (error) {
@@ -246,12 +325,14 @@ export function AuthProvider({ children }) {
         // Note: tokenResponse.access_token is the access token
         // For backend verification, the backend can verify this token using Google's tokeninfo endpoint
         // or we can get the ID token if needed (requires additional configuration)
-        setGoogleToken(tokenResponse.access_token);
+        const token = tokenResponse.access_token;
+        pendingGoogleTokenRef.current = token; // So sync can run before state flushes
+        setGoogleToken(token);
         setGoogleUser(userInfo);
         setAuthProvider('google');
         
         // Store in sessionStorage for persistence
-        sessionStorage.setItem('google_id_token', tokenResponse.access_token);
+        sessionStorage.setItem('google_id_token', token);
         sessionStorage.setItem('google_user', JSON.stringify(userInfo));
         
         // Clear Microsoft auth if switching providers
@@ -353,10 +434,23 @@ export function AuthProvider({ children }) {
         sessionStorage.removeItem('magic_token');
       }
       
-      // Logout from Email/Password - just clear local state
+      // Logout from Email/Password if authenticated
+      if (authProvider === 'email') {
+        setEmailPasswordToken(null);
+        sessionStorage.removeItem('email_password_token');
+      }
+      
+      // Logout from Email/Password - just clear local state and persisted session
       if (authProvider === 'email') {
         setUserProfile(null);
         setUserOID(null);
+        setEmailPasswordToken(null);
+        try {
+          localStorage.removeItem(EMAIL_SESSION_KEY);
+          sessionStorage.removeItem('email_password_token');
+        } catch {
+          // ignore storage errors
+        }
       }
       
       // Reset provider
@@ -377,8 +471,32 @@ export function AuthProvider({ children }) {
     }
   }, [instance, account, accounts, authProvider]);
 
+  /**
+   * Clear Google auth only (token, user, sessionStorage). Use when user is not registered
+   * so they stay on Sign In page and can go to Sign Up.
+   */
+  const clearGoogleAuth = useCallback(() => {
+    setGoogleToken(null);
+    setGoogleUser(null);
+    pendingGoogleTokenRef.current = null;
+    if (authProvider === 'google') {
+      setAuthProvider(null);
+      setUserProfile(null);
+    }
+    sessionStorage.removeItem('google_id_token');
+    sessionStorage.removeItem('google_user');
+    googleProfileFetchedRef.current = false;
+  }, [authProvider]);
+
   const getAccessToken = useCallback(async () => {
     // Return token based on current provider
+    if (authProvider === 'email') {
+      if (!emailPasswordToken) {
+        throw new Error('No email/password token available');
+      }
+      return emailPasswordToken;
+    }
+    
     if (authProvider === 'magic') {
       if (!magicToken) {
         throw new Error('No magic token available');
@@ -442,7 +560,9 @@ export function AuthProvider({ children }) {
     }
     
     throw new Error('No authentication provider available');
-  }, [instance, account, accounts, authProvider, googleToken]);
+  }, [instance, account, accounts, authProvider, googleToken, emailPasswordToken, magicToken]);
+
+  authRef.getAccessToken = getAccessToken;
 
   /**
    * Fetch current user profile from backend (/api/auth/me)
@@ -453,6 +573,12 @@ export function AuthProvider({ children }) {
   const fetchCurrentUser = useCallback(async () => {
     try {
       const token = await getAccessToken();
+      
+      // Validate token exists
+      if (!token) {
+        throw new Error('No access token available. Please sign in again.');
+      }
+      
       const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://echopad-app-service-bwd0bqd7g7ehb5c7.westus2-01.azurewebsites.net';
       const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
         method: 'GET',
@@ -464,6 +590,11 @@ export function AuthProvider({ children }) {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({ message: 'Unknown error' }));
+        if (isUserNotRegisteredError(response, errorData)) {
+          const err = new Error(errorData.message || 'User account not found. Please sign up first.');
+          err.code = 'USER_NOT_REGISTERED';
+          throw err;
+        }
         throw new Error(errorData.message || `Failed to fetch user: ${response.status}`);
       }
 
@@ -507,18 +638,18 @@ export function AuthProvider({ children }) {
       if (userOID && tokenRoles.length === 0 && !userProfile && accessToken && authProvider === 'microsoft' && fetchedOIDRef.current !== userOID) {
         // Mark this OID as fetched to prevent repeated calls
         fetchedOIDRef.current = userOID;
-        console.log(' [AUTH] OID available but no roles in token. Fetching role from database using OID...');
+        console.log('🔍 [AUTH] OID available but no roles in token. Fetching role from database using OID...');
         try {
           // Fetch user profile from backend (uses OID-first lookup)
           const profile = await fetchCurrentUser();
           if (profile?.user?.role) {
-            console.log(' [AUTH] Role fetched from database using OID:', profile.user.role);
+            console.log('✅ [AUTH] Role fetched from database using OID:', profile.user.role);
             console.log('   User:', profile.user.email, '| Role:', profile.user.role);
           } else {
-            console.warn(' [AUTH] User profile fetched but no role found. User may need to be created in database.');
+            console.warn('⚠️ [AUTH] User profile fetched but no role found. User may need to be created in database.');
           }
         } catch (fetchError) {
-          console.warn(' [AUTH] Failed to fetch user profile by OID:', fetchError);
+          console.warn('⚠️ [AUTH] Failed to fetch user profile by OID:', fetchError);
           // Reset the guard on error so we can retry if needed
           fetchedOIDRef.current = null;
           // User might not exist in database yet - this is OK for first-time login
@@ -536,6 +667,31 @@ export function AuthProvider({ children }) {
       fetchedOIDRef.current = null;
     }
   }, [userOID]);
+
+  // When Google-authenticated but no profile (e.g. landed on dashboard from old flow), try fetch; if user not registered, clear Google and set redirect flag
+  useEffect(() => {
+    const tryFetchGoogleProfile = async () => {
+      if (
+        authProvider !== 'google' ||
+        !googleToken ||
+        userProfile !== null ||
+        googleProfileFetchedRef.current
+      ) {
+        return;
+      }
+      googleProfileFetchedRef.current = true;
+      try {
+        await fetchCurrentUser();
+      } catch (err) {
+        googleProfileFetchedRef.current = false;
+        if (err?.code === 'USER_NOT_REGISTERED') {
+          clearGoogleAuth();
+          setUserNotRegisteredRedirect(true);
+        }
+      }
+    };
+    tryFetchGoogleProfile();
+  }, [authProvider, googleToken, userProfile, fetchCurrentUser, clearGoogleAuth]);
 
   /**
    * Sync user profile with backend
@@ -559,21 +715,46 @@ export function AuthProvider({ children }) {
 
     try {
       const token = await getAccessToken();
+      
+      // Validate token exists
+      if (!token) {
+        throw new Error('No access token available. Please sign in again.');
+      }
+      
       const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://echopad-app-service-bwd0bqd7g7ehb5c7.westus2-01.azurewebsites.net';
       const endpoint = isSignUp ? `${API_BASE_URL}/api/auth/sign-up` : `${API_BASE_URL}/api/auth/sign-in`;
       
-      const response = await fetch(endpoint, {
+      // Build headers conditionally - only include Content-Type when body exists
+      const headers = {
+        'Authorization': `Bearer ${token}`,
+      };
+      
+      // Build fetch options conditionally - only include body when signUpData is provided
+      const fetchOptions = {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: signUpData ? JSON.stringify(signUpData) : undefined,
-      });
+        headers,
+      };
+      
+      // Only add Content-Type and body when signUpData is provided (for sign-up)
+      if (signUpData) {
+        headers['Content-Type'] = 'application/json';
+        fetchOptions.body = JSON.stringify(signUpData);
+      }
+      
+      const response = await fetch(endpoint, fetchOptions);
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({ message: 'Unknown error' }));
-        throw new Error(errorData.message || `Backend request failed: ${response.status}`);
+        const errorMessage = errorData.message || errorData.error || `Backend request failed: ${response.status}`;
+        console.error('🔐 [AUTH] Sign-in/sign-up failed:', {
+          status: response.status,
+          error: errorData.error,
+          message: errorMessage,
+          endpoint,
+          hasToken: !!token,
+          tokenPreview: token ? token.substring(0, 20) + '...' : 'no token',
+        });
+        throw new Error(errorMessage);
       }
 
       const data = await response.json();
@@ -645,7 +826,7 @@ export function AuthProvider({ children }) {
           autoSyncAttemptedRef.current = false;
           // Silently fail - user might not exist in DB yet, will be created on first sign-in/sign-up
           if (import.meta.env.DEV) {
-            console.warn(' [AUTH] Auto-sync failed (user may not exist yet):', syncError.message);
+            console.warn('⚠️ [AUTH] Auto-sync failed (user may not exist yet):', syncError.message);
           }
         }
       }
@@ -670,30 +851,58 @@ export function AuthProvider({ children }) {
    * @returns {Promise<Object>} User profile data from backend
    */
   const syncGoogleUserProfile = useCallback(async (isSignUp = false, signUpData = null) => {
-    if (authProvider !== 'google' || !googleToken) {
+    const tokenToUse = googleToken ?? pendingGoogleTokenRef.current;
+    if (!tokenToUse) {
       throw new Error('Google user profile sync requires Google authentication');
     }
 
     try {
+      
       const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://echopad-app-service-bwd0bqd7g7ehb5c7.westus2-01.azurewebsites.net';
       const endpoint = isSignUp ? `${API_BASE_URL}/api/auth/sign-up` : `${API_BASE_URL}/api/auth/sign-in`;
       
-      const response = await fetch(endpoint, {
+      // Build headers conditionally - only include Content-Type when body exists
+      const headers = {
+        'Authorization': `Bearer ${tokenToUse}`,
+      };
+      
+      // Build fetch options conditionally - only include body when signUpData is provided
+      const fetchOptions = {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${googleToken}`,
-        },
-        body: signUpData ? JSON.stringify(signUpData) : undefined,
-      });
+        headers,
+      };
+      
+      // Only add Content-Type and body when signUpData is provided (for sign-up)
+      if (signUpData) {
+        headers['Content-Type'] = 'application/json';
+        fetchOptions.body = JSON.stringify(signUpData);
+      }
+      
+      const response = await fetch(endpoint, fetchOptions);
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({ message: 'Unknown error' }));
-        throw new Error(errorData.message || `Backend request failed: ${response.status}`);
+        const errorMessage = errorData.message || errorData.error || `Backend request failed: ${response.status}`;
+        console.error('🔐 [AUTH] Google sign-in/sign-up failed:', {
+          status: response.status,
+          error: errorData.error,
+          message: errorMessage,
+          endpoint,
+          hasToken: !!tokenToUse,
+          tokenPreview: tokenToUse ? tokenToUse.substring(0, 20) + '...' : 'no token',
+        });
+        if (isUserNotRegisteredError(response, errorData)) {
+          pendingGoogleTokenRef.current = null;
+          const err = new Error(errorMessage);
+          err.code = 'USER_NOT_REGISTERED';
+          throw err;
+        }
+        throw new Error(errorMessage);
       }
 
       const data = await response.json();
-      
+      pendingGoogleTokenRef.current = null; // Clear after successful use
+
       if (data.success && data.data) {
         setUserProfile(data.data);
         
@@ -787,10 +996,26 @@ export function AuthProvider({ children }) {
           email: data.data.user?.email,
           role: data.data.user?.role,
           id: data.data.user?.id?.substring(0, 8) + '...',
+          hasToken: !!data.data.sessionToken,
         });
         
         setUserProfile(data.data);
         setAuthProvider('email'); // Set provider to email
+        
+        // Extract and store session token if provided
+        const sessionToken = data.data.sessionToken;
+        if (sessionToken) {
+          setEmailPasswordToken(sessionToken);
+          // Store in sessionStorage for persistence (cleared on tab close)
+          try {
+            sessionStorage.setItem('email_password_token', sessionToken);
+            console.log('💾 [AUTH] Stored email/password session token in sessionStorage');
+          } catch (storageError) {
+            console.warn('Failed to store email/password token:', storageError);
+          }
+        } else {
+          console.warn('⚠️ [AUTH] No session token received from email/password sign-in');
+        }
         
         // For email/password auth, user.id may not be OID, but we can still extract it if available
         // For Microsoft auth, user.id is always the OID
@@ -803,10 +1028,24 @@ export function AuthProvider({ children }) {
           }
         }
         
-        // For email/password users, we don't have a token, so we can't call /api/auth/me
-        // The sign-in response already contains the upgraded role (if upgrade happened)
+        // Persist minimal email/password session so refresh keeps the user logged in
+        // This does NOT store the password or any tokens, only profile + identifiers
+        try {
+          const sessionPayload = {
+            authProvider: 'email',
+            userProfile: data.data,
+            userOID: data.data.user?.id || null,
+          };
+          localStorage.setItem(EMAIL_SESSION_KEY, JSON.stringify(sessionPayload));
+          console.log('💾 [AUTH] Persisted email/password session to localStorage for:', data.data.user?.email);
+        } catch (storageError) {
+          console.warn('Failed to persist email/password session:', storageError);
+        }
+        
+        // Email/password users now have tokens, so we can call /api/auth/me if needed
+        // But the sign-in response already contains the upgraded role (if upgrade happened)
         // So we just use the response directly - no need to fetch again
-        console.log(' [AUTH] Email/password sign-in complete, using response directly (no token for /api/auth/me)');
+        console.log('✅ [AUTH] Email/password sign-in complete with session token');
         return data.data;
       } else {
         throw new Error(data.message || 'Failed to sign in');
@@ -827,6 +1066,10 @@ export function AuthProvider({ children }) {
     setMagicToken(token);
     setAuthProvider('magic');
     sessionStorage.setItem('magic_token', token);
+  }, []);
+
+  const clearUserNotRegisteredRedirect = useCallback(() => {
+    setUserNotRegisteredRedirect(false);
   }, []);
 
   const value = {
@@ -860,6 +1103,10 @@ export function AuthProvider({ children }) {
     // Magic link authentication
     setMagicSession,
     magicToken,
+    // User not registered (e.g. Google sign-in without sign-up)
+    clearGoogleAuth,
+    userNotRegisteredRedirect,
+    clearUserNotRegisteredRedirect,
   };
 
   return (

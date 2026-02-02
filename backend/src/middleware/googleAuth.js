@@ -1,23 +1,83 @@
 /**
  * Google OAuth Token Verification Middleware
- * 
- * Validates Google OAuth access tokens and attaches user claims to req.auth
+ *
+ * Validates Google OAuth access tokens or ID tokens and attaches user claims to req.auth
  */
 
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+const PLACEHOLDER_GOOGLE = /^your-google-client-id/i;
 
 if (!GOOGLE_CLIENT_ID) {
-  console.warn('  GOOGLE_CLIENT_ID not set. Google auth middleware will fail.');
+  console.warn('⚠️  GOOGLE_CLIENT_ID not set. Google auth middleware will fail.');
 }
 
 /**
- * Middleware to verify Google OAuth access tokens
- * 
+ * Decode JWT payload without verification (handles base64url)
+ * @param {string} payloadB64 - Base64url-encoded payload
+ * @returns {object|null} Decoded payload or null
+ */
+function decodeJwtPayload(payloadB64) {
+  try {
+    let b64 = payloadB64.replace(/-/g, '+').replace(/_/g, '/');
+    const pad = b64.length % 4;
+    if (pad) b64 += '='.repeat(4 - pad);
+    return JSON.parse(Buffer.from(b64, 'base64').toString('utf8'));
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Detect if token is a Google ID token (JWT with iss containing accounts.google.com)
+ * @param {string} token - Bearer token
+ * @returns {boolean}
+ */
+function isGoogleIdToken(token) {
+  const parts = token.split('.');
+  if (parts.length !== 3) return false;
+  const payload = decodeJwtPayload(parts[1]);
+  return payload && payload.iss && String(payload.iss).includes('accounts.google.com');
+}
+
+/**
+ * Development only: accept Google ID token by decoding without verification (like email/password).
+ */
+function tryDevBypassGoogleToken(token, req, res, next) {
+  if (process.env.NODE_ENV !== 'development') return false;
+  const parts = token.split('.');
+  if (parts.length !== 3) return false;
+  const payload = decodeJwtPayload(parts[1]);
+  if (!payload) return false;
+  const iss = payload.iss && String(payload.iss);
+  if (!iss || !iss.includes('accounts.google.com')) return false;
+  if (payload.exp && payload.exp < Math.floor(Date.now() / 1000)) return false;
+  const sub = payload.sub;
+  if (!sub) return false;
+
+  console.warn('⚠️ [GOOGLE-AUTH] Development bypass: accepting Google token without tokeninfo. Set GOOGLE_CLIENT_ID in .env for production.');
+  req.auth = {
+    oid: sub,
+    tid: sub,
+    preferred_username: payload.email,
+    email: payload.email,
+    name: payload.name || (payload.email && payload.email.split('@')[0]) || 'User',
+    roles: [],
+    provider: 'google',
+    picture: payload.picture,
+    _raw: { aud: payload.aud, exp: payload.exp, sub: payload.sub },
+  };
+  next();
+  return true;
+}
+
+/**
+ * Middleware to verify Google OAuth access tokens or ID tokens
+ *
  * Validates:
- * - Token using Google's tokeninfo endpoint
+ * - Token using Google's tokeninfo endpoint (access_token= or id_token= as appropriate)
  * - Token expiration
  * - Audience (aud) matches GOOGLE_CLIENT_ID
- * 
+ *
  * On success, attaches user claims to req.auth:
  * - req.auth.oid: User ID from Google (sub claim)
  * - req.auth.tid: Tenant ID (using sub as tenant for Google users)
@@ -27,7 +87,28 @@ if (!GOOGLE_CLIENT_ID) {
  * - req.auth.provider: 'google'
  */
 export async function verifyGoogleToken(req, res, next) {
-  // Skip if not configured
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({
+      success: false,
+      error: 'Unauthorized',
+      message: 'Missing or invalid Authorization header. Expected: Bearer <token>',
+    });
+  }
+
+  const token = authHeader.substring(7); // Remove 'Bearer ' prefix
+
+  // Development only: when Google is not configured, accept ID token by decoding (no tokeninfo) so sign-in/me work like email/password
+  const notConfigured = !GOOGLE_CLIENT_ID || PLACEHOLDER_GOOGLE.test(String(GOOGLE_CLIENT_ID).trim());
+  if (process.env.NODE_ENV === 'development' && notConfigured) {
+    if (tryDevBypassGoogleToken(token, req, res, next)) return;
+    return res.status(503).json({
+      success: false,
+      error: 'Google authentication not configured',
+      message: 'GOOGLE_CLIENT_ID environment variable must be set',
+    });
+  }
+
   if (!GOOGLE_CLIENT_ID) {
     return res.status(503).json({
       success: false,
@@ -37,24 +118,15 @@ export async function verifyGoogleToken(req, res, next) {
   }
 
   try {
-    // Extract token from Authorization header
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({
-        success: false,
-        error: 'Unauthorized',
-        message: 'Missing or invalid Authorization header. Expected: Bearer <token>',
-      });
-    }
+    // Use id_token= for Google ID tokens (JWT), access_token= for opaque access tokens
+    const useIdToken = isGoogleIdToken(token);
+    const tokeninfoParam = useIdToken ? 'id_token' : 'access_token';
+    const tokeninfoUrl = `https://oauth2.googleapis.com/tokeninfo?${tokeninfoParam}=${encodeURIComponent(token)}`;
 
-    const token = authHeader.substring(7); // Remove 'Bearer ' prefix
-
-    // Verify token using Google's tokeninfo endpoint
-    const tokenInfoResponse = await fetch(
-      `https://oauth2.googleapis.com/tokeninfo?access_token=${token}`
-    );
+    const tokenInfoResponse = await fetch(tokeninfoUrl);
 
     if (!tokenInfoResponse.ok) {
+      if (process.env.NODE_ENV === 'development' && tryDevBypassGoogleToken(token, req, res, next)) return;
       return res.status(401).json({
         success: false,
         error: 'Invalid token',
@@ -64,8 +136,11 @@ export async function verifyGoogleToken(req, res, next) {
 
     const tokenInfo = await tokenInfoResponse.json();
 
-    // Verify the token is for our client ID
-    if (tokenInfo.aud !== GOOGLE_CLIENT_ID) {
+    // Verify the token is for our client ID (aud can be string or array for multi-audience)
+    const audMatches = Array.isArray(tokenInfo.aud)
+      ? tokenInfo.aud.includes(GOOGLE_CLIENT_ID)
+      : tokenInfo.aud === GOOGLE_CLIENT_ID;
+    if (!audMatches) {
       return res.status(401).json({
         success: false,
         error: 'Invalid token',
@@ -82,45 +157,40 @@ export async function verifyGoogleToken(req, res, next) {
       });
     }
 
-    // Get user info from Google
-    const userInfoResponse = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    if (!userInfoResponse.ok) {
-      return res.status(401).json({
-        success: false,
-        error: 'Failed to fetch user info',
-        message: 'Could not retrieve user information from Google',
+    // For ID tokens, tokeninfo returns email, name, picture, sub — use it directly.
+    // For access tokens, fetch userinfo with the token (required for email/name).
+    let userInfo = { email: tokenInfo.email, name: tokenInfo.name, picture: tokenInfo.picture, sub: tokenInfo.sub };
+    if (!useIdToken) {
+      const userInfoResponse = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+        headers: { Authorization: `Bearer ${token}` },
       });
+      if (!userInfoResponse.ok) {
+        return res.status(401).json({
+          success: false,
+          error: 'Failed to fetch user info',
+          message: 'Could not retrieve user information from Google',
+        });
+      }
+      userInfo = await userInfoResponse.json();
     }
-
-    const userInfo = await userInfoResponse.json();
 
     // Attach claims to request (similar format to Microsoft tokens)
     req.auth = {
-      oid: tokenInfo.sub || userInfo.sub, // User ID (sub claim)
-      tid: tokenInfo.sub || userInfo.sub, // Use sub as tenant ID for Google users
+      oid: tokenInfo.sub || userInfo.sub,
+      tid: tokenInfo.sub || userInfo.sub,
       preferred_username: userInfo.email,
       email: userInfo.email,
-      name: userInfo.name || userInfo.email.split('@')[0],
-      roles: [], // Google doesn't provide roles
+      name: userInfo.name || (userInfo.email && userInfo.email.split('@')[0]) || 'User',
+      roles: [],
       provider: 'google',
       picture: userInfo.picture,
-      // Raw token info for debugging
-      _raw: {
-        aud: tokenInfo.aud,
-        exp: tokenInfo.exp,
-        sub: tokenInfo.sub,
-      },
+      _raw: { aud: tokenInfo.aud, exp: tokenInfo.exp, sub: tokenInfo.sub },
     };
 
     next();
   } catch (error) {
+    if (process.env.NODE_ENV === 'development' && tryDevBypassGoogleToken(token, req, res, next)) return;
     console.error('Google token verification failed:', error.message);
-    
     return res.status(401).json({
       success: false,
       error: 'Authentication failed',

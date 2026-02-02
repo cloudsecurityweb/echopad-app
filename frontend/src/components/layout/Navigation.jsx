@@ -47,7 +47,7 @@ function Navigation() {
       // On home page, just scroll to the hero section
       const element = document.querySelector('#hero');
       if (element) {
-        const headerOffset = 80;
+        const headerOffset = 64;
         const elementPosition = element.getBoundingClientRect().top;
         const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
         window.scrollTo({
@@ -62,7 +62,7 @@ function Navigation() {
       setTimeout(() => {
         const element = document.querySelector('#hero');
         if (element) {
-          const headerOffset = 80;
+          const headerOffset = 64;
           const elementPosition = element.getBoundingClientRect().top;
           const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
           window.scrollTo({
@@ -103,31 +103,31 @@ function Navigation() {
   const isHomePage = location.pathname === '/';
 
   // Get user info based on provider
-  const userInfo = authProvider === 'google' 
-    ? { 
-        name: googleUser?.name, 
-        email: googleUser?.email, 
-        picture: googleUser?.picture 
-      }
-    : { 
-        name: account?.name, 
-        email: account?.username 
-      };
+  const userInfo = authProvider === 'google'
+    ? {
+      name: googleUser?.name,
+      email: googleUser?.email,
+      picture: googleUser?.picture
+    }
+    : {
+      name: account?.name,
+      email: account?.username
+    };
 
   return (
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-colors ${isMobileMenuOpen ? 'bg-white' : 'bg-gradient-to-b from-white to-transparent'}`}>
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-24">
+        <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <a 
-            href="/" 
+          <a
+            href="/"
             onClick={handleLogoClick}
-            className="flex items-center gap-3 text-3xl font-bold group cursor-pointer"
+            className="flex items-center gap-2 text-xl font-bold group cursor-pointer"
           >
-            <img 
-              src={echopadLogo} 
-              alt="Echopad AI Logo" 
-              className="w-14 h-14 transition-transform group-hover:scale-110"
+            <img
+              src={echopadLogo}
+              alt="Echopad AI Logo"
+              className="w-10 h-10 transition-transform group-hover:scale-110"
             />
             <span className="text-gray-900">
               Echopad <span className="bg-gradient-to-r from-cyan-500 to-blue-600 bg-clip-text text-transparent">AI</span>
@@ -137,44 +137,44 @@ function Navigation() {
           <div className="flex items-center gap-2">
             {/* Mobile Menu Toggle - Right burger (always visible on mobile) */}
             <button
-              className="md:hidden flex flex-col gap-1.5 p-2 relative"
+              className="md:hidden flex flex-col gap-1 p-2 relative"
               onClick={toggleMobileMenu}
               aria-label="Toggle mobile menu"
             >
-              <span className={`block w-6 h-0.5 bg-gray-900 transition-all duration-300 ${isMobileMenuOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
-              <span className={`block w-6 h-0.5 bg-gray-900 transition-all duration-300 ${isMobileMenuOpen ? 'opacity-0' : ''}`}></span>
-              <span className={`block w-6 h-0.5 bg-gray-900 transition-all duration-300 ${isMobileMenuOpen ? '-rotate-45 -translate-y-2' : ''}`}></span>
+              <span className={`block w-5 h-0.5 bg-gray-900 transition-all duration-300 ${isMobileMenuOpen ? 'rotate-45 translate-y-1.5' : ''}`}></span>
+              <span className={`block w-5 h-0.5 bg-gray-900 transition-all duration-300 ${isMobileMenuOpen ? 'opacity-0' : ''}`}></span>
+              <span className={`block w-5 h-0.5 bg-gray-900 transition-all duration-300 ${isMobileMenuOpen ? '-rotate-45 -translate-y-1.5' : ''}`}></span>
             </button>
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-8">
+          <div className="hidden md:flex items-center gap-6">
             {isHomePage ? (
               <>
-                <a href="#agents" className="text-gray-700 hover:text-gray-900 font-semibold text-lg relative group transition-colors">
+                <a href="#agents" className="text-gray-700 hover:text-gray-900 font-semibold text-base relative group transition-colors">
                   Products
                   <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-cyan-500 to-blue-600 transition-all group-hover:w-full"></span>
                 </a>
-                <a href="#platform" className="text-gray-700 hover:text-gray-900 font-semibold text-lg relative group transition-colors">
+                <a href="#platform" className="text-gray-700 hover:text-gray-900 font-semibold text-base relative group transition-colors">
                   Platform
                   <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-cyan-500 to-blue-600 transition-all group-hover:w-full"></span>
                 </a>
-                <a href="#roi" className="text-gray-700 hover:text-gray-900 font-semibold text-lg relative group transition-colors">
+                <a href="#roi" className="text-gray-700 hover:text-gray-900 font-semibold text-base relative group transition-colors">
                   ROI
                   <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-cyan-500 to-blue-600 transition-all group-hover:w-full"></span>
                 </a>
               </>
             ) : (
               <>
-                <Link to="/#agents" className="text-gray-700 hover:text-gray-900 font-semibold text-lg relative group transition-colors">
+                <Link to="/#agents" className="text-gray-700 hover:text-gray-900 font-semibold text-base relative group transition-colors">
                   Products
                   <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-cyan-500 to-blue-600 transition-all group-hover:w-full"></span>
                 </Link>
-                <Link to="/#platform" className="text-gray-700 hover:text-gray-900 font-semibold text-lg relative group transition-colors">
+                <Link to="/#platform" className="text-gray-700 hover:text-gray-900 font-semibold text-base relative group transition-colors">
                   Platform
                   <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-cyan-500 to-blue-600 transition-all group-hover:w-full"></span>
                 </Link>
-                <Link to="/#roi" className="text-gray-700 hover:text-gray-900 font-semibold text-lg relative group transition-colors">
+                <Link to="/#roi" className="text-gray-700 hover:text-gray-900 font-semibold text-base relative group transition-colors">
                   ROI
                   <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-cyan-500 to-blue-600 transition-all group-hover:w-full"></span>
                 </Link>
@@ -199,21 +199,21 @@ function Navigation() {
                     }}
                   >
                     {userInfo.picture ? (
-                      <img 
-                        src={userInfo.picture} 
-                        alt={userInfo.name || 'User'} 
-                        className="w-8 h-8 rounded-full object-cover"
+                      <img
+                        src={userInfo.picture}
+                        alt={userInfo.name || 'User'}
+                        className="w-7 h-7 rounded-full object-cover"
                       />
                     ) : (
-                      <div className="w-8 h-8 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full flex items-center justify-center text-white text-sm font-bold">
+                      <div className="w-7 h-7 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full flex items-center justify-center text-white text-xs font-bold">
                         {(userInfo.name || userInfo.email || 'U').charAt(0).toUpperCase()}
                       </div>
                     )}
-                    <span className="hidden lg:inline text-base font-semibold">{userInfo.name || userInfo.email || 'User'}</span>
-                    <svg 
+                    <span className="hidden lg:inline text-sm font-semibold">{userInfo.name || userInfo.email || 'User'}</span>
+                    <svg
                       className={`w-4 h-4 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`}
-                      fill="none" 
-                      stroke="currentColor" 
+                      fill="none"
+                      stroke="currentColor"
                       viewBox="0 0 24 24"
                     >
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -222,7 +222,7 @@ function Navigation() {
 
                   {/* Dropdown Menu */}
                   {isDropdownOpen && (
-                    <div 
+                    <div
                       className="absolute right-0 mt-2 w-64 glass-card rounded-xl py-2 z-50 animate-fade-in-scale"
                       role="menu"
                       aria-orientation="vertical"
@@ -279,9 +279,9 @@ function Navigation() {
                     </div>
                   )}
                 </div>
-                <a 
-                  href="#" 
-                  className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-6 py-3 rounded-lg hover:from-cyan-400 hover:to-blue-500 transition-all font-semibold text-base shadow-lg hover:shadow-cyan-500/50 hover:scale-105"
+                <a
+                  href="#"
+                  className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-5 py-2 rounded-lg hover:from-cyan-400 hover:to-blue-500 transition-all font-semibold text-sm shadow-lg hover:shadow-cyan-500/50 hover:scale-105"
                   onClick={(e) => handleIntercomClick(e, 'request-demo')}
                 >
                   Request Demo
@@ -289,15 +289,15 @@ function Navigation() {
               </>
             ) : (
               <>
-                <Link 
-                  to="/sign-in" 
-                  className="border-2 border-gray-300 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-50 transition-all font-semibold text-base"
+                <Link
+                  to="/sign-in"
+                  className="border-2 border-gray-300 text-gray-700 px-5 py-2 rounded-lg hover:bg-gray-50 transition-all font-semibold text-sm"
                 >
                   Sign in
                 </Link>
-                <a 
-                  href="#" 
-                  className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-6 py-3 rounded-lg hover:from-cyan-400 hover:to-blue-500 transition-all font-semibold text-base shadow-lg hover:shadow-cyan-500/50 hover:scale-105"
+                <a
+                  href="#"
+                  className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-5 py-2 rounded-lg hover:from-cyan-400 hover:to-blue-500 transition-all font-semibold text-sm shadow-lg hover:shadow-cyan-500/50 hover:scale-105"
                   onClick={(e) => handleIntercomClick(e, 'request-demo')}
                 >
                   Request Demo
@@ -312,22 +312,22 @@ function Navigation() {
           <div className="flex flex-col gap-4 pt-6 animate-slide-in-left">
             {isHomePage ? (
               <>
-                <a 
-                  href="#agents" 
+                <a
+                  href="#agents"
                   className="text-gray-700 hover:text-gray-900 transition-colors font-medium py-2 border-b border-gray-200 hover:border-cyan-500"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   Products
                 </a>
-                <a 
-                  href="#platform" 
+                <a
+                  href="#platform"
                   className="text-gray-700 hover:text-gray-900 transition-colors font-medium py-2 border-b border-gray-200 hover:border-cyan-500"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   Platform
                 </a>
-                <a 
-                  href="#roi" 
+                <a
+                  href="#roi"
                   className="text-gray-700 hover:text-gray-900 transition-colors font-medium py-2 border-b border-gray-200 hover:border-cyan-500"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
@@ -336,22 +336,22 @@ function Navigation() {
               </>
             ) : (
               <>
-                <Link 
-                  to="/#agents" 
+                <Link
+                  to="/#agents"
                   className="text-gray-700 hover:text-gray-900 transition-colors font-medium py-2 border-b border-gray-200 hover:border-cyan-500"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   Products
                 </Link>
-                <Link 
-                  to="/#platform" 
+                <Link
+                  to="/#platform"
                   className="text-gray-700 hover:text-gray-900 transition-colors font-medium py-2 border-b border-gray-200 hover:border-cyan-500"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   Platform
                 </Link>
-                <Link 
-                  to="/#roi" 
+                <Link
+                  to="/#roi"
                   className="text-gray-700 hover:text-gray-900 transition-colors font-medium py-2 border-b border-gray-200 hover:border-cyan-500"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
@@ -361,15 +361,15 @@ function Navigation() {
             )}
             {isAuthenticated && !isLoading ? (
               <>
-                <Link 
-                  to="/dashboard" 
+                <Link
+                  to="/dashboard"
                   className="flex items-center gap-3 text-gray-700 hover:text-gray-900 transition-colors font-medium py-2 border-b border-gray-200 hover:border-cyan-500"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   {userInfo.picture ? (
-                    <img 
-                      src={userInfo.picture} 
-                      alt={userInfo.name || 'User'} 
+                    <img
+                      src={userInfo.picture}
+                      alt={userInfo.name || 'User'}
                       className="w-10 h-10 rounded-full object-cover"
                     />
                   ) : (
@@ -383,8 +383,8 @@ function Navigation() {
                   </div>
                 </Link>
                 {/* Dashboard Button - Show for all authenticated users */}
-                <Link 
-                  to="/dashboard" 
+                <Link
+                  to="/dashboard"
                   className="flex items-center gap-3 text-gray-700 hover:text-gray-900 transition-colors font-medium py-2 border-b border-gray-200 hover:border-cyan-500"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
@@ -402,8 +402,8 @@ function Navigation() {
                 >
                   Sign out
                 </button>
-                <a 
-                  href="#" 
+                <a
+                  href="#"
                   className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-5 py-3 rounded-lg hover:from-cyan-400 hover:to-blue-500 transition-all font-medium text-center shadow-lg"
                   onClick={(e) => {
                     handleIntercomClick(e, 'request-demo');
@@ -415,15 +415,15 @@ function Navigation() {
               </>
             ) : (
               <>
-                <Link 
-                  to="/sign-in" 
+                <Link
+                  to="/sign-in"
                   className="border border-gray-300 text-gray-700 px-5 py-3 rounded-lg hover:bg-gray-50 transition-all font-medium text-center"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   Sign in
                 </Link>
-                <a 
-                  href="#" 
+                <a
+                  href="#"
                   className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-5 py-3 rounded-lg hover:from-cyan-400 hover:to-blue-500 transition-all font-medium text-center shadow-lg"
                   onClick={(e) => {
                     handleIntercomClick(e, 'request-demo');

@@ -31,13 +31,13 @@ console.log(`🌐 [CORS] FRONTEND_URL from env: ${FRONTEND_URL}`);
 const corsOptions = {
   origin: function (origin, callback) {
     // Log CORS check for debugging
-    console.log(` [CORS] Request from origin: ${origin || 'no origin'}`);
-    console.log(` [CORS] Allowed origins: ${uniqueOrigins.join(", ")}`);
-    console.log(` [CORS] NODE_ENV: ${process.env.NODE_ENV || 'not set'}`);
+    console.log(`🔍 [CORS] Request from origin: ${origin || 'no origin'}`);
+    console.log(`🔍 [CORS] Allowed origins: ${uniqueOrigins.join(", ")}`);
+    console.log(`🔍 [CORS] NODE_ENV: ${process.env.NODE_ENV || 'not set'}`);
     
     // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) {
-      console.log(` [CORS] Allowing request with no origin`);
+      console.log(`✅ [CORS] Allowing request with no origin`);
       return callback(null, true);
     }
     
@@ -46,12 +46,12 @@ const corsOptions = {
     
     // Check if origin is in allowed list (exact match or normalized)
     if (uniqueOrigins.includes(origin) || uniqueOrigins.includes(normalizedOrigin)) {
-      console.log(` [CORS] Origin ${origin} is allowed`);
+      console.log(`✅ [CORS] Origin ${origin} is allowed`);
       callback(null, true);
     } else {
       // In development or if NODE_ENV is not production, be more permissive
       if (process.env.NODE_ENV !== "production") {
-        console.warn(`  [CORS] Allowing origin ${origin} (non-production mode)`);
+        console.warn(`⚠️  [CORS] Allowing origin ${origin} (non-production mode)`);
         callback(null, true);
       } else {
         // In production, check if it's close match (same domain, different protocol/port)
@@ -65,11 +65,11 @@ const corsOptions = {
         });
         
         if (allowedHosts.includes(originHost)) {
-          console.log(` [CORS] Allowing origin ${origin} (hostname match: ${originHost})`);
+          console.log(`✅ [CORS] Allowing origin ${origin} (hostname match: ${originHost})`);
           callback(null, true);
         } else {
           // In production, only allow exact matches
-          console.error(` [CORS] Blocked request from origin ${origin}. Allowed origins: ${uniqueOrigins.join(", ")}`);
+          console.error(`❌ [CORS] Blocked request from origin ${origin}. Allowed origins: ${uniqueOrigins.join(", ")}`);
           callback(new Error("Not allowed by CORS"));
         }
       }
@@ -98,7 +98,7 @@ app.use(notFound);
 
 // Start server
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(` Server running on port ${PORT}`);
+  console.log(`🚀 Server running on port ${PORT}`);
   console.log(`📡 Health check: http://localhost:${PORT}/health`);
   console.log(`👥 Users API: http://localhost:${PORT}/api/users`);
   
@@ -107,31 +107,26 @@ app.listen(PORT, '0.0.0.0', () => {
     testConnection()
       .then(async (connected) => {
         if (connected) {
-          console.log(" Ensuring Cosmos DB containers exist...");
+          console.log("📦 Ensuring Cosmos DB containers exist...");
           const result = await ensureContainers();
           if (result.success) {
-            console.log(` Containers ready: ${result.existing.length} existing, ${result.created.length} created`);
+            console.log(`✅ Containers ready: ${result.existing.length} existing, ${result.created.length} created`);
             if (result.errors.length > 0) {
-              console.warn(`  Some containers had errors: ${result.errors.length}`);
+              console.warn(`⚠️  Some containers had errors: ${result.errors.length}`);
             }
             
             // Start warmup service to prevent cold starts
             // Runs every 5 minutes to keep Cosmos DB serverless account warm
             startWarmup(5);
           } else {
-            console.error(" Failed to ensure containers:", result.message);
+            console.error("❌ Failed to ensure containers:", result.message);
           }
         }
       })
       .catch((error) => {
-        console.error("  CosmosDB connection test failed on startup:", error.message);
+        console.error("⚠️  CosmosDB connection test failed on startup:", error.message);
       });
   } else {
-    console.warn("  CosmosDB not configured. Set COSMOS_ENDPOINT and COSMOS_KEY environment variables to enable database features.");
+    console.warn("⚠️  CosmosDB not configured. Set COSMOS_ENDPOINT and COSMOS_KEY environment variables to enable database features.");
   }
 });
-// Test deployment - Sat Jan 31 15:10:26 IST 2026
-// Test - 1769852577
-// Test push trigger - 1769852850
-// Test after fix - 1769853227
-// Test single workflow - 1769853648

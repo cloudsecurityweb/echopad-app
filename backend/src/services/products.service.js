@@ -31,3 +31,31 @@ export async function getProductByCode(productCode) {
   const { resource } = await container.item(productCode, productCode).read();
   return resource;
 }
+
+export async function getProductById(productId, tenantId) {
+  // NOTE: tenantId is ignored for now, as products are considered global.
+  // The partition key for products is productCode, which is the same as productId.
+  return getProductByCode(productId);
+}
+
+export async function getProductsByTenant(tenantId, status = null) {
+  const container = getContainer(CONTAINER_NAME);
+  if (!container) {
+    throw new Error("Cosmos DB container not available");
+  }
+  
+  let query = "SELECT * FROM c WHERE c.tenantId = @tenantId";
+  const parameters = [{ name: "@tenantId", value: tenantId }];
+  
+  if (status) {
+    query += " AND c.status = @status";
+    parameters.push({ name: "@status", value: status });
+  }
+  
+  const { resources } = await container.items.query({
+    query,
+    parameters,
+  }).fetchAll();
+  
+  return resources;
+}

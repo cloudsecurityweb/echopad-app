@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 
 function ProtectedRoute({ children }) {
-  const { isAuthenticated, isLoading, isAuthReady } = useAuth();
+  const { isAuthenticated, isLoading, isAuthReady, userNotRegisteredRedirect, clearUserNotRegisteredRedirect } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -11,6 +11,16 @@ function ProtectedRoute({ children }) {
       navigate('/sign-in', { replace: true });
     }
   }, [isAuthenticated, isLoading, isAuthReady, navigate]);
+
+  useEffect(() => {
+    if (userNotRegisteredRedirect) {
+      clearUserNotRegisteredRedirect();
+      navigate('/signup', {
+        replace: true,
+        state: { message: 'Please sign up first to create your account.' },
+      });
+    }
+  }, [userNotRegisteredRedirect, clearUserNotRegisteredRedirect, navigate]);
 
   // Show loading state while checking authentication
   if (isLoading || !isAuthReady) {
@@ -29,6 +39,11 @@ function ProtectedRoute({ children }) {
 
   // If not authenticated, don't render children (redirect will happen)
   if (!isAuthenticated) {
+    return null;
+  }
+
+  // If user not registered (e.g. Google sign-in without sign-up), redirect to signup
+  if (userNotRegisteredRedirect) {
     return null;
   }
 

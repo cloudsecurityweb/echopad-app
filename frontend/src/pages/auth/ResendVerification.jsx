@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
+import AuthPageHeader from '../../components/auth/AuthPageHeader';
 
 function ResendVerification() {
   const [searchParams] = useSearchParams();
@@ -61,7 +62,9 @@ function ResendVerification() {
   };
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-white py-4">
+    <div className="min-h-screen bg-white">
+      <AuthPageHeader />
+      <main className="flex items-center justify-center py-4 min-h-[calc(100vh-4rem)]">
       <section className="w-full max-w-md px-4">
         <div className="text-center">
           <div className="mb-4">
@@ -141,7 +144,8 @@ function ResendVerification() {
           </div>
         </div>
       </section>
-    </main>
+      </main>
+    </div>
   );
 }
 

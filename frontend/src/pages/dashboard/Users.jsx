@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useRole } from '../../contexts/RoleContext';
 import InviteUserModal from '../../components/users/InviteUserModal';
 import ChangeUserRoleModal from '../../components/users/ChangeUserRoleModal';
@@ -7,6 +7,8 @@ import UserManageDropdown from '../../components/users/UserManageDropdown';
 import { updateUserRole } from '../../utils/user-role-service';
 import { useAuth } from '../../contexts/AuthContext';
 import { showNotification } from '../../utils/notifications';
+import { useUsers } from '../../hooks/useUsers';
+import { getPendingInvitations } from '../../utils/invitation-service';
 import {
   PieChart,
   Pie,
@@ -21,9 +23,25 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 
+/** Map API role to display label (User / Admin) */
+function displayRole(role) {
+  if (!role) return 'User';
+  const r = String(role).toLowerCase();
+  if (r === 'clientadmin' || r === 'client_admin' || r === 'superadmin' || r === 'super_admin') return 'Admin';
+  return 'User';
+}
+
+/** Map API status to display label */
+function displayStatus(status) {
+  if (!status) return 'Active';
+  const s = String(status);
+  return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
+}
+
 function Users() {
-  const { isClientAdmin, isSuperAdmin } = useRole();
+  const { isClientAdmin } = useRole();
   const { getAccessToken } = useAuth();
+  const { users: apiUsers, loading, error, refresh } = useUsers();
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -34,6 +52,125 @@ function Users() {
   const [userToDelete, setUserToDelete] = useState(null);
   const [editingUserId, setEditingUserId] = useState(null);
   const [updatingRole, setUpdatingRole] = useState(false);
+  const [pendingInvites, setPendingInvites] = useState([]);
+  const [isLoadingPending, setIsLoadingPending] = useState(false);
+
+  const fetchPendingInvites = useMemo(() => {
+    return async () => {
+      setIsLoadingPending(true);
+      try {
+        const invites = await getPendingInvitations(getAccessToken);
+        setPendingInvites(invites || []);
+      } catch (err) {
+        console.error('Failed to fetch pending invites:', err);
+        setPendingInvites([]);
+      } finally {
+        setIsLoadingPending(false);
+      }
+    };
+  }, [getAccessToken]);
+
+  useEffect(() => {
+    if (isClientAdmin) fetchPendingInvites();
+  }, [isClientAdmin, fetchPendingInvites]);
+
+  // Map API users to table shape (name, email, role, status, products, lastActive)
+  const users = useMemo(() => {
+    return (apiUsers || []).map((u) => ({
+      id: u.id,
+      name: u.displayName || u.name || u.email?.split('@')[0] || '—',
+      email: u.email || '—',
+      role: displayRole(u.role),
+      status: displayStatus(u.status),
+      products: u.productsCount ?? '—',
+      lastActive: '—',
+      joinDate: u.createdAt ? new Date(u.createdAt).toLocaleDateString() : '—',
+      _raw: u,
+    }));
+  }, [apiUsers]);
+
+  // Summary stats from real data
+  const summaryStats = useMemo(() => {
+    const total = users.length;
+    const active = users.filter((u) => (u._raw?.status || '').toLowerCase() === 'active').length;
+    const inactive = total - active;
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const newThisMonth = users.filter((u) => {
+      const createdAt = u._raw?.createdAt;
+      return createdAt && new Date(createdAt) >= startOfMonth;
+    }).length;
+    return [
+      { label: 'Total Users', value: String(total), change: '', icon: '👥' },
+      { label: 'Active', value: String(active), change: '', icon: '✅' },
+      { label: 'Inactive', value: String(inactive), change: '', icon: '⏸️' },
+      { label: 'New This Month', value: String(newThisMonth), change: '', icon: '🆕' },
+    ];
+  }, [users]);
+
+  // Role distribution for chart
+  const roleDistribution = useMemo(() => {
+    const userCount = users.filter((u) => u.role === 'User').length;
+    const adminCount = users.filter((u) => u.role === 'Admin').length;
+    return [
+      { name: 'User', value: userCount, color: '#3b82f6' },
+      { name: 'Admin', value: adminCount, color: '#8b5cf6' },
+    ].filter((d) => d.value > 0);
+  }, [users]);
+
+  // Simple activity snapshot (active vs inactive today - we don't have per-day history)
+  const activityTimeline = useMemo(() => {
+    const active = users.filter((u) => (u._raw?.status || '').toLowerCase() === 'active').length;
+    const inactive = users.length - active;
+    return [{ date: new Date().toISOString().slice(0, 10), active, inactive }];
+  }, [users]);
+
+  const handleOpenRoleModal = (user) => {
+    setSelectedUser(user);
+    setIsRoleModalOpen(true);
+  };
+
+  const handleOpenDeleteModal = (user) => {
+    setUserToDelete(user);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleRoleChange = () => {
+    refresh();
+  };
+
+  const handleUserDeleted = () => {
+    refresh();
+  };
+
+  const handleInlineRoleChange = async (user, newRole) => {
+    if (user.role === newRole) {
+      setEditingUserId(null);
+      return;
+    }
+
+    setUpdatingRole(true);
+    try {
+      await updateUserRole(user.id, newRole, getAccessToken);
+      refresh();
+      showNotification(`User role updated successfully to ${newRole}`, 'success');
+      setEditingUserId(null);
+    } catch (error) {
+      console.error('Failed to update user role:', error);
+      showNotification(error.message || 'Failed to update user role', 'error');
+    } finally {
+      setUpdatingRole(false);
+    }
+  };
+
+  // Filter users
+  const filteredUsers = users.filter(user => {
+    const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         user.email.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesRole = roleFilter === 'all' || user.role.toLowerCase() === roleFilter.toLowerCase();
+    const matchesStatus = statusFilter === 'all' || user.status.toLowerCase() === statusFilter.toLowerCase();
+    return matchesSearch && matchesRole && matchesStatus;
+  });
 
   // Only client admins can access this page (super admins manage clients, not users directly)
   if (!isClientAdmin) {
@@ -46,88 +183,22 @@ function Users() {
     );
   }
 
-  // Placeholder data - to be replaced with API calls
-  const summaryStats = [
-    { label: 'Total Users', value: '156', change: '+8%', icon: '👥' },
-    { label: 'Active', value: '142', change: '+5%', icon: '' },
-    { label: 'Inactive', value: '14', change: '-3%', icon: '⏸' },
-    { label: 'New This Month', value: '12', change: '+20%', icon: '🆕' },
-  ];
-
-  const [users, setUsers] = useState([
-    { id: 1, name: 'John Doe', email: 'john@example.com', role: 'User', status: 'Active', products: 3, lastActive: '2 hours ago', joinDate: '2024-01-15' },
-    { id: 2, name: 'Jane Smith', email: 'jane@example.com', role: 'User', status: 'Active', products: 2, lastActive: '1 day ago', joinDate: '2024-02-20' },
-    { id: 3, name: 'Bob Johnson', email: 'bob@example.com', role: 'Admin', status: 'Active', products: 4, lastActive: '5 minutes ago', joinDate: '2023-11-10' },
-    { id: 4, name: 'Alice Williams', email: 'alice@example.com', role: 'User', status: 'Inactive', products: 1, lastActive: '1 week ago', joinDate: '2024-03-01' },
-    { id: 5, name: 'Charlie Brown', email: 'charlie@example.com', role: 'User', status: 'Active', products: 2, lastActive: '3 hours ago', joinDate: '2024-01-28' },
-    { id: 6, name: 'Diana Prince', email: 'diana@example.com', role: 'User', status: 'Active', products: 3, lastActive: '1 hour ago', joinDate: '2024-02-15' },
-    { id: 7, name: 'Edward Norton', email: 'edward@example.com', role: 'User', status: 'Inactive', products: 1, lastActive: '2 weeks ago', joinDate: '2024-03-10' },
-  ]);
-
-  const handleOpenRoleModal = (user) => {
-    setSelectedUser(user);
-    setIsRoleModalOpen(true);
-  };
-
-  const handleOpenDeleteModal = (user) => {
-    setUserToDelete(user);
-    setIsDeleteModalOpen(true);
-  };
-
-  const handleRoleChange = (userId, newRole) => {
-    setUsers(prevUsers => 
-      prevUsers.map(user => 
-        user.id === userId ? { ...user, role: newRole } : user
-      )
+  if (error) {
+    return (
+      <div className="max-w-6xl mx-auto">
+        <div className="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
+          <p className="text-red-700 mb-4">{error}</p>
+          <button
+            type="button"
+            onClick={() => refresh()}
+            className="px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
     );
-  };
-
-  const handleUserDeleted = (userId) => {
-    setUsers(prevUsers => prevUsers.filter(user => user.id !== userId));
-  };
-
-  const handleInlineRoleChange = async (user, newRole) => {
-    if (user.role === newRole) {
-      setEditingUserId(null);
-      return;
-    }
-
-    setUpdatingRole(true);
-    try {
-      await updateUserRole(user.id, newRole, getAccessToken);
-      handleRoleChange(user.id, newRole);
-      showNotification(`User role updated successfully to ${newRole}`, 'success');
-      setEditingUserId(null);
-    } catch (error) {
-      console.error('Failed to update user role:', error);
-      showNotification(error.message || 'Failed to update user role', 'error');
-    } finally {
-      setUpdatingRole(false);
-    }
-  };
-
-  const roleDistribution = [
-    { name: 'User', value: 128, color: '#3b82f6' },
-    { name: 'Admin', value: 28, color: '#8b5cf6' },
-  ];
-
-  const activityTimeline = [
-    { date: '2024-06-15', active: 142, inactive: 14 },
-    { date: '2024-06-14', active: 140, inactive: 16 },
-    { date: '2024-06-13', active: 138, inactive: 18 },
-    { date: '2024-06-12', active: 139, inactive: 17 },
-    { date: '2024-06-11', active: 141, inactive: 15 },
-    { date: '2024-06-10', active: 142, inactive: 14 },
-  ];
-
-  // Filter users
-  const filteredUsers = users.filter(user => {
-    const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         user.email.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesRole = roleFilter === 'all' || user.role.toLowerCase() === roleFilter.toLowerCase();
-    const matchesStatus = statusFilter === 'all' || user.status.toLowerCase() === statusFilter.toLowerCase();
-    return matchesSearch && matchesRole && matchesStatus;
-  });
+  }
 
   return (
     <div className="max-w-7xl mx-auto">
@@ -150,7 +221,7 @@ function Users() {
           >
             <div className="flex items-center justify-between mb-4">
               <div className="text-3xl">{stat.icon}</div>
-              <span className="text-sm font-semibold text-green-600">{stat.change}</span>
+              {stat.change ? <span className="text-sm font-semibold text-green-600">{stat.change}</span> : null}
             </div>
             <p className="text-sm text-gray-600 mb-1">{stat.label}</p>
             <p className="text-3xl font-bold text-gray-900">{stat.value}</p>
@@ -205,6 +276,9 @@ function Users() {
       <div className="bg-white rounded-xl shadow-md p-6 border border-gray-200 mb-8">
         <h2 className="text-2xl font-semibold text-gray-900 mb-6">All Users</h2>
         <div className="overflow-x-auto">
+          {loading ? (
+            <p className="py-8 text-center text-gray-500">Loading users...</p>
+          ) : (
           <table className="w-full">
             <thead>
               <tr className="border-b border-gray-200">
@@ -275,6 +349,48 @@ function Users() {
               ))}
             </tbody>
           </table>
+          )}
+        </div>
+      </div>
+
+      {/* Pending invitations */}
+      <div className="bg-white rounded-xl shadow-md p-6 border border-gray-200 mb-8">
+        <h2 className="text-2xl font-semibold text-gray-900 mb-6">Pending invitations</h2>
+        <div className="overflow-x-auto border border-gray-200 rounded-lg">
+          <table className="min-w-full text-sm">
+            <thead className="bg-gray-50 text-gray-600">
+              <tr>
+                <th className="text-left px-4 py-3 font-medium">Email</th>
+                <th className="text-left px-4 py-3 font-medium">Status</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200">
+              {isLoadingPending && (
+                <tr>
+                  <td colSpan={2} className="px-4 py-6 text-center text-gray-500">
+                    Loading pending invitations...
+                  </td>
+                </tr>
+              )}
+              {!isLoadingPending && pendingInvites.length === 0 && (
+                <tr>
+                  <td colSpan={2} className="px-4 py-6 text-center text-gray-500">
+                    No pending invitations.
+                  </td>
+                </tr>
+              )}
+              {!isLoadingPending && pendingInvites.map((invite) => (
+                <tr key={invite.id || invite.email} className="hover:bg-gray-50">
+                  <td className="px-4 py-3 font-medium text-gray-900">{invite.email}</td>
+                  <td className="px-4 py-3">
+                    <span className="px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700">
+                      {invite.status || 'pending'}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
 
@@ -283,6 +399,9 @@ function Users() {
         {/* Role Distribution */}
         <div className="bg-white rounded-xl shadow-md p-6 border border-gray-200">
           <h2 className="text-xl font-semibold text-gray-900 mb-4">User Role Distribution</h2>
+          {roleDistribution.length === 0 ? (
+            <div className="h-[300px] flex items-center justify-center text-gray-500">No data yet</div>
+          ) : (
           <ResponsiveContainer width="100%" height={300}>
             <PieChart>
               <Pie
@@ -302,6 +421,7 @@ function Users() {
               <Tooltip />
             </PieChart>
           </ResponsiveContainer>
+          )}
         </div>
 
         {/* Activity Timeline */}
@@ -326,8 +446,8 @@ function Users() {
         isOpen={isInviteModalOpen}
         onClose={() => setIsInviteModalOpen(false)}
         onSuccess={() => {
-          // Optionally refresh user list or show success message
-          // This can be extended when real API is integrated
+          refresh();
+          fetchPendingInvites();
         }}
       />
 

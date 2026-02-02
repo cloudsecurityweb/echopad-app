@@ -44,3 +44,20 @@ export const getProductByCode = asyncHandler(async (req, res) => {
     throw new ApiError(500, "Failed to fetch product");
   }
 })
+
+export const getProductsByTenant = asyncHandler(async (req, res) => {
+  const { tenantId } = req.params;
+  const { status } = req.query;
+  try {
+    const products = await productService.getProductsByTenant(tenantId, status);
+    if (products) {
+      res.status(200).json(
+        new ApiResponse(200, { products }, "products fetched successfully")
+      );
+    } else {
+      throw new ApiError(404, "Products not found for this tenant");
+    }
+  } catch (err) {
+    throw new ApiError(500, "Failed to fetch products");
+  }
+})

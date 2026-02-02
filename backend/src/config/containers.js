@@ -20,6 +20,9 @@ export const CONTAINERS = [
   // NEW
   "clients",
   "licenseAssignments",
+  "orgProducts",
+  "userLicenses",
+  "analyticsEvents",
   "dashboardMetrics",
   "helpCenterDocs",
   "clientFeedback",
@@ -49,6 +52,9 @@ const CONTAINER_PARTITION_KEYS = {
    // NEW
   clients: "/tenantId",
   licenseAssignments: "/tenantId",
+  orgProducts: "/tenantId",
+  userLicenses: "/tenantId",
+  analyticsEvents: "/tenantId",
   dashboardMetrics: "/tenantId",
   helpCenterDocs: "/tenantId",
   clientFeedback: "/tenantId",

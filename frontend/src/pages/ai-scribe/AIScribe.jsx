@@ -118,7 +118,7 @@ function AIScribe() {
                 <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
                   Real-Time Clinical Documentation
                 </h1>
-                
+
                 {/* 3-Second Value Proposition - Smaller Size */}
                 <div className="bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 border-2 border-green-300 rounded-xl p-4 mb-6 shadow-lg">
                   <div className="flex items-center justify-center gap-2 mb-3">
@@ -129,7 +129,7 @@ function AIScribe() {
                   </div>
                   <div className="flex items-center justify-center gap-3 md:gap-4 flex-wrap">
                     <div className="flex flex-col items-center gap-1 bg-white px-3 py-2 rounded-lg shadow-md border border-blue-200">
-                      <div className="text-2xl">🗣</div>
+                      <div className="text-2xl">🗣️</div>
                       <div className="text-center">
                         <div className="text-xs font-bold text-gray-900">You Speak</div>
                       </div>
@@ -145,7 +145,7 @@ function AIScribe() {
                     </div>
                     <div className="text-xl text-green-600 font-bold">→</div>
                     <div className="flex flex-col items-center gap-1 bg-white px-3 py-2 rounded-lg shadow-md border border-green-200">
-                      <div className="text-2xl"></div>
+                      <div className="text-2xl">📋</div>
                       <div className="text-center">
                         <div className="text-xs font-bold text-gray-900">Note Ready</div>
                       </div>
@@ -158,28 +158,28 @@ function AIScribe() {
                 </p>
 
                 {/* Interactive Stats Banner */}
-                <div className="bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-600 rounded-2xl p-5 md:p-6 mb-6 shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-[1.02] animate-gradient-x">
-                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                    <div className="flex items-center gap-3 md:gap-4">
+                <div className="bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-600 rounded-2xl p-5 md:p-6 mb-6 shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-[1.02] animate-gradient-x overflow-hidden">
+                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 min-w-0">
+                    <div className="flex items-center gap-3 md:gap-4 min-w-0 flex-1">
                       <div className="w-12 h-12 md:w-14 md:h-14 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center flex-shrink-0">
                         <i className="bi bi-graph-up-arrow text-white text-xl md:text-2xl animate-bounce"></i>
                       </div>
-                      <div>
-                        <div className="text-white/80 text-xs md:text-sm font-semibold uppercase tracking-wide mb-1">
+                      <div className="min-w-0 flex-1">
+                        <div className="text-white/80 text-xs md:text-sm font-semibold uppercase tracking-wide mb-1 break-words">
                           Real Impact, Real Results
                         </div>
-                        <div className="text-white text-xl md:text-2xl lg:text-3xl font-bold">
+                        <div className="text-white text-lg md:text-xl lg:text-2xl font-bold break-words whitespace-normal">
                           Average Saved: <span className="text-yellow-300">10+ Hours/Week</span>
                         </div>
                       </div>
                     </div>
-                    <div className="flex gap-2 md:gap-3">
-                      <div className="bg-white/20 backdrop-blur-sm px-3 md:px-4 py-2 rounded-lg flex-1 md:flex-none">
-                        <div className="text-white/80 text-xs">Accuracy</div>
+                    <div className="flex gap-2 md:gap-3 flex-shrink-0">
+                      <div className="bg-white/20 backdrop-blur-sm px-3 md:px-4 py-2 rounded-lg min-w-[80px] md:min-w-[100px] text-center">
+                        <div className="text-white/80 text-xs whitespace-nowrap">Accuracy</div>
                         <div className="text-white font-bold text-base md:text-lg">99.5%</div>
                       </div>
-                      <div className="bg-white/20 backdrop-blur-sm px-3 md:px-4 py-2 rounded-lg flex-1 md:flex-none">
-                        <div className="text-white/80 text-xs">Setup Time</div>
+                      <div className="bg-white/20 backdrop-blur-sm px-3 md:px-4 py-2 rounded-lg min-w-[80px] md:min-w-[100px] text-center">
+                        <div className="text-white/80 text-xs whitespace-nowrap">Setup Time</div>
                         <div className="text-white font-bold text-base md:text-lg">&lt;7 Days</div>
                       </div>
                     </div>
@@ -535,20 +535,23 @@ function AIScribe() {
         </section>
 
         {/* Perfect For You If Section - Above Footer CTA */}
-        <section className="py-20 bg-gradient-to-b from-gray-50 to-white">
+        <section className="py-12 md:py-20 bg-gradient-to-b from-gray-50 to-white">
           <div className="container mx-auto px-4">
             <div className="max-w-5xl mx-auto">
-              <div className="bg-gradient-to-br from-purple-600 via-blue-600 to-cyan-600 rounded-3xl p-8 md:p-12 shadow-2xl border-4 border-purple-200">
-                <div className="flex items-center justify-center gap-3 mb-8">
-                  <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center animate-pulse">
-                    <i className="bi bi-check-circle-fill text-purple-600 text-3xl"></i>
+              <div className="bg-gradient-to-br from-purple-600 via-blue-600 to-cyan-600 rounded-2xl md:rounded-3xl p-4 md:p-8 lg:p-12 shadow-2xl border-2 md:border-4 border-purple-200">
+                {/* Header - Stack on mobile, side-by-side on desktop */}
+                <div className="flex flex-col md:flex-row items-center justify-center gap-3 md:gap-4 mb-6 md:mb-8">
+                  <div className="w-12 h-12 md:w-14 md:h-14 bg-white rounded-full flex items-center justify-center animate-pulse flex-shrink-0">
+                    <i className="bi bi-check-circle-fill text-purple-600 text-2xl md:text-3xl"></i>
                   </div>
-                  <h2 className="text-3xl md:text-4xl font-bold text-white">
+                  <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white text-center">
                     Perfect For You If...
                   </h2>
                 </div>
-                <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-8 shadow-xl">
-                  <ul className="space-y-5">
+
+                {/* Content Card */}
+                <div className="bg-white/95 backdrop-blur-sm rounded-xl md:rounded-2xl p-4 md:p-6 lg:p-8 shadow-xl">
+                  <ul className="space-y-2.5 md:space-y-4 lg:space-y-5">
                     {[
                       'You spend more than 30 minutes charting per day',
                       'You want more face-time with patients, less screen-time',
@@ -556,37 +559,40 @@ function AIScribe() {
                       'Your current EHR feels slow and cumbersome',
                       'You experience provider burnout from admin work',
                     ].map((item, idx) => (
-                      <li key={idx} className="flex items-start gap-4 text-gray-800 hover:bg-blue-50 p-4 rounded-xl transition-all">
-                        <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center flex-shrink-0">
-                          <i className="bi bi-check-lg text-white text-xl font-bold"></i>
+                      <li key={idx} className="flex items-start gap-2.5 md:gap-3 lg:gap-4 text-gray-800 hover:bg-blue-50 p-2.5 md:p-3 lg:p-4 rounded-lg md:rounded-xl transition-all">
+                        <div className="w-6 h-6 md:w-8 md:h-8 lg:w-10 lg:h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                          <i className="bi bi-check-lg text-white text-sm md:text-base lg:text-xl font-bold"></i>
                         </div>
-                        <span className="font-semibold text-lg md:text-xl">{item}</span>
+                        <span className="font-semibold text-sm md:text-base lg:text-lg xl:text-xl leading-relaxed pt-0.5">{item}</span>
                       </li>
                     ))}
                   </ul>
-                  <div className="mt-8 pt-8 border-t-2 border-purple-200 bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl p-6">
-                    <p className="text-lg md:text-xl text-purple-900 font-bold text-center flex items-center justify-center gap-2 mb-6">
-                      <span className="text-3xl animate-pulse">✨</span>
-                      If you checked 2 or more, AI Scribe is built for you!
-                      <span className="text-3xl animate-pulse">✨</span>
+
+                  {/* Bottom CTA Section */}
+                  <div className="mt-6 md:mt-8 lg:mt-10 md:mt-12 pt-6 md:pt-8 lg:pt-10 border-t-2 border-purple-200 bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg md:rounded-xl p-4 md:p-6 lg:p-8">
+                    <p className="text-base md:text-xl lg:text-2xl xl:text-3xl text-purple-900 font-bold text-center flex flex-col sm:flex-row items-center justify-center gap-2 md:gap-3 lg:gap-4 mb-6 md:mb-8 lg:mb-10 leading-relaxed">
+                      <span className="text-3xl md:text-4xl lg:text-5xl animate-pulse">✨</span>
+                      <span className="px-2">If you checked 2 or more, AI Scribe is built for you!</span>
+                      <span className="text-3xl md:text-4xl lg:text-5xl animate-pulse">✨</span>
                     </p>
-                    {/* CTA Buttons */}
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
+
+                    {/* CTA Buttons - Full width on mobile */}
+                    <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center">
                       <a
                         href="#"
                         onClick={(e) => handleIntercomClick(e, 'request-demo')}
-                        className="inline-flex items-center justify-center gap-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:from-blue-700 hover:to-cyan-700 transition-all shadow-lg hover:shadow-xl hover:scale-105"
+                        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 md:gap-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white px-6 md:px-8 py-3 md:py-4 rounded-lg md:rounded-xl font-bold text-base md:text-lg hover:from-blue-700 hover:to-cyan-700 transition-all shadow-lg hover:shadow-xl hover:scale-105"
                       >
-                        <i className="bi bi-calendar-check-fill text-2xl"></i>
-                        Get Started - Book Demo
+                        <i className="bi bi-calendar-check-fill text-xl md:text-2xl"></i>
+                        <span>Get Started - Book Demo</span>
                       </a>
                       <a
                         href="#"
                         onClick={(e) => handleIntercomClick(e, 'sign-up')}
-                        className="inline-flex items-center justify-center gap-3 bg-white text-blue-600 px-8 py-4 rounded-xl font-bold text-lg hover:bg-gray-50 transition-all border-2 border-blue-600 shadow-lg hover:shadow-xl hover:scale-105"
+                        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 md:gap-3 bg-white text-blue-600 px-6 md:px-8 py-3 md:py-4 rounded-lg md:rounded-xl font-bold text-base md:text-lg hover:bg-gray-50 transition-all border-2 border-blue-600 shadow-lg hover:shadow-xl hover:scale-105"
                       >
-                        <i className="bi bi-rocket-takeoff-fill text-2xl"></i>
-                        Start Free Trial
+                        <i className="bi bi-rocket-takeoff-fill text-xl md:text-2xl"></i>
+                        <span>Start Free Trial</span>
                       </a>
                     </div>
                   </div>

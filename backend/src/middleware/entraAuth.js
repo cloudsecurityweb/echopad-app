@@ -43,8 +43,54 @@ function mapEntraRoleToBackendRole(entraRoles) {
 const TENANT_ID = process.env.AZURE_TENANT_ID;
 const CLIENT_ID = process.env.AZURE_CLIENT_ID;
 
+const PLACEHOLDER_TENANT = /^(your-tenant-id|your-tenant-id\.onmicrosoft\.com)$/i;
+const PLACEHOLDER_CLIENT = /^your-client-id$/i;
+
 if (!TENANT_ID || !CLIENT_ID) {
-  console.warn('  AZURE_TENANT_ID or AZURE_CLIENT_ID not set. Entra auth middleware will fail.');
+  console.warn('⚠️  AZURE_TENANT_ID or AZURE_CLIENT_ID not set. Entra auth middleware will fail.');
+} else if (PLACEHOLDER_TENANT.test(String(TENANT_ID).trim()) || PLACEHOLDER_CLIENT.test(String(CLIENT_ID).trim())) {
+  console.warn('⚠️  [ENTRA-AUTH] AZURE_TENANT_ID or AZURE_CLIENT_ID look like placeholders. Set them in backend .env to your Azure app registration values (same app as frontend VITE_MSAL_CLIENT_ID). Otherwise Microsoft sign-in will return 401.');
+}
+
+/**
+ * Decode JWT payload safely (handles base64url with or without padding)
+ * @param {string} payloadB64 - Base64 or base64url-encoded payload
+ * @returns {object|null} Decoded payload or null on failure
+ */
+function decodeJwtPayload(payloadB64) {
+  try {
+    let b64 = payloadB64.replace(/-/g, '+').replace(/_/g, '/');
+    const pad = b64.length % 4;
+    if (pad) b64 += '='.repeat(4 - pad);
+    return JSON.parse(Buffer.from(b64, 'base64').toString('utf8'));
+  } catch {
+    return null;
+  }
+}
+
+// UUID (tenant ID) pattern for fallback extraction from issuer
+const TENANT_UUID_REGEX = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i;
+
+/**
+ * Extract tenant ID from Microsoft issuer URL
+ * Supports: login.microsoftonline.com/{tenant}/v2.0, login.microsoftonline.com/{tenant}/, sts.windows.net/{tenant}/
+ * Fallback: any UUID in the issuer string (tenant IDs are GUIDs)
+ * @param {string} iss - Issuer from token
+ * @returns {string|null} Tenant ID or null
+ */
+function extractTenantFromIssuer(iss) {
+  if (!iss || typeof iss !== 'string') return null;
+  const normalized = iss.trim().replace(/\/+$/, '');
+  const loginMatch = normalized.match(/login\.microsoftonline\.com\/([^/]+)/i);
+  if (loginMatch) return loginMatch[1];
+  const stsMatch = normalized.match(/sts\.windows\.net\/([^/]+)/i);
+  if (stsMatch) return stsMatch[1];
+  // Fallback: issuer contains Microsoft host but path format unexpected — extract first UUID (tenant)
+  if (normalized.includes('login.microsoftonline.com') || normalized.includes('sts.windows.net')) {
+    const uuidMatch = normalized.match(TENANT_UUID_REGEX);
+    if (uuidMatch) return uuidMatch[0];
+  }
+  return null;
 }
 
 // Create JWKS client for token verification
@@ -67,17 +113,45 @@ const JWKS = TENANT_ID ? createRemoteJWKSet(new URL(JWKS_URL)) : null;
  * - req.auth.name: Display name
  * - req.auth.roles: Array of app roles
  */
-export async function verifyEntraToken(req, res, next) {
-  // Skip if not configured
-  if (!TENANT_ID || !CLIENT_ID || !JWKS) {
-    return res.status(503).json({
-      success: false,
-      error: 'Entra ID authentication not configured',
-      message: 'AZURE_TENANT_ID and AZURE_CLIENT_ID must be set',
-    });
-  }
+/** In development only: accept Microsoft token by decoding without verification (like email/password trust their JWT). */
+function tryDevBypassEntraToken(token, req, res, next) {
+  if (process.env.NODE_ENV !== 'development') return false;
+  const parts = token.split('.');
+  if (parts.length !== 3) return false;
+  const payload = decodeJwtPayload(parts[1]);
+  if (!payload) return false;
+  const iss = payload.iss && String(payload.iss);
+  const isMicrosoftIssuer = iss && (iss.includes('login.microsoftonline.com') || iss.includes('sts.windows.net'));
+  if (!isMicrosoftIssuer) return false;
+  if (payload.exp && payload.exp < Math.floor(Date.now() / 1000)) return false;
+  const oid = payload.oid || payload.sub;
+  const tid = payload.tid;
+  if (!oid || !tid) return false;
 
-  // Extract token from Authorization header (outside try block for error handling)
+  console.warn('⚠️ [ENTRA-AUTH] Development bypass: accepting Microsoft token without JWKS verification. Set AZURE_TENANT_ID and AZURE_CLIENT_ID in .env for production.');
+  const roles = payload.roles || [];
+  let entraRoleId = null;
+  if (roles.includes('SuperAdmin')) entraRoleId = ENTRA_ROLE_UUIDS.SUPER_ADMIN;
+  else if (roles.includes('ClientAdmin')) entraRoleId = ENTRA_ROLE_UUIDS.CLIENT_ADMIN;
+  else if (roles.includes('UserAdmin')) entraRoleId = ENTRA_ROLE_UUIDS.USER_ADMIN;
+
+  req.auth = {
+    oid,
+    tid,
+    preferred_username: payload.preferred_username || payload.email || payload.upn,
+    email: payload.email || payload.preferred_username || payload.upn,
+    name: payload.name || payload.preferred_username || 'User',
+    roles,
+    entraRoleId,
+    given_name: payload.given_name,
+    family_name: payload.family_name,
+    _raw: { aud: payload.aud, iss: payload.iss, exp: payload.exp, iat: payload.iat },
+  };
+  next();
+  return true;
+}
+
+export async function verifyEntraToken(req, res, next) {
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return res.status(401).json({
@@ -89,51 +163,87 @@ export async function verifyEntraToken(req, res, next) {
 
   const token = authHeader.substring(7); // Remove 'Bearer ' prefix
 
+  // Development only: when Azure is not configured, accept token by decoding (no JWKS) so sign-in/me work like email/password
+  const notConfigured = !TENANT_ID || !CLIENT_ID || !JWKS;
+  const isPlaceholder = TENANT_ID && CLIENT_ID && (
+    PLACEHOLDER_TENANT.test(String(TENANT_ID).trim()) || PLACEHOLDER_CLIENT.test(String(CLIENT_ID).trim())
+  );
+  if (process.env.NODE_ENV === 'development' && (notConfigured || isPlaceholder)) {
+    if (tryDevBypassEntraToken(token, req, res, next)) return;
+    return res.status(503).json({
+      success: false,
+      error: 'Entra ID authentication not configured',
+      message: 'AZURE_TENANT_ID and AZURE_CLIENT_ID must be set',
+    });
+  }
+
+  if (notConfigured) {
+    return res.status(503).json({
+      success: false,
+      error: 'Entra ID authentication not configured',
+      message: 'AZURE_TENANT_ID and AZURE_CLIENT_ID must be set',
+    });
+  }
+
   try {
     // First, decode the token to get the issuer and extract tenant ID
     // This allows us to use the correct JWKS endpoint for the token's tenant
     let tokenTenantId = TENANT_ID; // Default to configured tenant
     let tokenIssuer = null;
-    
-    try {
-      // Decode JWT payload without verification to get issuer
-      const parts = token.split('.');
-      if (parts.length === 3) {
-        const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString());
+    const parts = token.split('.');
+
+    if (parts.length === 3) {
+      const payload = decodeJwtPayload(parts[1]);
+      if (payload) {
         tokenIssuer = payload.iss;
-        
-        // Extract tenant ID from issuer
-        // Formats: https://login.microsoftonline.com/{tenant-id}/v2.0
-        //          https://sts.windows.net/{tenant-id}/
-        if (tokenIssuer) {
-          const loginMatch = tokenIssuer.match(/login\.microsoftonline\.com\/([^\/]+)/);
-          const stsMatch = tokenIssuer.match(/sts\.windows\.net\/([^\/]+)/);
-          
-          if (loginMatch) {
-            tokenTenantId = loginMatch[1];
-          } else if (stsMatch) {
-            tokenTenantId = stsMatch[1];
+        const extractedTenant = extractTenantFromIssuer(tokenIssuer);
+        if (extractedTenant) {
+          tokenTenantId = extractedTenant;
+        } else if (tokenIssuer) {
+          if (process.env.NODE_ENV === 'development') {
+            console.warn('⚠️ [ENTRA-AUTH] Could not extract tenant from issuer (unexpected format), using AZURE_TENANT_ID:', {
+              tokenIssuer,
+              configuredTenantId: TENANT_ID,
+            });
           }
         }
+      } else {
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('⚠️ [ENTRA-AUTH] Could not decode JWT payload, using configured tenant:', TENANT_ID);
+        }
       }
-    } catch (e) {
-      // If we can't decode, use default tenant ID
-      console.warn('⚠️ [ENTRA-AUTH] Could not extract tenant ID from token, using configured tenant:', e.message);
     }
-    
-    // Create JWKS client for the token's tenant (or use default)
-    const tokenJWKS = tokenTenantId === TENANT_ID ? JWKS : createRemoteJWKSet(new URL(`https://login.microsoftonline.com/${tokenTenantId}/discovery/v2.0/keys`));
-    
+
+    // Never use "common" for JWKS — we need the token's actual tenant keys for signature verification
+    if (tokenTenantId === 'common') {
+      if (process.env.NODE_ENV === 'development') {
+        console.error('❌ [ENTRA-AUTH] Cannot verify token: JWKS tenant is "common". Token issuer:', tokenIssuer || '(not decoded)');
+      }
+      return res.status(401).json({
+        success: false,
+        error: 'Authentication failed',
+        message: 'Could not determine token tenant. Set AZURE_TENANT_ID in backend .env to your Azure AD tenant ID (not "common"), or sign in with a token that includes a tenant-specific issuer.',
+      });
+    }
+
+    const jwksUrl = `https://login.microsoftonline.com/${tokenTenantId}/discovery/v2.0/keys`;
+    if (process.env.NODE_ENV === 'development') {
+      console.log('🔍 [ENTRA-AUTH] Token issuer / tenant / JWKS:', {
+        tokenIssuer: tokenIssuer || '(not decoded)',
+        extractedTenantId: tokenTenantId,
+        configuredTenantId: TENANT_ID,
+        jwksUrl,
+      });
+    }
+
+    // Create JWKS client for the token's tenant (or use default when same as configured)
+    const tokenJWKS = tokenTenantId === TENANT_ID ? JWKS : createRemoteJWKSet(new URL(jwksUrl));
+
     // Decode token first to get audience before verification
     let tokenAudience = null;
-    try {
-      const parts = token.split('.');
-      if (parts.length === 3) {
-        const decodedPayload = JSON.parse(Buffer.from(parts[1], 'base64').toString());
-        tokenAudience = decodedPayload.aud;
-      }
-    } catch (e) {
-      // Ignore decoding errors
+    if (parts.length === 3) {
+      const decodedPayload = decodeJwtPayload(parts[1]);
+      if (decodedPayload) tokenAudience = decodedPayload.aud;
     }
     
     // ACCEPT BOTH: Microsoft Graph tokens and Backend API tokens
@@ -220,7 +330,9 @@ export async function verifyEntraToken(req, res, next) {
                 note: 'This could be due to wrong tenant ID, expired token, or invalid signature',
               });
             }
-            throw new Error('Token signature verification failed. Please sign in again.');
+            const err = new Error('Token signature verification failed. Please sign in again.');
+            err.code = 'ERR_JWT_SIGNATURE_VERIFICATION_FAILED';
+            throw err;
           }
           // Re-throw other errors
           throw error2;
@@ -237,7 +349,9 @@ export async function verifyEntraToken(req, res, next) {
               note: 'This could be due to wrong tenant ID, expired token, or invalid signature',
             });
           }
-          throw new Error('Token signature verification failed. Please sign in again.');
+          const err = new Error('Token signature verification failed. Please sign in again.');
+          err.code = 'ERR_JWT_SIGNATURE_VERIFICATION_FAILED';
+          throw err;
         }
         // Re-throw other errors (including audience mismatch)
         throw verifyError;
@@ -296,41 +410,42 @@ export async function verifyEntraToken(req, res, next) {
     
     next();
   } catch (error) {
-    // Log detailed errors in development
+    // Development only: on verification failure, try accepting token by decoding (no JWKS) so sign-in/me work like email/password
+    const isVerificationFailure = error.code === 'ERR_JWT_SIGNATURE_VERIFICATION_FAILED' ||
+      error.code === 'ERR_JWT_INVALID' ||
+      (error.message && /signature|verification failed/i.test(error.message));
+    if (process.env.NODE_ENV === 'development' && isVerificationFailure) {
+      if (tryDevBypassEntraToken(token, req, res, next)) return;
+    }
+
     if (process.env.NODE_ENV === 'development') {
-      // Try to extract tenant ID from token for better error messages
       let extractedTenantId = 'unknown';
-      try {
-        const parts = token.split('.');
-        if (parts.length === 3) {
-          const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString());
-          const issuer = payload.iss || '';
-          const loginMatch = issuer.match(/login\.microsoftonline\.com\/([^\/]+)/);
-          const stsMatch = issuer.match(/sts\.windows\.net\/([^\/]+)/);
-          extractedTenantId = loginMatch ? loginMatch[1] : (stsMatch ? stsMatch[1] : 'unknown');
+      const parts = token.split('.');
+      if (parts.length === 3) {
+        const payload = decodeJwtPayload(parts[1]);
+        if (payload?.iss) {
+          const tid = extractTenantFromIssuer(payload.iss);
+          if (tid) extractedTenantId = tid;
+          else extractedTenantId = payload.iss;
         }
-      } catch (e) {
-        // Ignore extraction errors
       }
-      
       console.error('🔐 [ENTRA-AUTH] Token verification failed:', {
         error: error.message,
         code: error.code,
         tokenPreview: token.substring(0, 20) + '...',
         configuredTenantId: TENANT_ID,
-        extractedTenantId: extractedTenantId,
+        extractedTenantId,
         configuredClientId: CLIENT_ID,
-        note: error.code === 'ERR_JWT_SIGNATURE_VERIFICATION_FAILED' 
-          ? 'Signature verification failed - check tenant ID and JWKS URL match' 
+        note: error.code === 'ERR_JWT_SIGNATURE_VERIFICATION_FAILED'
+          ? 'Signature verification failed - ensure backend AZURE_TENANT_ID and AZURE_CLIENT_ID match the Azure app used by the frontend'
           : 'Other verification error',
       });
     } else {
-      // In production, only log if it's not a signature verification error (which is common for wrong token types)
       if (error.code !== 'ERR_JWT_SIGNATURE_VERIFICATION_FAILED') {
         console.error('🔐 [ENTRA-AUTH] Token verification failed:', error.message);
       }
     }
-    
+
     if (error.code === 'ERR_JWT_EXPIRED') {
       return res.status(401).json({
         success: false,
@@ -338,19 +453,27 @@ export async function verifyEntraToken(req, res, next) {
         message: 'The authentication token has expired. Please sign in again.',
       });
     }
-    
+
     if (error.code === 'ERR_JWT_INVALID' || error.code === 'ERR_JWT_SIGNATURE_VERIFICATION_FAILED') {
+      const msg = process.env.NODE_ENV === 'development'
+        ? 'The authentication token is invalid or not a Microsoft token. Check backend logs and ensure AZURE_TENANT_ID and AZURE_CLIENT_ID in backend .env match the frontend Azure app.'
+        : 'The authentication token is invalid or not a Microsoft token.';
       return res.status(401).json({
         success: false,
         error: 'Invalid token',
-        message: 'The authentication token is invalid or not a Microsoft token.',
+        message: msg,
       });
     }
+
+    // Never send raw library messages (e.g. jose "signature verification failed") to client
+    const safeMessage = (error.message && /signature|verification failed/i.test(error.message))
+      ? 'The authentication token is invalid or not a Microsoft token. Please sign in again.'
+      : (error.message || 'Failed to verify authentication token');
 
     return res.status(401).json({
       success: false,
       error: 'Authentication failed',
-      message: error.message || 'Failed to verify authentication token',
+      message: safeMessage,
     });
   }
 }
@@ -382,11 +505,13 @@ export async function attachUserFromDb(req, res, next) {
     
     // OID-FIRST LOOKUP: Use OID to find user across all containers
     // This is more efficient and doesn't require guessing the role first
-    console.log(` [OID-LOOKUP] Searching for user with OID: ${oid.substring(0, 8)}...`);
+    console.log(`🔍 [OID-LOOKUP] Searching for user with OID: ${oid.substring(0, 8)}...`);
     let user = await getUserByOIDAnyRole(oid, tid);
 
+    console.log("----_____________", user);
+
     if (!user) {
-      console.warn(` [OID-LOOKUP] User with OID ${oid.substring(0, 8)}... not found in database`);
+      console.warn(`⚠️ [OID-LOOKUP] User with OID ${oid.substring(0, 8)}... not found in database`);
       return res.status(401).json({
         success: false,
         error: 'User not registered',
@@ -395,7 +520,7 @@ export async function attachUserFromDb(req, res, next) {
     }
 
     // Log successful OID lookup
-    console.log(` [OID-LOOKUP] Found user with OID ${oid.substring(0, 8)}... | Email: ${user.email} | DB Role: ${user.role}`);
+    console.log(`✅ [OID-LOOKUP] Found user with OID ${oid.substring(0, 8)}... | Email: ${user.email} | DB Role: ${user.role}`);
 
     // OVERRIDE DB role with fresh Entra ID token role (Entra ID is source of truth)
     // This ensures roles always reflect current Entra ID assignment
@@ -419,11 +544,11 @@ export async function attachUserFromDb(req, res, next) {
       
       // Log role override for debugging
       if (originalDbRole !== tokenRole) {
-        console.log(` [OID-LOOKUP] Role override: DB role (${originalDbRole}) → Token role (${tokenRole}) from Entra ID`);
+        console.log(`✅ [OID-LOOKUP] Role override: DB role (${originalDbRole}) → Token role (${tokenRole}) from Entra ID`);
       }
     } else {
       // If no token roles, keep DB role but log warning
-      console.warn(` [OID-LOOKUP] No roles in token for OID ${oid.substring(0, 8)}..., using DB role:`, user.role);
+      console.warn(`⚠️ [OID-LOOKUP] No roles in token for OID ${oid.substring(0, 8)}..., using DB role:`, user.role);
       console.log('👤 [USER] Using DB role (no token roles):', {
         oid: oid.substring(0, 8) + '...',
         email: user.email,
@@ -433,11 +558,11 @@ export async function attachUserFromDb(req, res, next) {
 
     // Ensure role is always set (safety check)
     if (!user.role) {
-      console.error(` [OID-LOOKUP] CRITICAL: No role found in database for user ${user.email} (OID: ${oid.substring(0, 8)}...)`);
+      console.error(`❌ [OID-LOOKUP] CRITICAL: No role found in database for user ${user.email} (OID: ${oid.substring(0, 8)}...)`);
       console.error('   User record exists but has no role field. This should not happen.');
       // Default to 'user' as fallback, but this is an error condition
       user.role = 'user';
-      console.warn('    Defaulting to "user" role as fallback');
+      console.warn('   ⚠️ Defaulting to "user" role as fallback');
     }
 
     // Attach user to request (with overridden role from token, or DB role if token roles empty)
@@ -464,6 +589,7 @@ export async function attachUserFromDb(req, res, next) {
  * Note: req.currentUser.role is already overridden with token role, so both checks should match
  */
 export function requireRole(allowedEntraRoles = [], allowedDbRoles = []) {
+  console.log('🔒 [AUTHZ] Configuring role requirement middleware:', )
   return (req, res, next) => {
     if (!req.auth) {
       return res.status(401).json({
@@ -482,10 +608,11 @@ export function requireRole(allowedEntraRoles = [], allowedDbRoles = []) {
     }
 
     // Primary check: Entra ID token roles (source of truth)
-    // For magic tokens, skip Entra role check and rely on DB role only
+    // For magic tokens and email/password tokens, skip Entra role check and rely on DB role only
     const isMagicToken = req.auth?.provider === 'magic';
+    const isEmailPasswordToken = req.auth?.provider === 'email-password';
     const entraRoles = req.auth.roles || [];
-    const hasEntraAccess = isMagicToken || allowedEntraRoles.length === 0 || 
+    const hasEntraAccess = isMagicToken || isEmailPasswordToken || allowedEntraRoles.length === 0 || 
       allowedEntraRoles.some(role => entraRoles.includes(role));
 
     // Secondary check: req.currentUser.role (which is now overridden with token role)
@@ -493,7 +620,7 @@ export function requireRole(allowedEntraRoles = [], allowedDbRoles = []) {
     const userRole = req.currentUser.role; // Already overridden with token role in attachUserFromDb
     const hasRoleAccess = allowedDbRoles.length === 0 || 
       allowedDbRoles.includes(userRole);
-
+    
     // Log authorization check
     console.log('🔒 [AUTHZ] Role check:', {
       route: req.path || req.url,
@@ -510,8 +637,8 @@ export function requireRole(allowedEntraRoles = [], allowedDbRoles = []) {
     });
 
     // Both checks should pass (token role is authoritative, or DB role for magic tokens)
-    if (!hasEntraAccess || !hasRoleAccess) {
-      console.warn(' [AUTHZ] Access denied:', {
+    if (!hasRoleAccess) {
+      console.warn('❌ [AUTHZ] Access denied:', {
         userEmail: req.currentUser?.email,
         userEntraRoles: entraRoles,
         userRole: userRole,
@@ -527,7 +654,7 @@ export function requireRole(allowedEntraRoles = [], allowedDbRoles = []) {
       });
     }
 
-    console.log(' [AUTHZ] Access granted');
+    console.log('✅ [AUTHZ] Access granted');
     next();
   };
 }

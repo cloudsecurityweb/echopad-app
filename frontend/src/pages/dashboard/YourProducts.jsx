@@ -1,48 +1,91 @@
-import { useState, useMemo } from 'react';
+import { useEffect, useState } from 'react';
 import ProductFeedbackModal from '../../components/ui/ProductFeedbackModal';
 import { getUserOwnedProducts } from '../../utils/productOwnership';
 import { products } from '../../data/products';
+import { useAuth } from '../../contexts/AuthContext';
+import { fetchUserProducts } from '../../api/users.api';
 
 function YourProducts() {
+  const { userProfile } = useAuth();
   const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
   const [selectedProductName, setSelectedProductName] = useState(null);
+  const [userProducts, setUserProducts] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   // Get owned products and merge with full product details from catalog
-  const userProducts = useMemo(() => {
-    const ownedProducts = getUserOwnedProducts();
-    
-    // Map owned products to full product details from catalog
-    return ownedProducts.map(ownedProduct => {
-      // Find matching product in catalog by name
-      const catalogProduct = products.find(p => {
-        // Handle name variations
-        if (ownedProduct.name === 'AI DocMan') {
-          return p.name === 'AI Document Manager';
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadProducts = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+
+        const userId = userProfile?.user?.id;
+        if (!userId) {
+          setUserProducts([]);
+          return;
         }
-        return p.name === ownedProduct.name;
-      });
 
-      if (catalogProduct) {
-        return {
-          ...catalogProduct,
-          status: ownedProduct.status,
-          subscriptionDate: ownedProduct.subscriptionDate,
-          downloadUrl: `/api/products/${catalogProduct.id}/download`, // Placeholder download URL
-        };
+        const ownedProducts = await getUserOwnedProducts(
+          { fetchUserProducts },
+          userId
+        );
+
+        if (!isMounted) return;
+
+        const merged = ownedProducts.map((ownedProduct) => {
+          // Find matching product in catalog by name
+          const catalogProduct = products.find((p) => {
+            // Handle name variations
+            if (ownedProduct.name === 'AI DocMan') {
+              return p.name === 'AI Document Manager';
+            }
+            return p.name === ownedProduct.name;
+          });
+
+          if (catalogProduct) {
+            return {
+              ...catalogProduct,
+              status: ownedProduct.status,
+              subscriptionDate: ownedProduct.subscriptionDate,
+              downloadUrl: `/api/products/${catalogProduct.id}/download`, // Placeholder download URL
+            };
+          }
+
+          // Fallback if product not found in catalog
+          return {
+            id: ownedProduct.id,
+            name: ownedProduct.name,
+            description: 'Product purchased and available for download.',
+            status: ownedProduct.status,
+            subscriptionDate: ownedProduct.subscriptionDate,
+            icon: 'bi-box-seam',
+            downloadUrl: `/api/products/${ownedProduct.id}/download`,
+          };
+        });
+
+        setUserProducts(merged);
+      } catch (err) {
+        console.error('Failed to load user products for dashboard:', err);
+        if (isMounted) {
+          setError('Unable to load your products right now. Please try again later.');
+          setUserProducts([]);
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoading(false);
+        }
       }
+    };
 
-      // Fallback if product not found in catalog
-      return {
-        id: ownedProduct.id,
-        name: ownedProduct.name,
-        description: 'Product purchased and available for download.',
-        status: ownedProduct.status,
-        subscriptionDate: ownedProduct.subscriptionDate,
-        icon: 'bi-box-seam',
-        downloadUrl: `/api/products/${ownedProduct.id}/download`,
-      };
-    });
-  }, []);
+    loadProducts();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [userProfile]);
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -87,6 +130,20 @@ function YourProducts() {
     }
   };
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <div className="text-center">
+          <svg className="animate-spin h-12 w-12 text-cyan-600 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          <p className="mt-4 text-gray-600">Loading your AI agents...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-6xl mx-auto">
       {/* Page Header */}
@@ -98,6 +155,15 @@ function YourProducts() {
           Manage and view your subscribed AI agents
         </p>
       </div>
+
+      {/* Error State */}
+      {error && (
+        <div className="mb-6">
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+            {error}
+          </div>
+        </div>
+      )}
 
       {/* Products Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">

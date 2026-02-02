@@ -741,9 +741,9 @@ function ProductDetails() {
     },
   };
 
-  const referCareData = {
-    id: 'refercare',
-    label: 'REFERCARE',
+  const aperioData = {
+    id: 'aperio',
+    label: 'APERIO',
     title: 'Streamline Referral Management',
     intro: 'Intelligent referral tracking that ensures seamless patient handoffs and improves care coordination across providers.',
     sections: [
@@ -846,7 +846,7 @@ function ProductDetails() {
   const products = [
     aiScribeData,
     benchmarkData,
-    referCareData,
+    aperioData,
     aiDocManData,
     aiMedicalAssistantData,
     aiReceptionistData,
@@ -878,13 +878,13 @@ function ProductDetails() {
   };
 
   return (
-    <div className="collapsible-sections-container bg-white py-12">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-6">
+    <div className="collapsible-sections-container bg-white py-8 md:py-12">
+      <div className="container mx-auto px-4 sm:px-6">
+        <div className="text-center mb-4 md:mb-6">
           <div className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-2">
             Products
           </div>
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 px-2">
             Explore the Echopad Suite
           </h2>
           <div className="text-xs text-gray-500 mt-2">
@@ -892,14 +892,14 @@ function ProductDetails() {
           </div>
         </div>
 
-        <div className="relative">
+        <div className="relative px-0 md:px-16 lg:px-20">
           <button
             type="button"
             onClick={handlePrev}
             aria-label="Previous product"
-            className="hidden md:flex items-center justify-center absolute -left-2 top-1/2 -translate-y-1/2 -translate-x-4 w-16 h-16 rounded-full bg-gradient-to-r from-blue-600 to-cyan-600 text-white hover:from-blue-700 hover:to-cyan-700 shadow-2xl hover:shadow-blue-500/50 transition-all cursor-pointer z-10 hover:scale-110"
+            className="hidden md:flex items-center justify-center absolute left-0 top-1/2 -translate-y-1/2 w-14 h-14 md:w-16 md:h-16 rounded-full bg-white border border-gray-300 text-gray-600 hover:bg-gray-100 hover:text-gray-900 shadow-md hover:shadow-lg transition-all cursor-pointer z-10 hover:scale-110"
           >
-            <i className="bi bi-arrow-left text-2xl font-bold"></i>
+            <i className="bi bi-arrow-left text-xl md:text-2xl font-bold"></i>
           </button>
           <div
             key={products[activeIndex].id}
@@ -913,10 +913,27 @@ function ProductDetails() {
             type="button"
             onClick={handleNext}
             aria-label="Next product"
-            className="hidden md:flex items-center justify-center absolute right-0 top-1/2 -translate-y-1/2 translate-x-6 w-16 h-16 rounded-full bg-gradient-to-r from-blue-600 to-cyan-600 text-white hover:from-blue-700 hover:to-cyan-700 shadow-2xl hover:shadow-blue-500/50 transition-all cursor-pointer z-10 hover:scale-110"
+            className="hidden md:flex items-center justify-center absolute right-0 top-1/2 -translate-y-1/2 w-14 h-14 md:w-16 md:h-16 rounded-full bg-white border border-gray-300 text-gray-600 hover:bg-gray-100 hover:text-gray-900 shadow-md hover:shadow-lg transition-all cursor-pointer z-10 hover:scale-110"
           >
-            <i className="bi bi-arrow-right text-2xl font-bold"></i>
+            <i className="bi bi-arrow-right text-xl md:text-2xl font-bold"></i>
           </button>
+        </div>
+
+        {/* Dot Indicators */}
+        <div className="flex justify-center items-center gap-2 sm:gap-3 mt-4 md:mt-6 px-4">
+          {products.map((_, index) => (
+            <button
+              key={index}
+              type="button"
+              onClick={() => setActiveIndex(index)}
+              className={`transition-all duration-300 ${
+                index === activeIndex
+                  ? 'w-2.5 h-2.5 sm:w-3 sm:h-3 bg-cyan-500 rounded-full'
+                  : 'w-2 h-2 sm:w-2.5 sm:h-2.5 bg-gray-300 rounded-full hover:bg-gray-400 active:bg-gray-400'
+              }`}
+              aria-label={`Go to slide ${index + 1}`}
+            />
+          ))}
         </div>
       </div>
     </div>

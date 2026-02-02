@@ -9,12 +9,12 @@ function ProductCard({ product, license, onManage, onAnalytics }) {
 
   return (
     <Card>
-      <div className="flex items-start justify-between mb-4">
+      <div className="flex items-start justify-between mb-3 md:mb-4">
         <div>
-          <h3 className="text-lg font-semibold text-gray-900">
+          <h3 className="text-base md:text-lg font-semibold text-gray-900">
             {product.name}
           </h3>
-          <p className="text-sm text-gray-600 mt-1">
+          <p className="text-xs md:text-sm text-gray-600 mt-1">
             {product.description}
           </p>
         </div>
@@ -31,7 +31,7 @@ function ProductCard({ product, license, onManage, onAnalytics }) {
       </div>
 
       {license && (
-        <div className="mb-4">
+        <div className="mb-3 md:mb-4">
           <LicenseUsageBar percent={usagePercent} />
           <p className="text-xs text-gray-500 mt-1">
             {license.used} / {license.allocated} licenses used
@@ -39,17 +39,17 @@ function ProductCard({ product, license, onManage, onAnalytics }) {
         </div>
       )}
 
-      <div className="flex gap-3 mt-4">
+      <div className="flex gap-2 md:gap-3 mt-3 md:mt-4">
         <button
           onClick={onAnalytics}
-          className="flex-1 px-3 py-2 text-sm rounded-lg border border-gray-200 hover:bg-gray-50"
+          className="flex-1 px-3 py-2 text-xs md:text-sm rounded-lg border border-gray-200 hover:bg-gray-50"
         >
           View Analytics
         </button>
 
         <button
           onClick={onManage}
-          className="flex-1 px-3 py-2 text-sm rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 text-white"
+          className="flex-1 px-3 py-2 text-xs md:text-sm rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 text-white"
         >
           Manage
         </button>

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useRole } from '../../contexts/RoleContext';
+import SubscriptionsPage from './client-admin/SubscriptionsPage';
 import {
   PieChart,
   Pie,
@@ -19,6 +20,10 @@ function Subscriptions() {
   const [statusFilter, setStatusFilter] = useState('all');
   const [planFilter, setPlanFilter] = useState('all');
 
+  if (isClientAdmin) {
+    return <SubscriptionsPage />
+  }
+
   if (!isSuperAdmin && !isClientAdmin) {
     return (
       <div className="max-w-6xl mx-auto">
@@ -31,8 +36,8 @@ function Subscriptions() {
 
   // Placeholder data - to be replaced with API calls
   const summaryStats = [
-    { label: 'Total Subscriptions', value: '189', change: '+8%', icon: '' },
-    { label: 'Active', value: '165', change: '+5%', icon: '' },
+    { label: 'Total Subscriptions', value: '189', change: '+8%', icon: '📊' },
+    { label: 'Active', value: '165', change: '+5%', icon: '✅' },
     { label: 'Expiring Soon', value: '12', change: '-2%', icon: '⏰' },
     { label: 'Monthly Revenue', value: '$124.5K', change: '+23%', icon: '💰' },
   ];
@@ -266,5 +271,3 @@ function Subscriptions() {
 }
 
 export default Subscriptions;
-
-

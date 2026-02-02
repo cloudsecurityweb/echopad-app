@@ -7,28 +7,28 @@ function Contact() {
   };
 
   return (
-    <section id="contact" className="py-20 bg-white">
+    <section id="contact" className="py-8 md:py-10 lg:py-12 xl:py-16 2xl:py-20 bg-white">
       <div className="container mx-auto px-4">
         <div className="max-w-5xl mx-auto">
-          <div className="rounded-2xl border border-gray-200/80 bg-gradient-to-br from-white via-white to-cyan-50/40 p-10 md:p-14 shadow-sm">
-            <div className="flex flex-col gap-8 md:flex-row md:items-center md:justify-between">
+          <div className="rounded-2xl border border-gray-200/80 bg-gradient-to-br from-white via-white to-cyan-50/40 p-4 md:p-5 lg:p-6 xl:p-8 2xl:p-10 3xl:p-14 shadow-sm">
+            <div className="flex flex-col gap-3 md:gap-4 lg:gap-6 xl:gap-8 md:flex-row md:items-center md:justify-between">
               <div className="text-center md:text-left md:max-w-2xl">
-                <div className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-3">
+                <div className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-1.5 md:mb-2 lg:mb-3">
                   Get Started
                 </div>
-                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
+                <h2 className="text-lg md:text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl font-bold text-gray-900 mb-1.5 md:mb-2 lg:mb-3">
                   Ready to see Echopad in action?
                 </h2>
-                <p className="text-lg text-gray-600">
+                <p className="text-xs md:text-sm lg:text-base xl:text-lg text-gray-600">
                   Book a quick walkthrough and leave with a clear automation plan.
                 </p>
-                <p className="text-sm text-gray-500 mt-3">15-minute call, no obligation.</p>
+                <p className="text-xs md:text-sm text-gray-500 mt-1.5 md:mt-2 lg:mt-3">15-minute call, no obligation.</p>
               </div>
 
-              <div className="flex flex-col sm:flex-row items-center justify-center md:justify-end gap-4">
+              <div className="flex flex-col sm:flex-row items-center justify-center md:justify-end gap-1.5 md:gap-2 lg:gap-3 xl:gap-4">
                 <a
                   href="#"
-                  className="inline-flex items-center justify-center gap-2 bg-gray-900 text-white px-7 py-3 rounded-xl hover:bg-gray-800 transition-colors font-semibold w-full sm:w-52 shadow-sm"
+                  className="inline-flex items-center justify-center gap-1.5 md:gap-2 bg-gray-900 text-white px-4 md:px-5 lg:px-6 xl:px-7 py-1.5 md:py-2 lg:py-2.5 xl:py-3 rounded-xl hover:bg-gray-800 transition-colors font-semibold text-xs md:text-sm lg:text-base w-full sm:w-52 shadow-sm"
                   onClick={(e) => handleIntercomClick(e, 'request-demo')}
                 >
                   <i className="bi bi-chat-dots"></i>
@@ -36,7 +36,7 @@ function Contact() {
                 </a>
                 <a
                   href="/sign-up"
-                  className="inline-flex items-center justify-center gap-2 text-gray-700 px-3 py-2 rounded-lg hover:text-gray-900 transition-colors font-medium w-full sm:w-52"
+                  className="inline-flex items-center justify-center gap-1.5 md:gap-2 text-gray-700 px-2.5 md:px-3 py-1.5 md:py-2 rounded-lg hover:text-gray-900 transition-colors font-medium text-xs md:text-sm lg:text-base w-full sm:w-52"
                 >
                   <i className="bi bi-rocket-takeoff"></i>
                   Get Started

@@ -9,6 +9,8 @@ import { createOrganization, validateOrganization, ORG_TYPES, ORG_STATUS } from 
 import { createAuditEvent, AUDIT_EVENT_TYPES } from "../models/auditEvent.js";
 import { getContainer as getAuditContainer } from "../config/cosmosClient.js";
 import { warmupNow } from "./cosmosWarmup.js";
+import { getLicensesByTenant } from "./licenseService.js";
+import { getProducts } from "./products.service.js";
 
 const CONTAINER_NAME = "organizations";
 const AUDIT_CONTAINER_NAME = "auditEvents";
@@ -34,7 +36,7 @@ async function retryOperation(operation, maxRetries = 3, initialDelay = 1000) {
       
       if (attempt < maxRetries) {
         const delay = initialDelay * Math.pow(2, attempt);
-        console.log(`  Retrying operation (attempt ${attempt + 1}/${maxRetries}) after ${delay}ms...`);
+        console.log(`⚠️  Retrying operation (attempt ${attempt + 1}/${maxRetries}) after ${delay}ms...`);
         await new Promise(resolve => setTimeout(resolve, delay));
       }
     }
@@ -77,7 +79,7 @@ export async function createOrg(orgData, actorUserId) {
         const result = await container.items.create(org);
         const duration = Date.now() - startTime;
         if (duration > 5000) {
-          console.warn(`  Slow Cosmos DB operation: ${duration}ms (likely cold start)`);
+          console.warn(`⚠️  Slow Cosmos DB operation: ${duration}ms (likely cold start)`);
         }
         return result;
       },
@@ -86,7 +88,7 @@ export async function createOrg(orgData, actorUserId) {
     );
   } catch (error) {
     const duration = Date.now() - startTime;
-    console.error(` Failed to create organization after ${duration}ms:`, error.message);
+    console.error(`❌ Failed to create organization after ${duration}ms:`, error.message);
     if (error.code === 'TimeoutError') {
       throw new Error(`Cosmos DB timeout after ${duration}ms. This may be due to serverless cold start. Please try again.`);
     }
@@ -167,6 +169,58 @@ export async function getOrgsByTenant(tenantId, type = null) {
 }
 
 /**
+ * Get organizations with optional filters
+ * @param {Object} filters
+ * @param {string|null} filters.tenantId - Tenant ID (optional for super admin)
+ * @param {string|null} filters.type - Organization type
+ * @param {string|null} filters.status - Organization status
+ * @param {string|null} filters.organizationId - Organization ID
+ * @param {string|null} filters.search - Name search (case-insensitive)
+ * @returns {Promise<Array>} Array of organizations
+ */
+export async function getOrganizations(filters = {}) {
+  const container = getContainer(CONTAINER_NAME);
+  if (!container) {
+    throw new Error("Cosmos DB container not available");
+  }
+
+  let query = "SELECT * FROM c WHERE 1=1";
+  const parameters = [];
+
+  if (filters.tenantId) {
+    query += " AND c.tenantId = @tenantId";
+    parameters.push({ name: "@tenantId", value: filters.tenantId });
+  }
+
+  if (filters.organizationId) {
+    query += " AND c.id = @organizationId";
+    parameters.push({ name: "@organizationId", value: filters.organizationId });
+  }
+
+  if (filters.type) {
+    query += " AND c.type = @type";
+    parameters.push({ name: "@type", value: filters.type });
+  }
+
+  if (filters.status) {
+    query += " AND c.status = @status";
+    parameters.push({ name: "@status", value: filters.status });
+  }
+
+  if (filters.search) {
+    query += " AND CONTAINS(LOWER(c.name), @search)";
+    parameters.push({ name: "@search", value: String(filters.search).toLowerCase() });
+  }
+
+  const { resources } = await container.items.query({
+    query,
+    parameters,
+  }).fetchAll();
+
+  return resources;
+}
+
+/**
  * Update organization
  * @param {string} orgId - Organization ID
  * @param {string} tenantId - Tenant ID
@@ -211,4 +265,41 @@ export async function updateOrg(orgId, tenantId, updates, actorUserId) {
   }
   
   return resource;
+}
+
+/**
+ * Get detailed organization information, including product and license counts.
+ * @param {Object} filters - Filters to apply to organization query
+ * @returns {Promise<Array>} Array of organizations with added details
+ */
+export async function getOrganizationsDetails(filters = {}) {
+  const organizations = await getOrganizations(filters); // Use the existing getOrganizations
+
+  const allProducts = await getProducts(); // Get all products once
+
+  const organizationsDetails = await Promise.all(
+    organizations.map(async (organization) => {
+      const licenses = await getLicensesByTenant(organization.tenantId, organization.id);
+      
+      const uniqueProductIds = new Set();
+      let totalLicenses = 0;
+
+      for (const license of licenses) {
+        if (license.productId) {
+          uniqueProductIds.add(license.productId);
+        }
+        totalLicenses += license.seats || 1; // Assuming each license has at least 1 seat
+      }
+
+      const productsCount = uniqueProductIds.size;
+      
+      return {
+        ...organization,
+        productsCount: productsCount,
+        licensesCount: totalLicenses,
+      };
+    })
+  );
+
+  return organizationsDetails;
 }

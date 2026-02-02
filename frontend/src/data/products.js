@@ -219,17 +219,17 @@ export const products = [
     ],
   },
   {
-    id: 'refercare',
-    name: 'ReferCare',
+    id: 'aperio',
+    name: 'Aperio',
     shortDescription: 'Streamline referral management and patient care coordination',
     longDescription: 'Intelligent referral tracking system that ensures seamless patient handoffs and improves care coordination across providers.',
     price: '$279',
     pricePeriod: 'per practice/month',
-    route: '/ai-agent/refercare',
+    route: '/ai-agent/aperio',
     icon: 'bi-arrow-left-right',
     badge: null,
     usp: 'Reduce referral leakage by 45%',
-    stripePaymentLink: 'https://buy.stripe.com/placeholder-refercare', // Replace with actual Stripe Payment Link
+    stripePaymentLink: 'https://buy.stripe.com/placeholder-aperio', // Replace with actual Stripe Payment Link
     features: [
       'Automated referral tracking',
       'Provider network integration',

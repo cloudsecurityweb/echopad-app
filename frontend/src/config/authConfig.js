@@ -6,7 +6,7 @@
  * Configuration is loaded from .env.js file (via window.ENV) with fallback to Vite environment variables
  * (import.meta.env) and then default values.
  * 
- *  SECURITY WARNING:
+ * ⚠️ SECURITY WARNING:
  * Authentication credentials should be configured in .env.js, which is excluded from version control.
  * Never commit .env.js with real Client IDs and Tenant ID.
  * 
@@ -39,7 +39,7 @@ export const msalConfig = {
     clientId: (typeof window !== 'undefined' && window.ENV?.MSAL_CLIENT_ID) || 
               import.meta.env.VITE_MSAL_CLIENT_ID || 
               'd4ea5537-8b2a-4b88-9dbd-80bf02596c1a', // Frontend SPA Client ID
-    authority: "https://login.microsoftonline.com/common", // Allow both work/school and personal Microsoft accounts
+    authority: "https://login.microsoftonline.com/common",
     redirectUri: typeof window !== 'undefined' ? window.location.origin : 'http://localhost:5173',
   },
   cache: {
@@ -98,13 +98,6 @@ export const loginRequest = {
   // Request standard Microsoft Graph scopes - roles are included automatically from app registration
   // No custom API scope needed - app roles come from the app registration itself
   scopes: ["User.Read", "openid", "profile", "email"],
-  // Backend API Client ID: d4ea5537-8b2a-4b88-9dbd-80bf02596c1a
-  // CRITICAL: This scope is for the BACKEND API, not the frontend SPA
-  // The frontend SPA Client ID (d4ea5537-8b2a-4b88-9dbd-80bf02596c1a) is used for authentication,
-  // but the API scope (d4ea5537-8b2a-4b88-9dbd-80bf02596c1a) ensures roles are included in the token
-  // Optional: Add openid and profile if needed (MSAL adds these automatically)
-  // The API scope is critical - it tells Entra ID to include app roles in the access token
-  // NOTE: Roles come from the BACKEND API app registration, not frontend SPA
 };
 
 /**

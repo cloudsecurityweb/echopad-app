@@ -34,6 +34,9 @@ export async function authenticatedFetch(url, options = {}, getAccessTokenFn) {
   try {
     // Get access token
     const token = await getAccessToken(getAccessTokenFn);
+
+    console.log('Making authenticated request to:', url);
+    console.log('using token:', token);  
     
     // Merge headers
     const headers = {
@@ -47,6 +50,8 @@ export async function authenticatedFetch(url, options = {}, getAccessTokenFn) {
       ...options,
       headers,
     });
+
+    console.log('Received response with status:', response);
 
     // Handle token expiration or unauthorized
     if (response.status === 401) {

@@ -1,13 +1,11 @@
 import { getContainer, isConfigured } from "../config/cosmosClient.js";
 import { createOrg } from "../services/organizationService.js";
 import { createUserRecord } from "../services/userService.js";
-import { createProductRecord } from "../services/productService.js";
 import { createLicenseRecord } from "../services/licenseService.js";
 import { createInvitation } from "../services/inviteService.js";
 import { createAuditEvent } from "../models/auditEvent.js";
 import { USER_ROLES, USER_STATUS } from "../models/user.js";
 import { ORG_TYPES, ORG_STATUS } from "../models/organization.js";
-import { PRODUCT_STATUS } from "../models/product.js";
 import { LICENSE_STATUS } from "../models/license.js";
 import { INVITE_STATUS } from "../models/invite.js";
 import { AUDIT_EVENT_TYPES } from "../models/auditEvent.js";
@@ -110,43 +108,6 @@ export async function createDummyUser(req, res) {
  * POST /api/products/dummy
  * Create a dummy product
  */
-export async function createDummyProduct(req, res) {
-  if (!isConfigured()) {
-    return res.status(503).json({
-      success: false,
-      error: "CosmosDB not configured",
-      message: "COSMOS_ENDPOINT and COSMOS_KEY environment variables are required",
-    });
-  }
-
-  try {
-    const tenantId = req.body.tenantId || DEFAULT_TENANT_ID;
-    const timestamp = Date.now();
-    const productData = {
-      id: req.body.id || generateDummyId("product"),
-      tenantId,
-      name: req.body.name || `Dummy Product ${timestamp}`,
-      sku: req.body.sku || `SKU-${timestamp}`,
-      status: req.body.status || PRODUCT_STATUS.ACTIVE,
-      description: req.body.description || `This is a dummy product created at ${new Date().toISOString()}`,
-    };
-
-    const product = await createProductRecord(productData);
-
-    res.status(201).json({
-      success: true,
-      message: "Dummy product created successfully",
-      data: product,
-    });
-  } catch (error) {
-    console.error("Error creating dummy product:", error);
-    res.status(500).json({
-      success: false,
-      error: "Failed to create dummy product",
-      message: error.message,
-    });
-  }
-}
 
 /**
  * POST /api/licenses/dummy

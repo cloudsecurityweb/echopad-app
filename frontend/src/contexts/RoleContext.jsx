@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
-import { mapEntraRoleToFrontendRole } from '../utils/tokenDecoder';
+import { mapEntraRoleToFrontendRole, getUserInfoFromToken } from '../utils/tokenDecoder';
+import { useMsal } from '@azure/msal-react';
 
 const RoleContext = createContext(null);
 
@@ -57,60 +58,92 @@ function getRoleFromProfile(userProfile, tokenRoles = []) {
 }
 
 export function RoleProvider({ children }) {
-  const { userProfile, tokenRoles, userOID } = useAuth();
+  const { userProfile, tokenRoles, userOID, accessToken, authProvider } = useAuth();
+  const { account } = useMsal();
   
   // Role is derived from backend userProfile (primary) or token roles (fallback)
   // Default to CLIENT_ADMIN (non-SuperAdmin sign-ins become ClientAdmin)
   const [currentRole, setCurrentRole] = useState(ROLES.CLIENT_ADMIN);
   const [isLoadingRole, setIsLoadingRole] = useState(true);
+  
+  // Helper to get user email from various sources
+  const getUserEmail = () => {
+    if (userProfile?.user?.email) return userProfile.user.email;
+    if (account?.username) return account.username;
+    if (accessToken && authProvider === 'microsoft') {
+      const userInfo = getUserInfoFromToken(accessToken);
+      return userInfo?.email;
+    }
+    return null;
+  };
+  
+  // Check if user is SuperAdmin based on email domain
+  const isSuperAdminEmail = (email) => {
+    return email && email.toLowerCase().endsWith('@cloudsecurityweb.com');
+  };
 
   // Update role when userProfile or tokenRoles change
+  // Priority order: Token roles > Backend profile > Email domain > Default
   useEffect(() => {
-    // If we have token roles, we can determine role immediately
+    const userEmail = getUserEmail();
+    const isSuperAdmin = isSuperAdminEmail(userEmail);
+    let newRole = null;
+    
+    // PRIORITY 1: Token roles (Entra ID - source of truth when present)
     if (tokenRoles && tokenRoles.length > 0) {
-      const newRole = getRoleFromProfile(userProfile, tokenRoles);
-      if (newRole) {
-        setCurrentRole(newRole);
-        setIsLoadingRole(false);
-        return;
+      if (tokenRoles.includes('SuperAdmin')) {
+        newRole = ROLES.SUPER_ADMIN;
+        console.log('✅ [ROLE] Role from token: SUPER_ADMIN');
+      } else if (tokenRoles.includes('ClientAdmin')) {
+        newRole = ROLES.CLIENT_ADMIN;
+        console.log('✅ [ROLE] Role from token: CLIENT_ADMIN');
+      } else if (tokenRoles.includes('UserAdmin')) {
+        newRole = ROLES.USER_ADMIN;
+        console.log('✅ [ROLE] Role from token: USER_ADMIN');
       }
     }
 
-    // If userProfile is loaded, use it
-    if (userProfile !== null) {
-      const newRole = getRoleFromProfile(userProfile, tokenRoles);
-      setIsLoadingRole(false);
-      
-      if (newRole) {
-        setCurrentRole(newRole);
-      } else {
-        // No role found, default to CLIENT_ADMIN (non-SuperAdmin sign-ins become ClientAdmin)
-        if (import.meta.env.DEV) {
-          console.warn('[ROLE] No role found, defaulting to client_admin (non-SuperAdmin users become ClientAdmin)');
-        }
-        setCurrentRole(ROLES.CLIENT_ADMIN);
+    // PRIORITY 2: Backend userProfile role (database - reliable when available)
+    if (!newRole && userProfile !== null) {
+      const profileRole = getRoleFromProfile(userProfile, tokenRoles);
+      if (profileRole) {
+        newRole = profileRole;
+        console.log(`✅ [ROLE] Role from profile: ${profileRole}`);
       }
-      return;
     }
 
-    // If we have OID but no userProfile yet and no token roles, set default role immediately
-    // This ensures ClientAdmin users can access dashboard immediately (same as SuperAdmin)
-    // Don't wait for profile fetch - set default role now, update later if profile has different role
-    if (userOID && !userProfile && tokenRoles.length === 0) {
-      // Set default role immediately (don't wait for profile)
-      setCurrentRole(ROLES.CLIENT_ADMIN);
-      setIsLoadingRole(false);
-      console.log('🔐 [ROLE] Setting default ClientAdmin role immediately (profile loading in background)');
-      // Profile will load in background and update role if different
-      // No need for timeout - role is set immediately
-      return;
+    // PRIORITY 3: Email domain check (@cloudsecurityweb.com = SuperAdmin)
+    // This matches backend logic that upgrades these users to SUPER_ADMIN
+    if (!newRole && isSuperAdmin) {
+      newRole = ROLES.SUPER_ADMIN;
+      console.log('🔐 [ROLE] Detected @cloudsecurityweb.com email - treating as SuperAdmin:', userEmail);
     }
 
-    // If no OID and no profile, we're not authenticated yet
-    if (!userOID) {
-      setIsLoadingRole(false);
+    // PRIORITY 4: Default to CLIENT_ADMIN for new users (non-SuperAdmin sign-ins become ClientAdmin)
+    if (!newRole) {
+      newRole = ROLES.CLIENT_ADMIN;
+      if (import.meta.env.DEV && userOID) {
+        console.log('[ROLE] Defaulting to CLIENT_ADMIN (new user or role not found)');
+      }
     }
-  }, [userProfile, tokenRoles, userOID]);
+
+    // Update role state
+    setCurrentRole(newRole);
+    setIsLoadingRole(false);
+
+    // Log final role determination
+    if (import.meta.env.DEV) {
+      console.log('🔍 [ROLE] Final role determination:', {
+        role: newRole,
+        source: tokenRoles?.length > 0 ? 'token' : 
+                userProfile?.user?.role ? 'profile' : 
+                isSuperAdmin ? 'email-domain' : 'default',
+        tokenRoles,
+        profileRole: userProfile?.user?.role,
+        userEmail,
+      });
+    }
+  }, [userProfile, tokenRoles, userOID, accessToken, authProvider, account]);
 
   const isSuperAdmin = currentRole === ROLES.SUPER_ADMIN;
   const isClientAdmin = currentRole === ROLES.CLIENT_ADMIN;

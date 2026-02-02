@@ -31,7 +31,20 @@ export async function sendInvitation(email, role, productId, getAccessTokenFn) {
   const invitationEndpoint = `${API_BASE_URL}/api/invites/user`;
 
   try {
-    const token = await getAccessTokenFn();
+    let token;
+    try {
+      token = await getAccessTokenFn();
+    } catch (tokenError) {
+      // Provide a more user-friendly error message
+      if (tokenError.message?.includes('No authentication provider')) {
+        throw new Error('You must be signed in to send invitations. Please sign in and try again.');
+      }
+      throw new Error(`Authentication failed: ${tokenError.message || 'Please sign in and try again.'}`);
+    }
+    
+    if (!token) {
+      throw new Error('No access token available. Please sign in and try again.');
+    }
     
     const response = await fetch(invitationEndpoint, {
       method: 'POST',
@@ -83,7 +96,30 @@ export async function resendInvitation(invitationId, getAccessTokenFn) {
  * @returns {Promise<Array>} Array of pending invitations
  */
 export async function getPendingInvitations(getAccessTokenFn) {
-  // TODO: Implement when backend API is ready
-  return [];
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://echopad-app-service-bwd0bqd7g7ehb5c7.westus2-01.azurewebsites.net';
+  const pendingEndpoint = `${API_BASE_URL}/api/invites/pending`;
+
+  try {
+    const token = await getAccessTokenFn();
+    
+    const response = await fetch(pendingEndpoint, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || `Failed to get pending invitations: ${response.status}`);
+    }
+
+    return data.data.invites;
+  } catch (error) {
+    console.error('Get pending invitations error:', error);
+    throw new Error('Failed to get pending invitations. Please try again later.');
+  }
 }
 

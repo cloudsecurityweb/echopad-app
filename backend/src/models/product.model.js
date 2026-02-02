@@ -16,6 +16,7 @@ export default function createProduct(data) {
 
     name: data.name,
     description: data.description || "",
+    endpoint: data.endpoint || "", // e.g. /ai-scribe
 
     status: data.status || "ACTIVE", // ACTIVE | INACTIVE
 
