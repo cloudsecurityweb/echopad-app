@@ -156,12 +156,8 @@ jobs:
       - name: Deploy Frontend
         working-directory: ./frontend
         run: |
-          echo "📦 Installing Static Web Apps CLI..."
-          npm install -g @azure/static-web-apps-cli
-          echo "✅ CLI installed"
-          echo ""
-          echo "🚀 Deploying to Azure Static Web App..."
-          swa deploy ./dist \
+          echo "🚀 Deploying to Azure Static Web App using npx..."
+          npx --yes @azure/static-web-apps-cli deploy ./dist \
             --deployment-token "${{ github.ref == 'refs/heads/main' && secrets.PROD_AZURE_STATIC_WEB_APP_DEPLOYMENT_TOKEN || secrets.DEV_AZURE_STATIC_WEB_APP_DEPLOYMENT_TOKEN }}" \
             --env production \
             --no-use-keychain
