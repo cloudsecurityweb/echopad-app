@@ -77,24 +77,187 @@ export async function verifyEntraToken(req, res, next) {
     });
   }
 
+  // Extract token from Authorization header (outside try block for error handling)
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({
+      success: false,
+      error: 'Unauthorized',
+      message: 'Missing or invalid Authorization header. Expected: Bearer <token>',
+    });
+  }
+
+  const token = authHeader.substring(7); // Remove 'Bearer ' prefix
+
   try {
-    // Extract token from Authorization header
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({
-        success: false,
-        error: 'Unauthorized',
-        message: 'Missing or invalid Authorization header. Expected: Bearer <token>',
+    // First, decode the token to get the issuer and extract tenant ID
+    // This allows us to use the correct JWKS endpoint for the token's tenant
+    let tokenTenantId = TENANT_ID; // Default to configured tenant
+    let tokenIssuer = null;
+    
+    try {
+      // Decode JWT payload without verification to get issuer
+      const parts = token.split('.');
+      if (parts.length === 3) {
+        const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString());
+        tokenIssuer = payload.iss;
+        
+        // Extract tenant ID from issuer
+        // Formats: https://login.microsoftonline.com/{tenant-id}/v2.0
+        //          https://sts.windows.net/{tenant-id}/
+        if (tokenIssuer) {
+          const loginMatch = tokenIssuer.match(/login\.microsoftonline\.com\/([^\/]+)/);
+          const stsMatch = tokenIssuer.match(/sts\.windows\.net\/([^\/]+)/);
+          
+          if (loginMatch) {
+            tokenTenantId = loginMatch[1];
+          } else if (stsMatch) {
+            tokenTenantId = stsMatch[1];
+          }
+        }
+      }
+    } catch (e) {
+      // If we can't decode, use default tenant ID
+      console.warn('⚠️ [ENTRA-AUTH] Could not extract tenant ID from token, using configured tenant:', e.message);
+    }
+    
+    // Create JWKS client for the token's tenant (or use default)
+    const tokenJWKS = tokenTenantId === TENANT_ID ? JWKS : createRemoteJWKSet(new URL(`https://login.microsoftonline.com/${tokenTenantId}/discovery/v2.0/keys`));
+    
+    // Decode token first to get audience before verification
+    let tokenAudience = null;
+    try {
+      const parts = token.split('.');
+      if (parts.length === 3) {
+        const decodedPayload = JSON.parse(Buffer.from(parts[1], 'base64').toString());
+        tokenAudience = decodedPayload.aud;
+      }
+    } catch (e) {
+      // Ignore decoding errors
+    }
+    
+    // ACCEPT BOTH: Microsoft Graph tokens and Backend API tokens
+    // Microsoft Graph audience: 00000003-0000-0000-c000-000000000000
+    // Backend API audience: CLIENT_ID (d4ea5537-8b2a-4b88-9dbd-80bf02596c1a)
+    const MICROSOFT_GRAPH_AUDIENCE = '00000003-0000-0000-c000-000000000000';
+    const validAudiences = [CLIENT_ID, MICROSOFT_GRAPH_AUDIENCE];
+    
+    // Log audience information for debugging
+    if (process.env.NODE_ENV === 'development' && tokenAudience) {
+      console.log('🔍 [ENTRA-AUTH] Token audience check:', {
+        tokenAudience,
+        validAudiences,
+        audienceMatch: validAudiences.includes(tokenAudience) ? '✓' : '⚠ Mismatch',
       });
     }
-
-    const token = authHeader.substring(7); // Remove 'Bearer ' prefix
-
-    // Verify token
-    const { payload } = await jwtVerify(token, JWKS, {
-      issuer: `https://login.microsoftonline.com/${TENANT_ID}/v2.0`,
-      audience: CLIENT_ID,
-    });
+    
+    // Verify token signature and basic claims
+    // Note: Microsoft tokens can have different issuer formats:
+    // - https://login.microsoftonline.com/{tenant-id}/v2.0 (v2.0 endpoint)
+    // - https://sts.windows.net/{tenant-id}/ (v1.0 endpoint)
+    // For sts.windows.net tokens, we still use login.microsoftonline.com for JWKS
+    
+    let payload;
+    let verifyOptions = {};
+    
+    // If we know the audience and it's valid, use it for verification
+    if (tokenAudience && validAudiences.includes(tokenAudience)) {
+      verifyOptions.audience = tokenAudience;
+    } else {
+      // Try backend API audience first (most common for custom APIs)
+      verifyOptions.audience = CLIENT_ID;
+    }
+    
+    try {
+      payload = (await jwtVerify(token, tokenJWKS, verifyOptions)).payload;
+      
+      // Verify the audience is valid (double-check)
+      const actualAudience = payload.aud;
+      if (actualAudience && !validAudiences.includes(actualAudience)) {
+        // If verification succeeded but audience doesn't match, try Microsoft Graph
+        if (actualAudience === MICROSOFT_GRAPH_AUDIENCE && verifyOptions.audience === CLIENT_ID) {
+          // Retry with Microsoft Graph audience
+          payload = (await jwtVerify(token, tokenJWKS, {
+            audience: MICROSOFT_GRAPH_AUDIENCE,
+          })).payload;
+        } else {
+          if (process.env.NODE_ENV === 'development') {
+            console.error('❌ [ENTRA-AUTH] Audience mismatch after verification:', {
+              tokenAudience: actualAudience,
+              validAudiences,
+            });
+          }
+          throw new Error(`Token audience mismatch. Token is for '${actualAudience}', but backend expects one of: ${validAudiences.join(', ')}`);
+        }
+      }
+    } catch (verifyError) {
+      // If verification failed and we tried CLIENT_ID, try Microsoft Graph
+      if (verifyOptions.audience === CLIENT_ID && verifyError.code !== 'ERR_JWT_EXPIRED') {
+        try {
+          payload = (await jwtVerify(token, tokenJWKS, {
+            audience: MICROSOFT_GRAPH_AUDIENCE,
+          })).payload;
+        } catch (error2) {
+          // Check if it's an audience mismatch
+          if (tokenAudience && !validAudiences.includes(tokenAudience)) {
+            if (process.env.NODE_ENV === 'development') {
+              console.error('❌ [ENTRA-AUTH] Audience mismatch detected:', {
+                tokenAudience,
+                validAudiences,
+                issue: 'Token audience is not Microsoft Graph or backend API',
+              });
+            }
+            throw new Error(`Token audience mismatch. Token is for '${tokenAudience}', but backend expects one of: ${validAudiences.join(', ')}`);
+          }
+          // If signature verification fails, provide better error message
+          if (error2.code === 'ERR_JWT_SIGNATURE_VERIFICATION_FAILED') {
+            if (process.env.NODE_ENV === 'development') {
+              console.error('❌ [ENTRA-AUTH] Signature verification failed:', {
+                error: error2.message,
+                tokenTenantId,
+                configuredTenantId: TENANT_ID,
+                issuer: tokenIssuer,
+                note: 'This could be due to wrong tenant ID, expired token, or invalid signature',
+              });
+            }
+            throw new Error('Token signature verification failed. Please sign in again.');
+          }
+          // Re-throw other errors
+          throw error2;
+        }
+      } else {
+        // If signature verification fails, provide better error message
+        if (verifyError.code === 'ERR_JWT_SIGNATURE_VERIFICATION_FAILED') {
+          if (process.env.NODE_ENV === 'development') {
+            console.error('❌ [ENTRA-AUTH] Signature verification failed:', {
+              error: verifyError.message,
+              tokenTenantId,
+              configuredTenantId: TENANT_ID,
+              issuer: tokenIssuer,
+              note: 'This could be due to wrong tenant ID, expired token, or invalid signature',
+            });
+          }
+          throw new Error('Token signature verification failed. Please sign in again.');
+        }
+        // Re-throw other errors (including audience mismatch)
+        throw verifyError;
+      }
+    }
+    
+    // Manually verify issuer matches Microsoft format
+    if (!payload.iss || (!payload.iss.includes('login.microsoftonline.com') && !payload.iss.includes('sts.windows.net'))) {
+      throw new Error(`Invalid issuer: ${payload.iss}. Expected Microsoft Entra ID issuer`);
+    }
+    
+    // Log tenant information for debugging
+    if (process.env.NODE_ENV === 'development') {
+      console.log('🔐 [ENTRA-AUTH] Token verified:', {
+        issuer: payload.iss,
+        tokenTenantId,
+        configuredTenantId: TENANT_ID,
+        tenantMatch: tokenTenantId === TENANT_ID ? '✓' : '⚠ Different tenant',
+      });
+    }
 
     // Map role names to Entra ID role UUIDs
     const roles = payload.roles || [];
@@ -130,10 +293,43 @@ export async function verifyEntraToken(req, res, next) {
         iat: payload.iat,
       },
     };
-
+    
     next();
   } catch (error) {
-    console.error('Token verification failed:', error.message);
+    // Log detailed errors in development
+    if (process.env.NODE_ENV === 'development') {
+      // Try to extract tenant ID from token for better error messages
+      let extractedTenantId = 'unknown';
+      try {
+        const parts = token.split('.');
+        if (parts.length === 3) {
+          const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString());
+          const issuer = payload.iss || '';
+          const loginMatch = issuer.match(/login\.microsoftonline\.com\/([^\/]+)/);
+          const stsMatch = issuer.match(/sts\.windows\.net\/([^\/]+)/);
+          extractedTenantId = loginMatch ? loginMatch[1] : (stsMatch ? stsMatch[1] : 'unknown');
+        }
+      } catch (e) {
+        // Ignore extraction errors
+      }
+      
+      console.error('🔐 [ENTRA-AUTH] Token verification failed:', {
+        error: error.message,
+        code: error.code,
+        tokenPreview: token.substring(0, 20) + '...',
+        configuredTenantId: TENANT_ID,
+        extractedTenantId: extractedTenantId,
+        configuredClientId: CLIENT_ID,
+        note: error.code === 'ERR_JWT_SIGNATURE_VERIFICATION_FAILED' 
+          ? 'Signature verification failed - check tenant ID and JWKS URL match' 
+          : 'Other verification error',
+      });
+    } else {
+      // In production, only log if it's not a signature verification error (which is common for wrong token types)
+      if (error.code !== 'ERR_JWT_SIGNATURE_VERIFICATION_FAILED') {
+        console.error('🔐 [ENTRA-AUTH] Token verification failed:', error.message);
+      }
+    }
     
     if (error.code === 'ERR_JWT_EXPIRED') {
       return res.status(401).json({
@@ -143,11 +339,11 @@ export async function verifyEntraToken(req, res, next) {
       });
     }
     
-    if (error.code === 'ERR_JWT_INVALID') {
+    if (error.code === 'ERR_JWT_INVALID' || error.code === 'ERR_JWT_SIGNATURE_VERIFICATION_FAILED') {
       return res.status(401).json({
         success: false,
         error: 'Invalid token',
-        message: 'The authentication token is invalid.',
+        message: 'The authentication token is invalid or not a Microsoft token.',
       });
     }
 
