@@ -60,3 +60,4 @@ secrets-*.txt
 # Infrastructure code (separate repository)
 ../echopad-infra/
 echopad-infra/
+.github/SECRET_VALUE.txt
