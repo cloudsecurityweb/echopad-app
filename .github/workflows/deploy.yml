@@ -102,7 +102,7 @@ jobs:
         uses: azure/webapps-deploy@v3
         with:
           app-name: ${{ github.ref == 'refs/heads/main' && secrets.PROD_AZURE_WEBAPP_NAME || secrets.DEV_AZURE_WEBAPP_NAME }}
-          package: ./backend-deploy.zip
+          package: ${{ github.workspace }}/backend-deploy.zip
           startup-command: 'npm start'
 
       - name: Configure Backend Settings
