@@ -211,31 +211,62 @@ jobs:
           fi
           
           echo ""
-          echo "⏳ Deployment initiated. Waiting for files to upload and deployment to complete..."
-          echo "   (This may take 2-3 minutes - checking status every 15 seconds)"
+          echo "⏳ Deployment initiated. Waiting for deployment to complete..."
+          echo "   (This may take 2-5 minutes - checking status every 10 seconds)"
           
-          # Wait and poll deployment status
-          # The CLI initiates deployment but doesn't wait, so we need to check status
-          MAX_WAIT=180  # 3 minutes
+          # Wait and poll deployment status using Azure CLI
+          MAX_WAIT=300  # 5 minutes max
           ELAPSED=0
-          INTERVAL=15   # Check every 15 seconds
+          INTERVAL=10   # Check every 10 seconds
+          DEPLOYMENT_COMPLETE=false
+          
+          # Get the latest deployment ID
+          echo "   Getting latest deployment information..."
+          sleep 5  # Give Azure a moment to register the deployment
           
           while [ $ELAPSED -lt $MAX_WAIT ]; do
+            # Get the latest deployment status
+            DEPLOYMENT_STATUS=$(az staticwebapp deployment list \
+              --name "$SWA_NAME" \
+              --resource-group "$RESOURCE_GROUP" \
+              --query "[0].status" -o tsv 2>/dev/null || echo "unknown")
+            
+            DEPLOYMENT_ID=$(az staticwebapp deployment list \
+              --name "$SWA_NAME" \
+              --resource-group "$RESOURCE_GROUP" \
+              --query "[0].id" -o tsv 2>/dev/null || echo "")
+            
+            if [ ! -z "$DEPLOYMENT_ID" ] && [ "$DEPLOYMENT_ID" != "null" ]; then
+              # Get detailed status for the specific deployment
+              DETAILED_STATUS=$(az staticwebapp deployment show \
+                --name "$SWA_NAME" \
+                --resource-group "$RESOURCE_GROUP" \
+                --deployment-id "$DEPLOYMENT_ID" \
+                --query "status" -o tsv 2>/dev/null || echo "unknown")
+              
+              echo "   Status: $DETAILED_STATUS (${ELAPSED}s elapsed)"
+              
+              # Check if deployment is complete
+              if [ "$DETAILED_STATUS" = "Ready" ] || [ "$DETAILED_STATUS" = "Succeeded" ] || [ "$DETAILED_STATUS" = "Built" ]; then
+                echo "   ✅ Deployment completed successfully!"
+                DEPLOYMENT_COMPLETE=true
+                break
+              elif [ "$DETAILED_STATUS" = "Failed" ] || [ "$DETAILED_STATUS" = "Error" ]; then
+                echo "   ❌ Deployment failed with status: $DETAILED_STATUS"
+                exit 1
+              fi
+            else
+              echo "   Waiting for deployment to appear... (${ELAPSED}s elapsed)"
+            fi
+            
             sleep $INTERVAL
             ELAPSED=$((ELAPSED + INTERVAL))
-            
-            # Try to get the latest deployment status from Azure
-            # Note: This requires the deployment to be trackable via Azure CLI
-            echo "   Checking deployment status... (${ELAPSED}s elapsed)"
-            
-            # After 2 minutes, assume deployment is complete
-            # (The CLI initiates it, but we can't easily track it without deployment ID)
-            if [ $ELAPSED -ge 120 ]; then
-              echo "   ✅ Minimum wait time completed (2 minutes)"
-              echo "   Files should be uploaded. Deployment may still be processing in Azure."
-              break
-            fi
           done
+          
+          if [ "$DEPLOYMENT_COMPLETE" = "false" ]; then
+            echo "   ⚠️  Maximum wait time reached (5 minutes)"
+            echo "   Deployment may still be processing. Check Azure Portal for status."
+          fi
           
           echo ""
           echo "✅ Frontend deployment completed"
