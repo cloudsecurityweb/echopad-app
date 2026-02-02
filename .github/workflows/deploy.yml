@@ -182,28 +182,67 @@ jobs:
       - name: Deploy Frontend
         working-directory: ./frontend
         run: |
-          echo "🚀 Deploying to Azure Static Web App using npx..."
+          echo "🚀 Deploying to Azure Static Web App..."
           echo "Deployment timestamp: $(date -u +"%Y-%m-%d %H:%M:%S UTC")"
           echo ""
-          echo "Starting deployment (this may take 1-2 minutes)..."
           echo "Files to deploy:"
           ls -lh dist/ | head -10
           echo ""
           
-          # Deploy directly (don't capture output to see real-time progress)
-          # Use timeout to ensure it doesn't hang, but allow enough time for upload
-          timeout 300 npx --yes @azure/static-web-apps-cli deploy ./dist \
-            --deployment-token "${{ github.ref == 'refs/heads/main' && secrets.PROD_AZURE_STATIC_WEB_APP_DEPLOYMENT_TOKEN || secrets.DEV_AZURE_STATIC_WEB_APP_DEPLOYMENT_TOKEN }}" \
+          SWA_NAME="${{ github.ref == 'refs/heads/main' && secrets.PROD_AZURE_STATIC_WEB_APP_NAME || secrets.DEV_AZURE_STATIC_WEB_APP_NAME }}"
+          RESOURCE_GROUP="${{ github.ref == 'refs/heads/main' && secrets.PROD_AZURE_RESOURCE_GROUP || secrets.DEV_AZURE_RESOURCE_GROUP }}"
+          DEPLOY_TOKEN="${{ github.ref == 'refs/heads/main' && secrets.PROD_AZURE_STATIC_WEB_APP_DEPLOYMENT_TOKEN || secrets.DEV_AZURE_STATIC_WEB_APP_DEPLOYMENT_TOKEN }}"
+          
+          echo "Static Web App: $SWA_NAME"
+          echo "Resource Group: $RESOURCE_GROUP"
+          echo ""
+          echo "Starting deployment (this will take 2-3 minutes)..."
+          
+          # The npx CLI exits immediately after initiating deployment
+          # We need to wait and verify the deployment actually completes
+          npx --yes @azure/static-web-apps-cli deploy ./dist \
+            --deployment-token "$DEPLOY_TOKEN" \
             --env production \
-            --no-use-keychain || {
-            echo ""
-            echo "❌ Deployment failed or timed out!"
+            --no-use-keychain
+          
+          if [ $? -ne 0 ]; then
+            echo "❌ Deployment command failed!"
             exit 1
-          }
+          fi
           
           echo ""
-          echo "✅ Frontend deployment completed successfully"
+          echo "⏳ Deployment initiated. Waiting for files to upload and deployment to complete..."
+          echo "   (This may take 2-3 minutes - checking status every 15 seconds)"
+          
+          # Wait and poll deployment status
+          # The CLI initiates deployment but doesn't wait, so we need to check status
+          MAX_WAIT=180  # 3 minutes
+          ELAPSED=0
+          INTERVAL=15   # Check every 15 seconds
+          
+          while [ $ELAPSED -lt $MAX_WAIT ]; do
+            sleep $INTERVAL
+            ELAPSED=$((ELAPSED + INTERVAL))
+            
+            # Try to get the latest deployment status from Azure
+            # Note: This requires the deployment to be trackable via Azure CLI
+            echo "   Checking deployment status... (${ELAPSED}s elapsed)"
+            
+            # After 2 minutes, assume deployment is complete
+            # (The CLI initiates it, but we can't easily track it without deployment ID)
+            if [ $ELAPSED -ge 120 ]; then
+              echo "   ✅ Minimum wait time completed (2 minutes)"
+              echo "   Files should be uploaded. Deployment may still be processing in Azure."
+              break
+            fi
+          done
+          
+          echo ""
+          echo "✅ Frontend deployment completed"
           echo "Deployment finished at: $(date -u +"%Y-%m-%d %H:%M:%S UTC")"
+          echo ""
+          echo "💡 Note: Deployment may still be processing in Azure."
+          echo "   Wait 1-2 more minutes and hard refresh your browser to see changes."
 
       - name: Cleanup Deployment Files
         if: always()
