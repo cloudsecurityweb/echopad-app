@@ -1,6 +1,6 @@
 # Echopad Application
 
-> **Last tested:** 2026-02-02 - DEV deployment workflow test
+> **Last tested:** 2026-02-02 - Testing deployment with deployment tokens
 
 Full-stack application with React frontend and Node.js backend.
 
