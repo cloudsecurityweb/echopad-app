@@ -23,13 +23,13 @@
 ```json
 {
   "clientId": "d4ea5537-8b2a-4b88-9dbd-80bf02596c1a",
-  "clientSecret": "YOUR_DEV_CLIENT_SECRET_HERE",
+  "clientSecret": "YOUR_CLIENT_SECRET_VALUE",
   "tenantId": "42619268-2056-407a-9f6c-72e6741615e5",
   "subscriptionId": "c31376b6-ec72-4a1a-9fb6-ec8c53edf6d2"
 }
 ```
 
-**⚠️ DEV Secret Value:** (Get from `.github/SECRET_VALUE.txt` or create new - see commands below)
+**⚠️ DEV Secret Value:** Use the same secret value as PROD (see PROD section below)
 
 ### PROD_AZURE_CREDS (for main branch)
 
@@ -38,13 +38,13 @@
 ```json
 {
   "clientId": "d4ea5537-8b2a-4b88-9dbd-80bf02596c1a",
-  "clientSecret": "YOUR_PROD_CLIENT_SECRET_HERE",
+  "clientSecret": "YOUR_CLIENT_SECRET_VALUE",
   "tenantId": "42619268-2056-407a-9f6c-72e6741615e5",
   "subscriptionId": "c9ca9a88-e079-4b0d-a4ad-ed340a5d30fb"
 }
 ```
 
-**⚠️ PROD Secret Value:** (Get from `.github/SECRET_VALUE.txt` or create new one)
+**⚠️ Note:** Use the same client secret value for both DEV and PROD (app registration limit: max 2 passwords). Get the secret value by running: `az ad app credential list --id d4ea5537-8b2a-4b88-9dbd-80bf02596c1a`
 
 ## 📝 Steps to Update GitHub Secrets
 
@@ -55,7 +55,7 @@
 2. **Update DEV_AZURE_CREDS:**
    - Find `DEV_AZURE_CREDS` secret (create if doesn't exist)
    - Click **Update** (or **New repository secret**)
-   - Paste the DEV JSON above with secret value (get from `.github/SECRET_VALUE.txt` or see commands below)
+   - Paste the DEV JSON above with the actual secret value (same as PROD - see PROD section)
    - Click **Update secret**
 
 3. **Update PROD_AZURE_CREDS:**
