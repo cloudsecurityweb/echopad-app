@@ -184,21 +184,23 @@ jobs:
         run: |
           echo "🚀 Deploying to Azure Static Web App using npx..."
           echo "Deployment timestamp: $(date -u +"%Y-%m-%d %H:%M:%S UTC")"
-          echo "Deployment token: ${DEPLOYMENT_TOKEN:0:20}..."
           echo ""
           echo "Starting deployment (this may take 1-2 minutes)..."
+          echo "Files to deploy:"
+          ls -lh dist/ | head -10
+          echo ""
           
-          # Deploy and capture output
-          DEPLOY_OUTPUT=$(npx --yes @azure/static-web-apps-cli deploy ./dist \
+          # Deploy directly (don't capture output to see real-time progress)
+          # Use timeout to ensure it doesn't hang, but allow enough time for upload
+          timeout 300 npx --yes @azure/static-web-apps-cli deploy ./dist \
             --deployment-token "${{ github.ref == 'refs/heads/main' && secrets.PROD_AZURE_STATIC_WEB_APP_DEPLOYMENT_TOKEN || secrets.DEV_AZURE_STATIC_WEB_APP_DEPLOYMENT_TOKEN }}" \
             --env production \
-            --no-use-keychain 2>&1) || {
-            echo "❌ Deployment failed!"
-            echo "$DEPLOY_OUTPUT"
+            --no-use-keychain || {
+            echo ""
+            echo "❌ Deployment failed or timed out!"
             exit 1
           }
           
-          echo "$DEPLOY_OUTPUT"
           echo ""
           echo "✅ Frontend deployment completed successfully"
           echo "Deployment finished at: $(date -u +"%Y-%m-%d %H:%M:%S UTC")"
