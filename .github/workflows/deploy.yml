@@ -212,51 +212,66 @@ jobs:
           
           echo ""
           echo "⏳ Deployment initiated. Waiting for deployment to complete..."
-          echo "   (This may take 2-5 minutes - checking status every 10 seconds)"
+          echo "   (Checking status every 10 seconds - will wait until finished)"
           
           # Wait and poll deployment status using Azure CLI
-          MAX_WAIT=300  # 5 minutes max
+          # Keep polling until we get a definitive status (no max time limit)
           ELAPSED=0
           INTERVAL=10   # Check every 10 seconds
           DEPLOYMENT_COMPLETE=false
+          MAX_WAIT=1800  # 30 minutes absolute maximum (safety limit)
           
-          # Get the latest deployment ID
-          echo "   Getting latest deployment information..."
-          sleep 5  # Give Azure a moment to register the deployment
+          # Give Azure time to register the deployment
+          echo "   Waiting for deployment to appear in Azure..."
+          sleep 10
           
           while [ $ELAPSED -lt $MAX_WAIT ]; do
-            # Get the latest deployment status
-            DEPLOYMENT_STATUS=$(az staticwebapp deployment list \
+            # Try multiple methods to get deployment status
+            
+            # Method 1: Get latest deployment from list
+            DEPLOYMENT_LIST=$(az staticwebapp deployment list \
               --name "$SWA_NAME" \
               --resource-group "$RESOURCE_GROUP" \
-              --query "[0].status" -o tsv 2>/dev/null || echo "unknown")
+              --query "[0]" -o json 2>/dev/null || echo "{}")
             
-            DEPLOYMENT_ID=$(az staticwebapp deployment list \
-              --name "$SWA_NAME" \
-              --resource-group "$RESOURCE_GROUP" \
-              --query "[0].id" -o tsv 2>/dev/null || echo "")
+            DEPLOYMENT_ID=$(echo "$DEPLOYMENT_LIST" | grep -oP '"id":\s*"\K[^"]+' | head -1 || echo "")
+            DEPLOYMENT_STATUS=$(echo "$DEPLOYMENT_LIST" | grep -oP '"status":\s*"\K[^"]+' | head -1 || echo "")
             
-            if [ ! -z "$DEPLOYMENT_ID" ] && [ "$DEPLOYMENT_ID" != "null" ]; then
-              # Get detailed status for the specific deployment
+            # Method 2: If we have a deployment ID, get detailed status
+            if [ ! -z "$DEPLOYMENT_ID" ] && [ "$DEPLOYMENT_ID" != "null" ] && [ ! -z "$DEPLOYMENT_ID" ]; then
               DETAILED_STATUS=$(az staticwebapp deployment show \
                 --name "$SWA_NAME" \
                 --resource-group "$RESOURCE_GROUP" \
                 --deployment-id "$DEPLOYMENT_ID" \
-                --query "status" -o tsv 2>/dev/null || echo "unknown")
+                --query "status" -o tsv 2>/dev/null || echo "$DEPLOYMENT_STATUS")
               
-              echo "   Status: $DETAILED_STATUS (${ELAPSED}s elapsed)"
-              
-              # Check if deployment is complete
-              if [ "$DETAILED_STATUS" = "Ready" ] || [ "$DETAILED_STATUS" = "Succeeded" ] || [ "$DETAILED_STATUS" = "Built" ]; then
-                echo "   ✅ Deployment completed successfully!"
-                DEPLOYMENT_COMPLETE=true
-                break
-              elif [ "$DETAILED_STATUS" = "Failed" ] || [ "$DETAILED_STATUS" = "Error" ]; then
-                echo "   ❌ Deployment failed with status: $DETAILED_STATUS"
-                exit 1
+              if [ ! -z "$DETAILED_STATUS" ] && [ "$DETAILED_STATUS" != "null" ]; then
+                echo "   Status: $DETAILED_STATUS (${ELAPSED}s elapsed)"
+                
+                # Check if deployment is complete
+                if [ "$DETAILED_STATUS" = "Ready" ] || [ "$DETAILED_STATUS" = "Succeeded" ] || [ "$DETAILED_STATUS" = "Built" ] || [ "$DETAILED_STATUS" = "complete" ]; then
+                  echo "   ✅ Deployment completed successfully!"
+                  DEPLOYMENT_COMPLETE=true
+                  break
+                elif [ "$DETAILED_STATUS" = "Failed" ] || [ "$DETAILED_STATUS" = "Error" ] || [ "$DETAILED_STATUS" = "failed" ]; then
+                  echo "   ❌ Deployment failed with status: $DETAILED_STATUS"
+                  exit 1
+                fi
+              else
+                echo "   Waiting for deployment status... (${ELAPSED}s elapsed)"
               fi
             else
-              echo "   Waiting for deployment to appear... (${ELAPSED}s elapsed)"
+              # Method 3: Check build history as alternative
+              BUILD_STATUS=$(az staticwebapp show \
+                --name "$SWA_NAME" \
+                --resource-group "$RESOURCE_GROUP" \
+                --query "buildProperties" -o json 2>/dev/null || echo "{}")
+              
+              if [ "$BUILD_STATUS" != "{}" ]; then
+                echo "   Deployment processing... (${ELAPSED}s elapsed)"
+              else
+                echo "   Waiting for deployment to appear... (${ELAPSED}s elapsed)"
+              fi
             fi
             
             sleep $INTERVAL
@@ -264,8 +279,9 @@ jobs:
           done
           
           if [ "$DEPLOYMENT_COMPLETE" = "false" ]; then
-            echo "   ⚠️  Maximum wait time reached (5 minutes)"
+            echo "   ⚠️  Maximum safety limit reached (30 minutes)"
             echo "   Deployment may still be processing. Check Azure Portal for status."
+            echo "   This should not happen - please investigate if deployment is stuck."
           fi
           
           echo ""
