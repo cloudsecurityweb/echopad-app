@@ -164,44 +164,44 @@ jobs:
           echo "✅ Frontend deployment completed"
 
       - name: Cleanup Deployment Files
-              if: always()
-              run: rm -f backend-deploy.zip
+        if: always()
+        run: rm -f backend-deploy.zip
 
-            - name: Cleanup Runner Disk Space
-              if: always()
-              run: |
-                echo "🧹 Cleaning up runner disk space..."
-                
-                # Clean old work directories (older than 7 days)
-                echo "Cleaning old work directories..."
-                find "${{ runner.workspace }}/.." -maxdepth 1 -type d -name "_work" -exec find {} -type d -mtime +7 -exec rm -rf {} + \; 2>/dev/null || true
-                
-                # Clean old diagnostic logs (older than 3 days)
-                echo "Cleaning old diagnostic logs..."
-                find /opt/actions-runner/_diag -name "*.log" -mtime +3 -delete 2>/dev/null || true
-                
-                # Clean npm cache in work directory
-                echo "Cleaning npm cache..."
-                find "${{ runner.workspace }}/.." -type d -name ".npm" -exec rm -rf {} + 2>/dev/null || true
-                
-                # Clean temporary files
-                echo "Cleaning temporary files..."
-                find "${{ runner.temp }}" -type f -mtime +1 -delete 2>/dev/null || true
-                
-                # Clean old archives and downloads
-                echo "Cleaning old archives..."
-                find "${{ runner.workspace }}/.." -name "*.tar.gz" -mtime +1 -delete 2>/dev/null || true
-                find "${{ runner.workspace }}/.." -name "*.zip" -mtime +1 -delete 2>/dev/null || true
-                
-                # Show disk space after cleanup
-                echo ""
-                echo "📊 Disk space after cleanup:"
-                df -h / | tail -1
-                echo ""
-                echo "✅ Cleanup completed"
+      - name: Cleanup Runner Disk Space
+        if: always()
+        run: |
+          echo "🧹 Cleaning up runner disk space..."
+          
+          # Clean old work directories (older than 7 days)
+          echo "Cleaning old work directories..."
+          find "${{ runner.workspace }}/.." -maxdepth 1 -type d -name "_work" -exec find {} -type d -mtime +7 -exec rm -rf {} + \; 2>/dev/null || true
+          
+          # Clean old diagnostic logs (older than 3 days)
+          echo "Cleaning old diagnostic logs..."
+          find /opt/actions-runner/_diag -name "*.log" -mtime +3 -delete 2>/dev/null || true
+          
+          # Clean npm cache in work directory
+          echo "Cleaning npm cache..."
+          find "${{ runner.workspace }}/.." -type d -name ".npm" -exec rm -rf {} + 2>/dev/null || true
+          
+          # Clean temporary files
+          echo "Cleaning temporary files..."
+          find "${{ runner.temp }}" -type f -mtime +1 -delete 2>/dev/null || true
+          
+          # Clean old archives and downloads
+          echo "Cleaning old archives..."
+          find "${{ runner.workspace }}/.." -name "*.tar.gz" -mtime +1 -delete 2>/dev/null || true
+          find "${{ runner.workspace }}/.." -name "*.zip" -mtime +1 -delete 2>/dev/null || true
+          
+          # Show disk space after cleanup
+          echo ""
+          echo "📊 Disk space after cleanup:"
+          df -h / | tail -1
+          echo ""
+          echo "✅ Cleanup completed"
 
-            - name: Deployment Complete
-              run: |
-                echo "✅✅✅ Deployment Complete! ✅✅✅"
-                echo "Environment: ${{ steps.env.outputs.env }}"
-                echo "Branch: ${{ github.ref_name }}"
+      - name: Deployment Complete
+        run: |
+          echo "✅✅✅ Deployment Complete! ✅✅✅"
+          echo "Environment: ${{ steps.env.outputs.env }}"
+          echo "Branch: ${{ github.ref_name }}"
