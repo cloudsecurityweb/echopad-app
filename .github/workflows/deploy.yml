@@ -60,7 +60,7 @@ jobs:
       - name: Create Backend Deployment Package
         working-directory: ./backend
         run: |
-          zip -r ../../backend-deploy.zip . \
+          zip -r ../backend-deploy.zip . \
             -x "node_modules/*" \
             -x ".git/*" \
             -x "*.log" \
@@ -75,6 +75,7 @@ jobs:
             -x "create-*.ps1" \
             > /dev/null 2>&1
           echo "✅ Backend package created"
+          ls -lh ../backend-deploy.zip || echo "❌ Package not found!"
 
       - name: Verify Secrets
         run: |
