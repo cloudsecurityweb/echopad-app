@@ -1,5 +1,7 @@
 # Echopad Application
 
+> **Last tested:** 2026-02-02 - DEV deployment workflow test
+
 Full-stack application with React frontend and Node.js backend.
 
 ## 📁 Project Structure
