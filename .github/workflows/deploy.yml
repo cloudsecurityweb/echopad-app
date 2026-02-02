@@ -154,15 +154,14 @@ jobs:
         run: npm run build
 
       - name: Deploy Frontend
-        run: |
-          az staticwebapp deploy \
-            --name ${{ github.ref == 'refs/heads/main' && secrets.PROD_AZURE_STATIC_WEB_APP_NAME || secrets.DEV_AZURE_STATIC_WEB_APP_NAME }} \
-            --resource-group ${{ github.ref == 'refs/heads/main' && secrets.PROD_AZURE_RESOURCE_GROUP || secrets.DEV_AZURE_RESOURCE_GROUP }} \
-            --source-location frontend/dist \
-            --app-location frontend \
-            --output-location dist \
-            --no-wait
-          echo "✅ Frontend deployment initiated"
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ github.ref == 'refs/heads/main' && secrets.PROD_AZURE_STATIC_WEB_APP_DEPLOYMENT_TOKEN || secrets.DEV_AZURE_STATIC_WEB_APP_DEPLOYMENT_TOKEN }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          action: "upload"
+          app_location: "frontend"
+          output_location: "dist"
+          skip_app_build: true
 
       - name: Configure Frontend Settings
         run: |
