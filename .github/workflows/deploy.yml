@@ -1,4 +1,4 @@
-name: Deploy Backend and Frontend
+name: Deploy Application
 
 on:
   push:
@@ -7,205 +7,131 @@ on:
       - develop
 
 env:
-  NODE_VERSION: 20
+  NODE_VERSION: '20'
 
 jobs:
   deploy:
-    name: Deploy Application
     runs-on: self-hosted
 
     steps:
-    # -------------------------------------------------
-    # Checkout
-    # -------------------------------------------------
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      # =============================
+      # Checkout
+      # =============================
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    # -------------------------------------------------
-    # Determine Environment
-    # -------------------------------------------------
-    - name: Determine environment
-      id: env
-      shell: bash
-      run: |
-        if [ "${GITHUB_REF}" = "refs/heads/main" ]; then
-          echo "ENV=production" >> $GITHUB_OUTPUT
-          echo "SUBSCRIPTION_ID=c9ca9a88-e079-4b0d-a4ad-ed340a5d30fb" >> $GITHUB_OUTPUT
-          echo "Deploying to PRODUCTION"
-        else
-          echo "ENV=development" >> $GITHUB_OUTPUT
-          echo "SUBSCRIPTION_ID=c31376b6-ec72-4a1a-9fb6-ec8c53edf6d2" >> $GITHUB_OUTPUT
-          echo "Deploying to DEVELOPMENT"
-        fi
-
-    # -------------------------------------------------
-    # Azure Login (Using creds JSON format)
-    # -------------------------------------------------
-    - name: Azure Login
-      uses: azure/login@v2
-      with:
-        creds: ${{ secrets.AZURE_CREDS }}
-        allow-no-subscriptions: true
-
-    # -------------------------------------------------
-    # Set Azure Subscription
-    # -------------------------------------------------
-    - name: Set Azure Subscription
-      run: |
-        SUBSCRIPTION_ID="${{ steps.env.outputs.SUBSCRIPTION_ID }}"
-        echo "Setting subscription to: $SUBSCRIPTION_ID"
-        az account set --subscription "$SUBSCRIPTION_ID"
-        echo "✅ Subscription set successfully"
-        az account show --query "{name:name, id:id}" -o table
-
-    # -------------------------------------------------
-    # Verify Azure Login
-    # -------------------------------------------------
-    - name: Verify Azure Login
-      run: az account show
-
-    # -------------------------------------------------
-    # Backend Build
-    # -------------------------------------------------
-    - name: Setup Node.js (Backend)
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ env.NODE_VERSION }}
-
-    - name: Install backend dependencies
-      working-directory: backend
-      run: npm ci
-
-    - name: Package backend
-      working-directory: backend
-      shell: bash
-      run: |
-        zip -r ../backend.zip . \
-          -x node_modules/\* .git/\*
-        ls -lh ../backend.zip
-
-    # -------------------------------------------------
-    # Backend Deploy (App Service)
-    # -------------------------------------------------
-    - name: Verify Backend Secrets
-      run: |
-        if [ -z "${{ secrets.AZURE_BACKEND_APP_NAME }}" ]; then
-          echo "❌ ERROR: AZURE_BACKEND_APP_NAME secret is missing!"
-          exit 1
-        fi
-        if [ -z "${{ secrets.AZURE_BACKEND_RG }}" ]; then
-          echo "❌ ERROR: AZURE_BACKEND_RG secret is missing!"
-          exit 1
-        fi
-        echo "✅ Backend secrets verified"
-        echo "   App Name: ${{ secrets.AZURE_BACKEND_APP_NAME }}"
-        echo "   Resource Group: ${{ secrets.AZURE_BACKEND_RG }}"
-
-    - name: Verify App Service Exists
-      run: |
-        echo "🔍 Verifying App Service exists..."
-        APP_NAME="${{ secrets.AZURE_BACKEND_APP_NAME }}"
-        RG_NAME="${{ secrets.AZURE_BACKEND_RG }}"
-        
-        # Check if the app service exists
-        APP_EXISTS=$(az webapp show \
-          --name "$APP_NAME" \
-          --resource-group "$RG_NAME" \
-          --query "name" -o tsv 2>&1)
-        
-        if [ $? -eq 0 ] && [ -n "$APP_EXISTS" ]; then
-          echo "✅ App Service found: $APP_EXISTS"
-          echo "   Resource Group: $RG_NAME"
-        else
-          echo "❌ ERROR: App Service not found!"
-          echo "   App Name: $APP_NAME"
-          echo "   Resource Group: $RG_NAME"
-          echo "   Error: $APP_EXISTS"
-          echo ""
-          echo "📋 Available App Services in subscription:"
-          az webapp list --query "[].{name:name, resourceGroup:resourceGroup}" -o table || echo "   Cannot list app services"
-          exit 1
-        fi
-
-    - name: Deploy backend to Azure App Service
-      uses: azure/webapps-deploy@v3
-      with:
-        app-name: ${{ secrets.AZURE_BACKEND_APP_NAME }}
-        package: backend.zip
-        startup-command: npm start
-
-    - name: Restart backend
-      run: |
-        az webapp restart \
-          --name "${{ secrets.AZURE_BACKEND_APP_NAME }}" \
-          --resource-group "${{ secrets.AZURE_BACKEND_RG }}"
-
-    # -------------------------------------------------
-    # Frontend Build
-    # -------------------------------------------------
-    - name: Setup Node.js (Frontend)
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ env.NODE_VERSION }}
-
-    - name: Install frontend dependencies
-      working-directory: frontend
-      run: npm ci
-
-    - name: Build frontend
-      working-directory: frontend
-      env:
-        VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
-        VITE_MSAL_CLIENT_ID: ${{ secrets.VITE_MSAL_CLIENT_ID }}
-        VITE_MSAL_TENANT_ID: ${{ secrets.VITE_MSAL_TENANT_ID }}
-      run: |
-        npm run build
-        du -sh dist
-
-    # -------------------------------------------------
-    # Frontend Deploy (Static Web Apps – PRODUCTION)
-    # -------------------------------------------------
-    - name: Deploy frontend and wait until live
-      shell: bash
-      env:
-        DEPLOY_TOKEN: ${{ secrets.AZURE_SWA_DEPLOY_TOKEN }}
-        SWA_NAME: ${{ secrets.AZURE_SWA_NAME }}
-        RESOURCE_GROUP: ${{ secrets.AZURE_SWA_RG }}
-      run: |
-        set -euo pipefail
-
-        echo "🚀 Deploying frontend to PRODUCTION"
-
-        npx --yes @azure/static-web-apps-cli deploy ./frontend/dist \
-          --deployment-token "$DEPLOY_TOKEN" \
-          --env production \
-          --no-use-keychain
-
-        echo "🔍 Fetching Static Web App hostname"
-        HOSTNAME=$(az staticwebapp show \
-          --name "$SWA_NAME" \
-          --resource-group "$RESOURCE_GROUP" \
-          --query "defaultHostname" -o tsv)
-
-        FRONTEND_URL="https://$HOSTNAME"
-        echo "🌍 Frontend URL: $FRONTEND_URL"
-
-        echo "⏳ Waiting until frontend is reachable..."
-        while true; do
-          sleep 15
-          STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$FRONTEND_URL" || true)
-          if [ "$STATUS" = "200" ]; then
-            echo "✅ Frontend is LIVE"
-            break
+      # =============================
+      # Determine Environment
+      # =============================
+      - name: Determine Environment
+        id: env
+        run: |
+          if [ "${GITHUB_REF}" = "refs/heads/main" ]; then
+            echo "env=production" >> $GITHUB_OUTPUT
+            echo "ENV_PREFIX=PROD" >> $GITHUB_OUTPUT
+            echo "Deploying to PRODUCTION"
+          else
+            echo "env=development" >> $GITHUB_OUTPUT
+            echo "ENV_PREFIX=DEV" >> $GITHUB_OUTPUT
+            echo "Deploying to DEVELOPMENT"
           fi
-          echo "⏳ Still waiting... HTTP $STATUS"
-        done
 
-    # -------------------------------------------------
-    # Cleanup
-    # -------------------------------------------------
-    - name: Cleanup
-      if: always()
-      run: |
-        rm -f backend.zip
-        echo "✅ Deployment completed for ${{ steps.env.outputs.ENV }}"
+      # =============================
+      # Verify Required Secrets
+      # =============================
+      - name: Verify Required Secrets
+        run: |
+          ENV_PREFIX="${{ steps.env.outputs.ENV_PREFIX }}"
+          echo "🔍 Checking required secrets for $ENV_PREFIX environment..."
+          echo ""
+          echo "Required secrets for $ENV_PREFIX:"
+          echo "  ✅ ${ENV_PREFIX}_AZURE_CREDS"
+          echo "  ✅ ${ENV_PREFIX}_AZURE_WEBAPP_NAME"
+          echo "  ✅ ${ENV_PREFIX}_AZURE_RESOURCE_GROUP"
+          echo "  ✅ ${ENV_PREFIX}_AZURE_STATIC_WEB_APPS_API_TOKEN"
+          echo "  ✅ ${ENV_PREFIX}_VITE_API_BASE_URL"
+          echo "  ✅ ${ENV_PREFIX}_VITE_MSAL_CLIENT_ID"
+          echo "  ✅ ${ENV_PREFIX}_VITE_MSAL_TENANT_ID"
+          echo ""
+          echo "Note: Secrets will be validated when used. If any are missing, the deployment will fail with a clear error."
+          echo "Add secrets at: https://github.com/cloudsecurityweb/echopad-app/settings/secrets/actions"
+
+      # =====================================================
+      # BACKEND DEPLOYMENT (Azure App Service)
+      # =====================================================
+      - name: Setup Node (Backend)
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install Backend Dependencies
+        working-directory: backend
+        run: npm ci
+
+      - name: Package Backend
+        working-directory: backend
+        run: |
+          zip -r ../backend.zip . -x node_modules/\* .git/\*
+          ls -lh ../backend.zip
+
+      - name: Azure Login (Backend)
+        uses: azure/login@v2
+        with:
+          creds: ${{ steps.env.outputs.ENV_PREFIX == 'PROD' && secrets.PROD_AZURE_CREDS || secrets.DEV_AZURE_CREDS }}
+
+      - name: Deploy Backend to App Service
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ steps.env.outputs.ENV_PREFIX == 'PROD' && secrets.PROD_AZURE_WEBAPP_NAME || secrets.DEV_AZURE_WEBAPP_NAME }}
+          package: backend.zip
+          startup-command: "npm start"
+
+      - name: Restart Backend
+        run: |
+          az webapp restart \
+            --name ${{ steps.env.outputs.ENV_PREFIX == 'PROD' && secrets.PROD_AZURE_WEBAPP_NAME || secrets.DEV_AZURE_WEBAPP_NAME }} \
+            --resource-group ${{ steps.env.outputs.ENV_PREFIX == 'PROD' && secrets.PROD_AZURE_RESOURCE_GROUP || secrets.DEV_AZURE_RESOURCE_GROUP }}
+
+      # =====================================================
+      # FRONTEND DEPLOYMENT (Azure Static Web Apps)
+      # =====================================================
+      - name: Setup Node (Frontend)
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install Frontend Dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Build Frontend
+        working-directory: frontend
+        env:
+          VITE_API_BASE_URL: ${{ steps.env.outputs.ENV_PREFIX == 'PROD' && secrets.PROD_VITE_API_BASE_URL || secrets.DEV_VITE_API_BASE_URL }}
+          VITE_MSAL_CLIENT_ID: ${{ steps.env.outputs.ENV_PREFIX == 'PROD' && secrets.PROD_VITE_MSAL_CLIENT_ID || secrets.DEV_VITE_MSAL_CLIENT_ID }}
+          VITE_MSAL_TENANT_ID: ${{ steps.env.outputs.ENV_PREFIX == 'PROD' && secrets.PROD_VITE_MSAL_TENANT_ID || secrets.DEV_VITE_MSAL_TENANT_ID }}
+        run: |
+          npm run build
+          echo "Build output:"
+          du -sh dist
+          ls -l dist
+
+      # ✅ CORRECT & OFFICIAL STATIC WEB APP DEPLOY
+      - name: Deploy Frontend to Azure Static Web Apps
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ steps.env.outputs.ENV_PREFIX == 'PROD' && secrets.PROD_AZURE_STATIC_WEB_APPS_API_TOKEN || secrets.DEV_AZURE_STATIC_WEB_APPS_API_TOKEN }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          action: "upload"
+          app_location: "frontend"
+          output_location: "dist"
+          deployment_environment: ${{ steps.env.outputs.env }}
+
+      # =============================
+      # Cleanup
+      # =============================
+      - name: Cleanup
+        if: always()
+        run: |
+          rm -f backend.zip
+          echo "✅ Deployment completed for ${{ steps.env.outputs.env }}"
