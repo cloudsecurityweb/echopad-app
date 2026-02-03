@@ -43,6 +43,7 @@ jobs:
       uses: azure/login@v2
       with:
         creds: ${{ secrets.AZURE_CREDS }}
+        allow-no-subscriptions: true
 
     # -------------------------------------------------
     # Set Azure Subscription
