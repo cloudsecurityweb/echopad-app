@@ -345,11 +345,23 @@ jobs:
           echo "📦 Files to deploy:"
           ls -lh dist/ | head -10
           echo ""
-          echo "🔍 Final verification - checking built files contain latest code:"
-          if grep -r "Organizer Admin Name" dist/ 2>/dev/null | head -1; then
-            echo "   ✅ Confirmed: Latest code ('Organizer Admin Name') is in build"
+          
+          # CRITICAL: Verify the code is actually in the build
+          echo "🔍 CRITICAL VERIFICATION - checking built files contain latest code:"
+          echo "   Searching for 'Organizer Admin Name' in dist/..."
+          SEARCH_RESULT=$(grep -r "Organizer Admin Name" dist/ 2>/dev/null | head -1)
+          if [ -n "$SEARCH_RESULT" ]; then
+            echo "   ✅ CONFIRMED: Found 'Organizer Admin Name' in build!"
+            echo "   Location: $SEARCH_RESULT"
           else
-            echo "   ⚠️  WARNING: Latest code might not be in build!"
+            echo "   ❌ ERROR: 'Organizer Admin Name' NOT FOUND in build!"
+            echo "   This means the build is NOT including the latest code!"
+            echo ""
+            echo "   Checking what's actually in the build..."
+            grep -r "Organiser\|Organizer" dist/ 2>/dev/null | head -5 || echo "   No organizer-related text found at all"
+            echo ""
+            echo "   ❌ DEPLOYMENT WILL FAIL - Build does not contain latest code!"
+            exit 1
           fi
           echo ""
           
@@ -364,35 +376,26 @@ jobs:
           echo ""
           
           # Deploy using the CLI
-          # Capture output to verify deployment started
-          DEPLOY_OUTPUT=$(npx --yes @azure/static-web-apps-cli deploy ./dist \
+          # Don't capture output - let it stream so we can see what's happening
+          echo "Running deployment command..."
+          npx --yes @azure/static-web-apps-cli deploy ./dist \
             --deployment-token "$DEPLOY_TOKEN" \
             --env production \
-            --no-use-keychain 2>&1)
+            --no-use-keychain
           
           DEPLOY_EXIT_CODE=$?
-          
-          echo "$DEPLOY_OUTPUT"
           echo ""
           
           if [ $DEPLOY_EXIT_CODE -ne 0 ]; then
             echo "❌ Deployment command failed with exit code: $DEPLOY_EXIT_CODE"
-            echo "   Check the output above for errors"
             exit 1
           fi
           
-          # Check if deployment was initiated
-          if echo "$DEPLOY_OUTPUT" | grep -qi "deploy\|upload\|preparing"; then
-            echo "✅ Deployment initiated successfully"
-          else
-            echo "⚠️  Warning: Deployment output doesn't show expected messages"
-            echo "   But exit code was 0, so continuing..."
-          fi
-          
+          echo "✅ Deployment command completed successfully"
           echo ""
-          echo "⏳ Waiting for deployment to complete..."
-          echo "   Note: Deployment token method uploads files directly to Azure"
-          echo "   Standard deployment time is 2-3 minutes"
+          echo "⏳ Waiting for files to upload and Azure to process..."
+          echo "   Note: Files are uploading in the background"
+          echo "   Standard processing time is 2-3 minutes"
           echo ""
           
           # Wait for deployment to complete
@@ -404,7 +407,7 @@ jobs:
             sleep $INTERVAL
             ELAPSED=$((ELAPSED + INTERVAL))
             REMAINING=$((TOTAL_WAIT - ELAPSED))
-            echo "   ⏳ Deployment in progress... (${ELAPSED}s / ${TOTAL_WAIT}s - ${REMAINING}s remaining)"
+            echo "   ⏳ Processing... (${ELAPSED}s / ${TOTAL_WAIT}s - ${REMAINING}s remaining)"
           done
           
           echo ""
@@ -414,12 +417,17 @@ jobs:
           echo "   • Commit: ${{ github.sha }}"
           echo "   • Branch: ${{ github.ref_name }}"
           echo "   • Deployed at: $(date -u +"%Y-%m-%d %H:%M:%S UTC")"
+          echo "   • Build verified: ✅ 'Organizer Admin Name' confirmed in build"
           echo ""
-          echo "💡 To see changes:"
-          echo "   1. Wait 1-2 more minutes for Azure CDN to update"
-          echo "   2. Hard refresh browser: Ctrl+Shift+R (Windows) or Cmd+Shift+R (Mac)"
-          echo "   3. Or clear browser cache completely"
-          echo "   4. Check Azure Portal → Static Web App → Deployment history"
+          echo "🔧 IMPORTANT - To see changes in browser:"
+          echo "   1. Wait 1-2 more minutes for Azure CDN to propagate"
+          echo "   2. HARD REFRESH:"
+          echo "      • Windows/Linux: Ctrl + Shift + R (or Ctrl + F5)"
+          echo "      • Mac: Cmd + Shift + R"
+          echo "   3. Or clear browser cache completely:"
+          echo "      • Chrome: Settings → Privacy → Clear browsing data → Cached images"
+          echo "   4. Try incognito/private window to bypass cache"
+          echo "   5. Check Azure Portal → Static Web App → Deployment history"
           echo ""
           echo "✅ Frontend deployment completed"
 
