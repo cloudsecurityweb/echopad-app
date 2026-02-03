@@ -12,464 +12,102 @@ env:
 jobs:
   deploy:
     runs-on: self-hosted
-    
-    steps:
-      - name: Test Runner
-        run: |
-          echo "✅ Runner is working!"
-          echo "OS: $(uname -a)"
-          echo "User: $(whoami)"
-          echo "PWD: $(pwd)"
-          echo "Git version: $(git --version 2>&1 || echo 'Git not found')"
-          echo "Node version: $(node --version 2>&1 || echo 'Node not found')"
-          echo "NPM version: $(npm --version 2>&1 || echo 'NPM not found')"
-          echo "Azure CLI: $(az --version 2>&1 | head -1 || echo 'Azure CLI not found')"
-          ls -la
-          echo "✅ Test step completed"
 
+    steps:
+      # -----------------------------
+      # Checkout
+      # -----------------------------
       - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
+      # -----------------------------
+      # Determine Environment
+      # -----------------------------
       - name: Determine Environment
         id: env
         run: |
           if [ "${{ github.ref }}" = "refs/heads/main" ]; then
             echo "env=production" >> $GITHUB_OUTPUT
-            echo "prefix=PROD" >> $GITHUB_OUTPUT
-            echo "✅ Deploying to PRODUCTION"
+            echo "ENV_PREFIX=PROD" >> $GITHUB_OUTPUT
+            echo "Deploying to PRODUCTION"
           else
             echo "env=development" >> $GITHUB_OUTPUT
-            echo "prefix=DEV" >> $GITHUB_OUTPUT
-            echo "✅ Deploying to DEVELOPMENT"
+            echo "ENV_PREFIX=DEV" >> $GITHUB_OUTPUT
+            echo "Deploying to DEVELOPMENT"
           fi
-          echo "Branch: ${{ github.ref_name }}"
-          echo "Ref: ${{ github.ref }}"
 
-      # Deploy Backend
-      - name: Setup Node.js for Backend
+      # =====================================================
+      # BACKEND DEPLOYMENT (Azure App Service)
+      # =====================================================
+      - name: Setup Node (Backend)
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
 
       - name: Install Backend Dependencies
-        working-directory: ./backend
+        working-directory: backend
         run: npm ci
 
-      - name: Create Backend Deployment Package
-        working-directory: ./backend
+      - name: Package Backend
+        working-directory: backend
         run: |
-          zip -r ../backend-deploy.zip . \
-            -x "node_modules/*" \
-            -x ".git/*" \
-            -x "*.log" \
-            -x "*.md" \
-            -x ".env*" \
-            -x "test-*.js" \
-            -x "*.spec.js" \
-            -x ".DS_Store" \
-            -x "*.zip" \
-            -x "*.sh" \
-            -x "*.ps1" \
-            -x "create-*.ps1" \
-            > /dev/null 2>&1
-          echo "✅ Backend package created"
-          ls -lh ../backend-deploy.zip || echo "❌ Package not found!"
+          zip -r ../backend.zip . -x node_modules/\* .git/\*
+          ls -lh ../backend.zip
 
-      - name: Verify Secrets
-        run: |
-          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
-            if [ -z "${{ secrets.PROD_AZURE_CREDS }}" ]; then
-              echo "❌ ERROR: PROD_AZURE_CREDS secret is missing!"
-              exit 1
-            fi
-            echo "✅ PROD secrets verified"
-          else
-            if [ -z "${{ secrets.DEV_AZURE_CREDS }}" ]; then
-              echo "❌ ERROR: DEV_AZURE_CREDS secret is missing!"
-              exit 1
-            fi
-            echo "✅ DEV secrets verified"
-          fi
-
-      - name: Azure Login
+      - name: Azure Login (Backend)
         uses: azure/login@v2
         with:
-          creds: ${{ github.ref == 'refs/heads/main' && secrets.PROD_AZURE_CREDS || secrets.DEV_AZURE_CREDS }}
+          creds: ${{ steps.env.outputs.ENV_PREFIX == 'PROD' && secrets.PROD_AZURE_CREDS || secrets.DEV_AZURE_CREDS }}
 
-      - name: Verify Azure Access and Set Subscription
-        run: |
-          echo "🔍 Verifying Azure access and subscription..."
-          echo ""
-          
-          # Show current account
-          echo "Current Azure account:"
-          az account show --query "{name:name, id:id, tenantId:tenantId}" -o table || {
-            echo "❌ Cannot get account info"
-            exit 1
-          }
-          
-          # Set correct subscription based on environment
-          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
-            # PROD subscription
-            SUBSCRIPTION_ID="c9ca9a88-e079-4b0d-a4ad-ed340a5d30fb"
-            echo ""
-            echo "Setting PROD subscription: $SUBSCRIPTION_ID"
-          else
-            # DEV subscription
-            SUBSCRIPTION_ID="c31376b6-ec72-4a1a-9fb6-ec8c53edf6d2"
-            echo ""
-            echo "Setting DEV subscription: $SUBSCRIPTION_ID"
-          fi
-          
-          az account set --subscription "$SUBSCRIPTION_ID"
-          echo "✅ Subscription set"
-          
-          # Verify we can access the Static Web App
-          SWA_NAME="${{ github.ref == 'refs/heads/main' && secrets.PROD_AZURE_STATIC_WEB_APP_NAME || secrets.DEV_AZURE_STATIC_WEB_APP_NAME }}"
-          RESOURCE_GROUP="${{ github.ref == 'refs/heads/main' && secrets.PROD_AZURE_RESOURCE_GROUP || secrets.DEV_AZURE_RESOURCE_GROUP }}"
-          
-          echo ""
-          echo "Testing access to Static Web App:"
-          echo "   Name: $SWA_NAME"
-          echo "   Resource Group: $RESOURCE_GROUP"
-          
-          SWA_ACCESS=$(az staticwebapp show \
-            --name "$SWA_NAME" \
-            --resource-group "$RESOURCE_GROUP" \
-            --query "name" -o tsv 2>&1)
-          
-          if echo "$SWA_ACCESS" | grep -q "ResourceNotFound\|NotFound\|AuthorizationFailed\|Forbidden"; then
-            echo "   ❌ Cannot access Static Web App!"
-            echo "   Error: $SWA_ACCESS"
-            echo "   This indicates cross-account or permission issue"
-            echo "   Deployment will work via token, but status checking will fail"
-          else
-            echo "   ✅ Can access Static Web App: $SWA_ACCESS"
-          fi
-
-      - name: Verify Azure Connectivity
-        continue-on-error: true
-        run: |
-          echo "🔍 Verifying Azure connectivity and subscription access..."
-          echo ""
-          
-          # Show current account and subscription
-          echo "📋 Current Azure account:"
-          if az account show --query "{name:name, id:id, tenantId:tenantId}" -o table 2>&1; then
-            echo "✅ Account info retrieved"
-          else
-            echo "⚠️  Warning: Cannot get account info (non-critical)"
-          fi
-          
-          # List available subscriptions
-          echo ""
-          echo "📋 Available subscriptions:"
-          if az account list --query "[].{name:name, id:id, isDefault:isDefault}" -o table 2>&1; then
-            echo "✅ Subscriptions listed"
-          else
-            echo "⚠️  Warning: Cannot list subscriptions (non-critical)"
-          fi
-          
-          # Get Static Web App details
-          SWA_NAME="${{ github.ref == 'refs/heads/main' && secrets.PROD_AZURE_STATIC_WEB_APP_NAME || secrets.DEV_AZURE_STATIC_WEB_APP_NAME }}"
-          RESOURCE_GROUP="${{ github.ref == 'refs/heads/main' && secrets.PROD_AZURE_RESOURCE_GROUP || secrets.DEV_AZURE_RESOURCE_GROUP }}"
-          
-          echo ""
-          echo "🔍 Checking access to Static Web App:"
-          echo "   Name: $SWA_NAME"
-          echo "   Resource Group: $RESOURCE_GROUP"
-          
-          # Try to get the Static Web App
-          SWA_INFO=$(az staticwebapp show \
-            --name "$SWA_NAME" \
-            --resource-group "$RESOURCE_GROUP" \
-            --query "{name:name, defaultHostname:defaultHostname, location:location}" -o json 2>&1)
-          
-          SWA_EXIT_CODE=$?
-          
-          if [ $SWA_EXIT_CODE -ne 0 ] || echo "$SWA_INFO" | grep -q "ResourceNotFound\|NotFound\|does not exist"; then
-            echo "   ⚠️  Warning: Cannot access Static Web App via Azure CLI"
-            echo "   This might be a cross-subscription access issue"
-            echo "   Error: $SWA_INFO"
-            echo ""
-            echo "   ℹ️  This is OK - deployment via token will still work!"
-            echo "   The deployment token method doesn't require Azure CLI access"
-          elif echo "$SWA_INFO" | grep -q "AuthorizationFailed\|Forbidden"; then
-            echo "   ⚠️  Warning: Access denied via Azure CLI"
-            echo "   Error: $SWA_INFO"
-            echo ""
-            echo "   ℹ️  This is OK - deployment via token will still work!"
-            echo "   The deployment token method doesn't require Azure CLI access"
-          else
-            echo "   ✅ Can access Static Web App:"
-            # Try to parse with jq, fallback to raw output
-            if command -v jq >/dev/null 2>&1; then
-              echo "$SWA_INFO" | jq -r '. | "      Name: \(.name)\n      URL: \(.defaultHostname)\n      Location: \(.location)"' 2>/dev/null || echo "$SWA_INFO"
-            else
-              echo "$SWA_INFO"
-            fi
-          fi
-          
-          echo ""
-          echo "✅ Azure connectivity verification complete"
-          echo ""
-          echo "ℹ️  Note: Deployment via token doesn't require Azure CLI access"
-          echo "   Files upload directly to Azure Static Web App"
-          echo "   Check deployment history in Azure Portal → Static Web App → Deployment history"
-
-      - name: Deploy Backend
+      - name: Deploy Backend to App Service
         uses: azure/webapps-deploy@v3
         with:
-          app-name: ${{ github.ref == 'refs/heads/main' && secrets.PROD_AZURE_WEBAPP_NAME || secrets.DEV_AZURE_WEBAPP_NAME }}
-          package: ${{ github.workspace }}/backend-deploy.zip
-          startup-command: 'npm start'
-
-      - name: Configure Backend Settings
-        run: |
-          az webapp config appsettings set \
-            --name ${{ github.ref == 'refs/heads/main' && secrets.PROD_AZURE_WEBAPP_NAME || secrets.DEV_AZURE_WEBAPP_NAME }} \
-            --resource-group ${{ github.ref == 'refs/heads/main' && secrets.PROD_AZURE_RESOURCE_GROUP || secrets.DEV_AZURE_RESOURCE_GROUP }} \
-            --settings \
-              NODE_ENV="${{ steps.env.outputs.env }}" \
-              PORT="8080" \
-              FRONTEND_URL="${{ github.ref == 'refs/heads/main' && secrets.PROD_FRONTEND_URL || secrets.DEV_FRONTEND_URL }}" \
-              AZURE_TENANT_ID="${{ github.ref == 'refs/heads/main' && secrets.PROD_AZURE_TENANT_ID || secrets.DEV_AZURE_TENANT_ID }}" \
-              AZURE_CLIENT_ID="${{ github.ref == 'refs/heads/main' && secrets.PROD_AZURE_CLIENT_ID || secrets.DEV_AZURE_CLIENT_ID }}" \
-              COSMOS_ENDPOINT="${{ github.ref == 'refs/heads/main' && secrets.PROD_COSMOS_ENDPOINT || secrets.DEV_COSMOS_ENDPOINT }}" \
-              COSMOS_KEY="${{ github.ref == 'refs/heads/main' && secrets.PROD_COSMOS_KEY || secrets.DEV_COSMOS_KEY }}" \
-              COSMOS_DATABASE="${{ github.ref == 'refs/heads/main' && secrets.PROD_COSMOS_DATABASE || secrets.DEV_COSMOS_DATABASE }}" \
-              GOOGLE_CLIENT_ID="${{ github.ref == 'refs/heads/main' && secrets.PROD_GOOGLE_CLIENT_ID || secrets.DEV_GOOGLE_CLIENT_ID }}" \
-              MAGIC_LINK_JWT_SECRET="${{ github.ref == 'refs/heads/main' && secrets.PROD_MAGIC_LINK_JWT_SECRET || secrets.DEV_MAGIC_LINK_JWT_SECRET }}" \
-              MAGIC_LINK_TTL_MINUTES="1440" \
-              AZURE_COMMUNICATION_CONNECTION_STRING="${{ github.ref == 'refs/heads/main' && secrets.PROD_AZURE_COMMUNICATION_CONNECTION_STRING || secrets.DEV_AZURE_COMMUNICATION_CONNECTION_STRING }}" \
-              AZURE_COMMUNICATION_SENDER_EMAIL="${{ github.ref == 'refs/heads/main' && secrets.PROD_AZURE_COMMUNICATION_SENDER_EMAIL || secrets.DEV_AZURE_COMMUNICATION_SENDER_EMAIL }}" \
-              SCM_DO_BUILD_DURING_DEPLOYMENT="true" \
-              WEBSITES_ENABLE_APP_SERVICE_STORAGE="false" \
-            --output none
+          app-name: ${{ steps.env.outputs.ENV_PREFIX == 'PROD' && secrets.PROD_AZURE_WEBAPP_NAME || secrets.DEV_AZURE_WEBAPP_NAME }}
+          package: backend.zip
+          startup-command: "npm start"
 
       - name: Restart Backend
         run: |
           az webapp restart \
-            --name ${{ github.ref == 'refs/heads/main' && secrets.PROD_AZURE_WEBAPP_NAME || secrets.DEV_AZURE_WEBAPP_NAME }} \
-            --resource-group ${{ github.ref == 'refs/heads/main' && secrets.PROD_AZURE_RESOURCE_GROUP || secrets.DEV_AZURE_RESOURCE_GROUP }}
+            --name ${{ steps.env.outputs.ENV_PREFIX == 'PROD' && secrets.PROD_AZURE_WEBAPP_NAME || secrets.DEV_AZURE_WEBAPP_NAME }} \
+            --resource-group ${{ steps.env.outputs.ENV_PREFIX == 'PROD' && secrets.PROD_AZURE_RESOURCE_GROUP || secrets.DEV_AZURE_RESOURCE_GROUP }}
 
-      # Deploy Frontend
-      - name: Setup Node.js for Frontend
+      # =====================================================
+      # FRONTEND DEPLOYMENT (Azure Static Web Apps)
+      # =====================================================
+      - name: Setup Node (Frontend)
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
 
       - name: Install Frontend Dependencies
-        working-directory: ./frontend
+        working-directory: frontend
         run: npm ci
 
-      - name: Clean Frontend Build
-        working-directory: ./frontend
-        run: |
-          echo "🧹 Cleaning previous build..."
-          rm -rf dist
-          rm -rf node_modules/.vite
-          echo "✅ Clean completed"
-
       - name: Build Frontend
-        working-directory: ./frontend
+        working-directory: frontend
         env:
-          VITE_MSAL_CLIENT_ID: ${{ github.ref == 'refs/heads/main' && secrets.PROD_VITE_MSAL_CLIENT_ID || secrets.DEV_VITE_MSAL_CLIENT_ID }}
-          VITE_MSAL_TENANT_ID: ${{ github.ref == 'refs/heads/main' && secrets.PROD_VITE_MSAL_TENANT_ID || secrets.DEV_VITE_MSAL_TENANT_ID }}
-          VITE_GOOGLE_CLIENT_ID: ${{ github.ref == 'refs/heads/main' && secrets.PROD_VITE_GOOGLE_CLIENT_ID || secrets.DEV_VITE_GOOGLE_CLIENT_ID }}
-          VITE_API_BASE_URL: ${{ github.ref == 'refs/heads/main' && secrets.PROD_VITE_API_BASE_URL || secrets.DEV_VITE_API_BASE_URL }}
+          VITE_API_BASE_URL: ${{ steps.env.outputs.ENV_PREFIX == 'PROD' && secrets.PROD_VITE_API_BASE_URL || secrets.DEV_VITE_API_BASE_URL }}
+          VITE_MSAL_CLIENT_ID: ${{ steps.env.outputs.ENV_PREFIX == 'PROD' && secrets.PROD_VITE_MSAL_CLIENT_ID || secrets.DEV_VITE_MSAL_CLIENT_ID }}
+          VITE_MSAL_TENANT_ID: ${{ steps.env.outputs.ENV_PREFIX == 'PROD' && secrets.PROD_VITE_MSAL_TENANT_ID || secrets.DEV_VITE_MSAL_TENANT_ID }}
         run: |
-          echo "🔨 Building frontend with latest code..."
-          echo "Commit: ${{ github.sha }}"
-          echo "Branch: ${{ github.ref_name }}"
           npm run build
-          echo "✅ Build completed"
-          echo "📋 Build output size: $(du -sh dist | cut -f1)"
-          
-          # Inject build timestamp into index.html for cache busting
-          if [ -f dist/index.html ]; then
-            BUILD_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-            BUILD_COMMIT="${{ github.sha }}"
-            echo "   Injecting build metadata into index.html..."
-            # Use # as delimiter to avoid conflicts with | in the replacement string
-            sed -i.bak "s#</head>#<!-- Build: $BUILD_TIME | Commit: $BUILD_COMMIT --></head>#" dist/index.html
-            rm -f dist/index.html.bak
-            echo "   ✅ Build metadata injected"
-          fi
+          echo "Build size:"
+          du -sh dist
 
-      - name: Verify Build Output
-        working-directory: ./frontend
+      - name: Deploy Frontend to Static Web App
+        working-directory: frontend
         run: |
-          echo "📋 Verifying build output..."
-          echo "Build timestamp: $(date -u +"%Y-%m-%d %H:%M:%S UTC")"
-          echo "Commit: ${{ github.sha }}"
-          echo "Branch: ${{ github.ref_name }}"
-          echo ""
-          echo "Build files:"
-          find dist -type f -name "*.js" -o -name "*.css" -o -name "*.html" | head -10
-          echo ""
-          echo "Total build size: $(du -sh dist | cut -f1)"
-          echo ""
-          echo "🔍 Verifying latest code is in build..."
-          echo "Checking for 'Organizer Admin Name' in built files..."
-          if grep -r "Organizer Admin Name" dist/ 2>/dev/null | head -1; then
-            echo "✅ Found 'Organizer Admin Name' in build - latest code is included!"
-          else
-            echo "⚠️  WARNING: 'Organizer Admin Name' not found in build!"
-            echo "   This might indicate the build is using old code."
-            echo "   Checking what's actually in the build..."
-            grep -r "Organiser\|Organizer" dist/ 2>/dev/null | head -3 || echo "   No organizer-related text found"
-          fi
-          echo ""
-          echo "📄 Checking index.html for cache-busting..."
-          if [ -f dist/index.html ]; then
-            echo "   index.html size: $(wc -l < dist/index.html) lines"
-            echo "   index.html contains:"
-            grep -o 'assets/[^"]*\.js' dist/index.html | head -3 || echo "   No JS files referenced"
-          fi
-          echo ""
-          echo "✅ Build verification complete"
-
-      - name: Deploy Frontend
-        working-directory: ./frontend
-        run: |
-          echo "🚀 Deploying to Azure Static Web App..."
-          echo "Deployment timestamp: $(date -u +"%Y-%m-%d %H:%M:%S UTC")"
-          echo "Commit SHA: ${{ github.sha }}"
-          echo "Branch: ${{ github.ref_name }}"
-          echo ""
-          
-          # Verify we're deploying the right files
-          echo "📦 Files to deploy:"
-          ls -lh dist/ | head -10
-          echo ""
-          
-          # CRITICAL: Verify the code is actually in the build
-          echo "🔍 CRITICAL VERIFICATION - checking built files contain latest code:"
-          echo "   Searching for 'Organizer Admin Name' in dist/..."
-          SEARCH_RESULT=$(grep -r "Organizer Admin Name" dist/ 2>/dev/null | head -1)
-          if [ -n "$SEARCH_RESULT" ]; then
-            echo "   ✅ CONFIRMED: Found 'Organizer Admin Name' in build!"
-            echo "   Location: $SEARCH_RESULT"
-          else
-            echo "   ❌ ERROR: 'Organizer Admin Name' NOT FOUND in build!"
-            echo "   This means the build is NOT including the latest code!"
-            echo ""
-            echo "   Checking what's actually in the build..."
-            grep -r "Organiser\|Organizer" dist/ 2>/dev/null | head -5 || echo "   No organizer-related text found at all"
-            echo ""
-            echo "   ❌ DEPLOYMENT WILL FAIL - Build does not contain latest code!"
-            exit 1
-          fi
-          echo ""
-          
-          SWA_NAME="${{ github.ref == 'refs/heads/main' && secrets.PROD_AZURE_STATIC_WEB_APP_NAME || secrets.DEV_AZURE_STATIC_WEB_APP_NAME }}"
-          RESOURCE_GROUP="${{ github.ref == 'refs/heads/main' && secrets.PROD_AZURE_RESOURCE_GROUP || secrets.DEV_AZURE_RESOURCE_GROUP }}"
-          DEPLOY_TOKEN="${{ github.ref == 'refs/heads/main' && secrets.PROD_AZURE_STATIC_WEB_APP_DEPLOYMENT_TOKEN || secrets.DEV_AZURE_STATIC_WEB_APP_DEPLOYMENT_TOKEN }}"
-          
-          echo "Static Web App: $SWA_NAME"
-          echo "Resource Group: $RESOURCE_GROUP"
-          echo ""
-          echo "Starting deployment..."
-          echo ""
-          
-          # Deploy using the CLI
-          # Don't capture output - let it stream so we can see what's happening
-          echo "Running deployment command..."
           npx --yes @azure/static-web-apps-cli deploy ./dist \
-            --deployment-token "$DEPLOY_TOKEN" \
-            --env production \
+            --deployment-token "${{ steps.env.outputs.ENV_PREFIX == 'PROD' && secrets.PROD_AZURE_STATIC_WEB_APP_DEPLOYMENT_TOKEN || secrets.DEV_AZURE_STATIC_WEB_APP_DEPLOYMENT_TOKEN }}" \
+            --env "${{ steps.env.outputs.env }}" \
             --no-use-keychain
-          
-          DEPLOY_EXIT_CODE=$?
-          echo ""
-          
-          if [ $DEPLOY_EXIT_CODE -ne 0 ]; then
-            echo "❌ Deployment command failed with exit code: $DEPLOY_EXIT_CODE"
-            exit 1
-          fi
-          
-          echo "✅ Deployment command completed successfully"
-          echo ""
-          echo "⏳ Waiting for files to upload and Azure to process..."
-          echo "   Note: Files are uploading in the background"
-          echo "   Standard processing time is 2-3 minutes"
-          echo ""
-          
-          # Wait for deployment to complete
-          ELAPSED=0
-          TOTAL_WAIT=180  # 3 minutes
-          INTERVAL=15     # Show progress every 15 seconds
-          
-          while [ $ELAPSED -lt $TOTAL_WAIT ]; do
-            sleep $INTERVAL
-            ELAPSED=$((ELAPSED + INTERVAL))
-            REMAINING=$((TOTAL_WAIT - ELAPSED))
-            echo "   ⏳ Processing... (${ELAPSED}s / ${TOTAL_WAIT}s - ${REMAINING}s remaining)"
-          done
-          
-          echo ""
-          echo "✅ Wait period completed (3 minutes)"
-          echo ""
-          echo "📋 Deployment Summary:"
-          echo "   • Commit: ${{ github.sha }}"
-          echo "   • Branch: ${{ github.ref_name }}"
-          echo "   • Deployed at: $(date -u +"%Y-%m-%d %H:%M:%S UTC")"
-          echo "   • Build verified: ✅ 'Organizer Admin Name' confirmed in build"
-          echo ""
-          echo "🔧 IMPORTANT - To see changes in browser:"
-          echo "   1. Wait 1-2 more minutes for Azure CDN to propagate"
-          echo "   2. HARD REFRESH:"
-          echo "      • Windows/Linux: Ctrl + Shift + R (or Ctrl + F5)"
-          echo "      • Mac: Cmd + Shift + R"
-          echo "   3. Or clear browser cache completely:"
-          echo "      • Chrome: Settings → Privacy → Clear browsing data → Cached images"
-          echo "   4. Try incognito/private window to bypass cache"
-          echo "   5. Check Azure Portal → Static Web App → Deployment history"
-          echo ""
-          echo "✅ Frontend deployment completed"
 
-      - name: Cleanup Deployment Files
-        if: always()
-        run: rm -f backend-deploy.zip
-
-      - name: Cleanup Runner Disk Space
+      # -----------------------------
+      # Cleanup
+      # -----------------------------
+      - name: Cleanup
         if: always()
         run: |
-          echo "🧹 Cleaning up runner disk space..."
-          
-          # Clean old work directories (older than 7 days)
-          echo "Cleaning old work directories..."
-          find "${{ runner.workspace }}/.." -maxdepth 1 -type d -name "_work" -exec find {} -type d -mtime +7 -exec rm -rf {} + \; 2>/dev/null || true
-          
-          # Clean old diagnostic logs (older than 3 days)
-          echo "Cleaning old diagnostic logs..."
-          find /opt/actions-runner/_diag -name "*.log" -mtime +3 -delete 2>/dev/null || true
-          
-          # Clean npm cache in work directory
-          echo "Cleaning npm cache..."
-          find "${{ runner.workspace }}/.." -type d -name ".npm" -exec rm -rf {} + 2>/dev/null || true
-          
-          # Clean temporary files
-          echo "Cleaning temporary files..."
-          find "${{ runner.temp }}" -type f -mtime +1 -delete 2>/dev/null || true
-          
-          # Clean old archives and downloads
-          echo "Cleaning old archives..."
-          find "${{ runner.workspace }}/.." -name "*.tar.gz" -mtime +1 -delete 2>/dev/null || true
-          find "${{ runner.workspace }}/.." -name "*.zip" -mtime +1 -delete 2>/dev/null || true
-          
-          # Show disk space after cleanup
-          echo ""
-          echo "📊 Disk space after cleanup:"
-          df -h / | tail -1
-          echo ""
-          echo "✅ Cleanup completed"
-
-      - name: Deployment Complete
-        run: |
-          echo "✅✅✅ Deployment Complete! ✅✅✅"
-          echo "Environment: ${{ steps.env.outputs.env }}"
-          echo "Branch: ${{ github.ref_name }}"
+          rm -f backend.zip
+          echo "Deployment completed for ${{ steps.env.outputs.env }}"
