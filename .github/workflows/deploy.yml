@@ -11,8 +11,7 @@ env:
 
 jobs:
   deploy:
-    runs-on: self-hosted
-    timeout-minutes: 90   # safety net only
+    runs-on: self-hosted  
 
     steps:
     # =====================================================
