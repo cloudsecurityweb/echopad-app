@@ -16,13 +16,13 @@ jobs:
 
     steps:
     # =====================================================
-    # Checkout
+    # CHECKOUT
     # =====================================================
     - name: Checkout repository
       uses: actions/checkout@v4
 
     # =====================================================
-    # Determine Environment
+    # DETERMINE ENVIRONMENT
     # =====================================================
     - name: Determine environment
       id: env
@@ -38,7 +38,7 @@ jobs:
         fi
 
     # =====================================================
-    # BACKEND DEPLOYMENT (Azure App Service)
+    # BACKEND – BUILD & DEPLOY (APP SERVICE)
     # =====================================================
     - name: Setup Node (Backend)
       uses: actions/setup-node@v4
@@ -55,7 +55,7 @@ jobs:
         zip -r ../backend.zip . -x node_modules/\* .git/\*
         ls -lh ../backend.zip
 
-    - name: Azure login
+    - name: Azure Login
       uses: azure/login@v2
       with:
         creds: ${{ steps.env.outputs.PREFIX == 'PROD' && secrets.PROD_AZURE_CREDS || secrets.DEV_AZURE_CREDS }}
@@ -74,7 +74,7 @@ jobs:
           --resource-group ${{ steps.env.outputs.PREFIX == 'PROD' && secrets.PROD_AZURE_RESOURCE_GROUP || secrets.DEV_AZURE_RESOURCE_GROUP }}
 
     # =====================================================
-    # FRONTEND BUILD
+    # FRONTEND – BUILD
     # =====================================================
     - name: Setup Node (Frontend)
       uses: actions/setup-node@v4
@@ -96,39 +96,44 @@ jobs:
         du -sh dist
 
     # =====================================================
-    # FRONTEND DEPLOY (WAIT UNTIL SITE IS LIVE)
+    # FRONTEND – DEPLOY & WAIT UNTIL LIVE
     # =====================================================
     - name: Deploy frontend and wait until live
       working-directory: frontend
       env:
         DEPLOY_TOKEN: ${{ steps.env.outputs.PREFIX == 'PROD' && secrets.PROD_AZURE_STATIC_WEB_APP_DEPLOYMENT_TOKEN || secrets.DEV_AZURE_STATIC_WEB_APP_DEPLOYMENT_TOKEN }}
-        FRONTEND_URL: ${{ steps.env.outputs.PREFIX == 'PROD' && secrets.PROD_STATIC_WEB_APP_URL || secrets.DEV_STATIC_WEB_APP_URL }}
+        SWA_NAME: ${{ steps.env.outputs.PREFIX == 'PROD' && secrets.PROD_AZURE_STATIC_WEB_APP_NAME || secrets.DEV_AZURE_STATIC_WEB_APP_NAME }}
+        RESOURCE_GROUP: ${{ steps.env.outputs.PREFIX == 'PROD' && secrets.PROD_AZURE_RESOURCE_GROUP || secrets.DEV_AZURE_RESOURCE_GROUP }}
         ENVIRONMENT: ${{ steps.env.outputs.ENV }}
       run: |
         set -euo pipefail
 
-        echo "Triggering Static Web App deployment"
-        echo "Environment: $ENVIRONMENT"
-        echo "Frontend URL: $FRONTEND_URL"
-
+        echo "🚀 Deploying frontend to Azure Static Web Apps"
         npx --yes @azure/static-web-apps-cli deploy ./dist \
           --deployment-token "$DEPLOY_TOKEN" \
           --env "$ENVIRONMENT" \
           --no-use-keychain
 
-        echo "📡 Deployment triggered. Waiting for frontend to be live..."
+        echo "🔍 Fetching Static Web App hostname from Azure..."
+        HOSTNAME=$(az staticwebapp show \
+          --name "$SWA_NAME" \
+          --resource-group "$RESOURCE_GROUP" \
+          --query "defaultHostname" -o tsv)
 
+        FRONTEND_URL="https://$HOSTNAME"
+        echo "🌍 Frontend URL: $FRONTEND_URL"
+
+        echo "⏳ Waiting until frontend is reachable (HTTP 200)..."
         while true; do
           sleep 15
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$FRONTEND_URL" || true)
 
-          STATUS_CODE=$(curl -s -o /dev/null -w "%{http_code}" "$FRONTEND_URL" || true)
-
-          if [ "$STATUS_CODE" = "200" ]; then
-            echo "Frontend is LIVE (HTTP 200)"
+          if [ "$STATUS" = "200" ]; then
+            echo "✅ Frontend is LIVE (HTTP 200)"
             break
           fi
 
-          echo "Waiting for frontend... (HTTP $STATUS_CODE)"
+          echo "⏳ Still waiting... HTTP $STATUS"
         done
 
     # =====================================================
@@ -138,4 +143,4 @@ jobs:
       if: always()
       run: |
         rm -f backend.zip
-        echo "Deployment completed for ${{ steps.env.outputs.ENV }}"
+        echo "✅ Deployment completed for ${{ steps.env.outputs.ENV }}"
