@@ -134,3 +134,4 @@ jobs:
         run: |
           rm -f backend.zip
           echo "Deployment completed for ${{ steps.env.outputs.env }}"
+# Deployment triggered after SKU upgrade
