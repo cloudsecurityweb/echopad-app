@@ -96,6 +96,32 @@ jobs:
         echo "   App Name: ${{ secrets.AZURE_BACKEND_APP_NAME }}"
         echo "   Resource Group: ${{ secrets.AZURE_BACKEND_RG }}"
 
+    - name: Verify App Service Exists
+      run: |
+        echo "🔍 Verifying App Service exists..."
+        APP_NAME="${{ secrets.AZURE_BACKEND_APP_NAME }}"
+        RG_NAME="${{ secrets.AZURE_BACKEND_RG }}"
+        
+        # Check if the app service exists
+        APP_EXISTS=$(az webapp show \
+          --name "$APP_NAME" \
+          --resource-group "$RG_NAME" \
+          --query "name" -o tsv 2>&1)
+        
+        if [ $? -eq 0 ] && [ -n "$APP_EXISTS" ]; then
+          echo "✅ App Service found: $APP_EXISTS"
+          echo "   Resource Group: $RG_NAME"
+        else
+          echo "❌ ERROR: App Service not found!"
+          echo "   App Name: $APP_NAME"
+          echo "   Resource Group: $RG_NAME"
+          echo "   Error: $APP_EXISTS"
+          echo ""
+          echo "📋 Available App Services in subscription:"
+          az webapp list --query "[].{name:name, resourceGroup:resourceGroup}" -o table || echo "   Cannot list app services"
+          exit 1
+        fi
+
     - name: Deploy backend to Azure App Service
       uses: azure/webapps-deploy@v3
       with:
