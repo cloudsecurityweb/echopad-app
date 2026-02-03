@@ -30,9 +30,11 @@ jobs:
       run: |
         if [ "${GITHUB_REF}" = "refs/heads/main" ]; then
           echo "ENV=production" >> $GITHUB_OUTPUT
+          echo "SUBSCRIPTION_ID=c9ca9a88-e079-4b0d-a4ad-ed340a5d30fb" >> $GITHUB_OUTPUT
           echo "Deploying to PRODUCTION"
         else
           echo "ENV=development" >> $GITHUB_OUTPUT
+          echo "SUBSCRIPTION_ID=c31376b6-ec72-4a1a-9fb6-ec8c53edf6d2" >> $GITHUB_OUTPUT
           echo "Deploying to DEVELOPMENT"
         fi
 
@@ -50,8 +52,11 @@ jobs:
     # -------------------------------------------------
     - name: Set Azure Subscription
       run: |
-        az account set --subscription "${{ secrets.AZURE_SUBSCRIPTION_ID }}"
-        echo "✅ Subscription set to: ${{ secrets.AZURE_SUBSCRIPTION_ID }}"
+        SUBSCRIPTION_ID="${{ steps.env.outputs.SUBSCRIPTION_ID }}"
+        echo "Setting subscription to: $SUBSCRIPTION_ID"
+        az account set --subscription "$SUBSCRIPTION_ID"
+        echo "✅ Subscription set successfully"
+        az account show --query "{name:name, id:id}" -o table
 
     # -------------------------------------------------
     # Verify Azure Login
