@@ -98,6 +98,17 @@ jobs:
           ls -la dist
 
       # ✅ CLI-based deployment (Works on ARM64 without Docker)
+      - name: Verify staticwebapp.config.json in dist
+        working-directory: frontend
+        run: |
+          if [ ! -f "dist/staticwebapp.config.json" ]; then
+            echo "❌ ERROR: staticwebapp.config.json not found in dist/"
+            exit 1
+          fi
+          echo "✅ Config file found in dist/"
+          echo "Config file content:"
+          cat dist/staticwebapp.config.json
+
       - name: Deploy Frontend to Azure Static Web Apps
         working-directory: frontend
         env:
@@ -109,6 +120,9 @@ jobs:
             --env ${{ steps.env.outputs.env }} \
             --no-use-keychain
           echo "✅ Frontend deployment completed"
+          echo ""
+          echo "⚠️  Note: Cache headers may take 2-5 minutes to propagate."
+          echo "   Verify with: curl -I https://icy-mushroom-045ce1b0f.4.azurestaticapps.net/index.html"
 
       # -----------------------------
       # Cleanup
