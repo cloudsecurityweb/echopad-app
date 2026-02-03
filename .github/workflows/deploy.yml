@@ -1,4 +1,4 @@
-name: Deploy Backend & Frontend
+name: Deploy Backend and Frontend
 
 on:
   push:
@@ -11,19 +11,19 @@ env:
 
 jobs:
   deploy:
-    runs-on: self-hosted
     name: Deploy Application
+    runs-on: self-hosted
 
     steps:
-    # ----------------------------------------------------
+    # -------------------------------------------------
     # Checkout
-    # ----------------------------------------------------
+    # -------------------------------------------------
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    # ----------------------------------------------------
+    # -------------------------------------------------
     # Determine Environment
-    # ----------------------------------------------------
+    # -------------------------------------------------
     - name: Determine environment
       id: env
       shell: bash
@@ -36,10 +36,27 @@ jobs:
           echo "Deploying to DEVELOPMENT"
         fi
 
-    # ----------------------------------------------------
-    # Backend: Build + Zip
-    # ----------------------------------------------------
-    - name: Setup Node (Backend)
+    # -------------------------------------------------
+    # Azure Login (EXPLICIT – FIXES YOUR ERROR)
+    # -------------------------------------------------
+    - name: Azure Login
+      uses: azure/login@v2
+      with:
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+
+    # -------------------------------------------------
+    # Verify Azure Login (keep once, remove later)
+    # -------------------------------------------------
+    - name: Verify Azure Login
+      run: az account show
+
+    # -------------------------------------------------
+    # Backend Build
+    # -------------------------------------------------
+    - name: Setup Node.js (Backend)
       uses: actions/setup-node@v4
       with:
         node-version: ${{ env.NODE_VERSION }}
@@ -56,18 +73,10 @@ jobs:
           -x node_modules/\* .git/\*
         ls -lh ../backend.zip
 
-    # ----------------------------------------------------
-    # Azure Login
-    # ----------------------------------------------------
-    - name: Azure Login
-      uses: azure/login@v2
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-    # ----------------------------------------------------
-    # Backend: Deploy to App Service
-    # ----------------------------------------------------
-    - name: Deploy backend to App Service
+    # -------------------------------------------------
+    # Backend Deploy (App Service)
+    # -------------------------------------------------
+    - name: Deploy backend to Azure App Service
       uses: azure/webapps-deploy@v3
       with:
         app-name: ${{ secrets.AZURE_BACKEND_APP_NAME }}
@@ -80,10 +89,10 @@ jobs:
           --name "${{ secrets.AZURE_BACKEND_APP_NAME }}" \
           --resource-group "${{ secrets.AZURE_BACKEND_RG }}"
 
-    # ----------------------------------------------------
-    # Frontend: Build
-    # ----------------------------------------------------
-    - name: Setup Node (Frontend)
+    # -------------------------------------------------
+    # Frontend Build
+    # -------------------------------------------------
+    - name: Setup Node.js (Frontend)
       uses: actions/setup-node@v4
       with:
         node-version: ${{ env.NODE_VERSION }}
@@ -102,10 +111,10 @@ jobs:
         npm run build
         du -sh dist
 
-    # ----------------------------------------------------
-    # Frontend: Deploy to Static Web Apps (PRODUCTION)
-    # ----------------------------------------------------
-    - name: Deploy frontend to Azure Static Web Apps
+    # -------------------------------------------------
+    # Frontend Deploy (Static Web Apps – PRODUCTION)
+    # -------------------------------------------------
+    - name: Deploy frontend and wait until live
       shell: bash
       env:
         DEPLOY_TOKEN: ${{ secrets.AZURE_SWA_DEPLOY_TOKEN }}
@@ -121,7 +130,7 @@ jobs:
           --env production \
           --no-use-keychain
 
-        echo "🔍 Fetching Static Web App hostname..."
+        echo "🔍 Fetching Static Web App hostname"
         HOSTNAME=$(az staticwebapp show \
           --name "$SWA_NAME" \
           --resource-group "$RESOURCE_GROUP" \
@@ -130,7 +139,7 @@ jobs:
         FRONTEND_URL="https://$HOSTNAME"
         echo "🌍 Frontend URL: $FRONTEND_URL"
 
-        echo "⏳ Waiting until frontend is reachable (HTTP 200)..."
+        echo "⏳ Waiting until frontend is reachable..."
         while true; do
           sleep 15
           STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$FRONTEND_URL" || true)
@@ -141,9 +150,9 @@ jobs:
           echo "⏳ Still waiting... HTTP $STATUS"
         done
 
-    # ----------------------------------------------------
+    # -------------------------------------------------
     # Cleanup
-    # ----------------------------------------------------
+    # -------------------------------------------------
     - name: Cleanup
       if: always()
       run: |
