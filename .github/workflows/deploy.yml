@@ -114,13 +114,15 @@ jobs:
         env:
           DEPLOY_TOKEN: ${{ steps.env.outputs.ENV_PREFIX == 'PROD' && secrets.PROD_AZURE_STATIC_WEB_APP_DEPLOYMENT_TOKEN || secrets.DEV_AZURE_STATIC_WEB_APP_DEPLOYMENT_TOKEN }}
         run: |
-          echo "🚀 Deploying frontend to ${{ steps.env.outputs.env }} environment"
+          echo "🚀 Deploying frontend to PRODUCTION environment"
+          echo "   (Always using --env production, matching build-and-deploy.sh)"
           npx --yes @azure/static-web-apps-cli deploy ./dist \
             --deployment-token "$DEPLOY_TOKEN" \
-            --env ${{ steps.env.outputs.env }} \
+            --env production \
             --no-use-keychain
           echo "✅ Frontend deployment completed"
           echo ""
+          echo "🌍 Frontend URL: https://icy-mushroom-045ce1b0f.4.azurestaticapps.net"
           echo "⚠️  Note: Cache headers may take 2-5 minutes to propagate."
           echo "   Verify with: curl -I https://icy-mushroom-045ce1b0f.4.azurestaticapps.net/index.html"
 
