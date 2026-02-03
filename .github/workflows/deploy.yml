@@ -1,4 +1,4 @@
-name: Deploy Backend & Frontend
+name: Deploy Backend and Frontend
 
 on:
   push:
@@ -12,7 +12,7 @@ env:
 jobs:
   deploy:
     runs-on: self-hosted
-    timeout-minutes: 90   # only safety net, NOT used by script
+    timeout-minutes: 90   # safety net only
 
     steps:
     # =====================================================
@@ -96,52 +96,39 @@ jobs:
         du -sh dist
 
     # =====================================================
-    # FRONTEND DEPLOY (WAIT UNTIL FINISHED)
+    # FRONTEND DEPLOY (WAIT UNTIL SITE IS LIVE)
     # =====================================================
-    - name: Deploy frontend to Static Web Apps (wait until finished)
+    - name: Deploy frontend and wait until live
       working-directory: frontend
       env:
         DEPLOY_TOKEN: ${{ steps.env.outputs.PREFIX == 'PROD' && secrets.PROD_AZURE_STATIC_WEB_APP_DEPLOYMENT_TOKEN || secrets.DEV_AZURE_STATIC_WEB_APP_DEPLOYMENT_TOKEN }}
-        SWA_NAME: ${{ steps.env.outputs.PREFIX == 'PROD' && secrets.PROD_AZURE_STATIC_WEB_APP_NAME || secrets.DEV_AZURE_STATIC_WEB_APP_NAME }}
-        RESOURCE_GROUP: ${{ steps.env.outputs.PREFIX == 'PROD' && secrets.PROD_AZURE_RESOURCE_GROUP || secrets.DEV_AZURE_RESOURCE_GROUP }}
+        FRONTEND_URL: ${{ steps.env.outputs.PREFIX == 'PROD' && secrets.PROD_STATIC_WEB_APP_URL || secrets.DEV_STATIC_WEB_APP_URL }}
         ENVIRONMENT: ${{ steps.env.outputs.ENV }}
       run: |
         set -euo pipefail
 
-        echo "🚀 Triggering Static Web App deployment"
+        echo "Triggering Static Web App deployment"
         echo "Environment: $ENVIRONMENT"
-        echo "App: $SWA_NAME"
-
-        START_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-        echo "Deployment start time: $START_TIME"
+        echo "Frontend URL: $FRONTEND_URL"
 
         npx --yes @azure/static-web-apps-cli deploy ./dist \
           --deployment-token "$DEPLOY_TOKEN" \
           --env "$ENVIRONMENT" \
           --no-use-keychain
 
-        echo "📡 Deployment triggered. Waiting for Azure to complete..."
+        echo "📡 Deployment triggered. Waiting for frontend to be live..."
 
         while true; do
           sleep 15
 
-          STATUS=$(az staticwebapp deployment list \
-            --name "$SWA_NAME" \
-            --resource-group "$RESOURCE_GROUP" \
-            --query "[?properties.createdOn >= '$START_TIME'] | sort_by(@, &properties.createdOn) | [-1].properties.status" \
-            -o tsv 2>/dev/null || echo "")
+          STATUS_CODE=$(curl -s -o /dev/null -w "%{http_code}" "$FRONTEND_URL" || true)
 
-          if [ "$STATUS" = "Succeeded" ]; then
-            echo "✅ Frontend deployment completed successfully"
+          if [ "$STATUS_CODE" = "200" ]; then
+            echo "Frontend is LIVE (HTTP 200)"
             break
           fi
 
-          if [ "$STATUS" = "Failed" ]; then
-            echo "❌ Frontend deployment FAILED"
-            exit 1
-          fi
-
-          echo "⏳ Still deploying... (status: ${STATUS:-unknown})"
+          echo "Waiting for frontend... (HTTP $STATUS_CODE)"
         done
 
     # =====================================================
