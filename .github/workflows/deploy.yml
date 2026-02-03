@@ -14,19 +14,19 @@ jobs:
     runs-on: self-hosted
 
     steps:
-      # =============================
+      # -----------------------------
       # Checkout
-      # =============================
+      # -----------------------------
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # =============================
+      # -----------------------------
       # Determine Environment
-      # =============================
+      # -----------------------------
       - name: Determine Environment
         id: env
         run: |
-          if [ "${GITHUB_REF}" = "refs/heads/main" ]; then
+          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
             echo "env=production" >> $GITHUB_OUTPUT
             echo "ENV_PREFIX=PROD" >> $GITHUB_OUTPUT
             echo "Deploying to PRODUCTION"
@@ -35,26 +35,6 @@ jobs:
             echo "ENV_PREFIX=DEV" >> $GITHUB_OUTPUT
             echo "Deploying to DEVELOPMENT"
           fi
-
-      # =============================
-      # Verify Required Secrets
-      # =============================
-      - name: Verify Required Secrets
-        run: |
-          ENV_PREFIX="${{ steps.env.outputs.ENV_PREFIX }}"
-          echo "🔍 Checking required secrets for $ENV_PREFIX environment..."
-          echo ""
-          echo "Required secrets for $ENV_PREFIX:"
-          echo "  ✅ ${ENV_PREFIX}_AZURE_CREDS"
-          echo "  ✅ ${ENV_PREFIX}_AZURE_WEBAPP_NAME"
-          echo "  ✅ ${ENV_PREFIX}_AZURE_RESOURCE_GROUP"
-          echo "  ✅ ${ENV_PREFIX}_AZURE_STATIC_WEB_APPS_API_TOKEN"
-          echo "  ✅ ${ENV_PREFIX}_VITE_API_BASE_URL"
-          echo "  ✅ ${ENV_PREFIX}_VITE_MSAL_CLIENT_ID"
-          echo "  ✅ ${ENV_PREFIX}_VITE_MSAL_TENANT_ID"
-          echo ""
-          echo "Note: Secrets will be validated when used. If any are missing, the deployment will fail with a clear error."
-          echo "Add secrets at: https://github.com/cloudsecurityweb/echopad-app/settings/secrets/actions"
 
       # =====================================================
       # BACKEND DEPLOYMENT (Azure App Service)
@@ -95,6 +75,15 @@ jobs:
       # =====================================================
       # FRONTEND DEPLOYMENT (Azure Static Web Apps)
       # =====================================================
+      - name: Verify Docker is Available
+        run: |
+          if ! command -v docker &> /dev/null; then
+            echo "❌ ERROR: Docker is not installed or not in PATH"
+            exit 1
+          fi
+          echo "✅ Docker is available"
+          docker --version
+
       - name: Setup Node (Frontend)
         uses: actions/setup-node@v4
         with:
@@ -112,11 +101,10 @@ jobs:
           VITE_MSAL_TENANT_ID: ${{ steps.env.outputs.ENV_PREFIX == 'PROD' && secrets.PROD_VITE_MSAL_TENANT_ID || secrets.DEV_VITE_MSAL_TENANT_ID }}
         run: |
           npm run build
-          echo "Build output:"
+          echo "Build size:"
           du -sh dist
-          ls -l dist
 
-      # ✅ CORRECT & OFFICIAL STATIC WEB APP DEPLOY
+      # ✅ OFFICIAL STATIC WEB APP DEPLOY (Requires Docker)
       - name: Deploy Frontend to Azure Static Web Apps
         uses: Azure/static-web-apps-deploy@v1
         with:
@@ -127,11 +115,11 @@ jobs:
           output_location: "dist"
           deployment_environment: ${{ steps.env.outputs.env }}
 
-      # =============================
+      # -----------------------------
       # Cleanup
-      # =============================
+      # -----------------------------
       - name: Cleanup
         if: always()
         run: |
           rm -f backend.zip
-          echo "✅ Deployment completed for ${{ steps.env.outputs.env }}"
+          echo "Deployment completed for ${{ steps.env.outputs.env }}"
