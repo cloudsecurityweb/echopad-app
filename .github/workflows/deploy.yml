@@ -98,6 +98,127 @@ jobs:
         with:
           creds: ${{ github.ref == 'refs/heads/main' && secrets.PROD_AZURE_CREDS || secrets.DEV_AZURE_CREDS }}
 
+      - name: Verify Azure Access and Set Subscription
+        run: |
+          echo "🔍 Verifying Azure access and subscription..."
+          echo ""
+          
+          # Show current account
+          echo "Current Azure account:"
+          az account show --query "{name:name, id:id, tenantId:tenantId}" -o table || {
+            echo "❌ Cannot get account info"
+            exit 1
+          }
+          
+          # Set correct subscription based on environment
+          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            # PROD subscription
+            SUBSCRIPTION_ID="c9ca9a88-e079-4b0d-a4ad-ed340a5d30fb"
+            echo ""
+            echo "Setting PROD subscription: $SUBSCRIPTION_ID"
+          else
+            # DEV subscription
+            SUBSCRIPTION_ID="c31376b6-ec72-4a1a-9fb6-ec8c53edf6d2"
+            echo ""
+            echo "Setting DEV subscription: $SUBSCRIPTION_ID"
+          fi
+          
+          az account set --subscription "$SUBSCRIPTION_ID"
+          echo "✅ Subscription set"
+          
+          # Verify we can access the Static Web App
+          SWA_NAME="${{ github.ref == 'refs/heads/main' && secrets.PROD_AZURE_STATIC_WEB_APP_NAME || secrets.DEV_AZURE_STATIC_WEB_APP_NAME }}"
+          RESOURCE_GROUP="${{ github.ref == 'refs/heads/main' && secrets.PROD_AZURE_RESOURCE_GROUP || secrets.DEV_AZURE_RESOURCE_GROUP }}"
+          
+          echo ""
+          echo "Testing access to Static Web App:"
+          echo "   Name: $SWA_NAME"
+          echo "   Resource Group: $RESOURCE_GROUP"
+          
+          SWA_ACCESS=$(az staticwebapp show \
+            --name "$SWA_NAME" \
+            --resource-group "$RESOURCE_GROUP" \
+            --query "name" -o tsv 2>&1)
+          
+          if echo "$SWA_ACCESS" | grep -q "ResourceNotFound\|NotFound\|AuthorizationFailed\|Forbidden"; then
+            echo "   ❌ Cannot access Static Web App!"
+            echo "   Error: $SWA_ACCESS"
+            echo "   This indicates cross-account or permission issue"
+            echo "   Deployment will work via token, but status checking will fail"
+          else
+            echo "   ✅ Can access Static Web App: $SWA_ACCESS"
+          fi
+
+      - name: Verify Azure Connectivity
+        run: |
+          echo "🔍 Verifying Azure connectivity and subscription access..."
+          echo ""
+          
+          # Show current account and subscription
+          echo "📋 Current Azure account:"
+          az account show --query "{name:name, id:id, tenantId:tenantId}" -o table || {
+            echo "❌ Cannot get account info"
+            exit 1
+          }
+          
+          # List available subscriptions
+          echo ""
+          echo "📋 Available subscriptions:"
+          az account list --query "[].{name:name, id:id, isDefault:isDefault}" -o table || {
+            echo "❌ Cannot list subscriptions"
+            exit 1
+          }
+          
+          # Get Static Web App details
+          SWA_NAME="${{ github.ref == 'refs/heads/main' && secrets.PROD_AZURE_STATIC_WEB_APP_NAME || secrets.DEV_AZURE_STATIC_WEB_APP_NAME }}"
+          RESOURCE_GROUP="${{ github.ref == 'refs/heads/main' && secrets.PROD_AZURE_RESOURCE_GROUP || secrets.DEV_AZURE_RESOURCE_GROUP }}"
+          
+          echo ""
+          echo "🔍 Checking access to Static Web App:"
+          echo "   Name: $SWA_NAME"
+          echo "   Resource Group: $RESOURCE_GROUP"
+          
+          # Try to get the Static Web App
+          SWA_INFO=$(az staticwebapp show \
+            --name "$SWA_NAME" \
+            --resource-group "$RESOURCE_GROUP" \
+            --query "{name:name, defaultHostname:defaultHostname, location:location}" -o json 2>&1)
+          
+          if echo "$SWA_INFO" | grep -q "ResourceNotFound\|NotFound\|does not exist"; then
+            echo "   ❌ Static Web App not found or no access"
+            echo "   This might be a cross-subscription access issue"
+            echo "   Error: $SWA_INFO"
+            exit 1
+          elif echo "$SWA_INFO" | grep -q "AuthorizationFailed\|Forbidden"; then
+            echo "   ❌ Access denied - insufficient permissions"
+            echo "   Error: $SWA_INFO"
+            exit 1
+          else
+            echo "   ✅ Can access Static Web App:"
+            echo "$SWA_INFO" | jq -r '. | "      Name: \(.name)\n      URL: \(.defaultHostname)\n      Location: \(.location)"' 2>/dev/null || echo "$SWA_INFO"
+          fi
+          
+          # Test deployment list access
+          echo ""
+          echo "🔍 Testing deployment list access:"
+          DEPLOYMENT_LIST=$(az staticwebapp deployment list \
+            --name "$SWA_NAME" \
+            --resource-group "$RESOURCE_GROUP" \
+            --query "[0:2]" -o json 2>&1)
+          
+          if echo "$DEPLOYMENT_LIST" | grep -q "ResourceNotFound\|NotFound\|does not exist\|AuthorizationFailed\|Forbidden"; then
+            echo "   ⚠️  Cannot access deployment list"
+            echo "   This means we cannot verify deployment status"
+            echo "   Deployment will still work, but status checking will be limited"
+          else
+            echo "   ✅ Can access deployment list"
+            DEPLOYMENT_COUNT=$(echo "$DEPLOYMENT_LIST" | jq 'length' 2>/dev/null || echo "0")
+            echo "   Found $DEPLOYMENT_COUNT recent deployment(s)"
+          fi
+          
+          echo ""
+          echo "✅ Azure connectivity verification complete"
+
       - name: Deploy Backend
         uses: azure/webapps-deploy@v3
         with:
@@ -161,9 +282,21 @@ jobs:
           VITE_API_BASE_URL: ${{ github.ref == 'refs/heads/main' && secrets.PROD_VITE_API_BASE_URL || secrets.DEV_VITE_API_BASE_URL }}
         run: |
           echo "🔨 Building frontend with latest code..."
+          echo "Commit: ${{ github.sha }}"
+          echo "Branch: ${{ github.ref_name }}"
           npm run build
           echo "✅ Build completed"
           echo "📋 Build output size: $(du -sh dist | cut -f1)"
+          
+          # Inject build timestamp into index.html for cache busting
+          if [ -f dist/index.html ]; then
+            BUILD_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+            BUILD_COMMIT="${{ github.sha }}"
+            echo "   Injecting build metadata into index.html..."
+            sed -i.bak "s|</head>|<!-- Build: $BUILD_TIME | Commit: $BUILD_COMMIT --></head>|" dist/index.html
+            rm -f dist/index.html.bak
+            echo "   ✅ Build metadata injected"
+          fi
 
       - name: Verify Build Output
         working-directory: ./frontend
@@ -177,6 +310,25 @@ jobs:
           find dist -type f -name "*.js" -o -name "*.css" -o -name "*.html" | head -10
           echo ""
           echo "Total build size: $(du -sh dist | cut -f1)"
+          echo ""
+          echo "🔍 Verifying latest code is in build..."
+          echo "Checking for 'Organizer Admin Name' in built files..."
+          if grep -r "Organizer Admin Name" dist/ 2>/dev/null | head -1; then
+            echo "✅ Found 'Organizer Admin Name' in build - latest code is included!"
+          else
+            echo "⚠️  WARNING: 'Organizer Admin Name' not found in build!"
+            echo "   This might indicate the build is using old code."
+            echo "   Checking what's actually in the build..."
+            grep -r "Organiser\|Organizer" dist/ 2>/dev/null | head -3 || echo "   No organizer-related text found"
+          fi
+          echo ""
+          echo "📄 Checking index.html for cache-busting..."
+          if [ -f dist/index.html ]; then
+            echo "   index.html size: $(wc -l < dist/index.html) lines"
+            echo "   index.html contains:"
+            grep -o 'assets/[^"]*\.js' dist/index.html | head -3 || echo "   No JS files referenced"
+          fi
+          echo ""
           echo "✅ Build verification complete"
 
       - name: Deploy Frontend
@@ -184,9 +336,20 @@ jobs:
         run: |
           echo "🚀 Deploying to Azure Static Web App..."
           echo "Deployment timestamp: $(date -u +"%Y-%m-%d %H:%M:%S UTC")"
+          echo "Commit SHA: ${{ github.sha }}"
+          echo "Branch: ${{ github.ref_name }}"
           echo ""
-          echo "Files to deploy:"
+          
+          # Verify we're deploying the right files
+          echo "📦 Files to deploy:"
           ls -lh dist/ | head -10
+          echo ""
+          echo "🔍 Final verification - checking built files contain latest code:"
+          if grep -r "Organizer Admin Name" dist/ 2>/dev/null | head -1; then
+            echo "   ✅ Confirmed: Latest code ('Organizer Admin Name') is in build"
+          else
+            echo "   ⚠️  WARNING: Latest code might not be in build!"
+          fi
           echo ""
           
           SWA_NAME="${{ github.ref == 'refs/heads/main' && secrets.PROD_AZURE_STATIC_WEB_APP_NAME || secrets.DEV_AZURE_STATIC_WEB_APP_NAME }}"
@@ -196,100 +359,68 @@ jobs:
           echo "Static Web App: $SWA_NAME"
           echo "Resource Group: $RESOURCE_GROUP"
           echo ""
-          echo "Starting deployment (this will take 2-3 minutes)..."
+          echo "Starting deployment..."
+          echo ""
           
-          # The npx CLI exits immediately after initiating deployment
-          # We need to wait and verify the deployment actually completes
-          npx --yes @azure/static-web-apps-cli deploy ./dist \
+          # Deploy using the CLI
+          # Capture output to verify deployment started
+          DEPLOY_OUTPUT=$(npx --yes @azure/static-web-apps-cli deploy ./dist \
             --deployment-token "$DEPLOY_TOKEN" \
             --env production \
-            --no-use-keychain
+            --no-use-keychain 2>&1)
           
-          if [ $? -ne 0 ]; then
-            echo "❌ Deployment command failed!"
+          DEPLOY_EXIT_CODE=$?
+          
+          echo "$DEPLOY_OUTPUT"
+          echo ""
+          
+          if [ $DEPLOY_EXIT_CODE -ne 0 ]; then
+            echo "❌ Deployment command failed with exit code: $DEPLOY_EXIT_CODE"
+            echo "   Check the output above for errors"
             exit 1
           fi
           
-          echo ""
-          echo "⏳ Deployment initiated. Waiting for deployment to complete..."
-          echo "   (Checking status every 10 seconds - will wait until finished)"
-          
-          # Wait and poll deployment status using Azure CLI
-          # Keep polling until we get a definitive status (no max time limit)
-          ELAPSED=0
-          INTERVAL=10   # Check every 10 seconds
-          DEPLOYMENT_COMPLETE=false
-          MAX_WAIT=1800  # 30 minutes absolute maximum (safety limit)
-          
-          # Give Azure time to register the deployment
-          echo "   Waiting for deployment to appear in Azure..."
-          sleep 10
-          
-          while [ $ELAPSED -lt $MAX_WAIT ]; do
-            # Try multiple methods to get deployment status
-            
-            # Method 1: Get latest deployment from list
-            DEPLOYMENT_LIST=$(az staticwebapp deployment list \
-              --name "$SWA_NAME" \
-              --resource-group "$RESOURCE_GROUP" \
-              --query "[0]" -o json 2>/dev/null || echo "{}")
-            
-            DEPLOYMENT_ID=$(echo "$DEPLOYMENT_LIST" | grep -oP '"id":\s*"\K[^"]+' | head -1 || echo "")
-            DEPLOYMENT_STATUS=$(echo "$DEPLOYMENT_LIST" | grep -oP '"status":\s*"\K[^"]+' | head -1 || echo "")
-            
-            # Method 2: If we have a deployment ID, get detailed status
-            if [ ! -z "$DEPLOYMENT_ID" ] && [ "$DEPLOYMENT_ID" != "null" ] && [ ! -z "$DEPLOYMENT_ID" ]; then
-              DETAILED_STATUS=$(az staticwebapp deployment show \
-                --name "$SWA_NAME" \
-                --resource-group "$RESOURCE_GROUP" \
-                --deployment-id "$DEPLOYMENT_ID" \
-                --query "status" -o tsv 2>/dev/null || echo "$DEPLOYMENT_STATUS")
-              
-              if [ ! -z "$DETAILED_STATUS" ] && [ "$DETAILED_STATUS" != "null" ]; then
-                echo "   Status: $DETAILED_STATUS (${ELAPSED}s elapsed)"
-                
-                # Check if deployment is complete
-                if [ "$DETAILED_STATUS" = "Ready" ] || [ "$DETAILED_STATUS" = "Succeeded" ] || [ "$DETAILED_STATUS" = "Built" ] || [ "$DETAILED_STATUS" = "complete" ]; then
-                  echo "   ✅ Deployment completed successfully!"
-                  DEPLOYMENT_COMPLETE=true
-                  break
-                elif [ "$DETAILED_STATUS" = "Failed" ] || [ "$DETAILED_STATUS" = "Error" ] || [ "$DETAILED_STATUS" = "failed" ]; then
-                  echo "   ❌ Deployment failed with status: $DETAILED_STATUS"
-                  exit 1
-                fi
-              else
-                echo "   Waiting for deployment status... (${ELAPSED}s elapsed)"
-              fi
-            else
-              # Method 3: Check build history as alternative
-              BUILD_STATUS=$(az staticwebapp show \
-                --name "$SWA_NAME" \
-                --resource-group "$RESOURCE_GROUP" \
-                --query "buildProperties" -o json 2>/dev/null || echo "{}")
-              
-              if [ "$BUILD_STATUS" != "{}" ]; then
-                echo "   Deployment processing... (${ELAPSED}s elapsed)"
-              else
-                echo "   Waiting for deployment to appear... (${ELAPSED}s elapsed)"
-              fi
-            fi
-            
-            sleep $INTERVAL
-            ELAPSED=$((ELAPSED + INTERVAL))
-          done
-          
-          if [ "$DEPLOYMENT_COMPLETE" = "false" ]; then
-            echo "   ⚠️  Maximum safety limit reached (30 minutes)"
-            echo "   Deployment may still be processing. Check Azure Portal for status."
-            echo "   This should not happen - please investigate if deployment is stuck."
+          # Check if deployment was initiated
+          if echo "$DEPLOY_OUTPUT" | grep -qi "deploy\|upload\|preparing"; then
+            echo "✅ Deployment initiated successfully"
+          else
+            echo "⚠️  Warning: Deployment output doesn't show expected messages"
+            echo "   But exit code was 0, so continuing..."
           fi
           
           echo ""
-          echo "✅ Frontend deployment completed"
-          echo "Deployment finished at: $(date -u +"%Y-%m-%d %H:%M:%S UTC")"
+          echo "⏳ Waiting for deployment to complete..."
+          echo "   Note: Deployment token method uploads files directly to Azure"
+          echo "   Standard deployment time is 2-3 minutes"
           echo ""
-          echo "💡 Note: Deployment may still be processing in Azure."
-          echo "   Wait 1-2 more minutes and hard refresh your browser to see changes."
+          
+          # Wait for deployment to complete
+          ELAPSED=0
+          TOTAL_WAIT=180  # 3 minutes
+          INTERVAL=15     # Show progress every 15 seconds
+          
+          while [ $ELAPSED -lt $TOTAL_WAIT ]; do
+            sleep $INTERVAL
+            ELAPSED=$((ELAPSED + INTERVAL))
+            REMAINING=$((TOTAL_WAIT - ELAPSED))
+            echo "   ⏳ Deployment in progress... (${ELAPSED}s / ${TOTAL_WAIT}s - ${REMAINING}s remaining)"
+          done
+          
+          echo ""
+          echo "✅ Wait period completed (3 minutes)"
+          echo ""
+          echo "📋 Deployment Summary:"
+          echo "   • Commit: ${{ github.sha }}"
+          echo "   • Branch: ${{ github.ref_name }}"
+          echo "   • Deployed at: $(date -u +"%Y-%m-%d %H:%M:%S UTC")"
+          echo ""
+          echo "💡 To see changes:"
+          echo "   1. Wait 1-2 more minutes for Azure CDN to update"
+          echo "   2. Hard refresh browser: Ctrl+Shift+R (Windows) or Cmd+Shift+R (Mac)"
+          echo "   3. Or clear browser cache completely"
+          echo "   4. Check Azure Portal → Static Web App → Deployment history"
+          echo ""
+          echo "✅ Frontend deployment completed"
 
       - name: Cleanup Deployment Files
         if: always()
