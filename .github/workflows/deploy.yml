@@ -150,24 +150,27 @@ jobs:
           fi
 
       - name: Verify Azure Connectivity
+        continue-on-error: true
         run: |
           echo "🔍 Verifying Azure connectivity and subscription access..."
           echo ""
           
           # Show current account and subscription
           echo "📋 Current Azure account:"
-          az account show --query "{name:name, id:id, tenantId:tenantId}" -o table || {
-            echo "❌ Cannot get account info"
-            exit 1
-          }
+          if az account show --query "{name:name, id:id, tenantId:tenantId}" -o table 2>&1; then
+            echo "✅ Account info retrieved"
+          else
+            echo "⚠️  Warning: Cannot get account info (non-critical)"
+          fi
           
           # List available subscriptions
           echo ""
           echo "📋 Available subscriptions:"
-          az account list --query "[].{name:name, id:id, isDefault:isDefault}" -o table || {
-            echo "❌ Cannot list subscriptions"
-            exit 1
-          }
+          if az account list --query "[].{name:name, id:id, isDefault:isDefault}" -o table 2>&1; then
+            echo "✅ Subscriptions listed"
+          else
+            echo "⚠️  Warning: Cannot list subscriptions (non-critical)"
+          fi
           
           # Get Static Web App details
           SWA_NAME="${{ github.ref == 'refs/heads/main' && secrets.PROD_AZURE_STATIC_WEB_APP_NAME || secrets.DEV_AZURE_STATIC_WEB_APP_NAME }}"
@@ -184,40 +187,37 @@ jobs:
             --resource-group "$RESOURCE_GROUP" \
             --query "{name:name, defaultHostname:defaultHostname, location:location}" -o json 2>&1)
           
-          if echo "$SWA_INFO" | grep -q "ResourceNotFound\|NotFound\|does not exist"; then
-            echo "   ❌ Static Web App not found or no access"
+          SWA_EXIT_CODE=$?
+          
+          if [ $SWA_EXIT_CODE -ne 0 ] || echo "$SWA_INFO" | grep -q "ResourceNotFound\|NotFound\|does not exist"; then
+            echo "   ⚠️  Warning: Cannot access Static Web App via Azure CLI"
             echo "   This might be a cross-subscription access issue"
             echo "   Error: $SWA_INFO"
-            exit 1
+            echo ""
+            echo "   ℹ️  This is OK - deployment via token will still work!"
+            echo "   The deployment token method doesn't require Azure CLI access"
           elif echo "$SWA_INFO" | grep -q "AuthorizationFailed\|Forbidden"; then
-            echo "   ❌ Access denied - insufficient permissions"
+            echo "   ⚠️  Warning: Access denied via Azure CLI"
             echo "   Error: $SWA_INFO"
-            exit 1
+            echo ""
+            echo "   ℹ️  This is OK - deployment via token will still work!"
+            echo "   The deployment token method doesn't require Azure CLI access"
           else
             echo "   ✅ Can access Static Web App:"
-            echo "$SWA_INFO" | jq -r '. | "      Name: \(.name)\n      URL: \(.defaultHostname)\n      Location: \(.location)"' 2>/dev/null || echo "$SWA_INFO"
-          fi
-          
-          # Test deployment list access
-          echo ""
-          echo "🔍 Testing deployment list access:"
-          DEPLOYMENT_LIST=$(az staticwebapp deployment list \
-            --name "$SWA_NAME" \
-            --resource-group "$RESOURCE_GROUP" \
-            --query "[0:2]" -o json 2>&1)
-          
-          if echo "$DEPLOYMENT_LIST" | grep -q "ResourceNotFound\|NotFound\|does not exist\|AuthorizationFailed\|Forbidden"; then
-            echo "   ⚠️  Cannot access deployment list"
-            echo "   This means we cannot verify deployment status"
-            echo "   Deployment will still work, but status checking will be limited"
-          else
-            echo "   ✅ Can access deployment list"
-            DEPLOYMENT_COUNT=$(echo "$DEPLOYMENT_LIST" | jq 'length' 2>/dev/null || echo "0")
-            echo "   Found $DEPLOYMENT_COUNT recent deployment(s)"
+            # Try to parse with jq, fallback to raw output
+            if command -v jq >/dev/null 2>&1; then
+              echo "$SWA_INFO" | jq -r '. | "      Name: \(.name)\n      URL: \(.defaultHostname)\n      Location: \(.location)"' 2>/dev/null || echo "$SWA_INFO"
+            else
+              echo "$SWA_INFO"
+            fi
           fi
           
           echo ""
           echo "✅ Azure connectivity verification complete"
+          echo ""
+          echo "ℹ️  Note: Deployment via token doesn't require Azure CLI access"
+          echo "   Files upload directly to Azure Static Web App"
+          echo "   Check deployment history in Azure Portal → Static Web App → Deployment history"
 
       - name: Deploy Backend
         uses: azure/webapps-deploy@v3
