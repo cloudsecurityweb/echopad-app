@@ -122,9 +122,9 @@ jobs:
             --no-use-keychain
           echo "✅ Frontend deployment completed"
           echo ""
-          echo "🌍 Frontend URL: https://icy-mushroom-045ce1b0f.4.azurestaticapps.net"
+          echo "🌍 Frontend URL: https://polite-ground-0602c481e.2.azurestaticapps.net"
           echo "⚠️  Note: Cache headers may take 2-5 minutes to propagate."
-          echo "   Verify with: curl -I https://icy-mushroom-045ce1b0f.4.azurestaticapps.net/index.html"
+          echo "   Verify with: curl -I https://polite-ground-0602c481e.2.azurestaticapps.net/sign-up"
 
       # -----------------------------
       # Cleanup
