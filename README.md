@@ -142,3 +142,4 @@ See: https://github.com/your-org/echopad-infra
 # Test deployment after updating DEV_AZURE_CREDS with subscriptionId
 # Test deployment with AZURE_CREDS secret
 # Test deployment with all secrets configured
+# Deployment test - staticwebapp.config.json already has cache control headers
