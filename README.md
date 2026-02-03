@@ -140,3 +140,4 @@ See: https://github.com/your-org/echopad-infra
 # Deployment workflow - using --env production
 # Testing deployment with updated DEV_AZURE_CREDS
 # Test deployment after updating DEV_AZURE_CREDS with subscriptionId
+# Test deployment with AZURE_CREDS secret
