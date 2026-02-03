@@ -1,4 +1,4 @@
-name: Deploy Application
+name: Deploy Backend & Frontend
 
 on:
   push:
@@ -12,27 +12,28 @@ env:
 jobs:
   deploy:
     runs-on: self-hosted
+    timeout-minutes: 90   # only safety net, NOT used by script
 
     steps:
     # =====================================================
     # Checkout
     # =====================================================
-    - name: Checkout code
+    - name: Checkout repository
       uses: actions/checkout@v4
 
     # =====================================================
     # Determine Environment
     # =====================================================
-    - name: Determine Environment
+    - name: Determine environment
       id: env
       run: |
         if [ "${{ github.ref }}" = "refs/heads/main" ]; then
-          echo "env=production" >> $GITHUB_OUTPUT
-          echo "ENV_PREFIX=PROD" >> $GITHUB_OUTPUT
+          echo "ENV=production" >> $GITHUB_OUTPUT
+          echo "PREFIX=PROD" >> $GITHUB_OUTPUT
           echo "Deploying to PRODUCTION"
         else
-          echo "env=development" >> $GITHUB_OUTPUT
-          echo "ENV_PREFIX=DEV" >> $GITHUB_OUTPUT
+          echo "ENV=development" >> $GITHUB_OUTPUT
+          echo "PREFIX=DEV" >> $GITHUB_OUTPUT
           echo "Deploying to DEVELOPMENT"
         fi
 
@@ -44,33 +45,33 @@ jobs:
       with:
         node-version: ${{ env.NODE_VERSION }}
 
-    - name: Install Backend Dependencies
+    - name: Install backend dependencies
       working-directory: backend
       run: npm ci
 
-    - name: Package Backend
+    - name: Package backend
       working-directory: backend
       run: |
         zip -r ../backend.zip . -x node_modules/\* .git/\*
         ls -lh ../backend.zip
 
-    - name: Azure Login (Backend)
+    - name: Azure login
       uses: azure/login@v2
       with:
-        creds: ${{ steps.env.outputs.ENV_PREFIX == 'PROD' && secrets.PROD_AZURE_CREDS || secrets.DEV_AZURE_CREDS }}
+        creds: ${{ steps.env.outputs.PREFIX == 'PROD' && secrets.PROD_AZURE_CREDS || secrets.DEV_AZURE_CREDS }}
 
-    - name: Deploy Backend to App Service
+    - name: Deploy backend to App Service
       uses: azure/webapps-deploy@v3
       with:
-        app-name: ${{ steps.env.outputs.ENV_PREFIX == 'PROD' && secrets.PROD_AZURE_WEBAPP_NAME || secrets.DEV_AZURE_WEBAPP_NAME }}
+        app-name: ${{ steps.env.outputs.PREFIX == 'PROD' && secrets.PROD_AZURE_WEBAPP_NAME || secrets.DEV_AZURE_WEBAPP_NAME }}
         package: backend.zip
         startup-command: "npm start"
 
-    - name: Restart Backend
+    - name: Restart backend
       run: |
         az webapp restart \
-          --name ${{ steps.env.outputs.ENV_PREFIX == 'PROD' && secrets.PROD_AZURE_WEBAPP_NAME || secrets.DEV_AZURE_WEBAPP_NAME }} \
-          --resource-group ${{ steps.env.outputs.ENV_PREFIX == 'PROD' && secrets.PROD_AZURE_RESOURCE_GROUP || secrets.DEV_AZURE_RESOURCE_GROUP }}
+          --name ${{ steps.env.outputs.PREFIX == 'PROD' && secrets.PROD_AZURE_WEBAPP_NAME || secrets.DEV_AZURE_WEBAPP_NAME }} \
+          --resource-group ${{ steps.env.outputs.PREFIX == 'PROD' && secrets.PROD_AZURE_RESOURCE_GROUP || secrets.DEV_AZURE_RESOURCE_GROUP }}
 
     # =====================================================
     # FRONTEND BUILD
@@ -80,38 +81,68 @@ jobs:
       with:
         node-version: ${{ env.NODE_VERSION }}
 
-    - name: Install Frontend Dependencies
+    - name: Install frontend dependencies
       working-directory: frontend
       run: npm ci
 
-    - name: Build Frontend
+    - name: Build frontend
       working-directory: frontend
       env:
-        VITE_API_BASE_URL: ${{ steps.env.outputs.ENV_PREFIX == 'PROD' && secrets.PROD_VITE_API_BASE_URL || secrets.DEV_VITE_API_BASE_URL }}
-        VITE_MSAL_CLIENT_ID: ${{ steps.env.outputs.ENV_PREFIX == 'PROD' && secrets.PROD_VITE_MSAL_CLIENT_ID || secrets.DEV_VITE_MSAL_CLIENT_ID }}
-        VITE_MSAL_TENANT_ID: ${{ steps.env.outputs.ENV_PREFIX == 'PROD' && secrets.PROD_VITE_MSAL_TENANT_ID || secrets.DEV_VITE_MSAL_TENANT_ID }}
+        VITE_API_BASE_URL: ${{ steps.env.outputs.PREFIX == 'PROD' && secrets.PROD_VITE_API_BASE_URL || secrets.DEV_VITE_API_BASE_URL }}
+        VITE_MSAL_CLIENT_ID: ${{ steps.env.outputs.PREFIX == 'PROD' && secrets.PROD_VITE_MSAL_CLIENT_ID || secrets.DEV_VITE_MSAL_CLIENT_ID }}
+        VITE_MSAL_TENANT_ID: ${{ steps.env.outputs.PREFIX == 'PROD' && secrets.PROD_VITE_MSAL_TENANT_ID || secrets.DEV_VITE_MSAL_TENANT_ID }}
       run: |
         npm run build
         du -sh dist
 
     # =====================================================
-    # FRONTEND DEPLOYMENT (Azure Static Web Apps)
+    # FRONTEND DEPLOY (WAIT UNTIL FINISHED)
     # =====================================================
-    - name: Deploy Frontend to Static Web App
+    - name: Deploy frontend to Static Web Apps (wait until finished)
       working-directory: frontend
+      env:
+        DEPLOY_TOKEN: ${{ steps.env.outputs.PREFIX == 'PROD' && secrets.PROD_AZURE_STATIC_WEB_APP_DEPLOYMENT_TOKEN || secrets.DEV_AZURE_STATIC_WEB_APP_DEPLOYMENT_TOKEN }}
+        SWA_NAME: ${{ steps.env.outputs.PREFIX == 'PROD' && secrets.PROD_AZURE_STATIC_WEB_APP_NAME || secrets.DEV_AZURE_STATIC_WEB_APP_NAME }}
+        RESOURCE_GROUP: ${{ steps.env.outputs.PREFIX == 'PROD' && secrets.PROD_AZURE_RESOURCE_GROUP || secrets.DEV_AZURE_RESOURCE_GROUP }}
+        ENVIRONMENT: ${{ steps.env.outputs.ENV }}
       run: |
-        DEPLOY_TOKEN="${{ steps.env.outputs.ENV_PREFIX == 'PROD' && secrets.PROD_AZURE_STATIC_WEB_APP_DEPLOYMENT_TOKEN || secrets.DEV_AZURE_STATIC_WEB_APP_DEPLOYMENT_TOKEN }}"
-        
-        if [ -n "$DEPLOY_TOKEN" ]; then
-          npx --yes @azure/static-web-apps-cli deploy ./dist \
-            --deployment-token "$DEPLOY_TOKEN" \
-            --env "${{ steps.env.outputs.env }}" \
-            --no-use-keychain
-          echo "✅ Frontend deployed"
-        else
-          echo "⚠️  Could not get deployment token, skipping frontend deploy"
-          exit 1
-        fi
+        set -euo pipefail
+
+        echo "🚀 Triggering Static Web App deployment"
+        echo "Environment: $ENVIRONMENT"
+        echo "App: $SWA_NAME"
+
+        START_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+        echo "Deployment start time: $START_TIME"
+
+        npx --yes @azure/static-web-apps-cli deploy ./dist \
+          --deployment-token "$DEPLOY_TOKEN" \
+          --env "$ENVIRONMENT" \
+          --no-use-keychain
+
+        echo "📡 Deployment triggered. Waiting for Azure to complete..."
+
+        while true; do
+          sleep 15
+
+          STATUS=$(az staticwebapp deployment list \
+            --name "$SWA_NAME" \
+            --resource-group "$RESOURCE_GROUP" \
+            --query "[?properties.createdOn >= '$START_TIME'] | sort_by(@, &properties.createdOn) | [-1].properties.status" \
+            -o tsv 2>/dev/null || echo "")
+
+          if [ "$STATUS" = "Succeeded" ]; then
+            echo "✅ Frontend deployment completed successfully"
+            break
+          fi
+
+          if [ "$STATUS" = "Failed" ]; then
+            echo "❌ Frontend deployment FAILED"
+            exit 1
+          fi
+
+          echo "⏳ Still deploying... (status: ${STATUS:-unknown})"
+        done
 
     # =====================================================
     # CLEANUP
@@ -120,4 +151,4 @@ jobs:
       if: always()
       run: |
         rm -f backend.zip
-        echo "Deployment completed for ${{ steps.env.outputs.env }}"
+        echo "Deployment completed for ${{ steps.env.outputs.ENV }}"
