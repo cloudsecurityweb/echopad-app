@@ -293,7 +293,8 @@ jobs:
             BUILD_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
             BUILD_COMMIT="${{ github.sha }}"
             echo "   Injecting build metadata into index.html..."
-            sed -i.bak "s|</head>|<!-- Build: $BUILD_TIME | Commit: $BUILD_COMMIT --></head>|" dist/index.html
+            # Use # as delimiter to avoid conflicts with | in the replacement string
+            sed -i.bak "s#</head>#<!-- Build: $BUILD_TIME | Commit: $BUILD_COMMIT --></head>#" dist/index.html
             rm -f dist/index.html.bak
             echo "   ✅ Build metadata injected"
           fi
