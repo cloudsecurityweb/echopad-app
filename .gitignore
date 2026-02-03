@@ -61,3 +61,4 @@ secrets-*.txt
 ../echopad-infra/
 echopad-infra/
 .github/SECRET_VALUE.txt
+.github/current-deployment-tokens.txt
