@@ -139,3 +139,4 @@ See: https://github.com/your-org/echopad-infra
 # Deployment test - 2026-02-03 10:05:44 UTC
 # Deployment workflow - using --env production
 # Testing deployment with updated DEV_AZURE_CREDS
+# Test deployment after updating DEV_AZURE_CREDS with subscriptionId
