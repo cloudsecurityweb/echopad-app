@@ -82,6 +82,20 @@ jobs:
     # -------------------------------------------------
     # Backend Deploy (App Service)
     # -------------------------------------------------
+    - name: Verify Backend Secrets
+      run: |
+        if [ -z "${{ secrets.AZURE_BACKEND_APP_NAME }}" ]; then
+          echo "❌ ERROR: AZURE_BACKEND_APP_NAME secret is missing!"
+          exit 1
+        fi
+        if [ -z "${{ secrets.AZURE_BACKEND_RG }}" ]; then
+          echo "❌ ERROR: AZURE_BACKEND_RG secret is missing!"
+          exit 1
+        fi
+        echo "✅ Backend secrets verified"
+        echo "   App Name: ${{ secrets.AZURE_BACKEND_APP_NAME }}"
+        echo "   Resource Group: ${{ secrets.AZURE_BACKEND_RG }}"
+
     - name: Deploy backend to Azure App Service
       uses: azure/webapps-deploy@v3
       with:
