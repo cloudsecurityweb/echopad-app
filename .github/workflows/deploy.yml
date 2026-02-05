@@ -23,10 +23,12 @@ jobs:
           if [ "${{ github.ref }}" = "refs/heads/main" ]; then
             echo "env=production" >> $GITHUB_OUTPUT
             echo "ENV_PREFIX=PROD" >> $GITHUB_OUTPUT
+            echo "FRONTEND_URL=https://calm-smoke-0ef35d31e.4.azurestaticapps.net" >> $GITHUB_OUTPUT
             echo "Deploying to PRODUCTION"
           else
             echo "env=development" >> $GITHUB_OUTPUT
             echo "ENV_PREFIX=DEV" >> $GITHUB_OUTPUT
+            echo "FRONTEND_URL=https://polite-ground-0602c481e.2.azurestaticapps.net" >> $GITHUB_OUTPUT
             echo "Deploying to DEVELOPMENT"
           fi
 
@@ -67,18 +69,16 @@ jobs:
             --resource-group ${{ steps.env.outputs.ENV_PREFIX == 'PROD' && secrets.PROD_AZURE_RESOURCE_GROUP || secrets.DEV_AZURE_RESOURCE_GROUP }}
 
       # =====================================================
-      # FRONTEND DEPLOYMENT (CLI-based for ARM64 compatibility)
+      # FRONTEND DEPLOYMENT
       # =====================================================
       - name: Setup Node (Frontend)
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
 
-      - name: Clean and Install Frontend Dependencies
+      - name: Install Frontend Dependencies
         working-directory: frontend
-        run: |
-          rm -rf node_modules dist
-          npm install
+        run: npm install
 
       - name: Build Frontend
         working-directory: frontend
@@ -92,47 +92,32 @@ jobs:
         run: |
           echo "=== Building for ${{ steps.env.outputs.env }} ==="
           npm run build
-          echo "=== Build complete ==="
+          echo "=== Build output ==="
           ls -la dist/
           ls -la dist/assets/
 
-      - name: Install SWA CLI
-        run: npm install -g @azure/static-web-apps-cli
-
-      - name: Deploy Frontend to Azure Static Web Apps
+      - name: Deploy Frontend to Static Web Apps
         working-directory: frontend
-        env:
-          SWA_CLI_DEPLOYMENT_TOKEN: ${{ steps.env.outputs.ENV_PREFIX == 'PROD' && secrets.PROD_AZURE_STATIC_WEB_APP_DEPLOYMENT_TOKEN || secrets.DEV_AZURE_STATIC_WEB_APP_DEPLOYMENT_TOKEN }}
+        timeout-minutes: 5
         run: |
           echo "🚀 Deploying to ${{ steps.env.outputs.env }}..."
-          echo "📁 Dist contents:"
-          ls -la dist/
-          echo ""
           
-          # Deploy using the environment variable for token
-          swa deploy ./dist \
+          # Get the token from secrets
+          TOKEN="${{ steps.env.outputs.ENV_PREFIX == 'PROD' && secrets.PROD_AZURE_STATIC_WEB_APP_DEPLOYMENT_TOKEN || secrets.DEV_AZURE_STATIC_WEB_APP_DEPLOYMENT_TOKEN }}"
+          
+          # Install SWA CLI locally to avoid global install issues
+          npm install @azure/static-web-apps-cli
+          
+          # Run deployment with explicit token flag
+          npx swa deploy ./dist \
+            --deployment-token "$TOKEN" \
             --env production \
-            --no-use-keychain \
-            --verbose 2>&1 | tee deploy.log
+            --no-use-keychain
           
-          # Check if deployment was successful
-          if grep -q "Project deployed to" deploy.log; then
-            echo "✅ Deployment successful!"
-            grep "Project deployed to" deploy.log
-          else
-            echo "❌ Deployment may have failed. Full log:"
-            cat deploy.log
-            exit 1
-          fi
-
-      - name: Show Frontend URL
-        run: |
-          if [ "${{ steps.env.outputs.ENV_PREFIX }}" = "PROD" ]; then
-            echo "🌍 Production: https://calm-smoke-0ef35d31e.4.azurestaticapps.net"
-          else
-            echo "🌍 Development: https://polite-ground-0602c481e.2.azurestaticapps.net"
-          fi
+          echo ""
+          echo "✅ Deployment initiated!"
+          echo "🌍 URL: ${{ steps.env.outputs.FRONTEND_URL }}"
 
       - name: Cleanup
         if: always()
-        run: rm -f backend.zip frontend/deploy.log
+        run: rm -f backend.zip
