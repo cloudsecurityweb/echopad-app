@@ -95,13 +95,16 @@ jobs:
           VITE_API_ROUTE: ${{ steps.env.outputs.ENV_PREFIX == 'PROD' && secrets.PROD_VITE_API_ROUTE || secrets.DEV_VITE_API_ROUTE }}
         run: |
           echo "Building frontend for ${{ steps.env.outputs.env }}..."
+          echo "VITE_API_BASE_URL: $VITE_API_BASE_URL"
+          echo "VITE_MSAL_CLIENT_ID: $VITE_MSAL_CLIENT_ID"
+          echo "VITE_GOOGLE_CLIENT_ID: $VITE_GOOGLE_CLIENT_ID"
           npm run build
           echo "Build size:"
           du -sh dist
           echo "Build contents:"
           ls -la dist
+          ls -la dist/assets/
 
-      # ✅ CLI-based deployment (Works on ARM64 without Docker)
       - name: Verify staticwebapp.config.json in dist
         working-directory: frontend
         run: |
@@ -110,7 +113,6 @@ jobs:
             exit 1
           fi
           echo "✅ Config file found in dist/"
-          echo "Config file content:"
           cat dist/staticwebapp.config.json
 
       - name: Deploy Frontend to Azure Static Web Apps
@@ -120,12 +122,17 @@ jobs:
           FRONTEND_URL: ${{ steps.env.outputs.ENV_PREFIX == 'PROD' && secrets.PROD_FRONTEND_URL || secrets.DEV_FRONTEND_URL }}
         run: |
           echo "🚀 Deploying frontend to ${{ steps.env.outputs.env }} environment"
+          echo "📁 Contents of dist folder:"
+          ls -la dist/
+          echo ""
+          echo "📦 Starting deployment with SWA CLI..."
           npx --yes @azure/static-web-apps-cli deploy ./dist \
             --deployment-token "$DEPLOY_TOKEN" \
             --env production \
-            --no-use-keychain
-          echo "✅ Frontend deployment completed"
+            --no-use-keychain \
+            --verbose
           echo ""
+          echo "✅ Frontend deployment completed"
           echo "🌍 Frontend URL: $FRONTEND_URL"
 
       # -----------------------------
