@@ -63,4 +63,16 @@ export const getAssignmentsByTenant = asyncHandler(async (req, res) => {
   } catch (err) {
     throw new ApiError(500, "Failed to fetch license assignments");
   }
-})
+});
+
+export const getAssignmentsByUser = asyncHandler(async (req, res) => {
+  try {
+    const { tenantId, userId } = req.params;
+    const data = await licenseService.getAssignmentsByUser(tenantId, userId);
+    res.status(200).json(
+      new ApiResponse(200, { assignments: data }, "user license assignments fetched successfully")
+    );
+  } catch (err) {
+    throw new ApiError(500, "Failed to fetch user license assignments");
+  }
+});

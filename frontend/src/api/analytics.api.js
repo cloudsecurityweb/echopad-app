@@ -1,4 +1,4 @@
 import http from "./http";
 
 export const fetchSuperAdminAnalytics = () =>
-  http.get("/analytics/super-admin");
+  http.get("/api/analytics/super-admin");

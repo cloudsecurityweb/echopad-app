@@ -75,18 +75,18 @@ function AIReminders() {
                   
                   return (
                     <div className="mb-8 animate-fade-in-scale">
-                      <div className="relative inline-flex items-center gap-3 bg-gradient-to-br from-cyan-50 via-blue-50 to-purple-50 border-2 border-cyan-200/50 rounded-2xl px-6 py-4 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] group">
+                      <div className="relative flex items-center gap-3 bg-gradient-to-br from-cyan-50 via-blue-50 to-purple-50 border-2 border-cyan-200/50 rounded-2xl px-6 py-4 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] group overflow-hidden min-w-0">
                         <div className="absolute inset-0 bg-gradient-to-r from-cyan-400/20 via-blue-400/20 to-purple-400/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                         <div className="relative z-10 flex-shrink-0">
                           <div className="w-12 h-12 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg animate-pulse-glow">
                             <i className="bi bi-lightning-charge-fill text-white text-xl"></i>
                           </div>
                         </div>
-                        <div className="relative z-10">
-                          <div className="text-xs font-semibold text-cyan-600 uppercase tracking-wider mb-1">
+                        <div className="relative z-10 min-w-0 flex-1">
+                          <div className="text-xs font-semibold text-cyan-600 uppercase tracking-wider mb-1 break-words">
                             ROI Promise
                           </div>
-                          <div className="text-2xl md:text-3xl lg:text-4xl font-bold">
+                          <div className="text-xl md:text-2xl lg:text-3xl font-bold break-words whitespace-normal">
                             {uspParts.map((part, idx) => {
                               if (part.isNumber) {
                                 return (
@@ -184,13 +184,18 @@ function AIReminders() {
 
               <div className="lg:col-span-7">
                 <div className="bg-white rounded-2xl border-2 border-gray-200 p-6 shadow-lg">
-                  <div className="mb-6">
-                    <div className="text-xs font-semibold text-blue-600 uppercase tracking-wider mb-2">
+                  <div className="mb-6 text-center">
+                    <div className="inline-block bg-blue-600 text-white text-xs font-bold px-4 py-2 rounded-lg uppercase tracking-wider mb-4 shadow-md">
                       LIVE DEMO
                     </div>
-                    <div className="text-lg font-semibold text-gray-900">
+                    <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
+                      <span className="bg-gradient-to-r from-cyan-600 via-blue-600 to-purple-600 bg-clip-text text-transparent">
+                        Echopad AI Reminders
+                      </span>
+                    </h2>
+                    <h3 className="text-xl md:text-2xl font-semibold text-gray-700 mb-2">
                       Appointment → Reminders → Confirmation
-                    </div>
+                    </h3>
                   </div>
 
                   {/* Step 1 */}

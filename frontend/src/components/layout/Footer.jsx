@@ -166,9 +166,9 @@ function Footer() {
                 </Link>
               </li>
               <li>
-                <Link to="/refercare" className="text-gray-400 hover:text-cyan-400 transition-colors flex items-center gap-2 group">
+                <Link to="/aperio" className="text-gray-400 hover:text-cyan-400 transition-colors flex items-center gap-2 group">
                   <span className="w-0 h-0.5 bg-gradient-to-r from-cyan-400 to-blue-500 transition-all group-hover:w-4"></span>
-                  ReferCare
+                  Aperio
                 </Link>
               </li>
               <li>

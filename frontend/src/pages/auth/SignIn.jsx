@@ -17,7 +17,7 @@ function isValidRedirectUri(uri) {
 }
 
 function SignIn() {
-  const { login, loginWithGoogle, isAuthenticated, isLoading, account, getAccessToken, googleUser, syncUserProfile, signInEmailPassword } = useAuth();
+  const { login, loginWithGoogle, isAuthenticated, isLoading, account, getAccessToken, googleUser, syncUserProfile, syncGoogleUserProfile, clearGoogleAuth, signInEmailPassword } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [formData, setFormData] = useState({
@@ -183,7 +183,20 @@ function SignIn() {
         }
       } catch (error) {
         console.error('Sign in error:', error);
-        setAuthError(error.message || 'Failed to sign in. Please check your credentials and try again.');
+        // Check if error is about email verification
+        const errorMessage = error.message || 'Failed to sign in. Please check your credentials and try again.';
+        if (errorMessage.toLowerCase().includes('email not verified') || errorMessage.toLowerCase().includes('verification')) {
+          // Redirect to verification page with email
+          navigate('/verify-email-sent', {
+            state: {
+              email: formData.email,
+              message: errorMessage,
+              requiresVerification: true,
+            }
+          });
+          return;
+        }
+        setAuthError(errorMessage);
       } finally {
         setIsSubmitting(false);
       }
@@ -219,8 +232,20 @@ function SignIn() {
         // Profile sync will happen automatically in AuthContext once MSAL is ready
         // No need to sync here - it was causing timing issues and loops
         // Redirect will happen via useEffect when isAuthenticated becomes true
+        // If email verification is required, Dashboard component will handle redirect
       } catch (error) {
         console.error('Microsoft login error:', error);
+        // Check if error is about email verification
+        if (error.requiresVerification) {
+          navigate('/verify-email-sent', {
+            state: {
+              email: error.email || '',
+              message: error.message || 'Please verify your email address to access your dashboard.',
+              requiresVerification: true,
+            }
+          });
+          return;
+        }
         setAuthError(
           error.errorCode === 'user_cancelled' 
             ? 'Sign in was cancelled.' 
@@ -234,9 +259,27 @@ function SignIn() {
       setAuthError(null);
       try {
         await loginWithGoogle();
-        // Login successful, redirect will happen via useEffect once auth state updates
+        // Yield so AuthContext state (googleToken, authProvider) is updated before sync
+        await new Promise((r) => setTimeout(r, 0));
+        await syncGoogleUserProfile(false);
+        // Sync successful; redirect will happen via useEffect when isAuthenticated and userProfile are set
       } catch (error) {
         console.error('Google login error:', error);
+        if (error?.code === 'USER_NOT_REGISTERED' || (error?.message && error.message.toLowerCase().includes('sign up first'))) {
+          clearGoogleAuth();
+          setAuthError('Account not found. Please sign up first to create your account.');
+          return;
+        }
+        if (error.requiresVerification) {
+          navigate('/verify-email-sent', {
+            state: {
+              email: error.email || '',
+              message: error.message || 'Please verify your email address to access your dashboard.',
+              requiresVerification: true,
+            }
+          });
+          return;
+        }
         setAuthError(
           error.error === 'popup_closed_by_user' || error.type === 'user_cancelled'
             ? 'Sign in was cancelled.'
@@ -253,93 +296,93 @@ function SignIn() {
   return (
     <>
       <Navigation />
-      <main className="h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 pt-20 pb-4 overflow-hidden">
-        <div className="container mx-auto px-4 h-full flex items-center">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-6xl mx-auto items-center w-full">
+      <main className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 pt-16 md:pt-20 pb-4 overflow-hidden">
+        <div className="container mx-auto px-4 py-6 md:py-8 flex items-center min-h-[calc(100vh-4rem)]">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 max-w-6xl mx-auto items-center w-full">
             {/* Left Side - CTA */}
-            <div className="space-y-4">
+            <div className="space-y-2 md:space-y-3">
               <div>
-                <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-3">
+                <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-2">
                   Welcome to{' '}
                   <span className="bg-gradient-to-r from-cyan-600 via-blue-600 to-purple-600 bg-clip-text text-transparent">
                     Echopad AI
                   </span>
                 </h1>
-                <p className="text-xl text-gray-600 mb-4">
+                <p className="text-sm md:text-base lg:text-lg text-gray-600 mb-2 md:mb-3">
                   Transform your healthcare practice with AI-powered automation
                 </p>
               </div>
 
-              <div className="space-y-4">
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-xl flex items-center justify-center flex-shrink-0">
-                    <i className="bi bi-lightning-charge-fill text-white text-xl"></i>
+              <div className="space-y-2 md:space-y-3">
+                <div className="flex items-start gap-2 md:gap-3">
+                  <div className="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <i className="bi bi-lightning-charge-fill text-white text-base md:text-lg"></i>
                   </div>
                   <div>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2">Reduce Costs by 60%</h3>
-                    <p className="text-base text-gray-600">Cut administrative overhead dramatically with AI automation</p>
+                    <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-1">Reduce Costs by 60%</h3>
+                    <p className="text-xs md:text-sm text-gray-600">Cut administrative overhead dramatically with AI automation</p>
                   </div>
                 </div>
 
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-teal-600 rounded-xl flex items-center justify-center flex-shrink-0">
-                    <i className="bi bi-graph-up-arrow text-white text-xl"></i>
+                <div className="flex items-start gap-2 md:gap-3">
+                  <div className="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-green-500 to-teal-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <i className="bi bi-graph-up-arrow text-white text-base md:text-lg"></i>
                   </div>
                   <div>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2">Increase Revenue by 20%</h3>
-                    <p className="text-base text-gray-600">Recover billable time and reduce no-shows</p>
+                    <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-1">Increase Revenue by 20%</h3>
+                    <p className="text-xs md:text-sm text-gray-600">Recover billable time and reduce no-shows</p>
                   </div>
                 </div>
 
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center flex-shrink-0">
-                    <i className="bi bi-people-fill text-white text-xl"></i>
+                <div className="flex items-start gap-2 md:gap-3">
+                  <div className="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <i className="bi bi-people-fill text-white text-base md:text-lg"></i>
                   </div>
                   <div>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2">Improve Retention by 40%</h3>
-                    <p className="text-base text-gray-600">Reduce provider and staff burnout</p>
+                    <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-1">Improve Retention by 40%</h3>
+                    <p className="text-xs md:text-sm text-gray-600">Reduce provider and staff burnout</p>
                   </div>
                 </div>
               </div>
 
-              <div className="space-y-4">
-                <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl p-6 shadow-lg">
-                  <div className="flex items-center gap-3 mb-3">
-                    <i className="bi bi-shield-check text-white text-2xl"></i>
-                    <p className="text-white font-semibold text-lg">
+              <div className="space-y-2 md:space-y-3">
+                <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl p-3 md:p-4 lg:p-5 shadow-lg">
+                  <div className="flex items-center gap-2 mb-2">
+                    <i className="bi bi-shield-check text-white text-lg md:text-xl"></i>
+                    <p className="text-white font-semibold text-sm md:text-base">
                       Secure & Compliant
                     </p>
                   </div>
-                    <p className="text-blue-100 text-base">
+                    <p className="text-blue-100 text-xs md:text-sm">
                     HIPAA-compliant platform with enterprise-grade security. Your data is encrypted and protected.
                   </p>
                 </div>
 
-                <div className="grid grid-cols-3 gap-4">
-                  <div className="bg-white rounded-lg p-4 text-center border-2 border-blue-100 shadow">
-                    <i className="bi bi-clock-history text-blue-600 text-2xl mb-2 block"></i>
-                    <p className="text-sm font-semibold text-gray-900">Save 70%</p>
-                    <p className="text-sm text-gray-600">Time on Charts</p>
+                <div className="grid grid-cols-3 gap-2 md:gap-3">
+                  <div className="bg-white rounded-lg p-2 md:p-3 text-center border-2 border-blue-100 shadow">
+                    <i className="bi bi-clock-history text-blue-600 text-lg md:text-xl mb-1 block"></i>
+                    <p className="text-xs font-semibold text-gray-900">Save 70%</p>
+                    <p className="text-xs text-gray-600">Time on Charts</p>
                   </div>
-                  <div className="bg-white rounded-lg p-4 text-center border-2 border-green-100 shadow">
-                    <i className="bi bi-cash-stack text-green-600 text-2xl mb-2 block"></i>
-                    <p className="text-sm font-semibold text-gray-900">$200K+</p>
-                    <p className="text-sm text-gray-600">Annual Savings</p>
+                  <div className="bg-white rounded-lg p-2 md:p-3 text-center border-2 border-green-100 shadow">
+                    <i className="bi bi-cash-stack text-green-600 text-lg md:text-xl mb-1 block"></i>
+                    <p className="text-xs font-semibold text-gray-900">$200K+</p>
+                    <p className="text-xs text-gray-600">Annual Savings</p>
                   </div>
-                  <div className="bg-white rounded-lg p-4 text-center border-2 border-purple-100 shadow">
-                    <i className="bi bi-emoji-smile text-purple-600 text-2xl mb-2 block"></i>
-                    <p className="text-sm font-semibold text-gray-900">95%</p>
-                    <p className="text-sm text-gray-600">Satisfaction</p>
+                  <div className="bg-white rounded-lg p-2 md:p-3 text-center border-2 border-purple-100 shadow">
+                    <i className="bi bi-emoji-smile text-purple-600 text-lg md:text-xl mb-1 block"></i>
+                    <p className="text-xs font-semibold text-gray-900">95%</p>
+                    <p className="text-xs text-gray-600">Satisfaction</p>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Right Side - Login Form */}
-            <div className="bg-white rounded-2xl shadow-2xl border-2 border-blue-100 p-6 lg:p-8">
-              <div className="text-center mb-4">
-                <h2 className="text-3xl font-bold text-gray-900 mb-2">Sign In</h2>
-                <p className="text-gray-600 text-base">Access your dashboard</p>
+            <div className="bg-white rounded-2xl shadow-2xl border-2 border-blue-100 p-4 md:p-5 lg:p-6">
+              <div className="text-center mb-3">
+                <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-1">Sign In</h2>
+                <p className="text-gray-600 text-sm md:text-base">Access your dashboard</p>
               </div>
 
           {/* Social Sign-in Buttons */}
@@ -348,7 +391,7 @@ function SignIn() {
               type="button"
               onClick={() => handleSocialLogin('Microsoft')}
               disabled={isMicrosoftLoading || isGoogleLoading || isLoading}
-              className="w-full flex items-center justify-center gap-2 px-4 py-3 border-2 border-gray-300 rounded-lg hover:border-gray-400 transition-all font-medium text-base text-gray-700 bg-white disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 border-2 border-gray-300 rounded-lg hover:border-gray-400 transition-all font-medium text-sm md:text-base text-gray-700 bg-white disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isMicrosoftLoading ? (
                 <>
@@ -375,7 +418,7 @@ function SignIn() {
               type="button"
               onClick={() => handleSocialLogin('Google')}
               disabled={isGoogleLoading || isMicrosoftLoading || isLoading}
-              className="w-full flex items-center justify-center gap-2 px-4 py-2 border-2 border-gray-300 rounded-lg hover:border-gray-400 transition-all font-medium text-sm text-gray-700 bg-white disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 border-2 border-gray-300 rounded-lg hover:border-gray-400 transition-all font-medium text-sm md:text-base text-gray-700 bg-white disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isGoogleLoading ? (
                 <>
@@ -402,7 +445,10 @@ function SignIn() {
           {/* Error Message */}
           {authError && (
             <div className="mb-2 p-2 bg-red-50 border border-red-200 rounded-lg">
-              <p className="text-sm text-red-600">{authError}</p>
+              <p className="text-xs md:text-sm text-red-600">{authError}</p>
+              <p className="text-xs md:text-sm text-gray-600 mt-1">
+                Don&apos;t have an account? <Link to="/signup" className="text-blue-600 hover:underline font-medium">Sign up</Link>
+              </p>
             </div>
           )}
 
@@ -411,16 +457,16 @@ function SignIn() {
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-gray-300"></div>
             </div>
-            <div className="relative flex justify-center text-sm">
+            <div className="relative flex justify-center text-xs md:text-sm">
               <span className="px-2 bg-white text-gray-500">or</span>
             </div>
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-3">
+          <form onSubmit={handleSubmit} className="space-y-2.5 md:space-y-3">
             {/* Email Field */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="email" className="block text-xs md:text-sm font-medium text-gray-700 mb-1">
                 Email
               </label>
               <div className="relative">
@@ -435,7 +481,7 @@ function SignIn() {
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  className={`w-full pl-8 pr-3 py-3 text-base border-2 rounded-lg focus:outline-none focus:ring-2 transition-all ${
+                  className={`w-full pl-8 pr-3 py-2.5 md:py-3 text-sm md:text-base border-2 rounded-lg focus:outline-none focus:ring-2 transition-all ${
                     errors.email
                       ? 'border-red-500 focus:ring-red-500'
                       : 'border-gray-300 focus:border-cyan-500 focus:ring-cyan-500'
@@ -444,13 +490,13 @@ function SignIn() {
                 />
               </div>
               {errors.email && (
-                <p className="mt-0.5 text-sm text-red-600">{errors.email}</p>
+                <p className="mt-0.5 text-xs md:text-sm text-red-600">{errors.email}</p>
               )}
             </div>
 
             {/* Password Field */}
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="password" className="block text-xs md:text-sm font-medium text-gray-700 mb-1">
                 Password
               </label>
               <div className="relative">
@@ -460,7 +506,7 @@ function SignIn() {
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  className={`w-full px-3 py-3 pr-8 text-base border-2 rounded-lg focus:outline-none focus:ring-2 transition-all ${
+                  className={`w-full px-3 py-2.5 md:py-3 pr-8 text-sm md:text-base border-2 rounded-lg focus:outline-none focus:ring-2 transition-all ${
                     errors.password
                       ? 'border-red-500 focus:ring-red-500'
                       : 'border-gray-300 focus:border-cyan-500 focus:ring-cyan-500'
@@ -485,7 +531,7 @@ function SignIn() {
                 </button>
               </div>
               {errors.password && (
-                <p className="mt-0.5 text-sm text-red-600">{errors.password}</p>
+                <p className="mt-0.5 text-xs md:text-sm text-red-600">{errors.password}</p>
               )}
             </div>
 
@@ -493,7 +539,7 @@ function SignIn() {
             <div className="flex justify-end">
               <Link
                 to="#"
-                className="text-sm text-cyan-600 hover:text-cyan-700 font-medium transition-colors"
+                className="text-xs md:text-sm text-cyan-600 hover:text-cyan-700 font-medium transition-colors"
               >
                 Forgot Password?
               </Link>
@@ -503,15 +549,15 @@ function SignIn() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-4 py-3 rounded-lg hover:from-cyan-400 hover:to-blue-500 transition-all text-base font-medium shadow-lg hover:shadow-cyan-500/50 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-4 py-2.5 md:py-3 rounded-lg hover:from-cyan-400 hover:to-blue-500 transition-all text-sm md:text-base font-medium shadow-lg hover:shadow-cyan-500/50 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSubmitting ? 'Signing In...' : 'Login'}
             </button>
           </form>
 
               {/* Sign Up Link */}
-              <div className="mt-6 text-center">
-                <p className="text-gray-600 text-base">
+              <div className="mt-4 md:mt-6 text-center">
+                <p className="text-gray-600 text-sm md:text-base">
                   Don't have an account?{' '}
                   <Link
                     to="/sign-up"
@@ -523,8 +569,8 @@ function SignIn() {
               </div>
 
               {/* Additional Info */}
-              <div className="mt-4 text-center">
-                <p className="text-gray-600 text-sm">
+              <div className="mt-3 md:mt-4 text-center">
+                <p className="text-gray-600 text-xs md:text-sm">
                   By signing in, you agree to our{' '}
                   <Link to="/terms-of-service" className="text-blue-600 hover:text-blue-700">Terms of Service</Link>
                   {' '}and{' '}

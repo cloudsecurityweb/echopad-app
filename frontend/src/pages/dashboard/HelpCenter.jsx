@@ -1,23 +1,29 @@
 import { useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import HelpDocCard from '../../components/help/HelpDocCard';
 import HelpEditorModal from '../../components/help/HelpEditorModal';
 import { useHelpCenterDocs } from '../../hooks/useHelpCenterDocs';
 import { createHelpDoc, updateHelpDoc } from '../../api/helpCenter.api';
+import { useRole } from '../../contexts/RoleContext';
 
 const SYSTEM_TENANT_ID = "system";
 
 export default function HelpCenter() {
+  const navigate = useNavigate();
+  const { isClientAdmin, isUserAdmin, isSuperAdmin } = useRole();
+
   const [editorOpen, setEditorOpen] = useState(false);
   const [activeDoc, setActiveDoc] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
-  const [statusFilter, setStatusFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState((isClientAdmin || isUserAdmin) ? "published" : "all");
   const [isSaving, setIsSaving] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
 
   const { docs, loading, error } = useHelpCenterDocs({
     tenantId: SYSTEM_TENANT_ID,
     refreshKey,
+    status: isClientAdmin ? 'published' : undefined,
   });
 
   const categories = useMemo(() => {
@@ -32,10 +38,10 @@ export default function HelpCenter() {
         : doc.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
           doc.content?.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesCategory = categoryFilter === "all" || doc.category === categoryFilter;
-      const matchesStatus = statusFilter === "all" || doc.status === statusFilter;
+      const matchesStatus = isClientAdmin || statusFilter === "all" || doc.status === statusFilter;
       return matchesSearch && matchesCategory && matchesStatus;
     });
-  }, [docs, searchTerm, categoryFilter, statusFilter]);
+  }, [docs, searchTerm, categoryFilter, statusFilter, isClientAdmin]);
 
   const openCreate = () => {
     setActiveDoc(null);
@@ -78,17 +84,21 @@ export default function HelpCenter() {
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Help Center</h1>
           <p className="text-gray-600">
-            Manage documentation and support content for Echopad users
+            {(isClientAdmin || isUserAdmin)
+              ? "Find answers and guides to help you get the most out of Echopad."
+              : "Manage documentation and support content for Echopad users"}
           </p>
         </div>
 
-        <button
-          onClick={openCreate}
-          className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-lg font-medium shadow hover:from-cyan-400 hover:to-blue-500 transition"
-        >
-          <i className="bi bi-plus-circle-fill"></i>
-          New Article
-        </button>
+        {isSuperAdmin && (
+          <button
+            onClick={openCreate}
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-lg font-medium shadow hover:from-cyan-400 hover:to-blue-500 transition"
+          >
+            <i className="bi bi-plus-circle-fill"></i>
+            New Article
+          </button>
+        )}
       </div>
 
       {/* Search + Filters */}
@@ -112,16 +122,17 @@ export default function HelpCenter() {
           ))}
         </select>
 
-        <select
-          className="border border-gray-300 rounded-lg px-4 py-2 text-sm"
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-        >
-          <option value="all">All Status</option>
-          <option value="published">Published</option>
-          <option value="draft">Draft</option>
-          <option value="archived">Archived</option>
-        </select>
+        {isSuperAdmin && (
+          <select
+                    className="border border-gray-300 rounded-lg px-4 py-2 text-sm"
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value)}
+                  >            <option value="all">All Status</option>
+            <option value="published">Published</option>
+            <option value="draft">Draft</option>
+            <option value="archived">Archived</option>
+          </select>
+        )}
       </div>
 
       {/* Docs Grid */}
@@ -145,14 +156,19 @@ export default function HelpCenter() {
             </div>
           ) : (
             filteredDocs.map((doc) => (
-              <HelpDocCard key={doc.id} doc={doc} onEdit={openEdit} />
+              <HelpDocCard
+                key={doc.id}
+                doc={doc}
+                onEdit={isSuperAdmin ? openEdit : undefined}
+                onClick={(isClientAdmin || isUserAdmin) ? () => navigate(`/dashboard/help/${doc.id}`) : undefined}
+              />
             ))
           )}
         </div>
       )}
 
       {/* Editor Modal */}
-      {editorOpen && (
+      {isSuperAdmin && editorOpen && (
         <HelpEditorModal
           doc={activeDoc}
           onClose={() => setEditorOpen(false)}

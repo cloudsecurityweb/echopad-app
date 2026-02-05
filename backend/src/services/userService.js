@@ -7,6 +7,7 @@
 import { getContainer } from "../config/cosmosClient.js";
 import { createUser, validateUser, USER_ROLES, USER_STATUS, getContainerNameByRole } from "../models/user.js";
 import { createAuditEvent, AUDIT_EVENT_TYPES } from "../models/auditEvent.js";
+import { updateOrg } from "./organizationService.js";
 
 const AUDIT_CONTAINER_NAME = "auditEvents";
 
@@ -221,19 +222,19 @@ export async function getUserByOIDAnyRole(oid, tenantId) {
       // Cosmos DB uses OID as the id field, tenantId as partition key
       const { resource } = await container.item(oid, tenantId).read();
       if (resource) {
-        console.log(` [OID-LOOKUP] Found user with OID ${oid.substring(0, 8)}... in ${role} container`);
+        console.log(`✅ [OID-LOOKUP] Found user with OID ${oid.substring(0, 8)}... in ${role} container`);
         return resource; // Found user with role
       }
     } catch (error) {
       if (error.code !== 404) {
         // Only log non-404 errors (404 is expected when user not in that container)
-        console.warn(` [OID-LOOKUP] Error searching ${role} container for OID ${oid.substring(0, 8)}...:`, error.message);
+        console.warn(`⚠️ [OID-LOOKUP] Error searching ${role} container for OID ${oid.substring(0, 8)}...:`, error.message);
       }
       // Continue to next container
     }
   }
   
-  console.log(` [OID-LOOKUP] User with OID ${oid.substring(0, 8)}... not found in any container`);
+  console.log(`⚠️ [OID-LOOKUP] User with OID ${oid.substring(0, 8)}... not found in any container`);
   return null; // User not found in any container
 }
 
@@ -467,4 +468,33 @@ export async function updateUserRole(userId, tenantId, oldRole, newRole, actorUs
   }
 
   return newUser;
+}
+
+export async function updateUserProfile(userId, tenantId, actorUserId, profileData) {
+  const { displayName, organizationName, companyUrl } = profileData;
+
+  const user = await getUserById(userId, tenantId);
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  if (displayName) {
+    await updateUser(userId, tenantId, { displayName }, actorUserId, user.role);
+  }
+
+  if (organizationName || companyUrl) {
+    if (!user.organizationId) {
+      throw new Error("User is not associated with an organization");
+    }
+    const orgUpdates = {};
+    if (organizationName) {
+      orgUpdates.name = organizationName;
+    }
+    if (companyUrl) {
+      orgUpdates.company_url = companyUrl;
+    }
+    await updateOrg(user.organizationId, tenantId, orgUpdates, actorUserId);
+  }
+
+  return getUserById(userId, tenantId);
 }

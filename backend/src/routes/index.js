@@ -17,6 +17,11 @@ import productsRouter from "./products.routes.js";
 import analyticsRouter from "./analytics.routes.js";
 import helpCenterRouter from "./helpCenter.routes.js";
 import clientFeedbackRouter from "./clientFeedback.routes.js";
+import orgProductsRouter from "./orgProducts.routes.js";
+import licensesRouter from "./licenses.routes.js";
+import userProductRouter from "./userProduct.routes.js";
+import userLicensesRouter from "./userLicenses.routes.js";
+import { seedSaasDemoData } from "../services/seed-saas-data.js";
 
 const router = express.Router();
 
@@ -83,6 +88,14 @@ router.get("/health/cosmos", testCosmosContainer);
  * Can be called periodically to prevent cold starts
  */
 router.get("/health/warmup", warmup);
+router.post("/seed-demo", async (req, res) => {
+  try {
+    const result = await seedSaasDemoData();
+    res.json({ message: "Seed successful", result });
+  } catch (err) {
+    res.status(500).json({ message: "Seed failed", error: err.message });
+  }
+});
 
 /**
  * POST /health/containers
@@ -148,6 +161,10 @@ router.use("/api/dashboard", dashboardRouter);   // /metrics
 router.use("/api/clients", clientsRouter);       // GET, POST
 router.use("/api/license-assignments", licenseRouter);      // GET
 router.use("/api/products", productsRouter); // GET
+router.use("/api/org-products", orgProductsRouter);
+router.use("/api/licenses", licensesRouter);
+router.use("/api/user-licenses", userLicensesRouter);
+router.use("/api/user-products", userProductRouter);
 router.use("/api/analytics", analyticsRouter); // GET
 router.use("/api/help-center", helpCenterRouter); // GET, POST, PATCH
 router.use("/api/client-feedback", clientFeedbackRouter); // GET, POST, PATCH

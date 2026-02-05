@@ -7,6 +7,7 @@
 import { getUserByEmail, updateUser, getUserByEmailAnyRole } from '../services/userService.js';
 import { USER_STATUS } from '../models/user.js';
 import { isConfigured, getContainer } from '../config/cosmosClient.js';
+import { sendVerificationEmail, isEmailConfigured } from '../services/emailService.js';
 
 /**
  * GET /api/auth/verify-email
@@ -40,7 +41,7 @@ export async function verifyEmail(req, res) {
     // Decode URL-encoded token (Express should auto-decode, but ensure it's decoded)
     const normalizedToken = decodeURIComponent(token);
 
-    console.log(` [VERIFY-EMAIL] Verification attempt:`, {
+    console.log(`🔍 [VERIFY-EMAIL] Verification attempt:`, {
       email: normalizedEmail,
       tokenReceived: normalizedToken.substring(0, 50) + '...',
       tokenLength: normalizedToken.length,
@@ -66,7 +67,7 @@ export async function verifyEmail(req, res) {
         if (verifications.length > 0) {
           verificationRecord = verifications[0];
           userTenantId = verificationRecord.tenantId;
-          console.log(` [VERIFY-EMAIL] Found verification record for ${normalizedEmail}`);
+          console.log(`✅ [VERIFY-EMAIL] Found verification record for ${normalizedEmail}`);
         }
       }
     } catch (error) {
@@ -119,25 +120,25 @@ export async function verifyEmail(req, res) {
               const matchingUser = resources.find(u => u.tenantId === userTenantId);
               if (matchingUser) {
                 user = matchingUser;
-                console.log(` [VERIFY-EMAIL] Found user with matching tenantId: ${user.id}`);
+                console.log(`✅ [VERIFY-EMAIL] Found user with matching tenantId: ${user.id}`);
                 break;
               }
             }
             // If multiple users, prefer the one that's not verified (most recent sign-up)
             if (resources.length > 1) {
-              console.warn(`  [VERIFY-EMAIL] Multiple users found with email ${normalizedEmail} in ${role} container: ${resources.length}`);
+              console.warn(`⚠️  [VERIFY-EMAIL] Multiple users found with email ${normalizedEmail} in ${role} container: ${resources.length}`);
               // Prefer unverified user (most recent sign-up)
               const unverifiedUser = resources.find(u => !u.emailVerified);
               if (unverifiedUser) {
                 user = unverifiedUser;
-                console.log(` [VERIFY-EMAIL] Using unverified user: ${user.id}`);
+                console.log(`✅ [VERIFY-EMAIL] Using unverified user: ${user.id}`);
                 break;
               }
             }
             // Otherwise, use the first one found
             if (!user) {
               user = resources[0];
-              console.log(` [VERIFY-EMAIL] Using first user found: ${user.id}`);
+              console.log(`✅ [VERIFY-EMAIL] Using first user found: ${user.id}`);
               break;
             }
           }
@@ -149,7 +150,7 @@ export async function verifyEmail(req, res) {
     }
 
     if (!user) {
-      console.log(` [VERIFY-EMAIL] User not found: ${normalizedEmail}`);
+      console.log(`❌ [VERIFY-EMAIL] User not found: ${normalizedEmail}`);
       return res.status(404).json({
         success: false,
         error: 'User not found',
@@ -159,7 +160,7 @@ export async function verifyEmail(req, res) {
 
     // Check if already verified
     if (user.emailVerified) {
-      console.log(` [VERIFY-EMAIL] Email already verified: ${normalizedEmail}`);
+      console.log(`✅ [VERIFY-EMAIL] Email already verified: ${normalizedEmail}`);
       return res.status(200).json({
         success: true,
         message: 'Email already verified',
@@ -175,7 +176,7 @@ export async function verifyEmail(req, res) {
                         (verificationRecord && verificationRecord.token === normalizedToken);
 
     // Log token comparison for debugging
-    console.log(` [VERIFY-EMAIL] Token comparison:`, {
+    console.log(`🔍 [VERIFY-EMAIL] Token comparison:`, {
       storedToken: user.verificationToken ? user.verificationToken.substring(0, 50) + '...' : 'null',
       verificationRecordToken: verificationRecord ? verificationRecord.token.substring(0, 50) + '...' : 'null',
       receivedToken: normalizedToken.substring(0, 50) + '...',
@@ -186,7 +187,7 @@ export async function verifyEmail(req, res) {
 
     // Verify token matches
     if (!tokenMatches) {
-      console.log(` [VERIFY-EMAIL] Token mismatch for ${normalizedEmail}`);
+      console.log(`❌ [VERIFY-EMAIL] Token mismatch for ${normalizedEmail}`);
       return res.status(400).json({
         success: false,
         error: 'Invalid token',
@@ -196,13 +197,59 @@ export async function verifyEmail(req, res) {
 
     // Check if token expired - check verification record first, then user record
     const expiresAt = verificationRecord?.expiresAt || user.verificationTokenExpiresAt;
+    let tokenExpired = false;
     if (expiresAt) {
       const expirationDate = new Date(expiresAt);
       if (expirationDate < new Date()) {
+        tokenExpired = true;
+        console.log(`⏰ [VERIFY-EMAIL] Token expired for ${normalizedEmail}, regenerating new token...`);
+        
+        // Generate new verification token
+        const { randomUUID } = await import('crypto');
+        const newVerificationToken = `verify_${Date.now()}_${randomUUID().replace(/-/g, '')}`;
+        const newVerificationTokenExpiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+
+        // Update user with new token
+        await updateUser(user.id, user.tenantId, {
+          verificationToken: newVerificationToken,
+          verificationTokenExpiresAt: newVerificationTokenExpiresAt,
+        }, user.id, user.role);
+
+        // Store new verification token in emailVerifications container
+        try {
+          const verificationContainer = getContainer('emailVerifications');
+          if (verificationContainer) {
+            await verificationContainer.items.create({
+              id: `verify_${randomUUID()}`,
+              tenantId: user.tenantId,
+              email: normalizedEmail,
+              token: newVerificationToken,
+              expiresAt: newVerificationTokenExpiresAt,
+              verifiedAt: null,
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+            });
+            console.log(`✅ [VERIFY-EMAIL] New verification token stored for expired token: ${normalizedEmail}`);
+          }
+        } catch (error) {
+          console.warn('⚠️  [VERIFY-EMAIL] Failed to store new verification token:', error.message);
+        }
+
+        // Send new verification email
+        try {
+          const userName = user.displayName || user.name || 'User';
+          console.log(`📧 [VERIFY-EMAIL] Sending new verification email for expired token to: ${normalizedEmail}`);
+          await sendVerificationEmail(normalizedEmail, newVerificationToken, userName);
+          console.log(`✅ [VERIFY-EMAIL] New verification email sent successfully for expired token`);
+        } catch (emailError) {
+          console.error(`❌ [VERIFY-EMAIL] Failed to send new verification email for expired token:`, emailError.message);
+        }
+
         return res.status(400).json({
           success: false,
           error: 'Token expired',
-          message: 'The verification token has expired. Please request a new verification email.',
+          message: 'The verification token has expired. A new verification email has been sent to your inbox. Please check your email and use the new link to verify your account.',
+          tokenRegenerated: true,
         });
       }
     }
@@ -220,9 +267,9 @@ export async function verifyEmail(req, res) {
         verificationTokenExpiresAt: null,
         status: USER_STATUS.ACTIVE, // Activate account after verification
       }, user.id, userRole);
-      console.log(` [VERIFY-EMAIL] User updated successfully: ${normalizedEmail}`);
+      console.log(`✅ [VERIFY-EMAIL] User updated successfully: ${normalizedEmail}`);
     } catch (updateError) {
-      console.error(` [VERIFY-EMAIL] Failed to update user:`, updateError.message);
+      console.error(`❌ [VERIFY-EMAIL] Failed to update user:`, updateError.message);
       throw updateError;
     }
 
@@ -287,6 +334,15 @@ export async function resendVerificationEmail(req, res) {
     });
   }
 
+  // Check if email service is configured before proceeding
+  if (!isEmailConfigured()) {
+    return res.status(503).json({
+      success: false,
+      error: 'Email service not configured',
+      message: 'Email service is not configured. Please contact support to enable email verification.',
+    });
+  }
+
   try {
     const { email } = req.body;
 
@@ -347,7 +403,7 @@ export async function resendVerificationEmail(req, res) {
     // Generate new verification token
     const { randomUUID } = await import('crypto');
     const verificationToken = `verify_${Date.now()}_${randomUUID().replace(/-/g, '')}`;
-    const verificationExpiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+    const verificationTokenExpiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
 
     // Update user with new token
     await updateUser(user.id, user.tenantId, {
@@ -355,22 +411,59 @@ export async function resendVerificationEmail(req, res) {
       verificationTokenExpiresAt,
     }, user.id, user.role);
 
-    // Send verification email
-    const { sendVerificationEmail } = await import('../services/emailService.js');
+    // Store verification token in emailVerifications container (same pattern as signUpEmail)
+    const VERIFICATION_CONTAINER = 'emailVerifications';
     try {
-      await sendVerificationEmail(normalizedEmail, verificationToken, user.displayName);
-    } catch (emailError) {
-      console.error('Failed to send verification email:', emailError);
-      return res.status(500).json({
-        success: false,
-        error: 'Failed to send email',
-        message: 'Could not send verification email. Please try again later.',
-      });
+      const verificationContainer = getContainer(VERIFICATION_CONTAINER);
+      if (verificationContainer) {
+        await verificationContainer.items.create({
+          id: `verify_${randomUUID()}`,
+          tenantId: user.tenantId,
+          email: normalizedEmail,
+          token: verificationToken,
+          expiresAt: verificationTokenExpiresAt,
+          verifiedAt: null,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        });
+        console.log(`✅ [RESEND-VERIFICATION] Verification token stored in emailVerifications container for: ${normalizedEmail}`);
+      }
+    } catch (error) {
+      console.warn('⚠️  [RESEND-VERIFICATION] Failed to store verification token in emailVerifications container:', error.message);
+      // Continue even if verification container doesn't exist or fails
     }
+
+    // Send verification email - track success/failure
+    let emailSent = false;
+    let emailError = null;
+    const userName = user.displayName || user.name || 'User';
+    
+    try {
+      console.log(`📧 [RESEND-VERIFICATION] Sending verification email to: ${normalizedEmail}`);
+      const emailResult = await sendVerificationEmail(normalizedEmail, verificationToken, userName);
+      emailSent = true;
+      console.log(`✅ [RESEND-VERIFICATION] Verification email sent successfully. Message ID: ${emailResult.messageId || 'N/A'}`);
+    } catch (error) {
+      emailSent = false;
+      emailError = error.message || 'Failed to send verification email';
+      console.error(`❌ [RESEND-VERIFICATION] Failed to send verification email to ${normalizedEmail}:`, {
+        error: emailError,
+        email: normalizedEmail,
+        tokenLength: verificationToken.length,
+      });
+      // Don't fail the request, but track the error for user feedback
+    }
+
+    // Build response message based on email status
+    let responseMessage = emailSent 
+      ? 'Verification email sent successfully. Please check your inbox.'
+      : 'Account found but email sending failed. Please try again or contact support.';
 
     res.status(200).json({
       success: true,
-      message: 'Verification email sent successfully',
+      message: responseMessage,
+      emailSent: emailSent,
+      emailError: emailError || null,
     });
   } catch (error) {
     console.error('Resend verification error:', error);

@@ -153,3 +153,26 @@ export async function getAssignmentsByTenant(tenantId) {
   const { resources } = await container.items.query(query).fetchAll();
   return resources;
 }
+
+/**
+ * Get license assignments for a specific user within a tenant.
+ * Primarily used to power user dashboards with product access information.
+ *
+ * @param {string} tenantId
+ * @param {string} userId
+ * @returns {Promise<Array>}
+ */
+export async function getAssignmentsByUser(tenantId, userId) {
+  const container = getContainer("licenseAssignments");
+
+  const query = {
+    query: `SELECT * FROM c WHERE c.tenantId = @tenantId AND c.userId = @userId`,
+    parameters: [
+      { name: "@tenantId", value: tenantId },
+      { name: "@userId", value: userId },
+    ],
+  };
+
+  const { resources } = await container.items.query(query).fetchAll();
+  return resources;
+}

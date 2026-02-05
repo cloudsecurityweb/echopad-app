@@ -2,11 +2,13 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useRole, ROLES } from '../../contexts/RoleContext';
-import { getRolesFromToken } from '../../utils/tokenDecoder';
+import { getRolesFromToken, getUserInfoFromToken } from '../../utils/tokenDecoder';
+import { useMsal } from '@azure/msal-react';
 
 function Dashboard() {
-  const { isAuthenticated, isLoading, isAuthReady, tokenRoles, userProfile, userOID } = useAuth();
+  const { isAuthenticated, isLoading, isAuthReady, tokenRoles, userProfile, userOID, accessToken, authProvider } = useAuth();
   const { currentRole, isLoadingRole } = useRole();
+  const { account } = useMsal();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -18,83 +20,81 @@ function Dashboard() {
       // Check if already on a role-specific route - if yes, don't redirect
       if (currentPath === '/dashboard/super-admin' ||
         currentPath === '/dashboard/client-admin' ||
-        currentPath === '/dashboard/user-admin') {
+        currentPath === '/dashboard/user-admin' ||
+        currentPath === '/dashboard/subscriptions') {
         // Already on role-specific route, no need to redirect
         return;
       }
 
-      // Determine role to use (prefer currentRole from context, which comes from userProfile)
-      let roleToUse = currentRole;
+      // CRITICAL: Check email verification status before routing
+      // If email is not verified or status is PENDING, redirect to verification page
+      const emailVerified = userProfile?.user?.emailVerified;
+      const userStatus = userProfile?.user?.status;
+      
+      if (emailVerified === false || userStatus === 'pending') {
+        console.log('❌ [DASHBOARD] Email not verified or account pending:', {
+          emailVerified,
+          userStatus,
+          email: userProfile?.user?.email,
+        });
+        // Redirect to verification holding page
+        navigate('/verify-email-sent', { 
+          replace: true,
+          state: { 
+            email: userProfile?.user?.email || '',
+            message: 'Please verify your email address to access your dashboard. Check your inbox for the verification link.',
+            requiresVerification: true,
+          } 
+        });
+        return;
+      }
+
+      // Use role from RoleContext - it handles priority order:
+      // 1. Token roles (Entra ID - source of truth when present)
+      // 2. Backend userProfile role (database)
+      // 3. Email domain check (@cloudsecurityweb.com = SuperAdmin)
+      // 4. Default to CLIENT_ADMIN
+      // RoleContext already implements this logic, so we just use currentRole
+      const roleToUse = currentRole || ROLES.CLIENT_ADMIN;
 
       // Debug logging
-      console.log(' [DASHBOARD] Role detection:', {
+      console.log('🔍 [DASHBOARD] Role detection:', {
+        roleToUse,
         currentRole,
         userProfileRole: userProfile?.user?.role,
-        userEmail: userProfile?.user?.email,
+        userEmail: userProfile?.user?.email || account?.username,
+        emailVerified: emailVerified,
+        userStatus: userStatus,
         tokenRoles,
-        userProfile: userProfile?.user,
+        source: tokenRoles?.length > 0 ? 'token' : 
+                userProfile?.user?.role ? 'profile' : 
+                'default',
       });
 
-      // If we have userProfile, use its role (most reliable)
-      if (userProfile?.user?.role) {
-        const backendRole = userProfile.user.role;
-        console.log(` [DASHBOARD] Backend role from userProfile: ${backendRole}`);
-        if (backendRole === 'superAdmin') {
-          roleToUse = ROLES.SUPER_ADMIN;
-          console.log(' [DASHBOARD] Setting role to SUPER_ADMIN');
-        } else if (backendRole === 'clientAdmin') {
-          roleToUse = ROLES.CLIENT_ADMIN;
-          console.log(' [DASHBOARD] Setting role to CLIENT_ADMIN');
-        } else if (backendRole === 'user') {
-          roleToUse = ROLES.USER_ADMIN;
-          console.log(' [DASHBOARD] Setting role to USER_ADMIN');
-        }
-      }
-
-      // Fallback to token roles if userProfile doesn't have role (immediate for SuperAdmin)
-      if ((!roleToUse || roleToUse === ROLES.USER_ADMIN) && tokenRoles && tokenRoles.length > 0) {
-        if (tokenRoles.includes('SuperAdmin')) {
-          roleToUse = ROLES.SUPER_ADMIN;
-        } else if (tokenRoles.includes('ClientAdmin')) {
-          roleToUse = ROLES.CLIENT_ADMIN;
-        } else if (tokenRoles.includes('UserAdmin')) {
-          roleToUse = ROLES.USER_ADMIN;
-        }
-      }
-
-      // If we have a role from context, use it (even if userProfile not loaded yet)
-      // This ensures smooth redirect for all users, not just superadmin
-      if (!roleToUse && currentRole && currentRole !== ROLES.USER_ADMIN) {
-        roleToUse = currentRole;
-      }
-
-      // Default to CLIENT_ADMIN for new users (non-SuperAdmin sign-ins become ClientAdmin)
-      // This matches backend behavior: new sign-ins default to ClientAdmin role
-      // Redirect immediately - don't wait for profile fetch
-      if (!roleToUse) {
-        roleToUse = ROLES.CLIENT_ADMIN;
-      }
-
       try {
-        let targetRoute = '/dashboard/client-admin'; // Default to client-admin (not user-admin)
+        // Default landing for client admins is subscriptions page
+        let targetRoute = '/dashboard/subscriptions';
 
         if (roleToUse === ROLES.SUPER_ADMIN) {
           targetRoute = '/dashboard/super-admin';
         } else if (roleToUse === ROLES.CLIENT_ADMIN) {
-          targetRoute = '/dashboard/client-admin';
+          targetRoute = '/dashboard/subscriptions';
         } else if (roleToUse === ROLES.USER_ADMIN) {
           targetRoute = '/dashboard/user-admin';
         }
 
+        // Avoid redundant navigation if we're already there
+        if (currentPath === targetRoute) return;
+
         // Navigate immediately (replace: true to avoid back button issues)
-        console.log(' [DASHBOARD] Redirecting to:', targetRoute, '| Role:', roleToUse);
+        console.log('🚀 [DASHBOARD] Redirecting to:', targetRoute, '| Role:', roleToUse);
         navigate(targetRoute, { replace: true });
       } catch (error) {
         console.error('Error navigating to role-specific dashboard:', error);
-        navigate('/dashboard/client-admin', { replace: true });
+        navigate('/dashboard/subscriptions', { replace: true });
       }
     }
-  }, [isLoading, isAuthReady, isAuthenticated, currentRole, navigate, tokenRoles, userProfile, userOID, isLoadingRole]);
+  }, [isLoading, isAuthReady, isAuthenticated, currentRole, navigate, tokenRoles, userProfile, userOID, isLoadingRole, accessToken, authProvider, account]);
 
   if (isLoading || !isAuthReady || isLoadingRole) {
     return (
@@ -124,7 +124,8 @@ function Dashboard() {
   const currentPath = window.location.pathname;
   if (currentPath === '/dashboard/super-admin' ||
     currentPath === '/dashboard/client-admin' ||
-    currentPath === '/dashboard/user-admin') {
+    currentPath === '/dashboard/user-admin' ||
+    currentPath === '/dashboard/subscriptions') {
     return null; // Already on role-specific route, let it render
   }
 

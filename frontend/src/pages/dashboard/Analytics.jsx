@@ -12,6 +12,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { useRole } from '../../contexts/RoleContext';
+import AnalyticsPage from './client-admin/AnalyticsPage';
 import { useSuperAdminAnalytics } from '../../hooks/useSuperAdminAnalytics';
 
 function formatMetricLabel(key) {
@@ -41,12 +42,16 @@ function getMetricCategory(key) {
 const PIE_COLORS = ["#06b6d4", "#3b82f6", "#10b981", "#f59e0b", "#8b5cf6"];
 
 function Analytics() {
-  const { isSuperAdmin } = useRole();
+  const { isSuperAdmin, isClientAdmin } = useRole();
   const { analytics, loading, error } = useSuperAdminAnalytics();
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [sortDirection, setSortDirection] = useState("desc");
   const [topCount, setTopCount] = useState("8");
   const [searchTerm, setSearchTerm] = useState("");
+
+  if (isClientAdmin) {
+    return <AnalyticsPage />;
+  }
 
   if (!isSuperAdmin) {
     return (

@@ -29,7 +29,7 @@ function SuperAdminDashboard() {
   // Placeholder data - to be replaced with API calls
   const overviewStats = [
     { label: 'Total Clients', value: '247', change: '+12%', icon: '👥' },
-    { label: 'Active Subscriptions', value: '189', change: '+8%', icon: '' },
+    { label: 'Active Subscriptions', value: '189', change: '+8%', icon: '📊' },
     { label: 'Total Licenses', value: '1,234', change: '+15%', icon: '🔑' },
     { label: 'Monthly Revenue', value: '$124.5K', change: '+23%', icon: '💰' },
     { label: 'Client Feedback', value: '8', change: '+3', icon: '💬' },

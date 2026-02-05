@@ -5,7 +5,7 @@ import { showNotification } from '../../utils/notifications';
 import { products } from '../../data/products';
 
 function InviteUserModal({ isOpen, onClose, onSuccess }) {
-  const { getAccessToken } = useAuth();
+  const { getAccessToken, isAuthenticated, authProvider } = useAuth();
   const [email, setEmail] = useState('');
   const [role, setRole] = useState('User');
   const [selectedProduct, setSelectedProduct] = useState('');
@@ -83,6 +83,13 @@ function InviteUserModal({ isOpen, onClose, onSuccess }) {
     }
 
     // Product selection is optional
+
+    // Check authentication before sending
+    if (!isAuthenticated || !authProvider) {
+      setErrors({ submit: 'You must be signed in to send invitations. Please sign in and try again.' });
+      showNotification('You must be signed in to send invitations', 'error');
+      return;
+    }
 
     setIsLoading(true);
 

@@ -7,25 +7,30 @@
 
 /**
  * Get user's owned products
- * TODO: Replace with API call to fetch user's products
+ * NOTE: This utility is now a thin wrapper around the backend API that derives
+ * product access from license assignments. It returns a Promise that resolves
+ * to an array matching the structure expected by YourProducts.jsx.
  */
-export function getUserOwnedProducts() {
-  // Placeholder data - matches YourProducts.jsx structure
-  // In production, this would fetch from an API endpoint
-  return [
-    {
-      id: 1,
-      name: 'AI Scribe',
-      status: 'Active',
-      subscriptionDate: '2024-01-15',
-    },
-    {
-      id: 3,
-      name: 'AI Medical Assistant',
-      status: 'Active',
-      subscriptionDate: '2024-03-10',
-    },
-  ];
+export async function getUserOwnedProducts(api, userId) {
+  if (!api || !userId) {
+    return [];
+  }
+
+  try {
+    const response = await api.fetchUserProducts(userId);
+    const products = response?.data || response;
+    if (!Array.isArray(products)) return [];
+
+    return products.map((p) => ({
+      id: p.id,
+      name: p.name,
+      status: p.status || 'Active',
+      subscriptionDate: p.subscriptionDate || new Date().toISOString(),
+    }));
+  } catch (error) {
+    console.error('Failed to load user-owned products:', error);
+    return [];
+  }
 }
 
 /**
@@ -33,8 +38,10 @@ export function getUserOwnedProducts() {
  * @param {string} productId - Product ID from the catalog (e.g., 'ai-scribe', 'ai-docman')
  * @returns {Object|null} - Product ownership info or null if not owned
  */
-export function checkProductOwnership(productId) {
-  const ownedProducts = getUserOwnedProducts();
+export function checkProductOwnership(productId, ownedProducts) {
+  if (!ownedProducts || !Array.isArray(ownedProducts)) {
+    return null;
+  }
   
   // Map product IDs to product names
   const productIdToName = {
@@ -64,10 +71,13 @@ export function checkProductOwnership(productId) {
 /**
  * Check if user owns a product by product name
  * @param {string} productName - Product name (e.g., 'AI Scribe')
+ * @param {Array} ownedProducts - Array of user's owned products
  * @returns {Object|null} - Product ownership info or null if not owned
  */
-export function checkProductOwnershipByName(productName) {
-  const ownedProducts = getUserOwnedProducts();
+export function checkProductOwnershipByName(productName, ownedProducts) {
+  if (!ownedProducts || !Array.isArray(ownedProducts)) {
+    return null;
+  }
   
   // Handle name variations
   const nameVariations = {
@@ -80,3 +90,4 @@ export function checkProductOwnershipByName(productName) {
 
   return ownedProduct || null;
 }
+

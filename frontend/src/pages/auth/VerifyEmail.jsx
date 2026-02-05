@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
+import AuthPageHeader from '../../components/auth/AuthPageHeader';
 
 function VerifyEmail() {
   const navigate = useNavigate();
@@ -46,7 +47,9 @@ function VerifyEmail() {
   }, [searchParams]);
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-white py-4">
+    <div className="min-h-screen bg-white">
+      <AuthPageHeader />
+      <main className="flex items-center justify-center py-4 min-h-[calc(100vh-4rem)]">
       <section className="w-full max-w-md px-4">
         <div className="text-center">
           {isLoading ? (
@@ -100,7 +103,8 @@ function VerifyEmail() {
           )}
         </div>
       </section>
-    </main>
+      </main>
+    </div>
   );
 }
 

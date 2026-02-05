@@ -1,22 +1,28 @@
 import express from "express";
+import { verifyEntraToken, attachUserFromDb, requireRole } from "../middleware/entraAuth.js";
 import {
   getProducts,
   createProduct,
-  updateProduct
+  updateProduct,
+  getProductByCode,
+  getProductsByTenant
 } from "../controllers/products.controller.js";
-import { getProductByCode } from "../services/products.service.js";
 
 const router = express.Router();
 
 /**
  * PRODUCTS
+ * - GET /: Public or authenticated (product catalog)
+ * - POST, PATCH: SuperAdmin only (product management)
  */
 
-router.get("/", getProducts);
+router.get("/", getProducts); // Public product catalog
 
-// SUPER ADMIN
-router.post("/", createProduct);
-router.patch("/:productCode", updateProduct);
-router.get("/:productCode", getProductByCode);
+// SUPER ADMIN ONLY - Product management
+router.post("/", verifyEntraToken, attachUserFromDb, requireRole(['SuperAdmin'], ['superAdmin']), createProduct);
+router.patch("/:productCode", verifyEntraToken, attachUserFromDb, requireRole(['SuperAdmin'], ['superAdmin']), updateProduct);
+router.get("/:productCode", getProductByCode); // Public product details
+router.get("/:tenantId", verifyEntraToken, attachUserFromDb, requireRole(['SuperAdmin'], ['superAdmin']), getProductsByTenant);
+
 
 export default router;

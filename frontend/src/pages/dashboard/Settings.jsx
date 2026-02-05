@@ -1,12 +1,12 @@
-import { useState } from 'react';
+import { showIntercom } from '../../utils/intercom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useRole } from '../../contexts/RoleContext';
-import SupportContactModal from '../../components/ui/SupportContactModal';
+import SettingsPage from './client-admin/SettingsPage';
 
 function Settings() {
   const { logout } = useAuth();
   const { isSuperAdmin, isClientAdmin, isUserAdmin } = useRole();
-  const [isSupportModalOpen, setIsSupportModalOpen] = useState(false);
+
 
   const handleLogout = async () => {
     try {
@@ -56,7 +56,7 @@ function Settings() {
         </svg>
       ),
       actions: [
-        { label: 'Contact Support', description: 'Submit a support request or get help with your account', buttonText: 'Contact Support', action: () => setIsSupportModalOpen(true), variant: 'primary' },
+        { label: 'Contact Support', description: 'Submit a support request or get help with your account', buttonText: 'Contact Support', action: () => showIntercom(), variant: 'primary' },
       ],
     },
     {
@@ -74,6 +74,10 @@ function Settings() {
       ],
     },
   ];
+
+  if (isClientAdmin) {
+    return <SettingsPage />;
+  }
 
   return (
     <div className="max-w-6xl mx-auto">
@@ -168,7 +172,7 @@ function Settings() {
           Contact our support team if you have questions about your settings or need assistance with your account preferences.
         </p>
         <button
-          onClick={() => setIsSupportModalOpen(true)}
+          onClick={() => showIntercom()}
           className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-lg hover:from-cyan-400 hover:to-blue-500 transition-all font-medium text-sm"
         >
           <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -177,20 +181,10 @@ function Settings() {
           Contact Support
         </button>
       </div>
-
-      {/* Support Contact Modal */}
-      <SupportContactModal
-        isOpen={isSupportModalOpen}
-        onClose={() => setIsSupportModalOpen(false)}
-        onSuccess={() => {
-          // Optional: Handle success (e.g., refresh data, show additional message)
-        }}
-      />
     </div>
   );
 }
 
 export default Settings;
-
 
 

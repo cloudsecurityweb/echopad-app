@@ -5,7 +5,6 @@ import AnalyticsSection from "./sections/AnalyticsSection";
 import FeedbackSection from "./sections/FeedbackSection";
 import HelpCenterSection from "./sections/HelpCenterSection";
 import { useRole } from "../../../contexts/RoleContext";
-import ClientsSection from "./sections/ClientsSection";
 import LicensesSection from "./sections/LicensesSection";
 
 function SuperAdminProfile() {
@@ -35,7 +34,6 @@ function SuperAdminProfile() {
       <ProfileSection />
       <ProductsSection />
       <AnalyticsSection />
-      <ClientsSection />
       <LicensesSection />
       <FeedbackSection />
       <HelpCenterSection />

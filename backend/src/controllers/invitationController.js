@@ -4,10 +4,12 @@
  * Handles invitation validation and acceptance
  */
 
-import { getInviteByToken, acceptInvitation, createInvitation } from '../services/inviteService.js';
+import { getInviteByToken, acceptInvitation, createInvitation, getInvitesByTenant } from '../services/inviteService.js';
 import { isConfigured, getContainer } from '../config/cosmosClient.js';
 import { INVITE_TYPES } from '../models/invite.js';
+import { createUser, getContainerNameByRole, USER_STATUS } from '../models/user.js';
 import { generateMagicToken } from '../middleware/magicAuth.js';
+import { hashPassword } from '../services/passwordAuth.js';
 import { randomUUID } from 'crypto';
 
 /**
@@ -105,6 +107,7 @@ export async function validateInvitation(req, res) {
         email: invite.email,
         role: invite.role,
         organizationId: invite.organizationId,
+        productId: invite.productId || null,
         expiresAt: invite.expiresAt,
         type: invite.type || 'user', // Include invite type
       },
@@ -274,7 +277,7 @@ export async function acceptInvitationRoute(req, res) {
       : (userId || `user_${randomUUID()}`); // For other auth methods, use provided userId or generate
     
     if (authMethod === 'microsoft' && req.auth?.oid) {
-      console.log(' [INVITATION] Accepting invitation with OID as user ID:', {
+      console.log('📝 [INVITATION] Accepting invitation with OID as user ID:', {
         oid: req.auth.oid.substring(0, 8) + '...',
         email: normalizedEmail,
         role: invite.role,
@@ -290,7 +293,7 @@ export async function acceptInvitationRoute(req, res) {
     });
     
     if (authMethod === 'microsoft' && req.auth?.oid) {
-      console.log(' [INVITATION] User created with OID:', {
+      console.log('✅ [INVITATION] User created with OID:', {
         id: user.id.substring(0, 8) + '...',
         email: user.email,
         role: user.role,
@@ -404,7 +407,35 @@ export async function createUserInvite(req, res) {
       });
     }
 
-    // Create invitation
+    // Generate temporary password for invited user (sent in email; they sign in with email + temp password)
+    const tempPassword = randomUUID().replace(/-/g, '').slice(0, 12);
+    const passwordHash = await hashPassword(tempPassword);
+
+    // Create user account immediately so they can sign in with email + temp password
+    const userId = `user_${randomUUID()}`;
+    const userContainerName = getContainerNameByRole('user');
+    const userContainer = getContainer(userContainerName);
+    if (!userContainer) {
+      return res.status(503).json({
+        success: false,
+        error: 'Database not available',
+        message: `Container ${userContainerName} not available`,
+      });
+    }
+    const userDoc = createUser({
+      id: userId,
+      tenantId,
+      email: normalizedEmail,
+      displayName: normalizedEmail.split('@')[0],
+      role: 'user',
+      status: USER_STATUS.ACTIVE,
+      organizationId,
+      passwordHash,
+      emailVerified: true, // Invited by email; they receive the temp password at this address
+    });
+    await userContainer.items.create(userDoc);
+
+    // Create invitation (and send email with link + temp password)
     const inviteId = `inv_${Date.now()}_${randomUUID().replace(/-/g, '')}`;
     const inviteToken = `inv_${Date.now()}_${randomUUID().replace(/-/g, '')}`;
     
@@ -418,11 +449,41 @@ export async function createUserInvite(req, res) {
       organizationId: organizationId, // Use ClientAdmin's organization
       type: INVITE_TYPES.USER,
       productId: productId ? productId.trim() : null, // Optional product ID
-    }, actorUserId);
+    }, actorUserId, { tempPassword });
+
+    // If productId was provided, assign the new user to a license for that product
+    const productIdTrimmed = productId ? productId.trim() : null;
+    if (productIdTrimmed && organizationId) {
+      try {
+        const { getLicensesByTenant, assignLicenseToUser } = await import('../services/licenseService.js');
+        const licenses = await getLicensesByTenant(tenantId, organizationId, productIdTrimmed);
+        for (const license of licenses) {
+          try {
+            await assignLicenseToUser(license.id, tenantId, userId, actorUserId);
+            break;
+          } catch (assignErr) {
+            console.warn('License assign on invite:', assignErr.message);
+          }
+        }
+      } catch (licenseErr) {
+        console.warn('License assignment skipped on invite:', licenseErr.message);
+      }
+    }
+
+    // Build response message based on email status (same pattern as email verification)
+    let responseMessage = 'User invitation created successfully. ';
+    const emailSent = invite.emailSent !== false; // Default to true if not specified
+    const emailError = invite.emailError;
+    
+    if (emailSent) {
+      responseMessage += 'Invitation email has been sent to the user.';
+    } else {
+      responseMessage += 'However, we were unable to send the invitation email. Please try again or contact support.';
+    }
 
     res.status(201).json({
       success: true,
-      message: 'User invitation created and sent successfully',
+      message: responseMessage,
       data: {
         invite: {
           id: invite.id,
@@ -430,6 +491,8 @@ export async function createUserInvite(req, res) {
           organizationId: invite.organizationId,
           expiresAt: invite.expiresAt,
         },
+        emailSent: emailSent, // Indicate if email was sent successfully
+        emailError: emailError, // Error message if email failed (null if successful)
       },
     });
   } catch (error) {
@@ -437,6 +500,48 @@ export async function createUserInvite(req, res) {
     res.status(500).json({
       success: false,
       error: 'Failed to create user invitation',
+      message: error.message,
+    });
+  }
+}
+
+/**
+ * GET /api/invites/pending
+ * Get pending invitations for the current user's organization (ClientAdmin only)
+ */
+export async function getPendingInvites(req, res) {
+  if (!isConfigured()) {
+    return res.status(503).json({
+      success: false,
+      error: 'CosmosDB not configured',
+    });
+  }
+
+  try {
+    // Get tenant ID from authenticated user
+    const tenantId = req.auth?.tid || req.currentUser?.tenantId;
+    if (!tenantId) {
+      return res.status(401).json({
+        success: false,
+        error: 'Unauthorized',
+        message: 'Tenant ID not available',
+      });
+    }
+
+    // Get pending invitations for the tenant
+    const pendingInvites = await getInvitesByTenant(tenantId, 'pending');
+
+    res.status(200).json({
+      success: true,
+      data: {
+        invites: pendingInvites,
+      },
+    });
+  } catch (error) {
+    console.error('Get pending invites error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to get pending invitations',
       message: error.message,
     });
   }

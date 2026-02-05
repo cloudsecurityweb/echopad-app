@@ -140,7 +140,7 @@ export async function testCosmosContainer(req, res) {
       },
     });
   } catch (error) {
-    console.error(" Cosmos DB test failed:", error);
+    console.error("❌ Cosmos DB test failed:", error);
     return res.status(500).json({
       status: "error",
       message: "Cosmos DB test failed",

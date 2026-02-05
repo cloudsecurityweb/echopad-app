@@ -5,7 +5,7 @@ import { useRole } from '../../contexts/RoleContext';
 import echopadLogo from '../../assets/images/logos/echopad-logo.svg';
 
 function DashboardNavbar({ onToggleSidebar }) {
-  const { account, googleUser, authProvider, logout, isLoading, isAuthenticated, tokenRoles } = useAuth();
+  const { account, googleUser, authProvider, logout, isLoading, isAuthenticated, tokenRoles, userProfile } = useAuth();
   const { currentRole, isSuperAdmin, isClientAdmin, isUserAdmin } = useRole();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
@@ -69,17 +69,25 @@ function DashboardNavbar({ onToggleSidebar }) {
     }
   };
 
-  // Get user info based on provider
-  const userInfo = authProvider === 'google' 
-    ? { 
-        name: googleUser?.name, 
-        email: googleUser?.email, 
-        picture: googleUser?.picture 
-      }
-    : { 
-        name: account?.name, 
-        email: account?.username 
-      };
+  // Get user info based on provider and backend profile
+  // Priority: Backend profile > Auth provider info
+  const userInfo = {
+    name: userProfile?.user?.displayName || 
+          (authProvider === 'google' ? googleUser?.name : account?.name) || 
+          'User',
+    email: userProfile?.user?.email || 
+           (authProvider === 'google' ? googleUser?.email : account?.username) || 
+           '',
+    picture: authProvider === 'google' ? googleUser?.picture : null,
+    organizationName: userProfile?.organization?.name || null,
+  };
+
+  // Determine what to display in navbar
+  // For ClientAdmin: Show organization name if available, otherwise user displayName
+  // For others: Show user displayName
+  const displayName = isClientAdmin && userInfo.organizationName 
+    ? userInfo.organizationName 
+    : userInfo.name;
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200 shadow-md">
@@ -133,9 +141,9 @@ function DashboardNavbar({ onToggleSidebar }) {
                   </div>
                 )}
 
-                {/* User Name */}
+                {/* User/Organization Name */}
                 <span className="text-gray-700 font-medium">
-                  {userInfo.name || userInfo.email || 'User'}
+                  {displayName || userInfo.email || 'User'}
                 </span>
 
                 {/* Role Badge */}
@@ -202,7 +210,10 @@ function DashboardNavbar({ onToggleSidebar }) {
                       </div>
                     )}
                     <div className="flex-1">
-                      <p className="font-semibold text-gray-900">{userInfo.name || 'User'}</p>
+                      <p className="font-semibold text-gray-900">{displayName || 'User'}</p>
+                      {isClientAdmin && userInfo.organizationName && (
+                        <p className="text-xs text-gray-500">{userInfo.name}</p>
+                      )}
                       <p className="text-sm text-gray-600">{userInfo.email}</p>
                       {isAuthenticated && (
                         <p className={`text-xs mt-1 inline-block px-2 py-0.5 rounded-full font-semibold ${getRoleColor()}`}>

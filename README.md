@@ -1,5 +1,7 @@
 # Echopad Application
 
+> **Last tested:** 2026-02-02 - Testing deployment with deployment tokens
+
 Full-stack application with React frontend and Node.js backend.
 
 ## 📁 Project Structure
@@ -130,3 +132,15 @@ See: https://github.com/your-org/echopad-infra
 ##  License
 
 [Your License Here]
+<!-- Deployment trigger: Mon Feb  2 23:57:59 IST 2026 -->
+# Deployment test - Tue Feb  3 14:35:23 IST 2026
+# Deployment test - 2026-02-03 09:37:09 UTC
+# Deployment test with real-time output - 2026-02-03 09:48:40 UTC
+# Deployment test - 2026-02-03 10:05:44 UTC
+# Deployment workflow - using --env production
+# Testing deployment with updated DEV_AZURE_CREDS
+# Test deployment after updating DEV_AZURE_CREDS with subscriptionId
+# Test deployment with AZURE_CREDS secret
+# Test deployment with all secrets configured
+# Deployment test - staticwebapp.config.json already has cache control headers
+# Deployment trigger - ensure UI changes are deployed

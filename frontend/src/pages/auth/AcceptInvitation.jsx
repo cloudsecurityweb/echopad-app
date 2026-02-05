@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import AuthPageHeader from '../../components/auth/AuthPageHeader';
 
 function AcceptInvitation() {
   const navigate = useNavigate();
@@ -124,14 +125,25 @@ function AcceptInvitation() {
     setError(null);
 
     try {
-      // Sign in with email/password
+      // Sign in with email + temporary password (inviteToken marks invite accepted on backend)
+      const inviteToken = searchParams.get('token');
       const userProfile = await signInEmailPassword({
         email: emailPasswordForm.email.trim(),
         password: emailPasswordForm.password,
+        ...(inviteToken ? { inviteToken } : {}),
       });
 
-      // Accept invitation
-      await acceptInvitation('email', userProfile);
+      // User was created with temp password at invite time; no need to call acceptInvitation
+      const role = userProfile?.user?.role || userProfile?.backendRole;
+      if (role === 'user') {
+        navigate('/dashboard/user-admin');
+      } else if (role === 'clientAdmin') {
+        navigate('/dashboard/client-admin');
+      } else if (role === 'superAdmin') {
+        navigate('/dashboard/super-admin');
+      } else {
+        navigate('/dashboard');
+      }
     } catch (error) {
       console.error('Email/password sign in error:', error);
       setError(error.message || 'Failed to sign in. Please check your credentials.');
@@ -280,51 +292,59 @@ function AcceptInvitation() {
 
   if (isLoading || isSigningIn) {
     return (
-      <main className="min-h-screen flex items-center justify-center bg-white">
-        <div className="text-center">
-          <svg className="animate-spin h-12 w-12 text-cyan-600 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-          </svg>
-          <p className="mt-4 text-gray-600">{isSigningIn ? 'Accepting invitation...' : 'Loading invitation...'}</p>
-        </div>
-      </main>
+      <div className="min-h-screen bg-white">
+        <AuthPageHeader />
+        <main className="flex items-center justify-center min-h-[calc(100vh-4rem)]">
+          <div className="text-center">
+            <svg className="animate-spin h-12 w-12 text-cyan-600 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <p className="mt-4 text-gray-600">{isSigningIn ? 'Accepting invitation...' : 'Loading invitation...'}</p>
+          </div>
+        </main>
+      </div>
     );
   }
 
   if (error && !invitation) {
     return (
-      <main className="min-h-screen flex items-center justify-center bg-white py-4">
-        <section className="w-full max-w-md px-4">
-          <div className="text-center">
-            <div className="mb-4">
-              <svg className="h-16 w-16 text-red-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
+      <div className="min-h-screen bg-white">
+        <AuthPageHeader />
+        <main className="flex items-center justify-center py-4 min-h-[calc(100vh-4rem)]">
+          <section className="w-full max-w-md px-4">
+            <div className="text-center">
+              <div className="mb-4">
+                <svg className="h-16 w-16 text-red-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </div>
+              <h1 className="text-2xl font-bold text-gray-900 mb-2">Invalid Invitation</h1>
+              <p className="text-gray-600 mb-6">{error}</p>
+              <Link
+                to="/sign-in"
+                className="inline-block bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-6 py-2 rounded-lg hover:from-cyan-400 hover:to-blue-500 transition-all font-medium"
+              >
+                Go to Sign In
+              </Link>
             </div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">Invalid Invitation</h1>
-            <p className="text-gray-600 mb-6">{error}</p>
-            <Link
-              to="/sign-in"
-              className="inline-block bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-6 py-2 rounded-lg hover:from-cyan-400 hover:to-blue-500 transition-all font-medium"
-            >
-              Go to Sign In
-            </Link>
-          </div>
-        </section>
-      </main>
+          </section>
+        </main>
+      </div>
     );
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-white py-4">
+    <div className="min-h-screen bg-white">
+      <AuthPageHeader />
+      <main className="flex items-center justify-center py-4 min-h-[calc(100vh-4rem)]">
       <section className="w-full max-w-md px-4">
         <div className="text-center mb-6">
           <h1 className="text-2xl text-gray-900 mb-2">
             You've been invited!
           </h1>
           <p className="text-sm text-gray-600">
-            Sign in to accept your invitation and join the team.
+            Sign in with the temporary password we sent to your email, or use Microsoft or Google.
           </p>
         </div>
 
@@ -419,7 +439,7 @@ function AcceptInvitation() {
 
           <div>
             <label htmlFor="password" className="block text-xs font-medium text-gray-700 mb-1">
-              Password
+              Temporary password
             </label>
             <input
               type="password"
@@ -427,7 +447,7 @@ function AcceptInvitation() {
               value={emailPasswordForm.password}
               onChange={(e) => setEmailPasswordForm(prev => ({ ...prev, password: e.target.value }))}
               className="w-full px-3 py-2 text-sm border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:border-cyan-500 focus:ring-cyan-500"
-              placeholder="Enter your password"
+              placeholder="Enter the temporary password from your email"
               required
             />
           </div>
@@ -437,20 +457,18 @@ function AcceptInvitation() {
             disabled={isSigningIn}
             className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-4 py-2 rounded-lg hover:from-cyan-400 hover:to-blue-500 transition-all text-sm font-medium shadow-lg hover:shadow-cyan-500/50 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {isSigningIn ? 'Signing in...' : 'Sign In & Accept Invitation'}
+            {isSigningIn ? 'Signing in...' : 'Sign in & go to dashboard'}
           </button>
         </form>
 
         <div className="mt-4 text-center">
           <p className="text-xs text-gray-600">
-            Don't have an account?{' '}
-            <Link to="/sign-up" className="text-cyan-600 hover:text-cyan-700 font-medium">
-              Sign up first
-            </Link>
+            Use the temporary password from your invitation email. You can change it later in Profile.
           </p>
         </div>
       </section>
-    </main>
+      </main>
+    </div>
   );
 }
 

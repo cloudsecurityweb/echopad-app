@@ -1,7 +1,8 @@
 import express from "express";
 import { createDummyInvite } from "../controllers/dummyController.js";
-import { validateInvitation, acceptInvitationRoute, createUserInvite, acceptMagicInvitation } from "../controllers/invitationController.js";
+import { validateInvitation, acceptInvitationRoute, createUserInvite, acceptMagicInvitation, getPendingInvites } from "../controllers/invitationController.js";
 import { verifyEntraToken, attachUserFromDb, requireRole } from "../middleware/entraAuth.js";
+import { verifyAnyAuth, optionalAuth } from "../middleware/auth.js";
 import { devOnly } from "../middleware/devOnly.js";
 
 const router = express.Router();
@@ -25,8 +26,11 @@ router.get("/validate", validateInvitation);
  * 
  * For Google/email auth:
  * - Authentication optional (handled in controller)
+ * 
+ * Note: Authentication is optional - if a token is provided, it will be verified.
+ * The controller handles Microsoft auth requirements separately.
  */
-router.post("/accept", verifyEntraToken, attachUserFromDb, acceptInvitationRoute);
+router.post("/accept", optionalAuth, acceptInvitationRoute);
 
 /**
  * POST /api/invites/accept-magic
@@ -42,8 +46,17 @@ router.post("/accept-magic", acceptMagicInvitation);
  * Body: { email, productId? }
  * Requires: Authorization header with Bearer token
  * Requires: ClientAdmin role
+ * Supports: Microsoft, Google, Magic Link, and Email/Password authentication
  */
-router.post("/user", verifyEntraToken, attachUserFromDb, requireRole(['ClientAdmin'], ['clientAdmin']), createUserInvite);
+router.post("/user", verifyAnyAuth, requireRole(['ClientAdmin'], ['clientAdmin']), createUserInvite);
+
+/**
+ * GET /api/invites/pending
+ * Get pending invitations for the current user's organization (ClientAdmin only)
+ * Requires: Authorization header with Bearer token
+ * Requires: ClientAdmin role
+ */
+router.get("/pending", verifyEntraToken, attachUserFromDb, requireRole(['ClientAdmin'], ['clientAdmin']), getPendingInvites);
 
 /**
  * POST /api/invites/dummy

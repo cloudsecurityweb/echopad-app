@@ -42,6 +42,19 @@ export const createHelpDoc = asyncHandler(async (req, res) => {
   }
 });
 
+export const getHelpDocById = asyncHandler(async (req, res) => {
+  const { docId } = req.params;
+  const doc = await helpCenterService.getHelpDocById(docId);
+
+  if (!doc) {
+    throw new ApiError(404, "Help document not found");
+  }
+
+  res.status(200).json(
+    new ApiResponse(200, { doc }, "help doc fetched successfully")
+  );
+});
+
 export const updateHelpDoc = asyncHandler(async (req, res) => {
   try {
     const { docId } = req.params;

@@ -272,12 +272,12 @@ function Profile() {
             </div>
           </div>
 
-          <button
+          {/* <button
             onClick={() => setIsEditing(true)}
             className="self-start md:self-center px-5 py-2 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-medium shadow hover:from-cyan-400 hover:to-blue-500 transition"
           >
             Edit Profile
-          </button>
+          </button> */}
         </div>
       </section>
 

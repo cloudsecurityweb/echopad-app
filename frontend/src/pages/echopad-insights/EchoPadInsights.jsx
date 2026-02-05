@@ -56,28 +56,28 @@ function EchoPadInsights() {
                 </p>
 
                 {/* Interactive Stats Banner */}
-                <div className="bg-gradient-to-r from-purple-500 via-blue-500 to-teal-600 rounded-2xl p-5 md:p-6 mb-6 shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-[1.02] animate-gradient-x">
-                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                    <div className="flex items-center gap-3 md:gap-4">
+                <div className="bg-gradient-to-r from-purple-500 via-blue-500 to-teal-600 rounded-2xl p-5 md:p-6 mb-6 shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-[1.02] animate-gradient-x overflow-hidden">
+                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 min-w-0">
+                    <div className="flex items-center gap-3 md:gap-4 min-w-0 flex-1">
                       <div className="w-12 h-12 md:w-14 md:h-14 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center flex-shrink-0">
                         <i className="bi bi-cash-stack text-white text-xl md:text-2xl animate-bounce"></i>
                       </div>
-                      <div>
-                        <div className="text-white/80 text-xs md:text-sm font-semibold uppercase tracking-wide mb-1">
+                      <div className="min-w-0 flex-1">
+                        <div className="text-white/80 text-xs md:text-sm font-semibold uppercase tracking-wide mb-1 break-words">
                           Revenue Intelligence
                         </div>
-                        <div className="text-white text-xl md:text-2xl lg:text-3xl font-bold">
+                        <div className="text-white text-lg md:text-xl lg:text-2xl font-bold break-words whitespace-normal">
                           Identify: <span className="text-yellow-300">$500K+</span> Annually
                         </div>
                       </div>
                     </div>
-                    <div className="flex gap-2 md:gap-3">
-                      <div className="bg-white/20 backdrop-blur-sm px-3 md:px-4 py-2 rounded-lg flex-1 md:flex-none">
-                        <div className="text-white/80 text-xs">Coverage</div>
+                    <div className="flex gap-2 md:gap-3 flex-shrink-0">
+                      <div className="bg-white/20 backdrop-blur-sm px-3 md:px-4 py-2 rounded-lg min-w-[80px] md:min-w-[100px] text-center">
+                        <div className="text-white/80 text-xs whitespace-nowrap">Coverage</div>
                         <div className="text-white font-bold text-base md:text-lg">All 50 States</div>
                       </div>
-                      <div className="bg-white/20 backdrop-blur-sm px-3 md:px-4 py-2 rounded-lg flex-1 md:flex-none">
-                        <div className="text-white/80 text-xs">Setup</div>
+                      <div className="bg-white/20 backdrop-blur-sm px-3 md:px-4 py-2 rounded-lg min-w-[80px] md:min-w-[100px] text-center">
+                        <div className="text-white/80 text-xs whitespace-nowrap">Setup</div>
                         <div className="text-white font-bold text-base md:text-lg">&lt;1 Week</div>
                       </div>
                     </div>
@@ -171,11 +171,18 @@ function EchoPadInsights() {
                 {/* Step-by-Step Flow Visualization */}
                 <div className="bg-white rounded-3xl p-6 border border-gray-200 shadow-xl">
                   <div className="text-center mb-6">
-                    <div className="text-3xl font-bold text-gray-900 mb-3">Insights</div>
+                    <div className="inline-block bg-blue-600 text-white text-xs font-bold px-4 py-2 rounded-lg uppercase tracking-wider mb-4 shadow-md">
+                      LIVE DEMO
+                    </div>
+                    <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
+                      <span className="bg-gradient-to-r from-cyan-600 via-blue-600 to-purple-600 bg-clip-text text-transparent">
+                        Insights
+                      </span>
+                    </h2>
                     <h3 className="text-xl font-bold text-gray-700 mb-2">How It Works</h3>
                     <p className="text-sm text-gray-600">Simple 3-step process to unlock revenue insights</p>
                   </div>
-                  
+
                   {/* Step-by-Step Flow */}
                   <div className="space-y-6">
                     {/* Step 1: Aggregate Price Transparency Data */}
@@ -480,7 +487,7 @@ function EchoPadInsights() {
                     </div>
                     <h3 className="text-xl font-bold text-gray-900">{useCase.title}</h3>
                   </div>
-                  
+
                   <div className="mb-6">
                     <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-3">Common Challenges:</h4>
                     <ul className="space-y-2">
@@ -492,7 +499,7 @@ function EchoPadInsights() {
                       ))}
                     </ul>
                   </div>
-                  
+
                   <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
                     <h4 className="text-sm font-semibold text-purple-900 mb-2">How EchoPad Helps:</h4>
                     <p className="text-sm text-gray-700">{useCase.solution}</p>
@@ -643,7 +650,7 @@ function EchoPadInsights() {
               <p className="text-xl text-gray-300 mb-8">
                 Discover how much revenue you're missing. Get your free underpayment analysis today.
               </p>
-              
+
               <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
                 <a
                   href="#"
@@ -680,7 +687,7 @@ function EchoPadInsights() {
             </div>
           </div>
         </section>
-        
+
       </main>
       <Footer />
     </>

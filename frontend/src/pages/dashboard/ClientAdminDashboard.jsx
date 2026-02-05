@@ -37,9 +37,9 @@ function ClientAdminDashboard() {
   // Placeholder data - to be replaced with API calls
   const overviewStats = [
     { label: 'Total Users', value: '156', change: '+8%', icon: '👥' },
-    { label: 'Active AI Agents', value: '4', change: '0%', icon: '' },
+    { label: 'Active AI Agents', value: '4', change: '0%', icon: '📦' },
     { label: 'License Usage', value: '87%', change: '+5%', icon: '🔑' },
-    { label: 'Subscription Status', value: 'Active', change: 'Enterprise', icon: '' },
+    { label: 'Subscription Status', value: 'Active', change: 'Enterprise', icon: '✅' },
   ];
 
   const [users, setUsers] = useState([
