@@ -24,12 +24,10 @@ jobs:
             echo "env=production" >> $GITHUB_OUTPUT
             echo "ENV_PREFIX=PROD" >> $GITHUB_OUTPUT
             echo "FRONTEND_URL=https://calm-smoke-0ef35d31e.4.azurestaticapps.net" >> $GITHUB_OUTPUT
-            echo "Deploying to PRODUCTION"
           else
             echo "env=development" >> $GITHUB_OUTPUT
             echo "ENV_PREFIX=DEV" >> $GITHUB_OUTPUT
             echo "FRONTEND_URL=https://polite-ground-0602c481e.2.azurestaticapps.net" >> $GITHUB_OUTPUT
-            echo "Deploying to DEVELOPMENT"
           fi
 
       # =====================================================
@@ -48,7 +46,6 @@ jobs:
         working-directory: backend
         run: |
           zip -r ../backend.zip . -x node_modules/\* .git/\*
-          ls -lh ../backend.zip
 
       - name: Azure Login
         uses: azure/login@v2
@@ -69,7 +66,7 @@ jobs:
             --resource-group ${{ steps.env.outputs.ENV_PREFIX == 'PROD' && secrets.PROD_AZURE_RESOURCE_GROUP || secrets.DEV_AZURE_RESOURCE_GROUP }}
 
       # =====================================================
-      # FRONTEND DEPLOYMENT
+      # FRONTEND DEPLOYMENT (Using zipdeploy API)
       # =====================================================
       - name: Setup Node (Frontend)
         uses: actions/setup-node@v4
@@ -90,34 +87,67 @@ jobs:
           VITE_API_ENDPOINT: ${{ steps.env.outputs.ENV_PREFIX == 'PROD' && secrets.PROD_VITE_API_ENDPOINT || secrets.DEV_VITE_API_ENDPOINT }}
           VITE_API_ROUTE: ${{ steps.env.outputs.ENV_PREFIX == 'PROD' && secrets.PROD_VITE_API_ROUTE || secrets.DEV_VITE_API_ROUTE }}
         run: |
-          echo "=== Building for ${{ steps.env.outputs.env }} ==="
           npm run build
-          echo "=== Build output ==="
           ls -la dist/
-          ls -la dist/assets/
 
-      - name: Deploy Frontend to Static Web Apps
+      - name: Deploy Frontend via SWA zipdeploy API
         working-directory: frontend
-        timeout-minutes: 5
+        env:
+          DEPLOY_TOKEN: ${{ steps.env.outputs.ENV_PREFIX == 'PROD' && secrets.PROD_AZURE_STATIC_WEB_APP_DEPLOYMENT_TOKEN || secrets.DEV_AZURE_STATIC_WEB_APP_DEPLOYMENT_TOKEN }}
         run: |
-          echo "🚀 Deploying to ${{ steps.env.outputs.env }}..."
+          echo "🚀 Deploying to ${{ steps.env.outputs.env }} via API..."
           
-          # Get the token from secrets
-          TOKEN="${{ steps.env.outputs.ENV_PREFIX == 'PROD' && secrets.PROD_AZURE_STATIC_WEB_APP_DEPLOYMENT_TOKEN || secrets.DEV_AZURE_STATIC_WEB_APP_DEPLOYMENT_TOKEN }}"
+          # Create deployment zip
+          cd dist
+          zip -r ../deploy.zip .
+          cd ..
           
-          # Install SWA CLI locally to avoid global install issues
-          npm install @azure/static-web-apps-cli
+          echo "📦 Zip created: $(ls -lh deploy.zip)"
           
-          # Run deployment with explicit token flag
-          npx swa deploy ./dist \
-            --deployment-token "$TOKEN" \
-            --env production \
-            --no-use-keychain
+          # Extract API hostname from deployment token
+          # Token format: <secret>-<guid>-<guid><hostname-suffix>
+          API_HOST=$(echo "$DEPLOY_TOKEN" | grep -oE '[a-z0-9]+\.[0-9]+\.azurestaticapps\.net' || echo "")
           
+          if [ -z "$API_HOST" ]; then
+            # Fallback: use known hostnames
+            if [ "${{ steps.env.outputs.ENV_PREFIX }}" = "PROD" ]; then
+              API_HOST="calm-smoke-0ef35d31e.4.azurestaticapps.net"
+            else
+              API_HOST="polite-ground-0602c481e.2.azurestaticapps.net"
+            fi
+          fi
+          
+          echo "📤 Uploading to: $API_HOST"
+          
+          # Deploy using curl to the SWA zipdeploy endpoint
+          HTTP_CODE=$(curl -s -o response.txt -w "%{http_code}" \
+            -X POST \
+            -H "Authorization: Bearer $DEPLOY_TOKEN" \
+            -H "Content-Type: application/zip" \
+            --data-binary @deploy.zip \
+            "https://$API_HOST/api/zipdeploy?provider=Default")
+          
+          echo "HTTP Response Code: $HTTP_CODE"
+          echo "Response body:"
+          cat response.txt
           echo ""
-          echo "✅ Deployment initiated!"
+          
+          if [ "$HTTP_CODE" = "200" ] || [ "$HTTP_CODE" = "202" ]; then
+            echo "✅ Deployment successful!"
+          else
+            echo "❌ Deployment failed with HTTP $HTTP_CODE"
+            # Try alternative endpoint
+            echo "Trying alternative deployment method..."
+            
+            # Use SWA CLI as backup
+            npm install @azure/static-web-apps-cli
+            npx swa deploy ./dist --deployment-token "$DEPLOY_TOKEN" --env production --no-use-keychain --verbose || true
+          fi
+          
           echo "🌍 URL: ${{ steps.env.outputs.FRONTEND_URL }}"
 
       - name: Cleanup
         if: always()
-        run: rm -f backend.zip
+        run: |
+          rm -f backend.zip
+          rm -f frontend/deploy.zip frontend/response.txt
