@@ -1,5 +1,6 @@
 import express from "express";
-import { verifyEntraToken, attachUserFromDb, requireRole } from "../middleware/entraAuth.js";
+import { verifyAnyAuth } from "../middleware/auth.js";
+import { requireRole } from "../middleware/entraAuth.js";
 import {
   getClients,
   addClient,
@@ -13,7 +14,7 @@ const router = express.Router();
  * - Create new client
  */
 
-router.get("/", verifyEntraToken, attachUserFromDb, requireRole(['SuperAdmin'], ['superAdmin']), getClients);
-router.post("/", verifyEntraToken, attachUserFromDb, requireRole(['SuperAdmin'], ['superAdmin']), addClient);
+router.get("/", verifyAnyAuth, requireRole(['SuperAdmin'], ['superAdmin']), getClients);
+router.post("/", verifyAnyAuth, requireRole(['SuperAdmin'], ['superAdmin']), addClient);
 
 export default router;

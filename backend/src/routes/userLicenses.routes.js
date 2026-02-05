@@ -5,7 +5,8 @@ import {
   getUserLicensesByUser,
   getUserLicensesByOrganization,
 } from "../services/userLicenseService.js";
-import { verifyEntraToken, attachUserFromDb, requireRole } from "../middleware/entraAuth.js";
+import { verifyAnyAuth } from "../middleware/auth.js";
+import { requireRole } from "../middleware/entraAuth.js";
 
 const router = express.Router();
 
@@ -15,8 +16,7 @@ const router = express.Router();
  */
 router.get(
   "/",
-  verifyEntraToken,
-  attachUserFromDb,
+  verifyAnyAuth,
   async (req, res) => {
     try {
       const tenantId = req.currentUser.tenantId;
@@ -52,8 +52,7 @@ router.get(
  */
 router.post(
   "/assign",
-  verifyEntraToken,
-  attachUserFromDb,
+  verifyAnyAuth,
   requireRole(["SuperAdmin", "ClientAdmin"], ["superAdmin", "clientAdmin"]),
   async (req, res) => {
     try {
@@ -89,8 +88,7 @@ router.post(
  */
 router.post(
   "/revoke",
-  verifyEntraToken,
-  attachUserFromDb,
+  verifyAnyAuth,
   requireRole(["SuperAdmin", "ClientAdmin"], ["superAdmin", "clientAdmin"]),
   async (req, res) => {
     try {

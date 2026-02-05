@@ -15,7 +15,7 @@ function ProtectedRoute({ children }) {
   useEffect(() => {
     if (userNotRegisteredRedirect) {
       clearUserNotRegisteredRedirect();
-      navigate('/signup', {
+      navigate('/sign-up', {
         replace: true,
         state: { message: 'Please sign up first to create your account.' },
       });

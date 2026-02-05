@@ -31,7 +31,7 @@ function UserAdminProducts() {
               <p className="text-sm text-gray-600 mb-5">{product.description}</p>
             </div>
             <Link
-              to={`/ai-agent/${product.endpoint}` || `/products/${product.id}`}
+              to={`/${product.endpoint}` || `/products/${product.id}`}
               target="_blank"
               rel="noopener noreferrer"
               className="mt-6 w-full block text-center px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white hover:from-cyan-400 hover:to-blue-500 transition-all font-medium"

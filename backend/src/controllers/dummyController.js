@@ -41,6 +41,8 @@ export async function createDummyOrganization(req, res) {
       tenantId,
       name: req.body.name || `Dummy Organization ${Date.now()}`,
       type: req.body.type || ORG_TYPES.CLIENT,
+      email: req.body.email || `dummy.org.${Date.now()}@example.com`,
+      organizer: req.body.organizer || "Dummy Organizer",
       status: req.body.status || ORG_STATUS.ACTIVE,
     };
 

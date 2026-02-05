@@ -1,0 +1,21 @@
+{% extends "layout.njk" %}
+
+{% block content %}
+  <h2>Welcome to Echopad, {{ name }}!</h2>
+  <p>Thank you for signing up. Please verify your email address below to complete your secure registration.</p>
+  
+  <div style="text-align: center;">
+    <a href="{{ verificationLink }}" class="button">Verify Email Address</a>
+  </div>
+  
+  <div class="highlight-box">
+    <span class="label">Or copy this link:</span>
+    <div style="word-break: break-all; color: #06b6d4; margin-top: 4px;">{{ verificationLink }}</div>
+  </div>
+  
+  <p class="expiry-note">This secure link is valid for 24 hours.</p>
+  
+  <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 24px 0;" />
+  
+  <p style="font-size: 13px; color: #64748b;">If you didn't create an Echopad account using this email address, you can safely ignore this message.</p>
+{% endblock %}

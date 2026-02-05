@@ -5,7 +5,8 @@ import {
   getLicenseById,
   updateLicenseRecord,
 } from "../services/licenseService.js";
-import { verifyEntraToken, attachUserFromDb, requireRole } from "../middleware/entraAuth.js";
+import { verifyAnyAuth } from "../middleware/auth.js";
+import { requireRole } from "../middleware/entraAuth.js";
 import { LICENSE_STATUS } from "../models/license.js";
 
 const router = express.Router();
@@ -16,20 +17,37 @@ const router = express.Router();
  */
 router.get(
   "/",
-  verifyEntraToken,
-  attachUserFromDb,
+  verifyAnyAuth,
   requireRole(["SuperAdmin", "ClientAdmin"], ["superAdmin", "clientAdmin"]),
   async (req, res) => {
     try {
-      const tenantId = req.query.tenantId || req.currentUser.tenantId;
-      const ownerOrgId = req.query.organizationId || req.currentUser.organizationId;
+      // If SuperAdmin and no tenantId specified, allow querying all tenants (pass null)
+      // Otherwise default to current user's tenant
+      let tenantId = req.query.tenantId;
+      if (!tenantId && req.currentUser.role === 'clientAdmin') {
+        tenantId = req.currentUser.tenantId;
+      } else if (!tenantId && req.currentUser.role === 'superAdmin') {
+        // Explicitly keeping it undefined/null for superAdmin to fetch all
+        tenantId = null;
+      } else if (!tenantId) {
+        // Default fallthrough safety
+        tenantId = req.currentUser.tenantId;
+      }
+
+      // Allow SuperAdmin to view all licenses if no organizationId is provided
+      // Only default to currentUser.organizationId for ClientAdmin
+      let ownerOrgId = req.query.organizationId;
+      if (!ownerOrgId && req.currentUser.role === 'clientAdmin') {
+        ownerOrgId = req.currentUser.organizationId;
+      }
       const productId = req.query.productId || null;
+      const status = req.query.status || null;
 
       if (req.currentUser.role === "clientAdmin" && ownerOrgId !== req.currentUser.organizationId) {
         return res.status(403).json({ success: false, error: "Forbidden" });
       }
 
-      const licenses = await getLicensesByTenant(tenantId, ownerOrgId, productId);
+      const licenses = await getLicensesByTenant(tenantId, ownerOrgId, productId, status);
       return res.status(200).json({ success: true, data: licenses });
     } catch (error) {
       return res.status(500).json({ success: false, error: error.message });
@@ -43,8 +61,7 @@ router.get(
  */
 router.post(
   "/",
-  verifyEntraToken,
-  attachUserFromDb,
+  verifyAnyAuth,
   requireRole(["SuperAdmin", "ClientAdmin"], ["superAdmin", "clientAdmin"]),
   async (req, res) => {
     try {
@@ -69,9 +86,12 @@ router.post(
           licenseType: req.body.licenseType,
           totalSeats: req.body.totalSeats,
           usedSeats: req.body.usedSeats,
-          startDate: req.body.startDate,
-          expiresAt: req.body.expiresAt || req.body.endDate, // Support both during transition, prioritize expiresAt
-          status: req.body.status || LICENSE_STATUS.ACTIVE,
+          startDate: req.currentUser.role === "clientAdmin" ? null : req.body.startDate,
+          expiresAt: req.currentUser.role === "clientAdmin" ? null : (req.body.expiresAt || req.body.endDate), // Support both during transition, prioritize expiresAt
+          status: req.currentUser.role === "clientAdmin" ? LICENSE_STATUS.REQUESTED : (req.body.status || LICENSE_STATUS.ACTIVE),
+          // For client admin requests, default to 10 seats if not specified (or force it as per requirement)
+          // Requirement: "each license in this flow gonna have exactly 10 seats as fixed by default"
+          totalSeats: req.currentUser.role === "clientAdmin" ? 10 : req.body.totalSeats,
         },
         req.currentUser.id
       );
@@ -88,8 +108,7 @@ router.post(
  */
 router.get(
   "/:licenseId",
-  verifyEntraToken,
-  attachUserFromDb,
+  verifyAnyAuth,
   requireRole(["SuperAdmin", "ClientAdmin"], ["superAdmin", "clientAdmin"]),
   async (req, res) => {
     try {
@@ -111,19 +130,43 @@ router.get(
  */
 router.patch(
   "/:licenseId",
-  verifyEntraToken,
-  attachUserFromDb,
+  verifyAnyAuth,
   requireRole(["SuperAdmin", "ClientAdmin"], ["superAdmin", "clientAdmin"]),
   async (req, res) => {
     try {
       const tenantId = req.body.tenantId || req.currentUser.tenantId;
-      const updates = {
-        status: req.body.status,
-        startDate: req.body.startDate,
-        expiresAt: req.body.expiresAt || req.body.endDate, // Support both
-        totalSeats: req.body.totalSeats,
-        licenseType: req.body.licenseType,
-      };
+      const updates = {};
+
+      // Only include fields that are explicitly provided in the request body
+      if (req.body.status !== undefined) {
+        updates.status = req.body.status;
+      }
+      if (req.body.startDate !== undefined) {
+        updates.startDate = req.body.startDate;
+      }
+      if (req.body.expiresAt !== undefined || req.body.endDate !== undefined) {
+        updates.expiresAt = req.body.expiresAt || req.body.endDate;
+      }
+      if (req.body.totalSeats !== undefined) {
+        updates.totalSeats = req.body.totalSeats;
+      }
+      if (req.body.licenseType !== undefined) {
+        updates.licenseType = req.body.licenseType;
+      }
+
+      // If status is changing to ACTIVE (Approval flow), set default dates if not provided
+      if (req.body.status === "active") {
+        const now = new Date();
+        const oneYearLater = new Date(now);
+        oneYearLater.setFullYear(now.getFullYear() + 1);
+
+        if (!updates.startDate) {
+          updates.startDate = now.toISOString();
+        }
+        if (!updates.expiresAt) {
+          updates.expiresAt = oneYearLater.toISOString();
+        }
+      }
 
       const license = await updateLicenseRecord(req.params.licenseId, tenantId, updates);
       return res.status(200).json({ success: true, data: license });

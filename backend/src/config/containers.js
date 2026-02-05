@@ -26,6 +26,7 @@ export const CONTAINERS = [
   "dashboardMetrics",
   "helpCenterDocs",
   "clientFeedback",
+  "transcriptionHistory",
 ];
 
 /**
@@ -58,6 +59,7 @@ const CONTAINER_PARTITION_KEYS = {
   dashboardMetrics: "/tenantId",
   helpCenterDocs: "/tenantId",
   clientFeedback: "/tenantId",
+  transcriptionHistory: "/tenantId",
 };
 
 /**

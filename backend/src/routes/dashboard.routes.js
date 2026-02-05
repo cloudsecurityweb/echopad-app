@@ -1,5 +1,6 @@
 import express from "express";
-import { verifyEntraToken, attachUserFromDb, requireRole } from "../middleware/entraAuth.js";
+import { verifyAnyAuth } from "../middleware/auth.js";
+import { requireRole } from "../middleware/entraAuth.js";
 import { getDashboard, upsertDashboardMetric } from "../controllers/dashboard.controller.js";
 
 const router = express.Router();
@@ -10,10 +11,10 @@ const router = express.Router();
  * - CLIENT_ADMIN → tenant metrics
  * - USER         → personal metrics
  * 
- * All dashboard routes require authentication and appropriate role
+ * All dashboard routes require authentication (Microsoft, Google, Magic Link, or Email/Password) and appropriate role
  */
 
-router.get("/metrics/:tenantId/:role", verifyEntraToken, attachUserFromDb, getDashboard);
-router.post("/metrics/upsert", verifyEntraToken, attachUserFromDb, upsertDashboardMetric);
+router.get("/metrics/:tenantId/:role", verifyAnyAuth, getDashboard);
+router.post("/metrics/upsert", verifyAnyAuth, upsertDashboardMetric);
 
 export default router;

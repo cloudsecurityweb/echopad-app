@@ -7,6 +7,22 @@
 
 import { EmailClient } from "@azure/communication-email";
 import { AzureKeyCredential } from "@azure/core-auth";
+import nunjucks from "nunjucks";
+import path from "path";
+import { fileURLToPath } from "url";
+import { convert } from "html-to-text";
+import fs from "fs";
+
+// Get directory for templates
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const templateDir = path.join(__dirname, "../templates");
+
+// Configure Nunjucks
+nunjucks.configure(templateDir, {
+  autoescape: true,
+  noCache: process.env.NODE_ENV !== "production"
+});
 
 // Support both connection string and separate endpoint/access key
 const CONNECTION_STRING = process.env.AZURE_COMMUNICATION_CONNECTION_STRING;
@@ -14,6 +30,39 @@ const EMAIL_ENDPOINT_ENV = process.env.AZURE_COMMUNICATION_ENDPOINT; // Optional
 const EMAIL_ACCESS_KEY_ENV = process.env.AZURE_COMMUNICATION_ACCESS_KEY; // Optional: separate access key env var
 const SENDER_EMAIL = process.env.AZURE_COMMUNICATION_SENDER_EMAIL || "DoNotReply@cloudsecurityweb.com";
 const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
+const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:3000";
+
+// Logo Handling:
+// We use Base64 PNG embedding.
+// Gmail does not support SVG, so we generated a PNG version using 'sips'.
+// This ensures the logo renders on ALL clients.
+let LOGO_SRC_URL = `${BACKEND_URL}/public/images/echopad-logo.png`;
+let hasLocalLogo = false;
+
+try {
+  // Use the PNG version we just created
+  const logoPath = path.join(templateDir, "../public/images/echopad-logo.png");
+  if (fs.existsSync(logoPath)) {
+    const logoBuffer = fs.readFileSync(logoPath);
+    const base64Logo = logoBuffer.toString('base64');
+
+    // Embed as PNG Data URI
+    LOGO_SRC_URL = `data:image/png;base64,${base64Logo}`;
+    hasLocalLogo = true;
+    console.log("📧 [EMAIL-SERVICE] Loaded logo as Base64 PNG Data URI");
+  } else {
+    // Fallback to SVG if PNG missing (though we just created it)
+    const svgPath = path.join(templateDir, "../public/images/echopad-logo.svg");
+    if (fs.existsSync(svgPath)) {
+      console.warn("⚠️  [EMAIL-SERVICE] PNG logo not found, falling back to SVG (may not work in Gmail)");
+      const logoBuffer = fs.readFileSync(svgPath);
+      // We'll try to embed SVG but warn
+      LOGO_SRC_URL = `data:image/svg+xml;base64,${logoBuffer.toString('base64')}`;
+    }
+  }
+} catch (error) {
+  console.warn("⚠️  [EMAIL-SERVICE] Failed to load logo file:", error.message);
+}
 
 // Extract endpoint and access key from env vars or connection string
 let EMAIL_ENDPOINT = EMAIL_ENDPOINT_ENV || null;
@@ -26,13 +75,13 @@ if (!EMAIL_ENDPOINT || !EMAIL_ACCESS_KEY) {
       // Parse connection string format: endpoint=https://...;accesskey=...
       const parts = CONNECTION_STRING.split(';');
       for (const part of parts) {
-      if (part.startsWith('endpoint=')) {
-        EMAIL_ENDPOINT = EMAIL_ENDPOINT || part.substring('endpoint='.length).trim();
-        // Remove trailing slash if present (SDK expects endpoint without trailing slash)
-        if (EMAIL_ENDPOINT && EMAIL_ENDPOINT.endsWith('/')) {
-          EMAIL_ENDPOINT = EMAIL_ENDPOINT.slice(0, -1);
-        }
-      } else if (part.startsWith('accesskey=')) {
+        if (part.startsWith('endpoint=')) {
+          EMAIL_ENDPOINT = EMAIL_ENDPOINT || part.substring('endpoint='.length).trim();
+          // Remove trailing slash if present (SDK expects endpoint without trailing slash)
+          if (EMAIL_ENDPOINT && EMAIL_ENDPOINT.endsWith('/')) {
+            EMAIL_ENDPOINT = EMAIL_ENDPOINT.slice(0, -1);
+          }
+        } else if (part.startsWith('accesskey=')) {
           EMAIL_ACCESS_KEY = EMAIL_ACCESS_KEY || part.substring('accesskey='.length).trim();
         }
       }
@@ -89,16 +138,16 @@ function getEmailClient() {
 export function isEmailConfigured() {
   const hasConnectionString = !!CONNECTION_STRING;
   const hasSenderEmail = !!SENDER_EMAIL;
-  
+
   if (!hasConnectionString) {
     console.warn('⚠️  Email service not configured: AZURE_COMMUNICATION_CONNECTION_STRING is missing');
     return false;
   }
-  
+
   if (!hasSenderEmail) {
     console.warn('⚠️  Email service partially configured: AZURE_COMMUNICATION_SENDER_EMAIL is missing, using default');
   }
-  
+
   return hasConnectionString;
 }
 
@@ -120,7 +169,7 @@ export async function sendVerificationEmail(email, token, name = "User") {
   if (!email || !email.trim()) {
     throw new Error("Email address is required");
   }
-  
+
   if (!token || !token.trim()) {
     throw new Error("Verification token is required");
   }
@@ -130,7 +179,7 @@ export async function sendVerificationEmail(email, token, name = "User") {
   const endpointPrefix = EMAIL_ENDPOINT ? EMAIL_ENDPOINT.substring(0, 50) + '...' : 'NOT SET';
   console.log(`📧 [EMAIL] Using endpoint: ${endpointPrefix}`);
   console.log(`📧 [EMAIL] Creating EmailClient with explicit endpoint and credential...`);
-  
+
   let client;
   if (EMAIL_ENDPOINT && EMAIL_ACCESS_KEY) {
     const credential = new AzureKeyCredential(EMAIL_ACCESS_KEY);
@@ -141,59 +190,34 @@ export async function sendVerificationEmail(email, token, name = "User") {
   }
 
   const verificationLink = `${FRONTEND_URL}/verify-email?email=${encodeURIComponent(email)}&token=${encodeURIComponent(token)}`;
-  
+
   console.log(`📧 [EMAIL] Preparing verification email for: ${email}`);
   console.log(`   Verification link: ${verificationLink.substring(0, 80)}...`);
   console.log(`📧 [EMAIL] Using sender address: ${SENDER_EMAIL}`);
   console.log(`📧 [EMAIL] Sender email from env: ${process.env.AZURE_COMMUNICATION_SENDER_EMAIL || 'NOT SET'}`);
 
-  // Match the exact working test code structure
+  // Render HTML using Nunjucks
+  const html = nunjucks.render('auth/verify-email.njk', {
+    name,
+    verificationLink,
+    frontendUrl: FRONTEND_URL,
+    logoUrl: LOGO_SRC_URL, // Use PNG Base64
+    year: new Date().getFullYear()
+  });
+
+  const subject = "Verify your Echopad account";
+
+  // Generate plain text automatically
+  const plainText = convert(html, {
+    wordwrap: 130
+  });
+
   const emailMessage = {
     senderAddress: SENDER_EMAIL,
     content: {
-      subject: "Verify your Echopad account",
-      plainText: `
-Welcome to Echopad, ${name}!
-
-Thank you for signing up. Please verify your email address to complete your registration.
-
-Click this link to verify your email:
-${verificationLink}
-
-This link will expire in 24 hours.
-
-If you didn't create an account, please ignore this email.
-
-© ${new Date().getFullYear()} Echopad. All rights reserved.
-      `.trim(),
-      html: `
-			<html>
-				<head>
-					<meta charset="utf-8">
-					<style>
-						body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-						.container { max-width: 600px; margin: 0 auto; padding: 20px; }
-						.button { display: inline-block; padding: 12px 24px; background-color: #06b6d4; color: white; text-decoration: none; border-radius: 5px; margin: 20px 0; }
-						.footer { margin-top: 30px; font-size: 12px; color: #666; }
-					</style>
-				</head>
-				<body>
-					<div class="container">
-						<h2>Welcome to Echopad, ${name}!</h2>
-						<p>Thank you for signing up. Please verify your email address to complete your registration.</p>
-						<p>Click the button below to verify your email:</p>
-						<a href="${verificationLink}" class="button">Verify Email Address</a>
-						<p>Or copy and paste this link into your browser:</p>
-						<p style="word-break: break-all; color: #06b6d4;">${verificationLink}</p>
-						<p>This link will expire in 24 hours.</p>
-						<div class="footer">
-							<p>If you didn't create an account, please ignore this email.</p>
-							<p>© ${new Date().getFullYear()} Echopad. All rights reserved.</p>
-						</div>
-					</div>
-				</body>
-			</html>
-      `,
+      subject,
+      plainText,
+      html,
     },
     recipients: {
       to: [{ address: email }],
@@ -214,7 +238,7 @@ If you didn't create an account, please ignore this email.
     console.log(`📧 [EMAIL] Sending verification email via Azure Communication Services...`);
     const poller = await client.beginSend(emailMessage);
     const result = await poller.pollUntilDone();
-    
+
     console.log(`✅ [EMAIL] Verification email sent successfully. Message ID: ${result.id}`);
     return {
       success: true,
@@ -227,10 +251,10 @@ If you didn't create an account, please ignore this email.
       errorCode: error.code,
       errorDetails: error.details || error,
     });
-    
+
     // Provide more descriptive error messages
     let errorMessage = `Failed to send verification email: ${error.message}`;
-    
+
     if (error.message?.includes('connection') || error.message?.includes('network')) {
       errorMessage = "Failed to send verification email: Network or connection error. Please try again later.";
     } else if (error.message?.includes('authentication') || error.message?.includes('unauthorized')) {
@@ -238,7 +262,7 @@ If you didn't create an account, please ignore this email.
     } else if (error.message?.includes('quota') || error.message?.includes('limit')) {
       errorMessage = "Failed to send verification email: Email sending quota exceeded. Please contact support.";
     }
-    
+
     throw new Error(errorMessage);
   }
 }
@@ -263,7 +287,7 @@ export async function sendInvitationEmail(email, token, inviterName, organizatio
   if (!email || !email.trim()) {
     throw new Error("Email address is required");
   }
-  
+
   if (!token || !token.trim()) {
     throw new Error("Invitation token is required");
   }
@@ -273,7 +297,7 @@ export async function sendInvitationEmail(email, token, inviterName, organizatio
   const endpointPrefix = EMAIL_ENDPOINT ? EMAIL_ENDPOINT.substring(0, 50) + '...' : 'NOT SET';
   console.log(`📧 [INVITE-EMAIL] Using endpoint: ${endpointPrefix}`);
   console.log(`📧 [INVITE-EMAIL] Creating EmailClient with explicit endpoint and credential...`);
-  
+
   let client;
   if (EMAIL_ENDPOINT && EMAIL_ACCESS_KEY) {
     const credential = new AzureKeyCredential(EMAIL_ACCESS_KEY);
@@ -284,76 +308,39 @@ export async function sendInvitationEmail(email, token, inviterName, organizatio
   }
 
   const invitationLink = `${FRONTEND_URL}/accept-invitation?email=${encodeURIComponent(email)}&token=${encodeURIComponent(token)}`;
-  
-  const tempPasswordBlock = tempPassword
-    ? `
-Your temporary password: ${tempPassword}
-
-Sign in at the link below using this email and the temporary password above. You can change your password after signing in.
-
-`
-    : '';
-
-  const tempPasswordBlockHtml = tempPassword
-    ? `
-						<p><strong>Your temporary password:</strong> <code style="background:#f1f5f9;padding:4px 8px;border-radius:4px;">${tempPassword}</code></p>
-						<p>Sign in at the link below using this email and the temporary password above. You can change your password after signing in.</p>
-`
-    : '';
 
   console.log(`📧 [INVITE-EMAIL] Preparing invitation email for: ${email}`);
   console.log(`   Invitation link: ${invitationLink.substring(0, 80)}...`);
   console.log(`📧 [INVITE-EMAIL] Using sender address: ${SENDER_EMAIL}`);
   console.log(`📧 [INVITE-EMAIL] Sender email from env: ${process.env.AZURE_COMMUNICATION_SENDER_EMAIL || 'NOT SET'}`);
 
-  // Match the exact working test code structure (same pattern as sendVerificationEmail)
+
+  // Render HTML using Nunjucks
+  const html = nunjucks.render('auth/invite.njk', {
+    inviterName,
+    organizationName,
+    invitationLink,
+    tempPassword,
+    frontendUrl: FRONTEND_URL,
+    logoUrl: LOGO_SRC_URL, // Use PNG Base64
+    year: new Date().getFullYear()
+  });
+
+
+
+  const subject = `You've been invited to join ${organizationName} on Echopad`;
+
+  // Generate plain text automatically
+  const plainText = convert(html, {
+    wordwrap: 130
+  });
+
   const emailMessage = {
     senderAddress: SENDER_EMAIL,
     content: {
-      subject: `You've been invited to join ${organizationName} on Echopad`,
-      plainText: `
-You've been invited!
-
-${inviterName} has invited you to join ${organizationName} on Echopad.
-${tempPasswordBlock}
-Click this link to accept the invitation and sign in:
-${invitationLink}
-
-This invitation will expire in 7 days.
-
-If you didn't expect this invitation, please ignore this email.
-
-© ${new Date().getFullYear()} Echopad. All rights reserved.
-      `.trim(),
-      html: `
-			<html>
-				<head>
-					<meta charset="utf-8">
-					<style>
-						body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-						.container { max-width: 600px; margin: 0 auto; padding: 20px; }
-						.button { display: inline-block; padding: 12px 24px; background-color: #06b6d4; color: white; text-decoration: none; border-radius: 5px; margin: 20px 0; }
-						.footer { margin-top: 30px; font-size: 12px; color: #666; }
-					</style>
-				</head>
-				<body>
-					<div class="container">
-						<h2>You've been invited!</h2>
-						<p><strong>${inviterName}</strong> has invited you to join <strong>${organizationName}</strong> on Echopad.</p>
-						${tempPasswordBlockHtml}
-						<p>Click the button below to accept the invitation and sign in:</p>
-						<a href="${invitationLink}" class="button">Accept Invitation</a>
-						<p>Or copy and paste this link into your browser:</p>
-						<p style="word-break: break-all; color: #06b6d4;">${invitationLink}</p>
-						<p>This invitation will expire in 7 days.</p>
-						<div class="footer">
-							<p>If you didn't expect this invitation, please ignore this email.</p>
-							<p>© ${new Date().getFullYear()} Echopad. All rights reserved.</p>
-						</div>
-					</div>
-				</body>
-			</html>
-      `,
+      subject,
+      plainText,
+      html,
     },
     recipients: {
       to: [{ address: email }],
@@ -374,7 +361,7 @@ If you didn't expect this invitation, please ignore this email.
     console.log(`📧 [INVITE-EMAIL] Sending invitation email via Azure Communication Services...`);
     const poller = await client.beginSend(emailMessage);
     const result = await poller.pollUntilDone();
-    
+
     console.log(`✅ [INVITE-EMAIL] Invitation email sent successfully. Message ID: ${result.id}`);
     return {
       success: true,
@@ -387,10 +374,10 @@ If you didn't expect this invitation, please ignore this email.
       errorCode: error.code,
       errorDetails: error.details || error,
     });
-    
+
     // Provide more descriptive error messages
     let errorMessage = `Failed to send invitation email: ${error.message}`;
-    
+
     if (error.message?.includes('connection') || error.message?.includes('network')) {
       errorMessage = "Failed to send invitation email: Network or connection error. Please try again later.";
     } else if (error.message?.includes('authentication') || error.message?.includes('unauthorized')) {
@@ -398,7 +385,7 @@ If you didn't expect this invitation, please ignore this email.
     } else if (error.message?.includes('quota') || error.message?.includes('limit')) {
       errorMessage = "Failed to send invitation email: Email sending quota exceeded. Please contact support.";
     }
-    
+
     throw new Error(errorMessage);
   }
 }

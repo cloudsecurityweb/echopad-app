@@ -18,9 +18,8 @@ function Dashboard() {
       const currentPath = window.location.pathname;
 
       // Check if already on a role-specific route - if yes, don't redirect
-      if (currentPath === '/dashboard/super-admin' ||
+      if (currentPath === '/dashboard/profile' ||
         currentPath === '/dashboard/client-admin' ||
-        currentPath === '/dashboard/user-admin' ||
         currentPath === '/dashboard/subscriptions') {
         // Already on role-specific route, no need to redirect
         return;
@@ -30,7 +29,7 @@ function Dashboard() {
       // If email is not verified or status is PENDING, redirect to verification page
       const emailVerified = userProfile?.user?.emailVerified;
       const userStatus = userProfile?.user?.status;
-      
+
       if (emailVerified === false || userStatus === 'pending') {
         console.log('❌ [DASHBOARD] Email not verified or account pending:', {
           emailVerified,
@@ -38,13 +37,13 @@ function Dashboard() {
           email: userProfile?.user?.email,
         });
         // Redirect to verification holding page
-        navigate('/verify-email-sent', { 
+        navigate('/verify-email-sent', {
           replace: true,
-          state: { 
+          state: {
             email: userProfile?.user?.email || '',
             message: 'Please verify your email address to access your dashboard. Check your inbox for the verification link.',
             requiresVerification: true,
-          } 
+          }
         });
         return;
       }
@@ -66,9 +65,9 @@ function Dashboard() {
         emailVerified: emailVerified,
         userStatus: userStatus,
         tokenRoles,
-        source: tokenRoles?.length > 0 ? 'token' : 
-                userProfile?.user?.role ? 'profile' : 
-                'default',
+        source: tokenRoles?.length > 0 ? 'token' :
+          userProfile?.user?.role ? 'profile' :
+            'default',
       });
 
       try {
@@ -76,11 +75,11 @@ function Dashboard() {
         let targetRoute = '/dashboard/subscriptions';
 
         if (roleToUse === ROLES.SUPER_ADMIN) {
-          targetRoute = '/dashboard/super-admin';
+          targetRoute = '/dashboard/profile';
         } else if (roleToUse === ROLES.CLIENT_ADMIN) {
           targetRoute = '/dashboard/subscriptions';
         } else if (roleToUse === ROLES.USER_ADMIN) {
-          targetRoute = '/dashboard/user-admin';
+          targetRoute = '/dashboard/profile';
         }
 
         // Avoid redundant navigation if we're already there
@@ -122,9 +121,8 @@ function Dashboard() {
 
   // Check if already on a role-specific route - if yes, return null (let that route render)
   const currentPath = window.location.pathname;
-  if (currentPath === '/dashboard/super-admin' ||
+  if (currentPath === '/dashboard/profile' ||
     currentPath === '/dashboard/client-admin' ||
-    currentPath === '/dashboard/user-admin' ||
     currentPath === '/dashboard/subscriptions') {
     return null; // Already on role-specific route, let it render
   }

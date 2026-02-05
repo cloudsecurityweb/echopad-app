@@ -13,3 +13,4 @@ export * from "./auditEvent.js";
 export * from "./orgProduct.js";
 export * from "./userLicense.js";
 export * from "./analyticsEvent.js";
+export * from "./transcriptionHistory.js";

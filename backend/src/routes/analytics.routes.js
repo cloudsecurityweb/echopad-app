@@ -1,7 +1,8 @@
 import express from "express";
 import { getSuperAdminAnalytics, getOrgAnalyticsSummary, getProductUsageSummary } from "../controllers/analytics.controller.js";
 import { recordAnalyticsEvent, getAnalyticsEvents } from "../services/analytics.service.js";
-import { verifyEntraToken, attachUserFromDb, requireRole } from "../middleware/entraAuth.js";
+import { verifyAnyAuth } from "../middleware/auth.js";
+import { requireRole } from "../middleware/entraAuth.js";
 
 const router = express.Router();
 
@@ -9,7 +10,7 @@ const router = express.Router();
  * ANALYTICS (SUPER ADMIN ONLY)
  */
 
-router.get("/super-admin", verifyEntraToken, attachUserFromDb, requireRole(['SuperAdmin'], ['superAdmin']), getSuperAdminAnalytics);
+router.get("/super-admin", verifyAnyAuth, requireRole(['SuperAdmin'], ['superAdmin']), getSuperAdminAnalytics);
 
 /**
  * GET /api/analytics/org-summary
@@ -17,8 +18,7 @@ router.get("/super-admin", verifyEntraToken, attachUserFromDb, requireRole(['Sup
  */
 router.get(
     "/org-summary",
-    verifyEntraToken,
-    attachUserFromDb,
+    verifyAnyAuth,
     requireRole(["SuperAdmin", "ClientAdmin"], ["superAdmin", "clientAdmin"]),
     getOrgAnalyticsSummary
 );
@@ -29,8 +29,7 @@ router.get(
  */
 router.get(
     "/usage",
-    verifyEntraToken,
-    attachUserFromDb,
+    verifyAnyAuth,
     requireRole(["SuperAdmin", "ClientAdmin"], ["superAdmin", "clientAdmin"]),
     getProductUsageSummary
 );
@@ -41,8 +40,7 @@ router.get(
  */
 router.post(
   "/events",
-  verifyEntraToken,
-  attachUserFromDb,
+  verifyAnyAuth,
   async (req, res) => {
     try {
       const tenantId = req.currentUser.tenantId;
@@ -70,8 +68,7 @@ router.post(
  */
 router.get(
   "/events",
-  verifyEntraToken,
-  attachUserFromDb,
+  verifyAnyAuth,
   requireRole(["SuperAdmin", "ClientAdmin"], ["superAdmin", "clientAdmin"]),
   async (req, res) => {
     try {

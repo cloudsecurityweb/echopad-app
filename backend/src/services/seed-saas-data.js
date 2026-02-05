@@ -112,12 +112,14 @@ export async function seedSaasDemoData() {
 
   /* -------------------- Organizations -------------------- */
   const organizations = [
-    { id: "org_echopad", tenantId: TENANT_ID, name: "Echopad HQ", type: ORG_TYPES.SUPER, status: ORG_STATUS.ACTIVE },
-    { id: "org_aurora", tenantId: TENANT_ID, name: "Aurora Health", type: ORG_TYPES.CLIENT, status: ORG_STATUS.ACTIVE },
-    { id: "org_lighthouse", tenantId: TENANT_ID, name: "Lighthouse Clinic", type: ORG_TYPES.CLIENT, status: ORG_STATUS.ACTIVE },
+    { id: "org_echopad", tenantId: TENANT_ID, name: "Echopad HQ", type: ORG_TYPES.SUPER, email: "superadmin@echopad.ai", organizer: "Super Admin", status: ORG_STATUS.ACTIVE },
+    { id: "org_aurora", tenantId: TENANT_ID, name: "Aurora Health", type: ORG_TYPES.CLIENT, email: "admin@aurorahealth.com", organizer: "Aurora Admin", status: ORG_STATUS.ACTIVE },
+    { id: "org_lighthouse", tenantId: TENANT_ID, name: "Lighthouse Clinic", type: ORG_TYPES.CLIENT, email: "admin@lighthouseclinic.com", organizer: "Lighthouse Admin", status: ORG_STATUS.ACTIVE },
   ];
 
   for (const org of organizations) await upsertOrganization(org);
+  
+  return {tenantId: TENANT_ID, status: "Success"};
 
   // /* -------------------- Users -------------------- */
   // const users = [
@@ -166,11 +168,11 @@ export async function seedSaasDemoData() {
 
   /* -------------------- Licenses -------------------- */
   const licenses = [
-    { id: "lic_aurora_scribe", tenantId: TENANT_ID, organizationId: "org_aurora", ownerOrgId: "org_aurora", productId: "AI_SCRIBE", licenseType: LICENSE_TYPES.SEAT, totalSeats: 12, usedSeats: 0, startDate: daysFromNow(-30), endDate: daysFromNow(365), status: LICENSE_STATUS.ACTIVE },
-    { id: "lic_aurora_insights", tenantId: TENANT_ID, organizationId: "org_aurora", ownerOrgId: "org_aurora", productId: "INSIGHTS", licenseType: LICENSE_TYPES.SEAT, totalSeats: 6, usedSeats: 0, startDate: daysFromNow(-30), endDate: daysFromNow(365), status: LICENSE_STATUS.ACTIVE },
-    { id: "lic_aurora_aperio", tenantId: TENANT_ID, organizationId: "org_aurora", ownerOrgId: "org_aurora", productId: "APERIO", licenseType: LICENSE_TYPES.SEAT, totalSeats: 4, usedSeats: 0, startDate: daysFromNow(-15), endDate: daysFromNow(365), status: LICENSE_STATUS.ACTIVE },
-    { id: "lic_lighthouse_scribe", tenantId: TENANT_ID, organizationId: "org_lighthouse", ownerOrgId: "org_lighthouse", productId: "AI_SCRIBE", licenseType: LICENSE_TYPES.SEAT, totalSeats: 8, usedSeats: 0, startDate: daysFromNow(-45), endDate: daysFromNow(365), status: LICENSE_STATUS.ACTIVE },
-    { id: "lic_lighthouse_insights", tenantId: TENANT_ID, organizationId: "org_lighthouse", ownerOrgId: "org_lighthouse", productId: "INSIGHTS", licenseType: LICENSE_TYPES.SEAT, totalSeats: 5, usedSeats: 0, startDate: daysFromNow(-45), endDate: daysFromNow(365), status: LICENSE_STATUS.ACTIVE },
+    { id: "lic_aurora_scribe", tenantId: TENANT_ID, organizationId: "org_aurora", ownerOrgId: "org_aurora", productId: "AI_SCRIBE", licenseType: LICENSE_TYPES.SEAT, totalSeats: 12, usedSeats: 0, startDate: daysFromNow(-30), expiresAt: daysFromNow(365), status: LICENSE_STATUS.ACTIVE },
+    { id: "lic_aurora_insights", tenantId: TENANT_ID, organizationId: "org_aurora", ownerOrgId: "org_aurora", productId: "INSIGHTS", licenseType: LICENSE_TYPES.SEAT, totalSeats: 6, usedSeats: 0, startDate: daysFromNow(-30), expiresAt: daysFromNow(365), status: LICENSE_STATUS.ACTIVE },
+    { id: "lic_aurora_aperio", tenantId: TENANT_ID, organizationId: "org_aurora", ownerOrgId: "org_aurora", productId: "APERIO", licenseType: LICENSE_TYPES.SEAT, totalSeats: 4, usedSeats: 0, startDate: daysFromNow(-15), expiresAt: daysFromNow(365), status: LICENSE_STATUS.ACTIVE },
+    { id: "lic_lighthouse_scribe", tenantId: TENANT_ID, organizationId: "org_lighthouse", ownerOrgId: "org_lighthouse", productId: "AI_SCRIBE", licenseType: LICENSE_TYPES.SEAT, totalSeats: 8, usedSeats: 0, startDate: daysFromNow(-45), expiresAt: daysFromNow(365), status: LICENSE_STATUS.ACTIVE },
+    { id: "lic_lighthouse_insights", tenantId: TENANT_ID, organizationId: "org_lighthouse", ownerOrgId: "org_lighthouse", productId: "INSIGHTS", licenseType: LICENSE_TYPES.SEAT, totalSeats: 5, usedSeats: 0, startDate: daysFromNow(-45), expiresAt: daysFromNow(365), status: LICENSE_STATUS.ACTIVE },
   ];
 
   for (const license of licenses) await upsertLicense(license);

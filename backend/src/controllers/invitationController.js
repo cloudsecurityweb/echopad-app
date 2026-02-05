@@ -11,6 +11,8 @@ import { createUser, getContainerNameByRole, USER_STATUS } from '../models/user.
 import { generateMagicToken } from '../middleware/magicAuth.js';
 import { hashPassword } from '../services/passwordAuth.js';
 import { randomUUID } from 'crypto';
+import { assignLicenseToUser } from '../services/userLicenseService.js';
+const { getLicensesByTenant } = await import('../services/licenseService.js');
 
 /**
  * GET /api/invites/validate
@@ -275,7 +277,7 @@ export async function acceptInvitationRoute(req, res) {
     const finalUserId = authMethod === 'microsoft' && req.auth?.oid
       ? req.auth.oid // For Microsoft auth, always use OID (same as SuperAdmin/ClientAdmin)
       : (userId || `user_${randomUUID()}`); // For other auth methods, use provided userId or generate
-    
+
     if (authMethod === 'microsoft' && req.auth?.oid) {
       console.log('📝 [INVITATION] Accepting invitation with OID as user ID:', {
         oid: req.auth.oid.substring(0, 8) + '...',
@@ -291,7 +293,7 @@ export async function acceptInvitationRoute(req, res) {
       displayName: displayName || normalizedEmail.split('@')[0],
       authMethod: authMethod, // Pass auth method to determine if email should be auto-verified
     });
-    
+
     if (authMethod === 'microsoft' && req.auth?.oid) {
       console.log('✅ [INVITATION] User created with OID:', {
         id: user.id.substring(0, 8) + '...',
@@ -344,7 +346,7 @@ export async function createUserInvite(req, res) {
   }
 
   try {
-    const { email, productId } = req.body;
+    const { email, productId, licenseId } = req.body;
 
     // Validate required fields
     if (!email || !email.trim()) {
@@ -438,7 +440,7 @@ export async function createUserInvite(req, res) {
     // Create invitation (and send email with link + temp password)
     const inviteId = `inv_${Date.now()}_${randomUUID().replace(/-/g, '')}`;
     const inviteToken = `inv_${Date.now()}_${randomUUID().replace(/-/g, '')}`;
-    
+
     const invite = await createInvitation({
       id: inviteId,
       tenantId,
@@ -451,18 +453,48 @@ export async function createUserInvite(req, res) {
       productId: productId ? productId.trim() : null, // Optional product ID
     }, actorUserId, { tempPassword });
 
-    // If productId was provided, assign the new user to a license for that product
+    // If licenseId OR productId was provided, assign the new user to a license
+    const licenseIdTrimmed = licenseId ? licenseId.trim() : null;
     const productIdTrimmed = productId ? productId.trim() : null;
-    if (productIdTrimmed && organizationId) {
+
+    if ((licenseIdTrimmed || productIdTrimmed) && organizationId) {
+
       try {
-        const { getLicensesByTenant, assignLicenseToUser } = await import('../services/licenseService.js');
-        const licenses = await getLicensesByTenant(tenantId, organizationId, productIdTrimmed);
-        for (const license of licenses) {
+
+
+        if (licenseIdTrimmed) {
+          // Assign specific license
+          console.log("Assigning specific license..................")
           try {
-            await assignLicenseToUser(license.id, tenantId, userId, actorUserId);
-            break;
+            await assignLicenseToUser({
+              tenantId,
+              organizationId,
+              userId,
+              licenseId: licenseIdTrimmed,
+              assignedBy: actorUserId
+            });
           } catch (assignErr) {
-            console.warn('License assign on invite:', assignErr.message);
+            console.warn('Specific license assign on invite failed:', assignErr.message);
+          }
+        } else {
+          // Assign any available license for the product
+          console.log("Assigning any available license..................")
+          const licenses = await getLicensesByTenant(tenantId, organizationId, productIdTrimmed);
+          console.log("Licenses found: ", licenses.length);
+          for (const license of licenses) {
+            try {
+              console.log("Assigning license: ", license.id);
+              await assignLicenseToUser({
+                tenantId,
+                organizationId,
+                userId,
+                licenseId: license.id,
+                assignedBy: actorUserId
+              });
+              break;
+            } catch (assignErr) {
+              console.warn('Auto license assign on invite failed:', assignErr.message);
+            }
           }
         }
       } catch (licenseErr) {
@@ -474,7 +506,7 @@ export async function createUserInvite(req, res) {
     let responseMessage = 'User invitation created successfully. ';
     const emailSent = invite.emailSent !== false; // Default to true if not specified
     const emailError = invite.emailError;
-    
+
     if (emailSent) {
       responseMessage += 'Invitation email has been sent to the user.';
     } else {
@@ -542,6 +574,168 @@ export async function getPendingInvites(req, res) {
     res.status(500).json({
       success: false,
       error: 'Failed to get pending invitations',
+      message: error.message,
+    });
+  }
+}
+
+/**
+ * POST /api/invites/:inviteId/resend
+ * Resend an invitation email
+ * Requires: ClientAdmin role
+ */
+export async function resendUserInvite(req, res) {
+  if (!isConfigured()) {
+    return res.status(503).json({
+      success: false,
+      error: 'CosmosDB not configured',
+    });
+  }
+
+  try {
+    const { inviteId } = req.params;
+
+    if (!inviteId) {
+      return res.status(400).json({
+        success: false,
+        error: 'Validation failed',
+        message: 'Invitation ID is required',
+      });
+    }
+
+    // Get tenant ID from authenticated user
+    const tenantId = req.auth?.tid || req.currentUser?.tenantId;
+    if (!tenantId) {
+      return res.status(401).json({
+        success: false,
+        error: 'Unauthorized',
+        message: 'Tenant ID not available',
+      });
+    }
+
+    const invitesContainer = getContainer('invites');
+    if (!invitesContainer) {
+      return res.status(503).json({
+        success: false,
+        error: 'Database not available',
+      });
+    }
+
+    // Get the invite
+    const { resource: invite } = await invitesContainer.item(inviteId, tenantId).read();
+
+    if (!invite) {
+      return res.status(404).json({
+        success: false,
+        error: 'Not found',
+        message: 'Invitation not found',
+      });
+    }
+
+    if (invite.status !== 'pending') {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid status',
+        message: `Cannot resend invitation with status: ${invite.status}`,
+      });
+    }
+
+    // Check permissions - ensure ClientAdmin belongs to the same organization
+    // OR is the creator (though organization check is stronger for team management)
+    const actorUserId = req.currentUser?.id || req.auth?.oid;
+    const organizationId = req.currentUser?.organizationId;
+
+    if (organizationId && invite.organizationId && organizationId !== invite.organizationId) {
+      return res.status(403).json({
+        success: false,
+        error: 'Forbidden',
+        message: 'You do not have permission to manage this invitation',
+      });
+    }
+
+    // Resend email
+    const { sendInvitationEmail, isEmailConfigured } = await import('../services/emailService.js');
+
+    if (!isEmailConfigured()) {
+      return res.status(503).json({
+        success: false,
+        error: 'Service unavailable',
+        message: 'Email service is not configured',
+      });
+    }
+
+    // Get inviter name
+    let inviterName = 'A team member';
+    try {
+      const { getUserById } = await import('../services/userService.js');
+      const inviter = await getUserById(actorUserId, tenantId);
+      if (inviter) {
+        inviterName = inviter.displayName || inviter.email || inviterName;
+      }
+    } catch (error) {
+      console.warn('Failed to get inviter name for resend:', error.message);
+    }
+
+    // Get organization name
+    let organizationName = 'the organization';
+    if (invite.organizationId) {
+      try {
+        const { getOrgById } = await import('../services/organizationService.js');
+        const org = await getOrgById(invite.organizationId, tenantId);
+        if (org) {
+          organizationName = org.name || organizationName;
+        }
+      } catch (error) {
+        console.warn('Failed to get organization name for resend:', error.message);
+      }
+    }
+
+    // Generate a fresh temp password if needed? 
+    // Usually resend keeps same token or generates new one. 
+    // For simplicity, we keep same token to avoid race conditions if user finds old email.
+    // However, for security, we generate a NEW temp password for the email body.
+    const tempPassword = randomUUID().replace(/-/g, '').slice(0, 12);
+    // Note: We are NOT updating the password hash in the user record here. 
+    // Ideally we should updates user's password hash if we send a new one.
+    // Let's UPDATE the user's password hash to match the new temp password sent.
+
+    // Find the associated user (created during invite)
+    const { getUserByEmailAnyRole } = await import('../services/userService.js');
+    const existingUser = await getUserByEmailAnyRole(invite.email, tenantId);
+
+    if (existingUser) {
+      const { hashPassword } = await import('../services/passwordAuth.js');
+      const passwordHash = await hashPassword(tempPassword);
+
+      const { getContainerNameByRole } = await import('../models/user.js');
+      const userContainerName = getContainerNameByRole(existingUser.role);
+      const userContainer = getContainer(userContainerName);
+
+      if (userContainer) {
+        await userContainer.item(existingUser.id, tenantId).patch([
+          { op: 'replace', path: '/passwordHash', value: passwordHash }
+        ]);
+      }
+    }
+
+    console.log(`📧 [RESEND] Resending invitation email to: ${invite.email}`);
+    await sendInvitationEmail(invite.email, invite.token, inviterName, organizationName, tempPassword);
+
+    // Update invite timestamp
+    await invitesContainer.item(inviteId, tenantId).patch([
+      { op: 'replace', path: '/updatedAt', value: new Date().toISOString() }
+    ]);
+
+    res.status(200).json({
+      success: true,
+      message: 'Invitation resent successfully',
+    });
+
+  } catch (error) {
+    console.error('Resend invite error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to resend invitation',
       message: error.message,
     });
   }

@@ -2,6 +2,8 @@ import React, { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { MsalProvider } from '@azure/msal-react';
 import { GoogleOAuthProvider } from '@react-oauth/google';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import './index.css';
 import { AuthProvider } from './contexts/AuthContext';
 import { RoleProvider } from './contexts/RoleContext';
@@ -53,6 +55,7 @@ import Activity from './pages/dashboard/Activity';
 import ClientFeedback from './pages/dashboard/ClientFeedback';
 import SuperAdminClients from './pages/dashboard/super-admin/Clients';
 import ClientDetail from './pages/dashboard/ClientDetail';
+import LicenseRequests from './pages/dashboard/super-admin/LicenseRequests';
 
 // Dashboard Layout
 import DashboardLayout from './components/layout/DashboardLayout';
@@ -179,16 +182,13 @@ function App({ msalInstance }) {
                 <Routes>
                   <Route path="/" element={<HomePage />} />
                   <Route path="/ai-scribe" element={<AIScribe />} />
-                  <Route path="/ai-agent/ai-scribe" element={<AIScribe />} />
-                  <Route path="/ai-agent/ai-docman" element={<AIDocMan />} />
-                  <Route path="/ai-agent/ai-medical-assistant" element={<AIMedicalAssistant />} />
-                  <Route path="/ai-agent/ai-receptionist" element={<AIReceptionist />} />
-                  <Route path="/ai-agent/ai-admin-assistant" element={<AIAdminAssistant />} />
-                  <Route path="/ai-agent/ai-reminders" element={<AIReminders />} />
+                  <Route path="/ai-docman" element={<AIDocMan />} />
+                  <Route path="/ai-medical-assistant" element={<AIMedicalAssistant />} />
+                  <Route path="/ai-receptionist" element={<AIReceptionist />} />
+                  <Route path="/ai-admin-assistant" element={<AIAdminAssistant />} />
+                  <Route path="/ai-reminders" element={<AIReminders />} />
                   <Route path="/echopad-insights" element={<EchoPadInsights />} />
-                  <Route path="/ai-agent/echopad-insights" element={<EchoPadInsights />} />
                   <Route path="/aperio" element={<Aperio />} />
-                  <Route path="/ai-agent/aperio" element={<Aperio />} />
                   <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                   <Route path="/terms-of-service" element={<TermsOfService />} />
                   <Route path="/sign-in" element={<SignIn />} />
@@ -206,9 +206,7 @@ function App({ msalInstance }) {
                     }
                   >
                     <Route index element={<Dashboard />} />
-                    <Route path="super-admin" element={<Profile />} />
                     <Route path="client-admin" element={<Profile />} />
-                    <Route path="user-admin" element={<Profile />} />
                     <Route path="profile" element={<Profile />} />
                     <Route path="productsowned" element={<ProductsOwned />} />
                     <Route path="products" element={<Products />} />
@@ -225,10 +223,12 @@ function App({ msalInstance }) {
                     <Route path="client-feedback" element={<ClientFeedback />} />
                     <Route path="clients/:id" element={<ClientDetail />} />
                     <Route path="clients/client/:tenantId/:id" element={<ClientManagementPage />} />
+                    <Route path="license-requests" element={<LicenseRequests />} />
                   </Route>
                   <Route path="*" element={<NotFound />} />
                 </Routes>
                 <CookieConsent />
+                <ToastContainer position="top-right" autoClose={5000} />
               </BrowserRouter>
             </RoleProvider>
           </AuthProvider>

@@ -39,5 +39,22 @@ export function useOrgLicenses(organizationId) {
     fetchLicenses();
   }, [fetchLicenses]);
 
-  return { licenses, loading, error, refresh: fetchLicenses };
+  const requestLicense = useCallback(async (productId) => {
+    if (!organizationId) return;
+
+    try {
+      await http.post('/api/licenses', {
+        id: crypto.randomUUID(),
+        organizationId,
+        productId,
+      });
+      await fetchLicenses(); // Refresh licenses after request
+      return true;
+    } catch (err) {
+      console.error('Failed to request license:', err);
+      throw err;
+    }
+  }, [organizationId, fetchLicenses]);
+
+  return { licenses, loading, error, refresh: fetchLicenses, requestLicense };
 }

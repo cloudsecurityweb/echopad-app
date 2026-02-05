@@ -116,17 +116,27 @@ const JWKS = TENANT_ID ? createRemoteJWKSet(new URL(JWKS_URL)) : null;
 /** In development only: accept Microsoft token by decoding without verification (like email/password trust their JWT). */
 function tryDevBypassEntraToken(token, req, res, next) {
   if (process.env.NODE_ENV !== 'development') return false;
+  const claims = tryDevBypassEntraTokenReturnsClaims(token);
+  if (!claims) return false;
+  req.auth = claims;
+  next();
+  return true;
+}
+
+/** In development only: decode Microsoft token and return claims without JWKS verification. Returns null if not applicable. */
+function tryDevBypassEntraTokenReturnsClaims(token) {
+  if (process.env.NODE_ENV !== 'development') return null;
   const parts = token.split('.');
-  if (parts.length !== 3) return false;
+  if (parts.length !== 3) return null;
   const payload = decodeJwtPayload(parts[1]);
-  if (!payload) return false;
+  if (!payload) return null;
   const iss = payload.iss && String(payload.iss);
   const isMicrosoftIssuer = iss && (iss.includes('login.microsoftonline.com') || iss.includes('sts.windows.net'));
-  if (!isMicrosoftIssuer) return false;
-  if (payload.exp && payload.exp < Math.floor(Date.now() / 1000)) return false;
+  if (!isMicrosoftIssuer) return null;
+  if (payload.exp && payload.exp < Math.floor(Date.now() / 1000)) return null;
   const oid = payload.oid || payload.sub;
   const tid = payload.tid;
-  if (!oid || !tid) return false;
+  if (!oid || !tid) return null;
 
   console.warn('⚠️ [ENTRA-AUTH] Development bypass: accepting Microsoft token without JWKS verification. Set AZURE_TENANT_ID and AZURE_CLIENT_ID in .env for production.');
   const roles = payload.roles || [];
@@ -135,7 +145,7 @@ function tryDevBypassEntraToken(token, req, res, next) {
   else if (roles.includes('ClientAdmin')) entraRoleId = ENTRA_ROLE_UUIDS.CLIENT_ADMIN;
   else if (roles.includes('UserAdmin')) entraRoleId = ENTRA_ROLE_UUIDS.USER_ADMIN;
 
-  req.auth = {
+  return {
     oid,
     tid,
     preferred_username: payload.preferred_username || payload.email || payload.upn,
@@ -147,46 +157,29 @@ function tryDevBypassEntraToken(token, req, res, next) {
     family_name: payload.family_name,
     _raw: { aud: payload.aud, iss: payload.iss, exp: payload.exp, iat: payload.iat },
   };
-  next();
-  return true;
 }
 
-export async function verifyEntraToken(req, res, next) {
-  const authHeader = req.headers.authorization;
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({
-      success: false,
-      error: 'Unauthorized',
-      message: 'Missing or invalid Authorization header. Expected: Bearer <token>',
-    });
-  }
-
-  const token = authHeader.substring(7); // Remove 'Bearer ' prefix
-
-  // Development only: when Azure is not configured, accept token by decoding (no JWKS) so sign-in/me work like email/password
+/**
+ * Verify a Microsoft Entra ID JWT token (standalone, for use in controllers).
+ * @param {string} token - Raw JWT token string
+ * @returns {Promise<object>} Claims object (oid, tid, email, name, roles, entraRoleId, ...)
+ * @throws {Error} On verification failure
+ */
+export async function verifyMicrosoftToken(token) {
   const notConfigured = !TENANT_ID || !CLIENT_ID || !JWKS;
   const isPlaceholder = TENANT_ID && CLIENT_ID && (
     PLACEHOLDER_TENANT.test(String(TENANT_ID).trim()) || PLACEHOLDER_CLIENT.test(String(CLIENT_ID).trim())
   );
   if (process.env.NODE_ENV === 'development' && (notConfigured || isPlaceholder)) {
-    if (tryDevBypassEntraToken(token, req, res, next)) return;
-    return res.status(503).json({
-      success: false,
-      error: 'Entra ID authentication not configured',
-      message: 'AZURE_TENANT_ID and AZURE_CLIENT_ID must be set',
-    });
+    const claims = tryDevBypassEntraTokenReturnsClaims(token);
+    if (claims) return claims;
+    throw new Error('Entra ID authentication not configured. AZURE_TENANT_ID and AZURE_CLIENT_ID must be set.');
   }
-
   if (notConfigured) {
-    return res.status(503).json({
-      success: false,
-      error: 'Entra ID authentication not configured',
-      message: 'AZURE_TENANT_ID and AZURE_CLIENT_ID must be set',
-    });
+    throw new Error('Entra ID authentication not configured. AZURE_TENANT_ID and AZURE_CLIENT_ID must be set.');
   }
 
-  try {
-    // First, decode the token to get the issuer and extract tenant ID
+  // First, decode the token to get the issuer and extract tenant ID
     // This allows us to use the correct JWKS endpoint for the token's tenant
     let tokenTenantId = TENANT_ID; // Default to configured tenant
     let tokenIssuer = null;
@@ -219,11 +212,7 @@ export async function verifyEntraToken(req, res, next) {
       if (process.env.NODE_ENV === 'development') {
         console.error('❌ [ENTRA-AUTH] Cannot verify token: JWKS tenant is "common". Token issuer:', tokenIssuer || '(not decoded)');
       }
-      return res.status(401).json({
-        success: false,
-        error: 'Authentication failed',
-        message: 'Could not determine token tenant. Set AZURE_TENANT_ID in backend .env to your Azure AD tenant ID (not "common"), or sign in with a token that includes a tenant-specific issuer.',
-      });
+      throw new Error('Could not determine token tenant. Set AZURE_TENANT_ID in backend .env to your Azure AD tenant ID (not "common"), or sign in with a token that includes a tenant-specific issuer.');
     }
 
     const jwksUrl = `https://login.microsoftonline.com/${tokenTenantId}/discovery/v2.0/keys`;
@@ -246,11 +235,12 @@ export async function verifyEntraToken(req, res, next) {
       if (decodedPayload) tokenAudience = decodedPayload.aud;
     }
     
-    // ACCEPT BOTH: Microsoft Graph tokens and Backend API tokens
+    // ACCEPT: Microsoft Graph tokens, Backend API tokens (CLIENT_ID), and custom API identifier (echopad-api)
     // Microsoft Graph audience: 00000003-0000-0000-c000-000000000000
     // Backend API audience: CLIENT_ID (d4ea5537-8b2a-4b88-9dbd-80bf02596c1a)
+    // Custom/legacy API identifier (Azure Application ID URI): echopad-api
     const MICROSOFT_GRAPH_AUDIENCE = '00000003-0000-0000-c000-000000000000';
-    const validAudiences = [CLIENT_ID, MICROSOFT_GRAPH_AUDIENCE];
+    const validAudiences = [CLIENT_ID, MICROSOFT_GRAPH_AUDIENCE, 'echopad-api'];
     
     // Log audience information for debugging
     if (process.env.NODE_ENV === 'development' && tokenAudience) {
@@ -387,30 +377,58 @@ export async function verifyEntraToken(req, res, next) {
       entraRoleId = ENTRA_ROLE_UUIDS.USER_ADMIN;
     }
 
-    // Attach claims to request
-    req.auth = {
-      oid: payload.oid || payload.sub, // Object ID (user ID)
-      tid: payload.tid, // Tenant ID
+    // Return claims (same shape as req.auth)
+    return {
+      oid: payload.oid || payload.sub,
+      tid: payload.tid,
       preferred_username: payload.preferred_username || payload.email || payload.upn,
       email: payload.email || payload.preferred_username || payload.upn,
       name: payload.name || payload.preferred_username || 'User',
-      roles: roles, // App roles from Entra ID
-      entraRoleId: entraRoleId, // Entra ID role UUID (mapped from role name)
-      // Include other useful claims
+      roles,
+      entraRoleId,
       given_name: payload.given_name,
       family_name: payload.family_name,
-      // Raw payload for debugging (remove in production if needed)
-      _raw: {
-        aud: payload.aud,
-        iss: payload.iss,
-        exp: payload.exp,
-        iat: payload.iat,
-      },
+      _raw: { aud: payload.aud, iss: payload.iss, exp: payload.exp, iat: payload.iat },
     };
-    
+}
+
+export async function verifyEntraToken(req, res, next) {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({
+      success: false,
+      error: 'Unauthorized',
+      message: 'Missing or invalid Authorization header. Expected: Bearer <token>',
+    });
+  }
+
+  const token = authHeader.substring(7);
+
+  const notConfigured = !TENANT_ID || !CLIENT_ID || !JWKS;
+  const isPlaceholder = TENANT_ID && CLIENT_ID && (
+    PLACEHOLDER_TENANT.test(String(TENANT_ID).trim()) || PLACEHOLDER_CLIENT.test(String(CLIENT_ID).trim())
+  );
+  if (process.env.NODE_ENV === 'development' && (notConfigured || isPlaceholder)) {
+    if (tryDevBypassEntraToken(token, req, res, next)) return;
+    return res.status(503).json({
+      success: false,
+      error: 'Entra ID authentication not configured',
+      message: 'AZURE_TENANT_ID and AZURE_CLIENT_ID must be set',
+    });
+  }
+
+  if (notConfigured) {
+    return res.status(503).json({
+      success: false,
+      error: 'Entra ID authentication not configured',
+      message: 'AZURE_TENANT_ID and AZURE_CLIENT_ID must be set',
+    });
+  }
+
+  try {
+    req.auth = await verifyMicrosoftToken(token);
     next();
   } catch (error) {
-    // Development only: on verification failure, try accepting token by decoding (no JWKS) so sign-in/me work like email/password
     const isVerificationFailure = error.code === 'ERR_JWT_SIGNATURE_VERIFICATION_FAILED' ||
       error.code === 'ERR_JWT_INVALID' ||
       (error.message && /signature|verification failed/i.test(error.message));
@@ -465,7 +483,15 @@ export async function verifyEntraToken(req, res, next) {
       });
     }
 
-    // Never send raw library messages (e.g. jose "signature verification failed") to client
+    // Token uses an algorithm not supported by Microsoft JWKS (e.g. HS256 from Magic Link or Email/Password)
+    if (error.code === 'ERR_JOSE_NOT_SUPPORTED' || (error.message && error.message.includes('Unsupported "alg" value'))) {
+      return res.status(401).json({
+        success: false,
+        error: 'Authentication failed',
+        message: 'This endpoint requires Microsoft sign-in. The token you sent was signed with a different method (e.g. Magic Link or Email/Password). Please sign in with Microsoft for this resource.',
+      });
+    }
+
     const safeMessage = (error.message && /signature|verification failed/i.test(error.message))
       ? 'The authentication token is invalid or not a Microsoft token. Please sign in again.'
       : (error.message || 'Failed to verify authentication token');

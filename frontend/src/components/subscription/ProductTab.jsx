@@ -4,30 +4,31 @@ import UsageSection from './UsageSection';
 
 function ProductTab({
   product,
-  license,
+  productLicenses,
   users,
   licenses,
   userLicenses,
   getAccessToken,
-  onAssignLicense,
   onRevokeLicense,
+  onAssignLicense,
   usageData,
   usageLoading,
   usageError,
+  onRequestLicense,
 }) {
   const productCode = product.productCode || product.productId;
 
   return (
     <div className="space-y-6">
-      <BillingSection license={license} product={product} />
+      <BillingSection licenses={productLicenses} product={product} onRequestLicense={onRequestLicense} />
 
       <InvitesSection
         users={users}
         licenses={licenses}
         userLicenses={userLicenses}
         productCode={productCode}
-        onAssignLicense={onAssignLicense}
         onRevokeLicense={onRevokeLicense}
+        onAssignLicense={onAssignLicense}
         getAccessToken={getAccessToken}
       />
 

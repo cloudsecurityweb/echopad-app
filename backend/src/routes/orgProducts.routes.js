@@ -1,6 +1,7 @@
 import express from "express";
 import { createOrgProductRecord, getOrgProductsByOrganization, updateOrgProductStatus } from "../services/orgProductService.js";
-import { verifyEntraToken, attachUserFromDb, requireRole } from "../middleware/entraAuth.js";
+import { verifyAnyAuth } from "../middleware/auth.js";
+import { requireRole } from "../middleware/entraAuth.js";
 
 const router = express.Router();
 
@@ -10,8 +11,7 @@ const router = express.Router();
  */
 router.get(
   "/",
-  verifyEntraToken,
-  attachUserFromDb,
+  verifyAnyAuth,
   requireRole(["SuperAdmin", "ClientAdmin"], ["superAdmin", "clientAdmin"]),
   async (req, res) => {
     try {
@@ -43,8 +43,7 @@ router.get(
  */
 router.post(
   "/",
-  verifyEntraToken,
-  attachUserFromDb,
+  verifyAnyAuth,
   requireRole(["SuperAdmin", "ClientAdmin"], ["superAdmin", "clientAdmin"]),
   async (req, res) => {
     try {
@@ -83,8 +82,7 @@ router.post(
  */
 router.patch(
   "/:orgProductId",
-  verifyEntraToken,
-  attachUserFromDb,
+  verifyAnyAuth,
   requireRole(["SuperAdmin", "ClientAdmin"], ["superAdmin", "clientAdmin"]),
   async (req, res) => {
     try {

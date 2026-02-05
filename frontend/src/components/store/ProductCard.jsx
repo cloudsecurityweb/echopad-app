@@ -12,9 +12,8 @@ function ProductCard({ product, isSubscribed }) {
         <div className="w-12 h-12 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 text-white flex items-center justify-center text-xl font-semibold">
           {initial}
         </div>
-        <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${
-          isSubscribed ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'
-        }`}>
+        <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${isSubscribed ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'
+          }`}>
           {isSubscribed ? 'Subscribed' : 'Available'}
         </span>
       </div>
@@ -29,7 +28,7 @@ function ProductCard({ product, isSubscribed }) {
         </button>
       ) : (
         <Link
-          to={`/ai-agent/${endpoint}`}
+          to={endpoint.startsWith('/') ? endpoint : `/${endpoint}`}
           target="_blank"
           rel="noopener noreferrer"
           className="block w-full text-center px-4 py-2 rounded-lg text-sm font-medium bg-gradient-to-r from-cyan-500 to-blue-600 text-white hover:from-cyan-400 hover:to-blue-500"

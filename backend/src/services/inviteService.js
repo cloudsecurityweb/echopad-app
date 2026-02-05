@@ -287,34 +287,36 @@ export async function acceptInvitation(token, tenantId, userData) {
   // the user to an active license for that product (when available).
   // This links the invited user to the product at acceptance time so that
   // their dashboard can immediately reflect product access.
-  if (invite.productId && invite.organizationId) {
-    try {
-      const { getLicensesByTenant, assignLicenseToUser } = await import("./licenseService.js");
 
-      // Find licenses for this tenant, organization, and product
-      const licenses = await getLicensesByTenant(tenantId, invite.organizationId, invite.productId);
+  // Temp comment intensionally
+  // if (invite.productId && invite.organizationId) {
+  //   try {
+  //     const { getLicensesByTenant, assignLicenseToUser } = await import("./licenseService.js");
 
-      // Try to assign the user to the first license that can accept them.
-      // assignLicenseToUser internally validates status, expiry, and seat availability.
-      for (const license of licenses) {
-        try {
-          await assignLicenseToUser(license.id, tenantId, createdUser.id, invite.createdBy || createdUser.id);
-          // Successfully assigned; no need to try additional licenses
-          break;
-        } catch (assignError) {
-          // If assignment fails for this license (no seats, expired, etc.),
-          // log and continue to the next one.
-          console.warn("Failed to auto-assign license on invite acceptance:", {
-            licenseId: license.id,
-            error: assignError.message,
-          });
-        }
-      }
-    } catch (licenseError) {
-      // Never fail invitation acceptance because of license issues.
-      console.warn("License auto-assignment skipped on invite acceptance:", licenseError);
-    }
-  }
+  //     // Find licenses for this tenant, organization, and product
+  //     const licenses = await getLicensesByTenant(tenantId, invite.organizationId, invite.productId);
+
+  //     // Try to assign the user to the first license that can accept them.
+  //     // assignLicenseToUser internally validates status, expiry, and seat availability.
+  //     for (const license of licenses) {
+  //       try {
+  //         await assignLicenseToUser(license.id, tenantId, createdUser.id, invite.createdBy || createdUser.id);
+  //         // Successfully assigned; no need to try additional licenses
+  //         break;
+  //       } catch (assignError) {
+  //         // If assignment fails for this license (no seats, expired, etc.),
+  //         // log and continue to the next one.
+  //         console.warn("Failed to auto-assign license on invite acceptance:", {
+  //           licenseId: license.id,
+  //           error: assignError.message,
+  //         });
+  //       }
+  //     }
+  //   } catch (licenseError) {
+  //     // Never fail invitation acceptance because of license issues.
+  //     console.warn("License auto-assignment skipped on invite acceptance:", licenseError);
+  //   }
+  // }
 
   // Mark invite as accepted
   await container.item(invite.id, tenantId).replace({

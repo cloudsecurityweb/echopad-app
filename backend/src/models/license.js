@@ -12,6 +12,8 @@ export const LICENSE_STATUS = {
   INACTIVE: "inactive",
   EXPIRED: "expired",
   SUSPENDED: "suspended",
+  REQUESTED: "requested",
+  DENIED: "denied",
 };
 
 /**

@@ -97,11 +97,12 @@ function SuperAdminClients() {
           <table className="w-full">
             <thead>
               <tr className="border-b border-gray-200">
-                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Client Name</th>
+                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Client Org Name</th>
+                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Organizer</th>
+                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Email</th>
                 <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Status</th>
                 <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Products</th>
                 <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Licenses</th>
-                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Subscription</th>
                 <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Actions</th>
               </tr>
             </thead>
@@ -109,6 +110,16 @@ function SuperAdminClients() {
               {paginatedClients.map((client) => (
                 <tr key={client.id} className="border-b border-gray-100 hover:bg-gray-50">
                   <td className="py-4 px-4 text-sm font-medium text-gray-900">{client.name}</td>
+                  <td className="py-4 px-4 text-sm text-gray-700">{client.organizer || '-'}</td>
+                  <td className="py-4 px-4 text-sm text-gray-700">
+                    {client.email ? (
+                      <a href={`mailto:${client.email}`} className="text-blue-600 hover:underline">
+                        {client.email}
+                      </a>
+                    ) : (
+                      '-'
+                    )}
+                  </td>
                   <td className="py-4 px-4">
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${client.status === 'Active'
                       ? 'bg-green-100 text-green-800'
@@ -121,7 +132,6 @@ function SuperAdminClients() {
                   </td>
                   <td className="py-4 px-4 text-sm text-gray-700">{client.productsCount || 0}</td>
                   <td className="py-4 px-4 text-sm text-gray-700">{client.licensesCount || 0}</td>
-                  <td className="py-4 px-4 text-sm text-gray-700">{client.subscription?.name || 'N/A'}</td>
                   <td className="py-4 px-4">
                     <button
                       onClick={() => navigate(`/dashboard/clients/client/${client.tenantId}/${client.id}`)}

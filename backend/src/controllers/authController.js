@@ -1,7 +1,8 @@
 /**
  * Authentication Controller
  * 
- * Handles sign-in and sign-up with Microsoft Entra ID
+ * Handles sign-in and sign-up with Microsoft Entra ID and Google OAuth.
+ * Token verification is provider-driven (req.body.provider + token).
  */
 
 import { randomUUID } from 'crypto';
@@ -10,6 +11,8 @@ import { createOrg, getOrgById } from '../services/organizationService.js';
 import { USER_ROLES, USER_STATUS } from '../models/user.js';
 import { ORG_TYPES, ORG_STATUS } from '../models/organization.js';
 import { isConfigured } from '../config/cosmosClient.js';
+import { verifyMicrosoftToken } from '../middleware/entraAuth.js';
+import { verifyGoogleTokenStandalone } from '../middleware/googleAuth.js';
 
 /**
  * Map Entra ID roles to backend roles
@@ -42,7 +45,8 @@ function mapEntraRoleToBackendRole(entraRoles) {
 
 /**
  * POST /api/auth/sign-in
- * Sign in with existing account (verify token and return user profile)
+ * Sign in with existing account (verify token and return user profile).
+ * Body: { provider: 'microsoft'|'google', token: string }
  */
 export async function signIn(req, res) {
   if (!isConfigured()) {
@@ -54,7 +58,55 @@ export async function signIn(req, res) {
   }
 
   try {
-    const { oid, tid, email, name, roles, entraRoleId } = req.auth;
+    const { provider, token } = req.body || {};
+
+    if (!provider || !token) {
+      return res.status(400).json({
+        success: false,
+        message: 'Provider and token are required',
+      });
+    }
+
+    // Safety guard: prevent Google tokens being sent as Microsoft
+    if (provider === 'microsoft' && token.includes('.')) {
+      const parts = token.split('.');
+      if (parts.length === 3) {
+        try {
+          let b64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+          const pad = b64.length % 4;
+          if (pad) b64 += '='.repeat(4 - pad);
+          const payload = JSON.parse(Buffer.from(b64, 'base64').toString());
+          if (payload.iss && !String(payload.iss).includes('microsoftonline.com')) {
+            return res.status(401).json({
+              success: false,
+              error: 'Invalid token',
+              message: 'Invalid Microsoft token issuer',
+            });
+          }
+        } catch {
+          // Not valid base64/base64url JSON; let verifyMicrosoftToken handle it
+        }
+      }
+    }
+
+    let decoded;
+    if (provider === 'microsoft') {
+      decoded = await verifyMicrosoftToken(token);
+    } else if (provider === 'google') {
+      decoded = await verifyGoogleTokenStandalone(token);
+    } else {
+      return res.status(400).json({
+        success: false,
+        message: 'Unsupported auth provider',
+      });
+    }
+
+    const oid = decoded.oid;
+    const tid = decoded.tid;
+    const email = (decoded.email || decoded.preferred_username || '').toLowerCase().trim();
+    const name = decoded.name || decoded.preferred_username || (email && email.split('@')[0]) || 'User';
+    const roles = decoded.roles || [];
+    const entraRoleId = decoded.entraRoleId ?? null;
 
     if (!oid || !tid || !email) {
       return res.status(400).json({
@@ -68,7 +120,7 @@ export async function signIn(req, res) {
     // This is more efficient and doesn't require guessing the role first
     console.log(`🔍 [SIGN-IN] OID-first lookup for user: ${oid.substring(0, 8)}...`);
     let user = await getUserByOIDAnyRole(oid, tid);
-    
+
     // If not found by OID, fallback to email search (for edge cases)
     if (!user) {
       console.log(`⚠️ [SIGN-IN] User not found by OID, trying email lookup: ${email}`);
@@ -88,12 +140,12 @@ export async function signIn(req, res) {
           message: 'SuperAdmin access requires pre-configuration in Entra ID. Please contact your administrator.',
         });
       }
-      
+
       // For new users without token roles, default to CLIENT_ADMIN
       // New sign-ins/sign-ups should be ClientAdmin, not UserAdmin
       // UserAdmin users are invited by ClientAdmin after they sign up
       const newUserRole = backendRole !== null ? backendRole : USER_ROLES.CLIENT_ADMIN;
-      
+
       console.log('📝 [SIGN-IN] Creating new user with OID as user ID:', {
         oid: oid.substring(0, 8) + '...',
         email: email,
@@ -103,7 +155,32 @@ export async function signIn(req, res) {
         entraRoleId: entraRoleId,
         note: 'Using OID as user ID (same as SuperAdmin)',
       });
-      
+      let createdOrgId = null;
+
+      // Auto-create organization for Client Admin if not provided
+      // For Microsoft sign-ups, if no org ID exists, create one with empty details so they can set it up later
+      if (newUserRole === USER_ROLES.CLIENT_ADMIN) {
+        try {
+          console.log('📝 [SIGN-IN] Auto-creating organization for new Client Admin...');
+          const newOrgId = `org_${randomUUID()}`;
+          await createOrg({
+            id: newOrgId,
+            tenantId: tid,
+            name: "", // Empty name initially
+            type: ORG_TYPES.CLIENT,
+            email: email.toLowerCase().trim(),
+            organizer: "", // Empty organizer initially
+            status: ORG_STATUS.ACTIVE,
+          }, oid);
+
+          createdOrgId = newOrgId;
+          console.log(`✅ [SIGN-IN] Auto-created organization: ${newOrgId}`);
+        } catch (orgError) {
+          console.error('❌ [SIGN-IN] Failed to auto-create organization:', orgError);
+          // Continue creating user even if org creation fails (user can be assigned later)
+        }
+      }
+
       // CRITICAL: Always use OID as user ID for ClientAdmin (same as SuperAdmin)
       // This ensures consistent identity across all user roles
       user = await createUserRecord({
@@ -113,22 +190,23 @@ export async function signIn(req, res) {
         displayName: name || email.split('@')[0],
         role: newUserRole, // Use token role if present, otherwise default to CLIENT_ADMIN
         status: USER_STATUS.ACTIVE,
-        organizationId: null, // Will be set if user belongs to an org
+        organizationId: createdOrgId, // Use the locally created ID
         emailVerified: true, // OAuth users are auto-verified
         entraRoleId: entraRoleId || null, // Store Entra ID role UUID
       }, oid);
-      
+
       console.log('✅ [SIGN-IN] User created with OID:', {
         id: user.id.substring(0, 8) + '...',
         role: user.role,
         email: user.email,
+        organizationId: user.organizationId,
         note: user.id === oid ? 'OID matches user ID ✓' : 'WARNING: OID mismatch!',
       });
     } else {
       // Only override DB role if token has roles (Entra ID is source of truth when roles are present)
       // If token has no roles, preserve existing DB role (for invited UserAdmin users)
       const originalDbRole = user.role;
-      
+
       if (backendRole !== null) {
         // Token has roles - override DB role with token role
         user.role = backendRole;
@@ -139,7 +217,7 @@ export async function signIn(req, res) {
         // Token has no roles - preserve existing DB role
         console.log(`ℹ️ Sign-in preserving DB role (no token roles): ${originalDbRole}`);
       }
-      
+
       // Update user info if needed (e.g., name changed in Entra)
       if (user.displayName !== name || user.email !== email.toLowerCase().trim()) {
         // Note: We could update here, but for now just return existing user
@@ -225,10 +303,10 @@ export async function signIn(req, res) {
     });
   } catch (error) {
     console.error('Sign in error:', error);
-    res.status(500).json({
+    res.status(401).json({
       success: false,
-      error: 'Sign in failed',
-      message: error.message,
+      error: 'Invalid token',
+      message: error.message || 'Authentication failed',
     });
   }
 }
@@ -252,10 +330,57 @@ export async function signUp(req, res) {
   }
 
   try {
-    const { oid, tid, email, name, roles } = req.auth;
-    const { organizationName, organizerName, email: providedEmail } = req.body;
+    const { provider, token, organizationName, organizerName, email: providedEmail } = req.body || {};
 
-    if (!oid || !tid || !email) {
+    if (!provider || !token) {
+      return res.status(400).json({
+        success: false,
+        message: 'Provider and token are required',
+      });
+    }
+
+    // Safety guard: prevent Google tokens being sent as Microsoft
+    if (provider === 'microsoft' && token.includes('.')) {
+      const parts = token.split('.');
+      if (parts.length === 3) {
+        try {
+          let b64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+          const pad = b64.length % 4;
+          if (pad) b64 += '='.repeat(4 - pad);
+          const payload = JSON.parse(Buffer.from(b64, 'base64').toString());
+          if (payload.iss && !String(payload.iss).includes('microsoftonline.com')) {
+            return res.status(401).json({
+              success: false,
+              error: 'Invalid token',
+              message: 'Invalid Microsoft token issuer',
+            });
+          }
+        } catch {
+          // Not valid base64/base64url JSON; let verifyMicrosoftToken handle it
+        }
+      }
+    }
+
+    let decoded;
+    if (provider === 'microsoft') {
+      decoded = await verifyMicrosoftToken(token);
+    } else if (provider === 'google') {
+      decoded = await verifyGoogleTokenStandalone(token);
+    } else {
+      return res.status(400).json({
+        success: false,
+        message: 'Unsupported auth provider',
+      });
+    }
+
+    const oid = decoded.oid;
+    const tid = decoded.tid;
+    const tokenEmail = (decoded.email || decoded.preferred_username || '').toLowerCase().trim();
+    const name = decoded.name || decoded.preferred_username || (tokenEmail && tokenEmail.split('@')[0]) || 'User';
+    const roles = decoded.roles || [];
+    const entraRoleId = decoded.entraRoleId ?? null;
+
+    if (!oid || !tid || !tokenEmail) {
       return res.status(400).json({
         success: false,
         error: 'Invalid token',
@@ -264,9 +389,8 @@ export async function signUp(req, res) {
     }
 
     // Validate email matches token (if provided)
-    const tokenEmail = email.toLowerCase().trim();
     const bodyEmail = providedEmail ? providedEmail.toLowerCase().trim() : null;
-    
+
     if (bodyEmail && bodyEmail !== tokenEmail) {
       return res.status(400).json({
         success: false,
@@ -279,7 +403,7 @@ export async function signUp(req, res) {
     // This is more efficient and doesn't require guessing the role first
     console.log(`🔍 [SIGN-UP] OID-first lookup for user: ${oid.substring(0, 8)}...`);
     let user = await getUserByOIDAnyRole(oid, tid);
-    
+
     // If not found by OID, fallback to email search (for edge cases)
     if (!user) {
       console.log(`⚠️ [SIGN-UP] User not found by OID, trying email lookup: ${tokenEmail}`);
@@ -288,12 +412,12 @@ export async function signUp(req, res) {
 
     // Map Entra roles to backend role (for role override and user creation)
     const backendRole = mapEntraRoleToBackendRole(roles);
-    
+
     if (user) {
       // User already exists - only override role if token has roles
       // If token has no roles, preserve existing DB role (for invited UserAdmin users)
       const originalDbRole = user.role;
-      
+
       if (backendRole !== null) {
         // Token has roles - override DB role with token role (Entra ID is source of truth)
         user.role = backendRole;
@@ -304,7 +428,7 @@ export async function signUp(req, res) {
         // Token has no roles - preserve existing DB role
         console.log(`ℹ️ Sign-up preserving DB role (no token roles): ${originalDbRole}`);
       }
-      
+
       let organization = null;
       if (user.organizationId) {
         organization = await getOrgById(user.organizationId, tid);
@@ -354,7 +478,15 @@ export async function signUp(req, res) {
     // If provided, create organization; otherwise, user can set it later in profile
     let organization = null;
     let orgId = null;
-    
+
+    // Create user with ClientAdmin role (first user in org is admin)
+    // New sign-ups should be ClientAdmin, not UserAdmin
+    // UserAdmin users are invited by ClientAdmin after they sign up
+    // Only SuperAdmin from token can override this
+    const userRole = backendRole === USER_ROLES.SUPER_ADMIN
+      ? USER_ROLES.SUPER_ADMIN
+      : USER_ROLES.CLIENT_ADMIN;
+
     if (organizationName && organizerName) {
       // Create new organization if details are provided
       orgId = `org_${randomUUID()}`;
@@ -363,48 +495,58 @@ export async function signUp(req, res) {
         tenantId: tid,
         name: organizationName.trim(),
         type: ORG_TYPES.CLIENT, // New sign-ups are client organizations
+        email: tokenEmail, // Use token email as org email
+        organizer: organizerName.trim(), // Use organizer name
         status: ORG_STATUS.ACTIVE,
       }, oid);
+    } else if (userRole === USER_ROLES.CLIENT_ADMIN) {
+      // Auto-create organization for Client Admin if not provided
+      try {
+        console.log('📝 [SIGN-UP] Auto-creating organization for new Client Admin...');
+        orgId = `org_${randomUUID()}`;
+        organization = await createOrg({
+          id: orgId,
+          tenantId: tid,
+          name: "", // Empty name initially
+          type: ORG_TYPES.CLIENT,
+          email: tokenEmail.toLowerCase().trim(),
+          organizer: "", // Empty organizer initially
+          status: ORG_STATUS.ACTIVE,
+        }, oid);
+        console.log(`✅ [SIGN-UP] Auto-created organization: ${orgId}`);
+      } catch (orgError) {
+        console.error('❌ [SIGN-UP] Failed to auto-create organization:', orgError);
+      }
     }
 
-      // Create user with ClientAdmin role (first user in org is admin)
-      // New sign-ups should be ClientAdmin, not UserAdmin
-      // UserAdmin users are invited by ClientAdmin after they sign up
-      // Only SuperAdmin from token can override this
-      const userRole = backendRole === USER_ROLES.SUPER_ADMIN 
-        ? USER_ROLES.SUPER_ADMIN 
-        : USER_ROLES.CLIENT_ADMIN;
+    // For OAuth users (Microsoft/Google), email is considered verified by the IdP
+    // However, if you want strict parity, you can set emailVerified: false and require verification
+    // For now, we trust OAuth providers' email verification
+    const emailVerified = true; // OAuth users are auto-verified by IdP
 
-      const { entraRoleId } = req.auth;
-      
-      // For OAuth users (Microsoft/Google), email is considered verified by the IdP
-      // However, if you want strict parity, you can set emailVerified: false and require verification
-      // For now, we trust OAuth providers' email verification
-      const emailVerified = true; // OAuth users are auto-verified by IdP
-      
-      console.log('📝 [SIGN-UP] Creating new user with OID as user ID:', {
-        oid: oid.substring(0, 8) + '...',
-        email: tokenEmail,
-        tokenRoles: roles,
-        userRole: userRole,
-        organizationId: orgId,
-        emailVerified: emailVerified,
-        note: 'Using OID as user ID (same as SuperAdmin), OAuth email auto-verified',
-      });
-      
-      // CRITICAL: Always use OID as user ID for ClientAdmin (same as SuperAdmin)
-      // This ensures consistent identity across all user roles
-      user = await createUserRecord({
-        id: oid, // OID is the unique identifier (same for SuperAdmin and ClientAdmin)
-        tenantId: tid,
-        email: tokenEmail,
-        displayName: organizerName ? organizerName.trim() : (name || tokenEmail.split('@')[0]),
-        role: userRole,
-        status: USER_STATUS.ACTIVE, // OAuth users are active immediately (email verified by IdP)
-        organizationId: orgId, // null if organization not created
-        emailVerified: emailVerified, // OAuth users are auto-verified
-        entraRoleId: entraRoleId || null, // Store Entra ID role UUID
-      }, oid);
+    console.log('📝 [SIGN-UP] Creating new user with OID as user ID:', {
+      oid: oid.substring(0, 8) + '...',
+      email: tokenEmail,
+      tokenRoles: roles,
+      userRole: userRole,
+      organizationId: orgId,
+      emailVerified: emailVerified,
+      note: 'Using OID as user ID (same as SuperAdmin), OAuth email auto-verified',
+    });
+
+    // CRITICAL: Always use OID as user ID for ClientAdmin (same as SuperAdmin)
+    // This ensures consistent identity across all user roles
+    user = await createUserRecord({
+      id: oid, // OID is the unique identifier (same for SuperAdmin and ClientAdmin)
+      tenantId: tid,
+      email: tokenEmail,
+      displayName: organizerName ? organizerName.trim() : (name || tokenEmail.split('@')[0]),
+      role: userRole,
+      status: USER_STATUS.ACTIVE, // OAuth users are active immediately (email verified by IdP)
+      organizationId: orgId, // null if organization not created
+      emailVerified: emailVerified, // OAuth users are auto-verified
+      entraRoleId: entraRoleId || null, // Store Entra ID role UUID
+    }, oid);
 
     console.log('✅ [SIGN-UP] User registered with OID:', {
       id: user.id.substring(0, 8) + '...',
@@ -439,10 +581,10 @@ export async function signUp(req, res) {
     });
   } catch (error) {
     console.error('Sign up error:', error);
-    res.status(500).json({
+    res.status(401).json({
       success: false,
-      error: 'Sign up failed',
-      message: error.message,
+      error: 'Invalid token',
+      message: error.message || 'Authentication failed',
     });
   }
 }
@@ -481,7 +623,7 @@ export async function getCurrentUser(req, res) {
       // This is more efficient and doesn't require guessing the role first
       console.log(`🔍 [CURRENT-USER] OID-first lookup for user: ${oid.substring(0, 8)}...`);
       user = await getUserByOIDAnyRole(oid, tid);
-      
+
       // If not found by OID, fallback to email search (for edge cases)
       if (!user && req.auth?.email) {
         console.log(`⚠️ [CURRENT-USER] User not found by OID, trying email lookup: ${req.auth.email}`);
@@ -495,7 +637,7 @@ export async function getCurrentUser(req, res) {
           message: 'User profile not found. Please sign up first.',
         });
       }
-      
+
       // If user was loaded directly (not from middleware), ensure role is set
       // When token roles are empty, keep database role
       if (!user.role) {

@@ -142,19 +142,18 @@ export async function detectAuthProvider(req, res, next) {
 /**
  * POST /api/auth/sign-in
  * Sign in with existing account (OAuth - Microsoft/Google)
- * Requires: Authorization header with Bearer token
- * Supports both Microsoft and Google tokens
+ * Body: { provider: 'microsoft'|'google', token: string } (required)
+ * Token verification is provider-driven; no Bearer header for this endpoint.
  */
-router.post('/sign-in', detectAuthProvider, signIn);
+router.post('/sign-in', signIn);
 
 /**
  * POST /api/auth/sign-up
  * Sign up new organization and user (OAuth - Microsoft/Google)
- * Requires: Authorization header with Bearer token
- * Body: { organizationName?, organizerName?, email? } (all optional for OAuth)
- * Supports both Microsoft and Google tokens
+ * Body: { provider: 'microsoft'|'google', token: string, organizationName?, organizerName?, email? }
+ * Token verification is provider-driven; no Bearer header for this endpoint.
  */
-router.post('/sign-up', detectAuthProvider, signUp);
+router.post('/sign-up', signUp);
 
 /**
  * POST /api/auth/sign-up-email

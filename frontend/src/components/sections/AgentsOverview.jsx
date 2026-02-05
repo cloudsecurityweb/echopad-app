@@ -20,7 +20,7 @@ function AgentsOverview() {
       icon: 'bi-arrow-left-right',
       title: 'Aperio',
       description: 'Streamline referral management and patient care coordination',
-      link: '/ai-agent/aperio',
+      link: '/aperio',
       featured: true,
     },
   ];
@@ -30,14 +30,14 @@ function AgentsOverview() {
       icon: 'bi-file-earmark-text',
       title: 'AI Document Manager',
       description: 'Transform transcripts into formatted medical notes instantly',
-      link: '/ai-agent/ai-docman',
+      link: '/ai-docman',
       comingSoon: true,
     },
     {
       icon: 'bi-person-workspace',
       title: 'AI Medical Assistant',
       description: 'Full-session intelligence with EHR-ready chart outputs',
-      link: '/ai-agent/ai-medical-assistant',
+      link: '/ai-medical-assistant',
       comingSoon: true,
     },
   ];
@@ -47,19 +47,19 @@ function AgentsOverview() {
       icon: 'bi-headset',
       title: 'AI Receptionist',
       description: '24/7 call handling, appointment scheduling, and patient triage',
-      link: '/ai-agent/ai-receptionist',
+      link: '/ai-receptionist',
     },
     {
       icon: 'bi-briefcase',
       title: 'AI Admin Assistant',
       description: 'Automate forms, scheduling, emails, and operational workflows',
-      link: '/ai-agent/ai-admin-assistant',
+      link: '/ai-admin-assistant',
     },
     {
       icon: 'bi-bell',
       title: 'AI Patient Reminders',
       description: 'Automated, personalized reminders for appointments, procedures, medications, and care coordination',
-      link: '/ai-agent/ai-reminders',
+      link: '/ai-reminders',
     },
   ];
 

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-function SubscriptionTabs({ products, renderTab }) {
+function SubscriptionTabs({ products, renderTab, onRequestLicense }) {
   const [activeIndex, setActiveIndex] = useState(0);
 
   if (!products.length) {
@@ -21,18 +21,17 @@ function SubscriptionTabs({ products, renderTab }) {
             key={product.id || product.productId || product.sku}
             type="button"
             onClick={() => setActiveIndex(index)}
-            className={`px-8 py-4 rounded-lg text-sm font-medium transition-colors ${
-              index === activeIndex
-                ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-sm'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-            }`}
+            className={`px-8 py-4 rounded-lg text-sm font-medium transition-colors ${index === activeIndex
+              ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-sm'
+              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
           >
             {product.name}
           </button>
         ))}
       </div>
 
-      <div>{renderTab(activeProduct)}</div>
+      <div>{renderTab(activeProduct, onRequestLicense)}</div>
     </div>
   );
 }

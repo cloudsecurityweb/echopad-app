@@ -1,6 +1,6 @@
 # Echopad AI
 
-> HIPAA-compliant healthcare AI platform that reduces provider burnout by 40%, cuts administrative costs by 60%, and increases revenue by 20%. Offering AI Scribe, AI Receptionist, AI Admin Assistant, ReferCare, and performance analytics solutions for healthcare organizations.
+> HIPAA-compliant healthcare AI platform that reduces provider burnout by 40%, cuts administrative costs by 60%, and increases revenue by 20%. Offering AI Scribe, AI Receptionist, AI Admin Assistant, Aperio, and performance analytics solutions for healthcare organizations.
 
 ## About Echopad AI
 
@@ -18,7 +18,7 @@
 
 [Benchmark - Performance Analytics](https://echopadai.com/benchmark): Comprehensive healthcare operations analytics and performance tracking. Real-time dashboards, provider productivity metrics, revenue cycle analytics, and operational KPIs. Pricing at $499/month. Provides actionable insights for practice optimization.
 
-[ReferCare - Referral Management](https://echopadai.com/refercare): Automated referral management system that reduces processing time by 80%. Features automated referral tracking, specialist network coordination, patient communication, and outcomes monitoring. Pricing at $399/month. Improves care coordination and patient retention.
+[Aperio - Referral Management](https://echopadai.com/aperio): Automated referral management system that reduces processing time by 80%. Features automated referral tracking, specialist network coordination, patient communication, and outcomes monitoring. Pricing at $399/month. Improves care coordination and patient retention.
 
 [EchoPad Insights](https://echopadai.com/echopad-insights): Advanced analytics platform providing deep insights into practice performance, patient outcomes, and operational efficiency. Custom reporting, predictive analytics, and AI-powered recommendations.
 

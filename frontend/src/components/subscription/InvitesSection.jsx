@@ -1,19 +1,23 @@
 import { useMemo, useState, useEffect } from 'react';
-import { getPendingInvitations } from '../../utils/invitation-service';
+import { toast } from 'react-toastify';
+import { resendInvitation, getPendingInvitations } from '../../utils/invitation-service';
 import InviteModal from './InviteModal';
+import LicenseAssigner from './LicenseAssigner';
 
 function InvitesSection({
   users,
   licenses,
   userLicenses,
   productCode,
-  onAssignLicense,
   onRevokeLicense,
+  onAssignLicense,
   getAccessToken,
 }) {
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [pendingInvites, setPendingInvites] = useState([]);
   const [isLoadingPending, setIsLoadingPending] = useState(false);
+  const [resendingId, setResendingId] = useState(null);
 
   useEffect(() => {
     fetchPendingInvites();
@@ -31,6 +35,19 @@ function InvitesSection({
     }
   };
 
+  const handleResend = async (inviteId) => {
+    setResendingId(inviteId);
+    try {
+      await resendInvitation(inviteId, getAccessToken);
+      toast.success("Invitation resent successfully!");
+    } catch (error) {
+      console.error("Failed to resend invitation:", error);
+      toast.error(`Failed to resend: ${error.message}`);
+    } finally {
+      setResendingId(null);
+    }
+  };
+
   const userLicenseMap = useMemo(() => {
     const map = new Map();
     userLicenses.forEach((entry) => {
@@ -42,13 +59,19 @@ function InvitesSection({
     return map;
   }, [userLicenses]);
 
-  const handleAssign = async (userId, licenseId) => {
-    if (!licenseId) return;
-    await onAssignLicense({ userId, licenseId });
-  };
-
   const handleRevoke = async (userId, licenseId) => {
     await onRevokeLicense({ userId, licenseId });
+  };
+
+  const handleAssign = async (userId, licenseId) => {
+    if (!licenseId) return;
+    try {
+      await onAssignLicense({ userId, licenseId });
+      toast.success("License assigned successfully!");
+    } catch (error) {
+      console.error("Failed to assign license:", error);
+      toast.error(`Failed to assign license: ${error.message}`);
+    }
   };
 
   return (
@@ -79,7 +102,6 @@ function InvitesSection({
           <tbody className="divide-y divide-gray-200">
             {users.map((user) => {
               const assignments = userLicenseMap.get(user.id) || [];
-              const assignedProducts = assignments.map((entry) => entry.productId);
               const activeLicense = assignments.find((entry) => entry.productId === productCode);
 
               return (
@@ -89,49 +111,27 @@ function InvitesSection({
                     <div className="text-xs text-gray-500">{user.email}</div>
                   </td>
                   <td className="px-4 py-3">
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      user.status === 'ACTIVE' || user.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'
-                    }`}>
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${user.status === 'ACTIVE' || user.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'
+                      }`}>
                       {user.status || 'active'}
                     </span>
                   </td>
-                  {/* <td className="px-4 py-3">
-                    {assignedProducts.length === 0 ? (
-                      <span className="text-gray-500">None</span>
-                    ) : (
-                      <div className="flex flex-wrap gap-2">
-                        {assignedProducts.map((prod) => (
-                          <span key={prod} className="px-2 py-1 rounded-full text-xs bg-cyan-50 text-cyan-700 border border-cyan-200">
-                            {prod}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                  </td> */}
                   <td className="px-4 py-3">
                     {activeLicense ? (
                       <button
                         type="button"
                         onClick={() => handleRevoke(user.id, activeLicense.licenseId)}
-                        className="text-xs font-medium text-red-600 hover:text-red-700"
+                        className="px-3 py-1 bg-red-50 text-red-600 border border-red-200 rounded-md text-xs font-medium hover:bg-red-100 hover:text-red-700 transition-colors cursor-pointer"
                       >
                         Revoke
                       </button>
                     ) : (
-                      <div className="flex items-center gap-2">
-                        <select
-                          className="border border-gray-300 rounded-lg px-2 py-1 text-xs"
-                          defaultValue=""
-                          onChange={(event) => handleAssign(user.id, event.target.value)}
-                        >
-                          <option value="">Assign license</option>
-                          {licenses.filter(l => l.productId === productCode).map((license) => (
-                            <option key={license.id} value={license.id}>
-                              {license.licenseType || 'seat'} · {license.totalSeats ?? license.seats ?? 'Unlimited'}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
+                      <LicenseAssigner
+                        user={user}
+                        licenses={licenses}
+                        productCode={productCode}
+                        onAssign={handleAssign}
+                      />
                     )}
                   </td>
                 </tr>
@@ -180,15 +180,11 @@ function InvitesSection({
                   <div className="flex items-center gap-4">
                     <button
                       type="button"
-                      className="text-xs font-medium text-cyan-600 hover:text-cyan-700"
+                      onClick={() => handleResend(invite.id)}
+                      disabled={resendingId === invite.id}
+                      className="px-3 py-1 bg-cyan-50 text-cyan-600 border border-cyan-200 rounded-md text-xs font-medium hover:bg-cyan-100 hover:text-cyan-700 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      Resend
-                    </button>
-                    <button
-                      type="button"
-                      className="text-xs font-medium text-red-600 hover:text-red-700"
-                    >
-                      Cancel
+                      {resendingId === invite.id ? 'Resending...' : 'Resend'}
                     </button>
                   </div>
                 </td>

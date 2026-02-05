@@ -9,8 +9,17 @@ import routes from "./routes/index.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 import { notFound } from "./middleware/notFound.js";
 
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Serve static files (email assets)
+app.use('/public', express.static(path.join(__dirname, 'public')));
 
 // CORS Configuration
 // Allow requests from localhost (development) and production frontend URL

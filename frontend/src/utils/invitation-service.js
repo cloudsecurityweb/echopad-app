@@ -17,7 +17,7 @@
  * @returns {Promise<Object>} Response object with success status and message
  * @throws {Error} If invitation fails
  */
-export async function sendInvitation(email, role, productId, getAccessTokenFn) {
+export async function sendInvitation(email, role, productId, licenseId, getAccessTokenFn) {
   // Validate inputs
   if (!email || !email.trim()) {
     throw new Error('Email is required');
@@ -41,11 +41,11 @@ export async function sendInvitation(email, role, productId, getAccessTokenFn) {
       }
       throw new Error(`Authentication failed: ${tokenError.message || 'Please sign in and try again.'}`);
     }
-    
+
     if (!token) {
       throw new Error('No access token available. Please sign in and try again.');
     }
-    
+
     const response = await fetch(invitationEndpoint, {
       method: 'POST',
       headers: {
@@ -55,6 +55,7 @@ export async function sendInvitation(email, role, productId, getAccessTokenFn) {
       body: JSON.stringify({
         email: email.trim(),
         productId: productId ? productId.trim() : null, // Optional product ID
+        licenseId: licenseId ? licenseId.trim() : null, // Optional license ID
       }),
     });
 
@@ -67,12 +68,12 @@ export async function sendInvitation(email, role, productId, getAccessTokenFn) {
     return data;
   } catch (error) {
     console.error('Invitation service error:', error);
-    
+
     // Re-throw with user-friendly message
     if (error.message) {
       throw error;
     }
-    
+
     throw new Error('Failed to send invitation. Please try again later.');
   }
 }
@@ -85,8 +86,46 @@ export async function sendInvitation(email, role, productId, getAccessTokenFn) {
  * @returns {Promise<Object>} Response object with success status
  */
 export async function resendInvitation(invitationId, getAccessTokenFn) {
-  // TODO: Implement when backend API is ready
-  throw new Error('Resend invitation not yet implemented');
+  if (!invitationId) {
+    throw new Error('Invitation ID is required');
+  }
+
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://echopad-app-service-bwd0bqd7g7ehb5c7.westus2-01.azurewebsites.net';
+  const resendEndpoint = `${API_BASE_URL}/api/invites/${invitationId}/resend`;
+
+  try {
+    let token;
+    try {
+      token = await getAccessTokenFn();
+    } catch (tokenError) {
+      if (tokenError.message?.includes('No authentication provider')) {
+        throw new Error('You must be signed in to resend invitations.');
+      }
+      throw new Error(`Authentication failed: ${tokenError.message}`);
+    }
+
+    const response = await fetch(resendEndpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || `Failed to resend invitation: ${response.status}`);
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Resend invitation error:', error);
+    if (error.message) {
+      throw error;
+    }
+    throw new Error('Failed to resend invitation. Please try again later.');
+  }
 }
 
 /**
@@ -101,7 +140,7 @@ export async function getPendingInvitations(getAccessTokenFn) {
 
   try {
     const token = await getAccessTokenFn();
-    
+
     const response = await fetch(pendingEndpoint, {
       method: 'GET',
       headers: {

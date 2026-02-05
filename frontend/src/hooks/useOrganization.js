@@ -15,13 +15,12 @@ import http from '../api/http';
  * Organization hook (client admin)
  */
 export function useOrganization() {
-  // const { userProfile } = useAuth();
+  const { userProfile } = useAuth();
   const [organization, setOrganization] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // const orgId = userProfile?.organization?.id || userProfile?.user?.organizationId || null;
-  const orgId = "org_aurora";
+  const orgId = userProfile?.organization?.id || userProfile?.user?.organizationId || null;
 
   // console.log('useOrganization orgId:', userProfile);
   const fetchOrganization = useCallback(async () => {

@@ -1,7 +1,7 @@
 import express from "express";
 import { createDummyInvite } from "../controllers/dummyController.js";
-import { validateInvitation, acceptInvitationRoute, createUserInvite, acceptMagicInvitation, getPendingInvites } from "../controllers/invitationController.js";
-import { verifyEntraToken, attachUserFromDb, requireRole } from "../middleware/entraAuth.js";
+import { validateInvitation, acceptInvitationRoute, createUserInvite, acceptMagicInvitation, getPendingInvites, resendUserInvite } from "../controllers/invitationController.js";
+import { requireRole } from "../middleware/entraAuth.js";
 import { verifyAnyAuth, optionalAuth } from "../middleware/auth.js";
 import { devOnly } from "../middleware/devOnly.js";
 
@@ -56,7 +56,15 @@ router.post("/user", verifyAnyAuth, requireRole(['ClientAdmin'], ['clientAdmin']
  * Requires: Authorization header with Bearer token
  * Requires: ClientAdmin role
  */
-router.get("/pending", verifyEntraToken, attachUserFromDb, requireRole(['ClientAdmin'], ['clientAdmin']), getPendingInvites);
+router.get("/pending", verifyAnyAuth, requireRole(['ClientAdmin'], ['clientAdmin']), getPendingInvites);
+
+/**
+ * POST /api/invites/:inviteId/resend
+ * Resend an invitation email (ClientAdmin only)
+ * Requires: Authorization header with Bearer token
+ * Requires: ClientAdmin role
+ */
+router.post("/:inviteId/resend", verifyAnyAuth, requireRole(['ClientAdmin'], ['clientAdmin']), resendUserInvite);
 
 /**
  * POST /api/invites/dummy

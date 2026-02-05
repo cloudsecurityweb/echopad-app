@@ -74,14 +74,14 @@ export async function signUpEmail(req, res) {
     }
 
     const normalizedEmail = email.toLowerCase().trim();
-    
+
     // Check if user already exists across ALL tenants (prevent duplicate sign-ups)
     // Email/password users are CLIENT_ADMIN, search across all tenants
     console.log(`🔍 [SIGN-UP] Checking for existing user with email: ${normalizedEmail}`);
-    
+
     let existingUser = null;
     const roles = [USER_ROLES.CLIENT_ADMIN, USER_ROLES.SUPER_ADMIN, USER_ROLES.USER];
-    
+
     for (const role of roles) {
       try {
         const container = getContainer(getContainerNameByRole(role));
@@ -93,7 +93,7 @@ export async function signUpEmail(req, res) {
           }, {
             enableCrossPartitionQuery: true
           }).fetchAll();
-          
+
           if (resources.length > 0) {
             existingUser = resources[0];
             console.log(`⚠️  [SIGN-UP] User already exists: ${normalizedEmail} (found ${resources.length} user(s))`);
@@ -104,7 +104,7 @@ export async function signUpEmail(req, res) {
         console.warn(`Error checking ${role} container for duplicates:`, error.message);
       }
     }
-    
+
     if (existingUser) {
       return res.status(409).json({
         success: false,
@@ -112,18 +112,18 @@ export async function signUpEmail(req, res) {
         message: 'An account with this email already exists. Please sign in instead.',
       });
     }
-    
+
     console.log(`✅ [SIGN-UP] No existing user found, proceeding with sign-up: ${normalizedEmail}`);
-    
+
     // Determine user role based on email domain
     // @cloudsecurityweb.com emails get SUPER_ADMIN role
     const isSuperAdmin = normalizedEmail.endsWith('@cloudsecurityweb.com');
     const userRole = isSuperAdmin ? USER_ROLES.SUPER_ADMIN : USER_ROLES.CLIENT_ADMIN;
-    
+
     if (isSuperAdmin) {
       console.log(`🔐 [SIGN-UP] Assigning SUPER_ADMIN role to ${normalizedEmail}`);
     }
-    
+
     const tenantId = `tenant_${randomUUID()}`; // Generate tenant ID for new organization
 
     // Hash password
@@ -143,6 +143,8 @@ export async function signUpEmail(req, res) {
         tenantId,
         name: organizationName.trim(),
         type: ORG_TYPES.CLIENT,
+        email: normalizedEmail, // Pass email
+        organizer: organizerName.trim(), // Pass organizer name
         status: ORG_STATUS.ACTIVE,
       }, 'system_signup');
     } else {
@@ -191,7 +193,7 @@ export async function signUpEmail(req, res) {
     // Send verification email - track success/failure
     let emailSent = false;
     let emailError = null;
-    
+
     try {
       console.log(`📧 [SIGN-UP] Sending verification email to: ${normalizedEmail}`);
       const emailResult = await sendVerificationEmail(normalizedEmail, verificationToken, organizerName);
@@ -278,7 +280,7 @@ export async function signInEmail(req, res) {
     // We'll search each role container since we don't know the tenantId or role
     let user = null;
     const roles = [USER_ROLES.CLIENT_ADMIN, USER_ROLES.SUPER_ADMIN, USER_ROLES.USER];
-    
+
     // Try CLIENT_ADMIN first (most common for email/password users)
     for (const role of roles) {
       try {
@@ -294,12 +296,12 @@ export async function signInEmail(req, res) {
           }, {
             enableCrossPartitionQuery: true
           }).fetchAll();
-          
+
           if (resources.length > 0) {
             // If multiple users found, try to find the correct one by password
             if (resources.length > 1) {
               console.warn(`⚠️  [SIGN-IN] Multiple users found with email ${normalizedEmail} in ${role} container: ${resources.length}`);
-              
+
               // Try each user until we find one with matching password
               // Prefer verified and active users first
               const sortedUsers = resources.sort((a, b) => {
@@ -315,7 +317,7 @@ export async function signInEmail(req, res) {
                 }
                 return 0;
               });
-              
+
               // Try each user's password
               for (const candidateUser of sortedUsers) {
                 if (candidateUser.passwordHash) {
@@ -328,7 +330,7 @@ export async function signInEmail(req, res) {
                   }
                 }
               }
-              
+
               // If we found a matching user, break out of role loop
               if (user) {
                 break;
@@ -377,7 +379,7 @@ export async function signInEmail(req, res) {
     } else {
       console.log(`🔍 [SIGN-IN] Verifying password for: ${normalizedEmail}`);
       console.log(`🔍 [SIGN-IN] Password hash exists: ${!!user.passwordHash}, hash length: ${user.passwordHash ? user.passwordHash.length : 0}`);
-      
+
       passwordValid = await verifyPassword(password, user.passwordHash);
       if (!passwordValid) {
         console.log(`❌ [SIGN-IN] Password verification failed: ${normalizedEmail}`);

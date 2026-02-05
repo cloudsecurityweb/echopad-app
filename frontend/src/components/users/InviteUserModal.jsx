@@ -94,7 +94,7 @@ function InviteUserModal({ isOpen, onClose, onSuccess }) {
     setIsLoading(true);
 
     try {
-      await sendInvitation(email.trim(), role, selectedProduct, getAccessToken);
+      await sendInvitation(email.trim(), role, selectedProduct, null, getAccessToken);
       showNotification(`Invitation sent successfully to ${email}`, 'success');
       
       // Call onSuccess callback if provided

@@ -4,13 +4,13 @@ Backend API service for Echopad that connects to Azure CosmosDB and provides RES
 
 ## Features
 
--  RESTful API with Express.js
--  Azure CosmosDB integration
--  Microsoft Entra ID (Azure AD) authentication
--  JWT token verification with JWKS
--  Full CRUD operations for users
--  Health check endpoint
--  Error handling and validation
+- ✅ RESTful API with Express.js
+- ✅ Azure CosmosDB integration
+- ✅ Microsoft Entra ID (Azure AD) authentication
+- ✅ JWT token verification with JWKS
+- ✅ Full CRUD operations for users
+- ✅ Health check endpoint
+- ✅ Error handling and validation
 
 ## API Endpoints
 
@@ -173,7 +173,7 @@ git push azure main
 
 1. Check the App Service logs:
    - Azure Portal → App Service → Log stream
-   - Look for: ` Server running on port...`
+   - Look for: `🚀 Server running on port...`
 
 2. Test the health endpoint:
    ```bash
@@ -238,10 +238,10 @@ Common HTTP status codes:
 
 ## Security Notes
 
--  **Never commit `.env` files** with real credentials
--  Use Azure App Service Application Settings for production secrets
--  Consider using Azure Key Vault for sensitive configuration
--  Enable CORS if calling from a frontend (add CORS middleware)
+- ⚠️ **Never commit `.env` files** with real credentials
+- ✅ Use Azure App Service Application Settings for production secrets
+- ✅ Consider using Azure Key Vault for sensitive configuration
+- ✅ Enable CORS if calling from a frontend (add CORS middleware)
 
 ## Troubleshooting
 
@@ -313,12 +313,10 @@ curl -X POST https://your-api.azurewebsites.net/api/auth/sign-up \
 
 ## Next Steps
 
--  Authentication/authorization middleware (implemented)
+- ✅ Authentication/authorization middleware (implemented)
 - Implement pagination for list endpoints
 - Add request validation with a library like Joi or Zod
 - Set up CORS for frontend integration
 - Add logging with Winston or similar
 - Implement rate limiting
 - Add API documentation with Swagger/OpenAPI
-# Test - Thu Jan 29 17:17:14 IST 2026
-# Test commit - Thu Jan 29 17:45:49 IST 2026

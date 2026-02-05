@@ -1,0 +1,27 @@
+{% extends "layout.njk" %}
+
+{% block content %}
+  <h2>You've been invited!</h2>
+  <p><strong>{{ inviterName }}</strong> has invited you to join <strong style="color: #06b6d4;">{{ organizationName }}</strong> on Echopad.</p>
+  
+  {% if tempPassword %}
+  <div class="highlight-box">
+    <span class="label">Temporary Password</span>
+    <div class="value">{{ tempPassword }}</div>
+    <p style="font-size: 13px; color: #64748b; margin: 8px 0 0 0;">Please use this password to sign in. You will be prompted to change it later.</p>
+  </div>
+  {% endif %}
+  
+  <p>Click the button below to accept the invitation and access your workspace:</p>
+  
+  <div style="text-align: center;">
+    <a href="{{ invitationLink }}" class="button">Accept Invitation</a>
+  </div>
+  
+  <div style="margin-top: 24px;">
+    <p style="font-size: 14px; color: #64748b; margin-bottom: 4px;">Having trouble with the button?</p>
+    <div style="word-break: break-all; color: #06b6d4; font-size: 13px;">{{ invitationLink }}</div>
+  </div>
+  
+  <p class="expiry-note" style="margin-top: 24px;">This invitation expires in 7 days.</p>
+{% endblock %}

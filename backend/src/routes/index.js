@@ -21,6 +21,7 @@ import orgProductsRouter from "./orgProducts.routes.js";
 import licensesRouter from "./licenses.routes.js";
 import userProductRouter from "./userProduct.routes.js";
 import userLicensesRouter from "./userLicenses.routes.js";
+import transcriptionHistoryRouter from "./transcriptionHistory.routes.js";
 import { seedSaasDemoData } from "../services/seed-saas-data.js";
 
 const router = express.Router();
@@ -64,6 +65,7 @@ router.get("/", (req, res) => {
         products: "/api/products",
         helpCenter: "/api/help-center",
         clientFeedback: "/api/client-feedback",
+        transcriptionHistory: "/api/transcription-history",
       },
     },
     timestamp: new Date().toISOString(),
@@ -168,5 +170,6 @@ router.use("/api/user-products", userProductRouter);
 router.use("/api/analytics", analyticsRouter); // GET
 router.use("/api/help-center", helpCenterRouter); // GET, POST, PATCH
 router.use("/api/client-feedback", clientFeedbackRouter); // GET, POST, PATCH
+router.use("/api/transcription-history", transcriptionHistoryRouter); // GET, POST
 
 export default router;

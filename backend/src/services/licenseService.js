@@ -102,14 +102,19 @@ export async function getLicenseById(licenseId, tenantId) {
  * @param {string} [productId] - Optional filter by product ID
  * @returns {Promise<Array>} Array of licenses
  */
-export async function getLicensesByTenant(tenantId, ownerOrgId = null, productId = null) {
+export async function getLicensesByTenant(tenantId, ownerOrgId = null, productId = null, status = null) {
   const container = getContainer(CONTAINER_NAME);
   if (!container) {
     throw new Error("Cosmos DB container not available");
   }
 
-  let query = "SELECT * FROM c WHERE c.tenantId = @tenantId";
-  const parameters = [{ name: "@tenantId", value: tenantId }];
+  let query = "SELECT * FROM c WHERE 1=1";
+  const parameters = [];
+
+  if (tenantId) {
+    query += " AND c.tenantId = @tenantId";
+    parameters.push({ name: "@tenantId", value: tenantId });
+  }
 
   if (ownerOrgId) {
     query += " AND c.ownerOrgId = @ownerOrgId";
@@ -121,12 +126,67 @@ export async function getLicensesByTenant(tenantId, ownerOrgId = null, productId
     parameters.push({ name: "@productId", value: productId });
   }
 
-  const { resources } = await container.items.query({
+  if (status) {
+    query += " AND c.status = @status";
+    parameters.push({ name: "@status", value: status });
+  }
+
+  const { resources: licenses } = await container.items.query({
     query,
     parameters,
   }).fetchAll();
 
-  return resources;
+  // Enrich with product names and organization details
+  try {
+    const { getProducts } = await import("./products.service.js"); // Dynamic import to avoid circular dependency
+    const { getOrgById } = await import("./organizationService.js"); // Dynamic import
+
+    const products = await getProducts();
+    const productMap = new Map(products.map(p => [p.productCode, p.name]));
+
+    // Cache organization details to avoid repeated fetches
+    const orgCache = new Map();
+
+    const enrichedLicenses = await Promise.all(licenses.map(async (license) => {
+      const productName = productMap.get(license.productId) || license.productId;
+
+      let orgDetails = {};
+      if (license.ownerOrgId && license.tenantId) {
+        const cacheKey = `${license.ownerOrgId}_${license.tenantId}`;
+
+        if (orgCache.has(cacheKey)) {
+          orgDetails = orgCache.get(cacheKey);
+        } else {
+          try {
+            const org = await getOrgById(license.ownerOrgId, license.tenantId);
+            if (org) {
+              orgDetails = {
+                organizationName: org.name,
+                organizerName: org.organizer,
+                organizerEmail: org.email
+              };
+            }
+            orgCache.set(cacheKey, orgDetails);
+          } catch (err) {
+            console.warn(`Failed to fetch org details for ${license.ownerOrgId}:`, err);
+            // Default to empty if failed
+            orgCache.set(cacheKey, {});
+          }
+        }
+      }
+
+      return {
+        ...license,
+        productName,
+        ...orgDetails
+      };
+    }));
+
+    return enrichedLicenses;
+  } catch (error) {
+    console.warn("Failed to enrich licenses:", error);
+    return licenses;
+  }
 }
 
 /**
@@ -227,7 +287,10 @@ export async function assignLicenseToUser(licenseId, tenantId, userId, actorUser
     throw new Error("Cosmos DB container not available");
   }
 
+  console.log("243 in assign license to user", licenseId, tenantId, userId, actorUserId);
+
   const { resource: license } = await container.item(licenseId, tenantId).read();
+  console.log("246 in assign license to user", license);
   if (!license) {
     throw new Error("License not found");
   }
@@ -360,7 +423,7 @@ export async function updateLicenseRecord(licenseId, tenantId, updates) {
   if (!resource) {
     throw new Error("License not found");
   }
-  
+
   // Remove system properties
   const { _rid, _self, _etag, _attachments, _ts, ...cleanResource } = resource;
 

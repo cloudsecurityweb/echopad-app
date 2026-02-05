@@ -168,20 +168,66 @@ function ClientManagementPage() {
                 </div>
             )}
 
-            {/* Header with Back Button */}
-            <div className="flex items-center gap-4 mb-6">
-                <button
-                    onClick={() => navigate('/dashboard/clients')}
-                    className="p-2 rounded-lg hover:bg-gray-100 text-gray-600 transition-colors"
-                    aria-label="Back"
-                >
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                    </svg>
-                </button>
-                <div>
-                    <h1 className="text-3xl font-bold text-gray-900">{organization.name}</h1>
-                    <p className="text-gray-500">Manage licenses and settings</p>
+            {/* Header with Back Button and Org Details */}
+            <div className="mb-8">
+                <div className="flex items-center gap-4 mb-6">
+                    <button
+                        onClick={() => navigate('/dashboard/clients')}
+                        className="p-2 rounded-lg hover:bg-gray-100 text-gray-600 transition-colors"
+                        aria-label="Back"
+                    >
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                        </svg>
+                    </button>
+                    <div>
+                        <h1 className="text-3xl font-bold text-gray-900">{organization.name}</h1>
+                        <p className="text-gray-500">Manage licenses and settings</p>
+                    </div>
+                </div>
+
+                {/* Organization Details Card */}
+                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <h2 className="text-lg font-semibold text-gray-900 mb-4 border-b border-gray-100 pb-2">Organization Details</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div>
+                            <p className="text-sm font-medium text-gray-500">Organizer</p>
+                            <p className="text-base text-gray-900 font-medium">{organization.organizer || '-'}</p>
+                        </div>
+                        <div>
+                            <p className="text-sm font-medium text-gray-500">Contact Email</p>
+                            <p className="text-base text-gray-900">
+                                {organization.email ? (
+                                    <a href={`mailto:${organization.email}`} className="text-blue-600 hover:underline">
+                                        {organization.email}
+                                    </a>
+                                ) : '-'}
+                            </p>
+                        </div>
+                        <div>
+                            <p className="text-sm font-medium text-gray-500">Status</p>
+                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium mt-1 ${organization.status === 'Active'
+                                ? 'bg-green-100 text-green-800'
+                                : 'bg-gray-100 text-gray-800'
+                                }`}>
+                                {organization.status || 'Active'}
+                            </span>
+                        </div>
+                        <div>
+                            <p className="text-sm font-medium text-gray-500">Tenant ID</p>
+                            <p className="text-sm text-gray-600 font-mono bg-gray-50 px-2 py-1 rounded inline-block mt-1">
+                                {organization.tenantId}
+                            </p>
+                        </div>
+                        <div>
+                            <p className="text-sm font-medium text-gray-500">Since</p>
+                            <p className="text-base text-gray-900">{formatDate(organization.createdAt)}</p>
+                        </div>
+                        <div>
+                            <p className="text-sm font-medium text-gray-500">Type</p>
+                            <p className="text-base text-gray-900 capitalize">{organization.type}</p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -228,7 +274,7 @@ function ClientManagementPage() {
 
                                     return (
                                         <tr key={license.id} className="border-b last:border-0 hover:bg-gray-50 transition-colors">
-                                            <td className="px-6 py-4 text-sm font-medium text-gray-900">{license.productId}</td>
+                                            <td className="px-6 py-4 text-sm font-medium text-gray-900">{license.productName || license.productId}</td>
                                             <td className="px-6 py-4 text-sm text-gray-700 capitalize">{license.licenseType || 'seat'}</td>
                                             <td className="px-6 py-4 text-sm text-gray-700">
                                                 {isUnlimited ? 'Unlimited' : totalSeats}

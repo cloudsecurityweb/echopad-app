@@ -7,7 +7,8 @@ import {
   listOrganizationsDetails,
 } from "../controllers/organizations.controller.js";
 import { devOnly } from "../middleware/devOnly.js";
-import { verifyEntraToken, attachUserFromDb, requireRole } from "../middleware/entraAuth.js";
+import { verifyAnyAuth } from "../middleware/auth.js";
+import { requireRole } from "../middleware/entraAuth.js";
 
 const router = express.Router();
 
@@ -23,8 +24,7 @@ router.post("/dummy", devOnly, createDummyOrganization);
  */
 router.get(
   "/details",
-  verifyEntraToken,
-  attachUserFromDb,
+  verifyAnyAuth,
   requireRole(["SuperAdmin"], ["superAdmin"]),
   listOrganizationsDetails
 );
@@ -35,8 +35,7 @@ router.get(
  */
 router.get(
   "/",
-  verifyEntraToken,
-  attachUserFromDb,
+  verifyAnyAuth,
   requireRole(["SuperAdmin"], ["superAdmin"]),
   listOrganizations
 );

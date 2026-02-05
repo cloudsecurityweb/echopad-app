@@ -136,11 +136,11 @@ function AcceptInvitation() {
       // User was created with temp password at invite time; no need to call acceptInvitation
       const role = userProfile?.user?.role || userProfile?.backendRole;
       if (role === 'user') {
-        navigate('/dashboard/user-admin');
+        navigate('/dashboard/profile');
       } else if (role === 'clientAdmin') {
-        navigate('/dashboard/client-admin');
+        navigate('/dashboard/subscriptions');
       } else if (role === 'superAdmin') {
-        navigate('/dashboard/super-admin');
+        navigate('/dashboard/profile');
       } else {
         navigate('/dashboard');
       }
@@ -186,9 +186,9 @@ function AcceptInvitation() {
         // Redirect based on role
         const role = data.data.user?.role;
         if (role === 'clientAdmin') {
-          navigate('/dashboard/client-admin');
+          navigate('/dashboard/subscriptions');
         } else if (role === 'user') {
-          navigate('/dashboard/user-admin');
+          navigate('/dashboard/profile');
         } else {
           navigate('/dashboard');
         }
@@ -267,11 +267,11 @@ function AcceptInvitation() {
         // Redirect based on role
         const role = data.data.user?.role || data.data.backendRole;
         if (role === 'user') {
-          navigate('/dashboard/user-admin');
+          navigate('/dashboard/profile');
         } else if (role === 'clientAdmin') {
-          navigate('/dashboard/client-admin');
+          navigate('/dashboard/subscriptions');
         } else if (role === 'superAdmin') {
-          navigate('/dashboard/super-admin');
+          navigate('/dashboard/profile');
         } else {
           navigate('/dashboard');
         }

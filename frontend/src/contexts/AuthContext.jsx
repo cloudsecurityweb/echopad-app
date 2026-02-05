@@ -348,27 +348,27 @@ export function AuthProvider({ children }) {
         // Send token to backend for verification and user creation/retrieval
         // The backend should verify the token using Google's tokeninfo endpoint:
         // https://oauth2.googleapis.com/tokeninfo?access_token=TOKEN
-        try {
-          const backendResponse = await fetch('/api/auth/verify', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${tokenResponse.access_token}`,
-            },
-            body: JSON.stringify({
-              provider: 'google',
-              token: tokenResponse.access_token,
-              userInfo: userInfo,
-            }),
-          });
+        // try {
+        //   const backendResponse = await fetch('/api/auth/verify', {
+        //     method: 'POST',
+        //     headers: {
+        //       'Content-Type': 'application/json',
+        //       'Authorization': `Bearer ${tokenResponse.access_token}`,
+        //     },
+        //     body: JSON.stringify({
+        //       provider: 'google',
+        //       token: tokenResponse.access_token,
+        //       userInfo: userInfo,
+        //     }),
+        //   });
           
-          if (!backendResponse.ok) {
-            console.warn('Backend verification failed, but continuing with local auth');
-          }
-        } catch (error) {
-          console.warn('Failed to verify token with backend:', error);
-          // Continue with local authentication even if backend verification fails
-        }
+        //   if (!backendResponse.ok) {
+        //     console.warn('Backend verification failed, but continuing with local auth');
+        //   }
+        // } catch (error) {
+        //   console.warn('Failed to verify token with backend:', error);
+        //   // Continue with local authentication even if backend verification fails
+        // }
       } catch (error) {
         console.error('Google login error:', error);
         throw error;
@@ -714,34 +714,57 @@ export function AuthProvider({ children }) {
     }
 
     try {
-      const token = await getAccessToken();
-      
-      // Validate token exists
-      if (!token) {
-        throw new Error('No access token available. Please sign in again.');
+      const currentAccount = account || accounts[0];
+      if (!currentAccount) {
+        throw new Error('No Microsoft account available. Please sign in again.');
       }
-      
+
+      let idToken;
+      try {
+        const tokenResponse = await instance.acquireTokenSilent({
+          ...loginRequest,
+          account: currentAccount,
+        });
+        idToken = tokenResponse.idToken || tokenResponse.accessToken;
+        if (tokenResponse.accessToken) {
+          setAccessToken(tokenResponse.accessToken);
+          const roles = getRolesFromToken(tokenResponse.accessToken);
+          setTokenRoles(roles);
+          const oid = getOIDFromToken(tokenResponse.accessToken);
+          setUserOID(oid);
+        }
+      } catch (silentError) {
+        console.warn('Silent token acquisition failed, trying interactive:', silentError);
+        const tokenResponse = await instance.acquireTokenPopup({
+          ...loginRequest,
+          account: currentAccount,
+        });
+        idToken = tokenResponse.idToken || tokenResponse.accessToken;
+        if (tokenResponse.accessToken) {
+          setAccessToken(tokenResponse.accessToken);
+          const roles = getRolesFromToken(tokenResponse.accessToken);
+          setTokenRoles(roles);
+        }
+      }
+
+      if (!idToken) {
+        throw new Error('No ID token available. Please sign in again.');
+      }
+
       const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://echopad-app-service-bwd0bqd7g7ehb5c7.westus2-01.azurewebsites.net';
       const endpoint = isSignUp ? `${API_BASE_URL}/api/auth/sign-up` : `${API_BASE_URL}/api/auth/sign-in`;
-      
-      // Build headers conditionally - only include Content-Type when body exists
-      const headers = {
-        'Authorization': `Bearer ${token}`,
+
+      const body = {
+        provider: 'microsoft',
+        token: idToken,
+        ...(signUpData || {}),
       };
-      
-      // Build fetch options conditionally - only include body when signUpData is provided
-      const fetchOptions = {
+
+      const response = await fetch(endpoint, {
         method: 'POST',
-        headers,
-      };
-      
-      // Only add Content-Type and body when signUpData is provided (for sign-up)
-      if (signUpData) {
-        headers['Content-Type'] = 'application/json';
-        fetchOptions.body = JSON.stringify(signUpData);
-      }
-      
-      const response = await fetch(endpoint, fetchOptions);
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({ message: 'Unknown error' }));
@@ -751,8 +774,8 @@ export function AuthProvider({ children }) {
           error: errorData.error,
           message: errorMessage,
           endpoint,
-          hasToken: !!token,
-          tokenPreview: token ? token.substring(0, 20) + '...' : 'no token',
+          hasToken: !!idToken,
+          tokenPreview: idToken ? idToken.substring(0, 20) + '...' : 'no token',
         });
         throw new Error(errorMessage);
       }
@@ -793,7 +816,7 @@ export function AuthProvider({ children }) {
       console.error('Failed to sync user profile:', error);
       throw error;
     }
-  }, [authProvider, accounts, account, isMicrosoftAuthenticated, getAccessToken, fetchCurrentUser]);
+  }, [authProvider, accounts, account, isMicrosoftAuthenticated, instance, loginRequest, fetchCurrentUser]);
 
   // Auto-sync user profile once MSAL is ready and we have a Microsoft account
   // This replaces the immediate sync calls in SignIn/SignUp that caused timing issues
@@ -857,28 +880,20 @@ export function AuthProvider({ children }) {
     }
 
     try {
-      
       const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://echopad-app-service-bwd0bqd7g7ehb5c7.westus2-01.azurewebsites.net';
       const endpoint = isSignUp ? `${API_BASE_URL}/api/auth/sign-up` : `${API_BASE_URL}/api/auth/sign-in`;
-      
-      // Build headers conditionally - only include Content-Type when body exists
-      const headers = {
-        'Authorization': `Bearer ${tokenToUse}`,
+
+      const body = {
+        provider: 'google',
+        token: tokenToUse,
+        ...(signUpData || {}),
       };
-      
-      // Build fetch options conditionally - only include body when signUpData is provided
-      const fetchOptions = {
+
+      const response = await fetch(endpoint, {
         method: 'POST',
-        headers,
-      };
-      
-      // Only add Content-Type and body when signUpData is provided (for sign-up)
-      if (signUpData) {
-        headers['Content-Type'] = 'application/json';
-        fetchOptions.body = JSON.stringify(signUpData);
-      }
-      
-      const response = await fetch(endpoint, fetchOptions);
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({ message: 'Unknown error' }));

@@ -42,14 +42,14 @@ function getMetricCategory(key) {
 const PIE_COLORS = ["#06b6d4", "#3b82f6", "#10b981", "#f59e0b", "#8b5cf6"];
 
 function Analytics() {
-  const { isSuperAdmin, isClientAdmin } = useRole();
+  const { isSuperAdmin, isClientAdmin, isUserAdmin } = useRole();
   const { analytics, loading, error } = useSuperAdminAnalytics();
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [sortDirection, setSortDirection] = useState("desc");
   const [topCount, setTopCount] = useState("8");
   const [searchTerm, setSearchTerm] = useState("");
 
-  if (isClientAdmin) {
+  if (isClientAdmin || isUserAdmin) {
     return <AnalyticsPage />;
   }
 
