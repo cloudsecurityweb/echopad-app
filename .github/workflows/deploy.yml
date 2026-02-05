@@ -11,7 +11,7 @@ env:
 
 jobs:
   deploy:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
@@ -51,7 +51,7 @@ jobs:
         with:
           creds: ${{ steps.env.outputs.ENV_PREFIX == 'PROD' && secrets.PROD_AZURE_CREDS || secrets.DEV_AZURE_CREDS }}
 
-      - name: Deploy Backend to App Service
+      - name: Deploy Backend
         uses: azure/webapps-deploy@v3
         with:
           app-name: ${{ steps.env.outputs.ENV_PREFIX == 'PROD' && secrets.PROD_AZURE_WEBAPP_NAME || secrets.DEV_AZURE_WEBAPP_NAME }}
@@ -74,7 +74,7 @@ jobs:
 
       - name: Install Frontend Dependencies
         working-directory: frontend
-        run: npm install
+        run: npm ci
 
       - name: Build Frontend
         working-directory: frontend
@@ -89,58 +89,20 @@ jobs:
           npm run build
           ls -la dist/
 
-      - name: Test network connectivity
-        run: |
-          echo "Testing Azure connectivity..."
-          curl -s -o /dev/null -w "Azure blob: %{http_code}\n" https://swalocaldeploy.azureedge.net || true
-          curl -s -o /dev/null -w "SWA endpoint: %{http_code}\n" https://calm-smoke-0ef35d31e.4.azurestaticapps.net || true
-          echo "Network test complete"
-
       - name: Deploy Frontend
-        working-directory: frontend
-        timeout-minutes: 10
-        env:
-          SWA_CLI_DEPLOYMENT_TOKEN: ${{ steps.env.outputs.ENV_PREFIX == 'PROD' && secrets.PROD_AZURE_STATIC_WEB_APP_DEPLOYMENT_TOKEN || secrets.DEV_AZURE_STATIC_WEB_APP_DEPLOYMENT_TOKEN }}
-          DEBUG: "*"
-        run: |
-          echo "🚀 Deploying to ${{ steps.env.outputs.env }}..."
-          echo "Node version: $(node -v)"
-          echo "NPM version: $(npm -v)"
-          
-          # Install SWA CLI
-          npm install @azure/static-web-apps-cli
-          
-          # Show CLI version
-          npx swa --version
-          
-          # Run deployment with full output capture
-          echo "Starting deployment..."
-          set +e
-          npx swa deploy ./dist \
-            --env production \
-            --no-use-keychain \
-            --verbose 2>&1 | while IFS= read -r line; do
-              echo "[SWA] $line"
-            done
-          EXIT_CODE=${PIPESTATUS[0]}
-          set -e
-          
-          echo ""
-          echo "SWA CLI exit code: $EXIT_CODE"
-          
-          if [ $EXIT_CODE -eq 0 ]; then
-            echo "✅ Deployment command completed"
-          else
-            echo "❌ Deployment failed with exit code $EXIT_CODE"
-          fi
-          
-          echo "🌍 URL: ${{ steps.env.outputs.FRONTEND_URL }}"
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ steps.env.outputs.ENV_PREFIX == 'PROD' && secrets.PROD_AZURE_STATIC_WEB_APP_DEPLOYMENT_TOKEN || secrets.DEV_AZURE_STATIC_WEB_APP_DEPLOYMENT_TOKEN }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          action: "upload"
+          app_location: "frontend/dist"
+          skip_app_build: true
+          skip_api_build: true
 
-      - name: Verify deployment
+      - name: Show URLs
         run: |
-          echo "Checking if site was updated..."
-          LAST_MOD=$(curl -sI "https://calm-smoke-0ef35d31e.4.azurestaticapps.net" | grep -i "last-modified" || echo "unknown")
-          echo "Last-Modified: $LAST_MOD"
+          echo "✅ Deployment complete!"
+          echo "🌍 Frontend: ${{ steps.env.outputs.FRONTEND_URL }}"
 
       - name: Cleanup
         if: always()
