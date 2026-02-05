@@ -60,7 +60,7 @@ jobs:
       - name: Create Backend Deployment Package
         working-directory: ./backend
         run: |
-          zip -r ../../backend-deploy.zip . \
+          zip -r ../../backend.zip . \
             -x "node_modules/*" \
             -x ".git/*" \
             -x "*.log" \
@@ -101,7 +101,7 @@ jobs:
         uses: azure/webapps-deploy@v3
         with:
           app-name: ${{ github.ref == 'refs/heads/main' && secrets.PROD_AZURE_WEBAPP_NAME || secrets.DEV_AZURE_WEBAPP_NAME }}
-          package: ./backend-deploy.zip
+          package: ./backend.zip
           startup-command: 'npm start'
 
       - name: Configure Backend Settings
@@ -177,7 +177,7 @@ jobs:
 
       - name: Cleanup
         if: always()
-        run: rm -f backend-deploy.zip
+        run: rm -f backend.zip
 
       - name: Deployment Complete
         run: |
