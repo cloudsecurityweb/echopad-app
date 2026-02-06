@@ -136,6 +136,7 @@ jobs:
           az artifacts universal publish \
             --organization ${{ env.AZURE_DEVOPS_ORG }} \
             --project ${{ env.AZURE_DEVOPS_PROJECT }} \
+            --scope project \
             --feed ${{ env.ARTIFACT_FEED }} \
             --name echopad-backend \
             --version ${{ needs.build-and-scan.outputs.version }} \
@@ -147,6 +148,7 @@ jobs:
           az artifacts universal publish \
             --organization ${{ env.AZURE_DEVOPS_ORG }} \
             --project ${{ env.AZURE_DEVOPS_PROJECT }} \
+            --scope project \
             --feed ${{ env.ARTIFACT_FEED }} \
             --name echopad-frontend \
             --version ${{ needs.build-and-scan.outputs.version }} \
@@ -188,6 +190,7 @@ jobs:
           az artifacts universal download \
             --organization ${{ env.AZURE_DEVOPS_ORG }} \
             --project ${{ env.AZURE_DEVOPS_PROJECT }} \
+            --scope project \
             --feed ${{ env.ARTIFACT_FEED }} \
             --name echopad-backend \
             --version ${{ needs.build-and-scan.outputs.version }} \
@@ -198,6 +201,7 @@ jobs:
           az artifacts universal download \
             --organization ${{ env.AZURE_DEVOPS_ORG }} \
             --project ${{ env.AZURE_DEVOPS_PROJECT }} \
+            --scope project \
             --feed ${{ env.ARTIFACT_FEED }} \
             --name echopad-frontend \
             --version ${{ needs.build-and-scan.outputs.version }} \
