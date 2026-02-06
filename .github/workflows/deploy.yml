@@ -1,4 +1,4 @@
-name: Deploy Application
+name: Build, Scan, Publish & Deploy
 
 on:
   push:
@@ -8,11 +8,158 @@ on:
 
 env:
   NODE_VERSION: '20'
+  AZURE_DEVOPS_ORG: 'https://dev.azure.com/cloudsecurityweb'
+  AZURE_DEVOPS_PROJECT: 'echopad'
+  ARTIFACT_FEED: 'echopad-artifacts'
 
 jobs:
+  # =====================================================
+  # JOB 1: Build & Security Scan
+  # =====================================================
+  build-and-scan:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set version
+        id: version
+        run: echo "version=1.0.${{ github.run_number }}" >> $GITHUB_OUTPUT
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      # ----- BACKEND BUILD -----
+      - name: Install Backend Dependencies
+        working-directory: backend
+        run: npm install
+
+      - name: Snyk Security Scan - Backend
+        uses: snyk/actions/node@master
+        continue-on-error: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          command: test
+          args: --file=backend/package.json --severity-threshold=high
+
+      - name: Package Backend
+        working-directory: backend
+        run: |
+          zip -r ../backend-${{ steps.version.outputs.version }}.zip . -x node_modules/\* .git/\*
+          ls -lh ../backend-${{ steps.version.outputs.version }}.zip
+
+      # ----- FRONTEND BUILD -----
+      - name: Install Frontend Dependencies
+        working-directory: frontend
+        run: |
+          rm -rf node_modules package-lock.json
+          npm install
+
+      - name: Snyk Security Scan - Frontend
+        uses: snyk/actions/node@master
+        continue-on-error: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          command: test
+          args: --file=frontend/package.json --severity-threshold=high
+
+      - name: Determine Environment
+        id: env
+        run: |
+          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            echo "ENV_PREFIX=PROD" >> $GITHUB_OUTPUT
+          else
+            echo "ENV_PREFIX=DEV" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Build Frontend
+        working-directory: frontend
+        env:
+          VITE_API_BASE_URL: ${{ steps.env.outputs.ENV_PREFIX == 'PROD' && secrets.PROD_VITE_API_BASE_URL || secrets.DEV_VITE_API_BASE_URL }}
+          VITE_MSAL_CLIENT_ID: ${{ steps.env.outputs.ENV_PREFIX == 'PROD' && secrets.PROD_VITE_MSAL_CLIENT_ID || secrets.DEV_VITE_MSAL_CLIENT_ID }}
+          VITE_MSAL_TENANT_ID: ${{ steps.env.outputs.ENV_PREFIX == 'PROD' && secrets.PROD_VITE_MSAL_TENANT_ID || secrets.DEV_VITE_MSAL_TENANT_ID }}
+          VITE_GOOGLE_CLIENT_ID: ${{ steps.env.outputs.ENV_PREFIX == 'PROD' && secrets.PROD_VITE_GOOGLE_CLIENT_ID || secrets.DEV_VITE_GOOGLE_CLIENT_ID }}
+          VITE_API_ENDPOINT: ${{ steps.env.outputs.ENV_PREFIX == 'PROD' && secrets.PROD_VITE_API_ENDPOINT || secrets.DEV_VITE_API_ENDPOINT }}
+          VITE_API_ROUTE: ${{ steps.env.outputs.ENV_PREFIX == 'PROD' && secrets.PROD_VITE_API_ROUTE || secrets.DEV_VITE_API_ROUTE }}
+        run: |
+          npm run build
+          cd dist && zip -r ../../frontend-${{ steps.version.outputs.version }}.zip . && cd ..
+          ls -lh ../frontend-${{ steps.version.outputs.version }}.zip
+
+      # ----- UPLOAD ARTIFACTS (GitHub) -----
+      - name: Upload Backend Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-${{ steps.version.outputs.version }}
+          path: backend-${{ steps.version.outputs.version }}.zip
+          retention-days: 30
+
+      - name: Upload Frontend Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-${{ steps.version.outputs.version }}
+          path: frontend-${{ steps.version.outputs.version }}.zip
+          retention-days: 30
+
+  # =====================================================
+  # JOB 2: Publish to Azure Artifacts
+  # =====================================================
+  publish-artifacts:
+    runs-on: ubuntu-latest
+    needs: build-and-scan
+    
+    steps:
+      - name: Download Backend Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: backend-${{ needs.build-and-scan.outputs.version }}
+
+      - name: Download Frontend Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-${{ needs.build-and-scan.outputs.version }}
+
+      - name: Setup Azure DevOps CLI
+        run: |
+          az extension add --name azure-devops --allow-preview true
+          echo "${{ secrets.AZURE_DEVOPS_PAT }}" | az devops login --organization ${{ env.AZURE_DEVOPS_ORG }}
+
+      - name: Publish Backend to Azure Artifacts
+        run: |
+          az artifacts universal publish \
+            --organization ${{ env.AZURE_DEVOPS_ORG }} \
+            --project ${{ env.AZURE_DEVOPS_PROJECT }} \
+            --feed ${{ env.ARTIFACT_FEED }} \
+            --name echopad-backend \
+            --version ${{ needs.build-and-scan.outputs.version }} \
+            --path ./backend-${{ needs.build-and-scan.outputs.version }}.zip \
+            --description "Backend build ${{ needs.build-and-scan.outputs.version }}"
+
+      - name: Publish Frontend to Azure Artifacts
+        run: |
+          az artifacts universal publish \
+            --organization ${{ env.AZURE_DEVOPS_ORG }} \
+            --project ${{ env.AZURE_DEVOPS_PROJECT }} \
+            --feed ${{ env.ARTIFACT_FEED }} \
+            --name echopad-frontend \
+            --version ${{ needs.build-and-scan.outputs.version }} \
+            --path ./frontend-${{ needs.build-and-scan.outputs.version }}.zip \
+            --description "Frontend build ${{ needs.build-and-scan.outputs.version }}"
+
+  # =====================================================
+  # JOB 3: Deploy from Azure Artifacts
+  # =====================================================
   deploy:
     runs-on: ubuntu-latest
-
+    needs: [build-and-scan, publish-artifacts]
+    
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -30,28 +177,48 @@ jobs:
             echo "FRONTEND_URL=https://polite-ground-0602c481e.2.azurestaticapps.net" >> $GITHUB_OUTPUT
           fi
 
-      # =====================================================
-      # BACKEND DEPLOYMENT
-      # =====================================================
-      - name: Setup Node (Backend)
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
+      - name: Setup Azure DevOps CLI
+        run: |
+          az extension add --name azure-devops --allow-preview true
+          echo "${{ secrets.AZURE_DEVOPS_PAT }}" | az devops login --organization ${{ env.AZURE_DEVOPS_ORG }}
 
-      - name: Install Backend Dependencies
-        working-directory: backend
-        run: npm install
+      - name: Download Backend from Azure Artifacts
+        run: |
+          mkdir -p artifacts
+          az artifacts universal download \
+            --organization ${{ env.AZURE_DEVOPS_ORG }} \
+            --project ${{ env.AZURE_DEVOPS_PROJECT }} \
+            --feed ${{ env.ARTIFACT_FEED }} \
+            --name echopad-backend \
+            --version ${{ needs.build-and-scan.outputs.version }} \
+            --path ./artifacts
 
-      - name: Package Backend
-        working-directory: backend
-        run: zip -r ../backend.zip . -x node_modules/\* .git/\*
+      - name: Download Frontend from Azure Artifacts
+        run: |
+          az artifacts universal download \
+            --organization ${{ env.AZURE_DEVOPS_ORG }} \
+            --project ${{ env.AZURE_DEVOPS_PROJECT }} \
+            --feed ${{ env.ARTIFACT_FEED }} \
+            --name echopad-frontend \
+            --version ${{ needs.build-and-scan.outputs.version }} \
+            --path ./artifacts
 
+      - name: Prepare artifacts for deployment
+        run: |
+          ls -la artifacts/
+          # Backend is already zipped
+          mv artifacts/backend-${{ needs.build-and-scan.outputs.version }}.zip backend.zip
+          # Extract frontend for SWA deployment
+          mkdir -p frontend-dist
+          unzip artifacts/frontend-${{ needs.build-and-scan.outputs.version }}.zip -d frontend-dist
+
+      # ----- DEPLOY BACKEND -----
       - name: Azure Login
         uses: azure/login@v2
         with:
           creds: ${{ steps.env.outputs.ENV_PREFIX == 'PROD' && secrets.PROD_AZURE_CREDS || secrets.DEV_AZURE_CREDS }}
 
-      - name: Deploy Backend
+      - name: Deploy Backend to App Service
         uses: azure/webapps-deploy@v3
         with:
           app-name: ${{ steps.env.outputs.ENV_PREFIX == 'PROD' && secrets.PROD_AZURE_WEBAPP_NAME || secrets.DEV_AZURE_WEBAPP_NAME }}
@@ -64,48 +231,24 @@ jobs:
             --name ${{ steps.env.outputs.ENV_PREFIX == 'PROD' && secrets.PROD_AZURE_WEBAPP_NAME || secrets.DEV_AZURE_WEBAPP_NAME }} \
             --resource-group ${{ steps.env.outputs.ENV_PREFIX == 'PROD' && secrets.PROD_AZURE_RESOURCE_GROUP || secrets.DEV_AZURE_RESOURCE_GROUP }}
 
-      # =====================================================
-      # FRONTEND DEPLOYMENT
-      # =====================================================
-      - name: Setup Node (Frontend)
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-
-      - name: Install Frontend Dependencies
-        working-directory: frontend
-        run: |
-          rm -rf node_modules package-lock.json
-          npm install
-
-      - name: Build Frontend
-        working-directory: frontend
-        env:
-          VITE_API_BASE_URL: ${{ steps.env.outputs.ENV_PREFIX == 'PROD' && secrets.PROD_VITE_API_BASE_URL || secrets.DEV_VITE_API_BASE_URL }}
-          VITE_MSAL_CLIENT_ID: ${{ steps.env.outputs.ENV_PREFIX == 'PROD' && secrets.PROD_VITE_MSAL_CLIENT_ID || secrets.DEV_VITE_MSAL_CLIENT_ID }}
-          VITE_MSAL_TENANT_ID: ${{ steps.env.outputs.ENV_PREFIX == 'PROD' && secrets.PROD_VITE_MSAL_TENANT_ID || secrets.DEV_VITE_MSAL_TENANT_ID }}
-          VITE_GOOGLE_CLIENT_ID: ${{ steps.env.outputs.ENV_PREFIX == 'PROD' && secrets.PROD_VITE_GOOGLE_CLIENT_ID || secrets.DEV_VITE_GOOGLE_CLIENT_ID }}
-          VITE_API_ENDPOINT: ${{ steps.env.outputs.ENV_PREFIX == 'PROD' && secrets.PROD_VITE_API_ENDPOINT || secrets.DEV_VITE_API_ENDPOINT }}
-          VITE_API_ROUTE: ${{ steps.env.outputs.ENV_PREFIX == 'PROD' && secrets.PROD_VITE_API_ROUTE || secrets.DEV_VITE_API_ROUTE }}
-        run: |
-          npm run build
-          ls -la dist/
-
-      - name: Deploy Frontend
+      # ----- DEPLOY FRONTEND -----
+      - name: Deploy Frontend to Static Web Apps
         uses: Azure/static-web-apps-deploy@v1
         with:
           azure_static_web_apps_api_token: ${{ steps.env.outputs.ENV_PREFIX == 'PROD' && secrets.PROD_AZURE_STATIC_WEB_APP_DEPLOYMENT_TOKEN || secrets.DEV_AZURE_STATIC_WEB_APP_DEPLOYMENT_TOKEN }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
-          app_location: "frontend/dist"
+          app_location: "frontend-dist"
           skip_app_build: true
           skip_api_build: true
 
-      - name: Show URLs
+      - name: Deployment Summary
         run: |
-          echo "✅ Deployment complete!"
-          echo "🌍 Frontend: ${{ steps.env.outputs.FRONTEND_URL }}"
+          echo "✅ Deployment Complete!"
+          echo "📦 Version: ${{ needs.build-and-scan.outputs.version }}"
+          echo "🌍 Environment: ${{ steps.env.outputs.env }}"
+          echo "🔗 Frontend: ${{ steps.env.outputs.FRONTEND_URL }}"
 
       - name: Cleanup
         if: always()
-        run: rm -f backend.zip
+        run: rm -rf backend.zip frontend-dist artifacts
