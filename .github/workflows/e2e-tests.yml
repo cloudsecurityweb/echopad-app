@@ -1,10 +1,14 @@
 name: E2E Tests
 
 on:
-  push:
+  # Run AFTER deployment workflow completes successfully
+  workflow_run:
+    workflows: ["Build, Scan, Publish & Deploy"]
+    types:
+      - completed
     branches: [main, develop]
-  pull_request:
-    branches: [main, develop]
+  
+  # Manual trigger for on-demand testing
   workflow_dispatch:
     inputs:
       environment:
@@ -15,19 +19,26 @@ on:
         options:
           - production
           - development
+  
+  # Daily scheduled regression tests
   schedule:
-    # Run tests daily at 6 AM UTC
     - cron: '0 6 * * *'
 
 env:
-  FRONTEND_URL: ${{ github.ref == 'refs/heads/main' && 'https://polite-ground-0602c481e.2.azurestaticapps.net' || 'https://polite-ground-0602c481e.2.azurestaticapps.net' }}
-  API_URL: ${{ github.ref == 'refs/heads/main' && 'https://echopad-backend.azurewebsites.net' || 'https://echopad-backend.azurewebsites.net' }}
+  # Production: calm-smoke (main branch), Development: polite-ground (develop branch)
+  # For workflow_run, use the triggering workflow's branch
+  FRONTEND_URL_PROD: 'https://calm-smoke-0ef35d31e.4.azurestaticapps.net'
+  FRONTEND_URL_DEV: 'https://polite-ground-0602c481e.2.azurestaticapps.net'
+  API_URL_PROD: 'https://echopad-backend.azurewebsites.net'
+  API_URL_DEV: 'https://echopad-backend.azurewebsites.net'
 
 jobs:
   e2e-tests:
     name: Run E2E Tests
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    # Only run if deployment was successful (for workflow_run trigger)
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     
     strategy:
       fail-fast: false
@@ -37,6 +48,35 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Determine environment
+        id: env
+        run: |
+          # For workflow_run, get branch from triggering workflow
+          if [ "${{ github.event_name }}" == "workflow_run" ]; then
+            BRANCH="${{ github.event.workflow_run.head_branch }}"
+          else
+            BRANCH="${{ github.ref_name }}"
+          fi
+          
+          echo "Branch: $BRANCH"
+          
+          if [ "$BRANCH" == "main" ]; then
+            echo "FRONTEND_URL=${{ env.FRONTEND_URL_PROD }}" >> $GITHUB_OUTPUT
+            echo "API_URL=${{ env.API_URL_PROD }}" >> $GITHUB_OUTPUT
+            echo "ENV=production" >> $GITHUB_OUTPUT
+          else
+            echo "FRONTEND_URL=${{ env.FRONTEND_URL_DEV }}" >> $GITHUB_OUTPUT
+            echo "API_URL=${{ env.API_URL_DEV }}" >> $GITHUB_OUTPUT
+            echo "ENV=development" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Log test environment
+        run: |
+          echo "🧪 Running E2E tests"
+          echo "📍 Environment: ${{ steps.env.outputs.ENV }}"
+          echo "🌐 Frontend URL: ${{ steps.env.outputs.FRONTEND_URL }}"
+          echo "🔌 API URL: ${{ steps.env.outputs.API_URL }}"
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -57,8 +97,8 @@ jobs:
         working-directory: e2e
         run: npx playwright test --project=${{ matrix.browser }}
         env:
-          FRONTEND_URL: ${{ env.FRONTEND_URL }}
-          API_URL: ${{ env.API_URL }}
+          FRONTEND_URL: ${{ steps.env.outputs.FRONTEND_URL }}
+          API_URL: ${{ steps.env.outputs.API_URL }}
 
       - name: Upload test results
         if: always()
@@ -85,6 +125,23 @@ jobs:
     if: always()
     
     steps:
+      - name: Determine environment
+        id: env
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_run" ]; then
+            BRANCH="${{ github.event.workflow_run.head_branch }}"
+          else
+            BRANCH="${{ github.ref_name }}"
+          fi
+          
+          if [ "$BRANCH" == "main" ]; then
+            echo "FRONTEND_URL=${{ env.FRONTEND_URL_PROD }}" >> $GITHUB_OUTPUT
+            echo "API_URL=${{ env.API_URL_PROD }}" >> $GITHUB_OUTPUT
+          else
+            echo "FRONTEND_URL=${{ env.FRONTEND_URL_DEV }}" >> $GITHUB_OUTPUT
+            echo "API_URL=${{ env.API_URL_DEV }}" >> $GITHUB_OUTPUT
+          fi
+
       - name: Download all reports
         uses: actions/download-artifact@v4
         with:
@@ -108,8 +165,8 @@ jobs:
           
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Environment" >> $GITHUB_STEP_SUMMARY
-          echo "- Frontend: ${{ env.FRONTEND_URL }}" >> $GITHUB_STEP_SUMMARY
-          echo "- API: ${{ env.API_URL }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Frontend: ${{ steps.env.outputs.FRONTEND_URL }}" >> $GITHUB_STEP_SUMMARY
+          echo "- API: ${{ steps.env.outputs.API_URL }}" >> $GITHUB_STEP_SUMMARY
 
   notify-on-failure:
     name: Notify on Failure

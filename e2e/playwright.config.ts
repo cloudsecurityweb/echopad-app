@@ -32,8 +32,8 @@ export default defineConfig({
   
   /* Shared settings for all the projects below */
   use: {
-    /* Base URL for the frontend */
-    baseURL: process.env.FRONTEND_URL || 'https://polite-ground-0602c481e.2.azurestaticapps.net',
+    /* Base URL for the frontend (default: production) */
+    baseURL: process.env.FRONTEND_URL || 'https://calm-smoke-0ef35d31e.4.azurestaticapps.net',
     
     /* Collect trace when retrying the failed test */
     trace: 'on-first-retry',
