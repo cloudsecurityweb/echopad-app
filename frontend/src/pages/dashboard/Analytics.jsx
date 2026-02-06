@@ -53,16 +53,6 @@ function Analytics() {
     return <AnalyticsPage />;
   }
 
-  if (!isSuperAdmin) {
-    return (
-      <div className="max-w-6xl mx-auto">
-        <div className="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
-          <p className="text-red-700">You don't have permission to access this page.</p>
-        </div>
-      </div>
-    );
-  }
-
   const dashboardMetrics = analytics?.dashboard?.data || {};
   const totals = analytics?.totals || {};
 

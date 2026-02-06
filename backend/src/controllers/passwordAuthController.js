@@ -514,3 +514,111 @@ export async function signInEmail(req, res) {
     });
   }
 }
+
+/**
+ * POST /api/auth/change-password
+ * Change password for authenticated user
+ * 
+ * Body:
+ * - oldPassword: string (required)
+ * - newPassword: string (required)
+ */
+export async function changePassword(req, res) {
+  if (!isConfigured()) {
+    return res.status(503).json({
+      success: false,
+      error: 'CosmosDB not configured',
+      message: 'COSMOS_ENDPOINT and COSMOS_KEY environment variables are required',
+    });
+  }
+
+  try {
+    const { oldPassword, newPassword } = req.body;
+    const userId = req.currentUser.id;
+    const tenantId = req.currentUser.tenantId;
+    const role = req.currentUser.role;
+
+    if (!oldPassword || !newPassword) {
+      return res.status(400).json({
+        success: false,
+        error: 'Validation failed',
+        message: 'Old password and new password are required',
+      });
+    }
+
+    if (!userId || !tenantId || !role) {
+      return res.status(401).json({
+        success: false,
+        error: 'Unauthorized',
+        message: 'User authentication information invalid',
+      });
+    }
+
+    // Get latest user data to verify old password
+    const user = await getUserById(userId, tenantId, role);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        error: 'User not found',
+        message: 'User record not found',
+      });
+    }
+
+    // Check if user is email/password user
+    if (!user.passwordHash) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid operation',
+        message: 'This account does not use a password. Please sign in with your social provider.',
+      });
+    }
+
+    // Verify old password
+    const isOldPasswordValid = await verifyPassword(oldPassword, user.passwordHash);
+    if (!isOldPasswordValid) {
+      return res.status(401).json({
+        success: false,
+        error: 'Invalid validation',
+        message: 'Current password is incorrect',
+      });
+    }
+
+    // Validate new password strength
+    const passwordValidation = validatePasswordStrength(newPassword);
+    if (!passwordValidation.isValid) {
+      return res.status(400).json({
+        success: false,
+        error: 'Password validation failed',
+        message: passwordValidation.errors.join(', '),
+      });
+    }
+
+    // Hash new password
+    const newPasswordHash = await hashPassword(newPassword);
+
+    // Update user with new password hash
+    try {
+      const { updateUser } = await import('../services/userService.js');
+      await updateUser(user.id, user.tenantId, { passwordHash: newPasswordHash }, user.id, user.role);
+
+      console.log(`✅ [CHANGE-PASSWORD] Password updated successfully for user: ${user.email}`);
+
+      res.status(200).json({
+        success: true,
+        message: 'Password updated successfully',
+      });
+    } catch (updateError) {
+      console.error('Failed to update password in database:', updateError);
+      throw new Error('Database update failed');
+    }
+
+  } catch (error) {
+    console.error('Change password error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Change password failed',
+      message: error.message,
+    });
+  }
+}

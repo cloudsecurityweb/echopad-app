@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useRole } from '../../contexts/RoleContext';
+import ChangePasswordModal from '../../components/ui/ChangePasswordModal';
 
 function Profile() {
   const { account, googleUser, authProvider, userProfile, getAccessToken, googleToken } = useAuth();
@@ -15,7 +16,9 @@ function Profile() {
     email: '',
     organizationName: '',
   });
-  
+
+  const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
+
   // Fetch user profile from backend
   useEffect(() => {
     const fetchProfile = async () => {
@@ -439,8 +442,10 @@ function Profile() {
       >
         <ActionRow
           title="Password"
-          description="Change your account password"
+          description={authProvider === 'email' ? "Change your account password" : "Password change is not available for social login accounts"}
           action="Change Password"
+          onClick={() => setIsChangePasswordOpen(true)}
+          disabled={authProvider !== 'email'}
         />
         <ActionRow
           title="Multi-Factor Authentication"
@@ -496,6 +501,12 @@ function Profile() {
           Contact Support
         </button>
       </section>
+
+      {/* Change Password Modal */}
+      <ChangePasswordModal
+        isOpen={isChangePasswordOpen}
+        onClose={() => setIsChangePasswordOpen(false)}
+      />
     </div>
   );
 }
@@ -523,14 +534,18 @@ function InfoRow({ label, value }) {
   );
 }
 
-function ActionRow({ title, description, action }) {
+function ActionRow({ title, description, action, onClick, disabled }) {
   return (
     <div className="py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
       <div>
         <p className="font-medium text-gray-900">{title}</p>
         <p className="text-sm text-gray-600">{description}</p>
       </div>
-      <button className="px-4 py-2 rounded-lg bg-white border border-gray-300 text-gray-800 font-medium hover:bg-gray-50">
+      <button
+        className={`px-4 py-2 rounded-lg bg-white border border-gray-300 text-gray-800 font-medium hover:bg-gray-50 transition-colors cursor-pointer ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+        onClick={onClick}
+        disabled={disabled}
+      >
         {action}
       </button>
     </div>
