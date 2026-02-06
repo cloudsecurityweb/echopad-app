@@ -5,7 +5,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import echopadLogo from '../../assets/images/logos/echopad-logo.svg';
 
 function Navigation() {
-  const { isAuthenticated, account, googleUser, authProvider, logout, isLoading } = useAuth();
+  const { isAuthenticated, account, googleUser, authProvider, userProfile, logout, isLoading } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -114,6 +114,9 @@ function Navigation() {
       email: account?.username
     };
 
+  // Prefer backend display name when signed in, then provider name, then email
+  const displayName = userProfile?.user?.displayName || userInfo.name || userInfo.email || 'User';
+
   return (
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-colors ${isMobileMenuOpen ? 'bg-white' : 'bg-gradient-to-b from-white to-transparent'}`}>
       <div className="container mx-auto px-4">
@@ -201,15 +204,15 @@ function Navigation() {
                     {userInfo.picture ? (
                       <img
                         src={userInfo.picture}
-                        alt={userInfo.name || 'User'}
+                        alt={displayName}
                         className="w-7 h-7 rounded-full object-cover"
                       />
                     ) : (
                       <div className="w-7 h-7 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full flex items-center justify-center text-white text-xs font-bold">
-                        {(userInfo.name || userInfo.email || 'U').charAt(0).toUpperCase()}
+                        {displayName.charAt(0).toUpperCase()}
                       </div>
                     )}
-                    <span className="hidden lg:inline text-sm font-semibold">{userInfo.name || userInfo.email || 'User'}</span>
+                    <span className="hidden lg:inline text-sm font-semibold">{displayName}</span>
                     <svg
                       className={`w-4 h-4 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`}
                       fill="none"
@@ -230,7 +233,7 @@ function Navigation() {
                       {/* User Info */}
                       <div className="px-4 py-3 border-b border-gray-200">
                         <p className="text-sm font-semibold text-gray-900 truncate">
-                          {userInfo.name || 'User'}
+                          {displayName}
                         </p>
                         {userInfo.email && (
                           <p className="text-xs text-gray-500 truncate mt-1">
@@ -369,16 +372,16 @@ function Navigation() {
                   {userInfo.picture ? (
                     <img
                       src={userInfo.picture}
-                      alt={userInfo.name || 'User'}
+                      alt={displayName}
                       className="w-10 h-10 rounded-full object-cover"
                     />
                   ) : (
                     <div className="w-10 h-10 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full flex items-center justify-center text-white font-bold">
-                      {(userInfo.name || userInfo.email || 'U').charAt(0).toUpperCase()}
+                      {displayName.charAt(0).toUpperCase()}
                     </div>
                   )}
                   <div>
-                    <p className="font-semibold">{userInfo.name || 'User'}</p>
+                    <p className="font-semibold">{displayName}</p>
                     <p className="text-sm text-gray-500">{userInfo.email}</p>
                   </div>
                 </Link>
