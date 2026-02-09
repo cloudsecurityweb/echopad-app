@@ -105,79 +105,112 @@ export async function checkApiHealth(page: Page): Promise<boolean> {
   }
 }
 
-// -------------------------
-// Auth helpers (email/password)
-// -------------------------
-
-export type TestUserRole = 'clientAdmin' | 'user';
-
-export interface TestUserCredentials {
-  email: string;
-  password: string;
-}
-
-export function getTestUserCredentials(role: TestUserRole): TestUserCredentials {
-  if (role === 'clientAdmin') {
-    if (!process.env.TEST_CLIENT_ADMIN_EMAIL || !process.env.TEST_CLIENT_ADMIN_PASSWORD) {
-      throw new Error('TEST_CLIENT_ADMIN_EMAIL and TEST_CLIENT_ADMIN_PASSWORD must be set for client admin tests');
-    }
-    return {
-      email: process.env.TEST_CLIENT_ADMIN_EMAIL,
-      password: process.env.TEST_CLIENT_ADMIN_PASSWORD,
-    };
-  }
-
-  if (!process.env.TEST_USER_EMAIL || !process.env.TEST_USER_PASSWORD) {
-    throw new Error('TEST_USER_EMAIL and TEST_USER_PASSWORD must be set for user tests');
-  }
+/**
+ * Get test user credentials
+ */
+export function getTestUserCredentials() {
   return {
-    email: process.env.TEST_USER_EMAIL,
-    password: process.env.TEST_USER_PASSWORD,
+    clientAdmin: {
+      email: process.env.TEST_CLIENT_ADMIN_EMAIL || 'pandey.abhi142002@gmail.com',
+      password: process.env.TEST_CLIENT_ADMIN_PASSWORD || '11111111',
+    },
+    regularUser: {
+      email: process.env.TEST_USER_EMAIL || 'pandeyabhi.142002@gmail.com',
+      password: process.env.TEST_USER_PASSWORD || '11111111',
+    },
   };
 }
 
-export async function loginWithEmailPassword(page: Page, creds: TestUserCredentials) {
+/**
+ * Login with email and password
+ */
+export async function loginWithEmailPassword(page: Page, email: string, password: string) {
   await page.goto('/sign-in');
-  await waitForPageLoad(page);
-
-  await page.getByLabel(/Email/i).fill(creds.email);
-  await page.getByLabel(/Password/i).fill(creds.password);
-
-  await Promise.all([
-    page.waitForNavigation({ waitUntil: 'networkidle' }),
-    page.getByRole('button', { name: /login/i }).click(),
-  ]).
-  catch(() => undefined);
-}
-
-export async function loginAsClientAdmin(page: Page) {
-  const creds = getTestUserCredentials('clientAdmin');
-  await loginWithEmailPassword(page, creds);
-}
-
-export async function loginAsRegularUser(page: Page) {
-  const creds = getTestUserCredentials('user');
-  await loginWithEmailPassword(page, creds);
-}
-
-export async function ensureLoggedOut(page: Page) {
-  await page.goto('/');
-  await waitForPageLoad(page);
-
-  // Try to find a logout/sign out button or menu item
-  const logoutCandidates = [
-    page.getByRole('button', { name: /sign out|log out/i }),
-    page.getByRole('link', { name: /sign out|log out/i }),
-  ];
-
-  for (const candidate of logoutCandidates) {
-    if (await candidate.isVisible().catch(() => false)) {
-      await candidate.click();
-      await page.waitForTimeout(1000);
-      break;
-    }
+  await page.waitForLoadState('networkidle');
+  
+  // Fill in email
+  const emailInput = page.getByLabel(/Email/i).first();
+  await emailInput.fill(email);
+  
+  // Fill in password
+  const passwordInput = page.getByLabel(/Password/i).first();
+  await passwordInput.fill(password);
+  
+  // Click login button
+  const loginButton = page.getByRole('button', { name: /Login|Sign in/i }).first();
+  await loginButton.click();
+  
+  // Wait for redirect to dashboard or error
+  await page.waitForURL(/\/dashboard|\/sign-in/, { timeout: 15000 });
+  
+  // Verify we're logged in (should be on dashboard)
+  const isDashboard = page.url().includes('/dashboard');
+  if (!isDashboard) {
+    throw new Error('Login failed - not redirected to dashboard');
   }
+  
+  await page.waitForLoadState('networkidle');
+}
 
-  // Clear storage as a fallback
+/**
+ * Login as Client Admin
+ */
+export async function loginAsClientAdmin(page: Page) {
+  const credentials = getTestUserCredentials();
+  await loginWithEmailPassword(page, credentials.clientAdmin.email, credentials.clientAdmin.password);
+}
+
+/**
+ * Login as Regular User
+ */
+export async function loginAsRegularUser(page: Page) {
+  const credentials = getTestUserCredentials();
+  await loginWithEmailPassword(page, credentials.regularUser.email, credentials.regularUser.password);
+}
+
+/**
+ * Ensure user is logged out
+ */
+export async function ensureLoggedOut(page: Page) {
   await clearStorage(page);
+  await page.goto('/sign-in');
+  await page.waitForLoadState('networkidle');
+}
+
+/**
+ * Verify API response contains expected data
+ */
+export async function verifyApiResponse(page: Page, url: string, expectedFields: string[]): Promise<boolean> {
+  try {
+    const response = await page.request.get(url);
+    if (!response.ok()) return false;
+    
+    const data = await response.json();
+    return expectedFields.every(field => {
+      const keys = field.split('.');
+      let value = data;
+      for (const key of keys) {
+        value = value?.[key];
+        if (value === undefined) return false;
+      }
+      return true;
+    });
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Wait for API call to complete
+ */
+export async function waitForApiCall(page: Page, urlPattern: string | RegExp, method: string = 'GET', timeout: number = 10000): Promise<void> {
+  const pattern = typeof urlPattern === 'string' ? urlPattern : urlPattern.source;
+  await page.waitForResponse(
+    response => {
+      const url = response.url();
+      const matches = typeof urlPattern === 'string' ? url.includes(urlPattern) : urlPattern.test(url);
+      return matches && response.request().method() === method.toUpperCase();
+    },
+    { timeout }
+  );
 }
