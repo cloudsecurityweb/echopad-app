@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import { useTranscriptionHistory } from '../../hooks/useTranscriptionHistory';
 import { deleteTranscription as deleteTranscriptionApi } from '../../api/transcriptionHistory.api';
 
@@ -16,6 +17,7 @@ const HistorySection = ({ title }) => {
   const [expandedId, setExpandedId] = useState(null);
   const [copiedId, setCopiedId] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
+  const [deleteModal, setDeleteModal] = useState({ isOpen: false, transcription: null });
 
   const handleToggleExpand = (id) => {
     setExpandedId(expandedId === id ? null : id);
@@ -25,20 +27,32 @@ const HistorySection = ({ title }) => {
     try {
       await navigator.clipboard.writeText(text);
       setCopiedId(id);
+      toast.success('Copied to clipboard!');
       setTimeout(() => setCopiedId(null), 2000);
     } catch {
-      // ignore
+      toast.error('Failed to copy to clipboard');
     }
   };
 
-  const handleDelete = async (transcription) => {
-    if (!window.confirm('Delete this transcription? This cannot be undone.')) return;
+  const openDeleteModal = (transcription) => {
+    setDeleteModal({ isOpen: true, transcription });
+  };
+
+  const closeDeleteModal = () => {
+    setDeleteModal({ isOpen: false, transcription: null });
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteModal.transcription) return;
+    const transcription = deleteModal.transcription;
+    closeDeleteModal();
     setDeletingId(transcription.id);
     try {
       await deleteTranscriptionApi(transcription.id);
       await refresh();
+      toast.success('Transcription deleted successfully');
     } catch {
-      // keep deletingId so user sees error state
+      toast.error('Failed to delete transcription');
     } finally {
       setDeletingId(null);
     }
@@ -172,7 +186,7 @@ const HistorySection = ({ title }) => {
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      handleDelete(transcription);
+                      openDeleteModal(transcription);
                     }}
                     disabled={deletingId === transcription.id}
                     className="text-gray-400 hover:text-red-600 p-1.5 rounded-md hover:bg-red-50 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
@@ -223,7 +237,7 @@ const HistorySection = ({ title }) => {
                         {copiedId === transcription.id ? 'Copied!' : 'Copy Transcript'}
                       </button>
                       <button
-                        onClick={() => handleDelete(transcription)}
+                        onClick={() => openDeleteModal(transcription)}
                         disabled={deletingId === transcription.id}
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-red-700 bg-red-50 hover:bg-red-100 rounded-lg border border-red-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
                       >
@@ -262,6 +276,56 @@ const HistorySection = ({ title }) => {
               </button>
             </div>
           )}
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {deleteModal.isOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          onClick={closeDeleteModal}
+        >
+          {/* Backdrop with blur */}
+          <div className="absolute inset-0 bg-white/60 backdrop-blur-sm" />
+
+          {/* Modal Content */}
+          <div
+            className="relative bg-white rounded-xl shadow-2xl border border-gray-200 max-w-md w-full p-6 transform transition-all"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Warning Icon */}
+            <div className="flex justify-center mb-4">
+              <div className="w-14 h-14 rounded-full bg-red-100 flex items-center justify-center">
+                <svg className="w-7 h-7 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              </div>
+            </div>
+
+            {/* Title & Message */}
+            <h3 className="text-lg font-semibold text-gray-900 text-center mb-2">
+              Delete Transcription?
+            </h3>
+            <p className="text-gray-600 text-center text-sm mb-6">
+              This action cannot be undone. The transcription will be permanently removed from your history.
+            </p>
+
+            {/* Action Buttons */}
+            <div className="flex space-x-3">
+              <button
+                onClick={closeDeleteModal}
+                className="flex-1 px-4 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDelete}
+                className="flex-1 px-4 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-red-500 to-red-600 hover:from-red-400 hover:to-red-500 rounded-lg transition-all cursor-pointer"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

@@ -141,7 +141,6 @@ function Profile() {
         },
         body: JSON.stringify({
           displayName: profileData.displayName,
-          email: authProvider === 'email' ? profileData.email : undefined, // Only allow email update for email/password users
           organizationName: isClientAdmin ? profileData.organizationName : undefined,
         }),
       });
@@ -329,7 +328,7 @@ function Profile() {
           <div className="space-y-4">
             <div>
               <label htmlFor="displayName" className="block text-sm font-medium text-gray-700 mb-1">
-                Display Name (Organizer Name)
+                Display Name (Organizer Name) *
               </label>
               <input
                 type="text"
@@ -337,27 +336,31 @@ function Profile() {
                 name="displayName"
                 value={profileData.displayName}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 ${!profileData.displayName.trim() ? 'border-red-300' : 'border-gray-300'
+                  }`}
                 placeholder="Enter your display name"
+                required
               />
+              {!profileData.displayName.trim() && (
+                <p className="mt-1 text-xs text-red-600">Display name is required</p>
+              )}
             </div>
 
-            {authProvider === 'email' && (
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  value={profileData.email}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
-                  placeholder="Enter your email"
-                />
-              </div>
-            )}
+            {/* Email is read-only */}
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                Email
+              </label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={profileData.email}
+                disabled
+                className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-gray-50 text-gray-500 cursor-not-allowed"
+              />
+              <p className="mt-1 text-xs text-gray-500">Email cannot be changed</p>
+            </div>
 
             {isClientAdmin && (
               <div>
@@ -385,8 +388,8 @@ function Profile() {
             <div className="flex gap-3 pt-4">
               <button
                 onClick={handleSave}
-                disabled={isSaving}
-                className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-lg hover:from-cyan-400 hover:to-blue-500 transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={isSaving || !profileData.displayName.trim()}
+                className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-lg hover:from-cyan-400 hover:to-blue-500 transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               >
                 {isSaving ? 'Saving...' : 'Save Changes'}
               </button>
