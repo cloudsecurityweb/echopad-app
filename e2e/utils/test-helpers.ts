@@ -104,3 +104,80 @@ export async function checkApiHealth(page: Page): Promise<boolean> {
     return false;
   }
 }
+
+// -------------------------
+// Auth helpers (email/password)
+// -------------------------
+
+export type TestUserRole = 'clientAdmin' | 'user';
+
+export interface TestUserCredentials {
+  email: string;
+  password: string;
+}
+
+export function getTestUserCredentials(role: TestUserRole): TestUserCredentials {
+  if (role === 'clientAdmin') {
+    if (!process.env.TEST_CLIENT_ADMIN_EMAIL || !process.env.TEST_CLIENT_ADMIN_PASSWORD) {
+      throw new Error('TEST_CLIENT_ADMIN_EMAIL and TEST_CLIENT_ADMIN_PASSWORD must be set for client admin tests');
+    }
+    return {
+      email: process.env.TEST_CLIENT_ADMIN_EMAIL,
+      password: process.env.TEST_CLIENT_ADMIN_PASSWORD,
+    };
+  }
+
+  if (!process.env.TEST_USER_EMAIL || !process.env.TEST_USER_PASSWORD) {
+    throw new Error('TEST_USER_EMAIL and TEST_USER_PASSWORD must be set for user tests');
+  }
+  return {
+    email: process.env.TEST_USER_EMAIL,
+    password: process.env.TEST_USER_PASSWORD,
+  };
+}
+
+export async function loginWithEmailPassword(page: Page, creds: TestUserCredentials) {
+  await page.goto('/sign-in');
+  await waitForPageLoad(page);
+
+  await page.getByLabel(/Email/i).fill(creds.email);
+  await page.getByLabel(/Password/i).fill(creds.password);
+
+  await Promise.all([
+    page.waitForNavigation({ waitUntil: 'networkidle' }),
+    page.getByRole('button', { name: /login/i }).click(),
+  ]).
+  catch(() => undefined);
+}
+
+export async function loginAsClientAdmin(page: Page) {
+  const creds = getTestUserCredentials('clientAdmin');
+  await loginWithEmailPassword(page, creds);
+}
+
+export async function loginAsRegularUser(page: Page) {
+  const creds = getTestUserCredentials('user');
+  await loginWithEmailPassword(page, creds);
+}
+
+export async function ensureLoggedOut(page: Page) {
+  await page.goto('/');
+  await waitForPageLoad(page);
+
+  // Try to find a logout/sign out button or menu item
+  const logoutCandidates = [
+    page.getByRole('button', { name: /sign out|log out/i }),
+    page.getByRole('link', { name: /sign out|log out/i }),
+  ];
+
+  for (const candidate of logoutCandidates) {
+    if (await candidate.isVisible().catch(() => false)) {
+      await candidate.click();
+      await page.waitForTimeout(1000);
+      break;
+    }
+  }
+
+  // Clear storage as a fallback
+  await clearStorage(page);
+}
