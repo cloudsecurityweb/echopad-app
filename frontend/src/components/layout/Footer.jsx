@@ -80,16 +80,16 @@ function Footer() {
               Healthcare AI platform that reduces provider burnout, cuts costs, and improves patient satisfaction.
             </p>
             <p className="text-sm text-gray-500">
-              Part of{' '}
-              <a
-                href="https://cloudsecurityweb.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-cyan-400 hover:text-cyan-300 font-medium transition-colors"
-              >
-                Cloud Security Web LLC
-              </a>
-            </p>
+            Part of{' '}
+            <a
+              href="https://cloudsecurityweb.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-cyan-400 hover:text-cyan-300 font-medium transition-colors"
+            >
+              Cloud Security Web LLC
+            </a>
+          </p>
           </div>
 
           {/* Quick Links */}
