@@ -8,9 +8,11 @@ import BeforeAfterSlider from '../../components/products/BeforeAfterSlider';
 import { getProductByRoute } from '../../data/products';
 import { checkProductOwnership } from '../../utils/productOwnership';
 import { useAuth } from '../../contexts/AuthContext';
+import usePageTitle from '../../hooks/usePageTitle';
 
 function AIMedicalAssistant() {
   const { isAuthenticated, isLoading } = useAuth();
+  const PageTitle = usePageTitle('Echopad AI Medical Assistant');
   const handleIntercomClick = (e, action) => {
     e.preventDefault();
     handleIntercomAction(action);
@@ -36,6 +38,7 @@ function AIMedicalAssistant() {
 
   return (
     <>
+      {PageTitle}
       <Navigation />
       <main>
         {/* Hero Section - Clinical Workflow Design */}
@@ -48,7 +51,7 @@ function AIMedicalAssistant() {
               <i className="bi bi-arrow-left"></i>
               View All Products
             </a>
-            
+
             <div className="max-w-6xl mx-auto">
               <div className="text-center mb-12">
                 <div className="inline-flex items-center gap-2 bg-teal-50 text-teal-500 px-4 py-2 rounded-full text-sm font-semibold mb-4">
@@ -64,7 +67,7 @@ function AIMedicalAssistant() {
                 <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
                   Record entire patient sessions and automatically generate comprehensive, EHR-ready charts with structured clinical data.
                 </p>
-                
+
                 {/* Clinical Metrics */}
                 <div className="flex flex-wrap items-center justify-center gap-6 mb-8">
                   <div className="bg-white rounded-xl px-6 py-3 shadow-lg border-2 border-teal-100">
@@ -83,29 +86,29 @@ function AIMedicalAssistant() {
 
                 {/* CTA Buttons */}
                 <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-                <a
-                  href="#"
-                  onClick={(e) => handleIntercomClick(e, 'request-demo')}
-                  className="inline-flex items-center justify-center gap-3 bg-gradient-to-r from-teal-400 to-emerald-400 text-white px-8 py-4 rounded-xl font-bold text-lg hover:from-teal-500 hover:to-emerald-500 transition-all shadow-xl hover:shadow-2xl hover:scale-105"
-                >
-                  <i className="bi bi-calendar-check text-xl"></i>
-                  Schedule a Demo
-                </a>
-                <a
-                  href="#"
-                  onClick={(e) => handleIntercomClick(e, 'sign-up')}
-                  className="inline-flex items-center justify-center gap-3 bg-white text-teal-400 px-8 py-4 rounded-xl font-bold text-lg hover:bg-teal-50 transition-all border-2 border-teal-300 shadow-lg hover:shadow-xl"
-                >
-                  <i className="bi bi-rocket-takeoff text-xl"></i>
-                  Start Free Trial
-                </a>
+                  <a
+                    href="#"
+                    onClick={(e) => handleIntercomClick(e, 'request-demo')}
+                    className="inline-flex items-center justify-center gap-3 bg-gradient-to-r from-teal-400 to-emerald-400 text-white px-8 py-4 rounded-xl font-bold text-lg hover:from-teal-500 hover:to-emerald-500 transition-all shadow-xl hover:shadow-2xl hover:scale-105"
+                  >
+                    <i className="bi bi-calendar-check text-xl"></i>
+                    Schedule a Demo
+                  </a>
+                  <a
+                    href="#"
+                    onClick={(e) => handleIntercomClick(e, 'sign-up')}
+                    className="inline-flex items-center justify-center gap-3 bg-white text-teal-400 px-8 py-4 rounded-xl font-bold text-lg hover:bg-teal-50 transition-all border-2 border-teal-300 shadow-lg hover:shadow-xl"
+                  >
+                    <i className="bi bi-rocket-takeoff text-xl"></i>
+                    Start Free Trial
+                  </a>
                 </div>
               </div>
 
               {/* Visit Process Timeline */}
               <div className="bg-white rounded-3xl shadow-2xl p-8 border-2 border-teal-100">
                 <h3 className="text-2xl font-bold text-gray-900 mb-6 text-center">Complete Visit Documentation Process</h3>
-                
+
                 <div className="space-y-6">
                   {/* Recording Phase */}
                   <div className="flex items-start gap-4">
@@ -429,7 +432,7 @@ function AIMedicalAssistant() {
                 <a
                   href="#"
                   onClick={(e) => handleIntercomClick(e, 'request-demo')}
-                    className="inline-flex items-center gap-3 bg-white text-teal-500 px-8 py-4 rounded-xl font-bold text-lg hover:bg-teal-50 transition-all shadow-xl hover:shadow-2xl hover:scale-105"
+                  className="inline-flex items-center gap-3 bg-white text-teal-500 px-8 py-4 rounded-xl font-bold text-lg hover:bg-teal-50 transition-all shadow-xl hover:shadow-2xl hover:scale-105"
                 >
                   <i className="bi bi-calendar-check text-2xl"></i>
                   Schedule a Demo

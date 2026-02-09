@@ -6,8 +6,10 @@ import { handleIntercomAction } from '../../utils/intercom';
 import BuyNowCTA from '../../components/products/BuyNowCTA';
 import { getProductByRoute } from '../../data/products';
 import BeforeAfterSlider from '../../components/products/BeforeAfterSlider';
+import usePageTitle from '../../hooks/usePageTitle';
 
 function Aperio() {
+  const PageTitle = usePageTitle('Echopad Aperio');
   const handleIntercomClick = (e, action) => {
     e.preventDefault();
     handleIntercomAction(action);
@@ -33,6 +35,7 @@ function Aperio() {
 
   return (
     <>
+      {PageTitle}
       <Navigation />
       <main>
         {/* Hero Section */}
@@ -53,7 +56,7 @@ function Aperio() {
                 <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
                   AI-Powered Referral Coordination That <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Closes the Loop</span>
                 </h1>
-                
+
                 {/* 3-Second Value Proposition - Smaller Size */}
                 <div className="bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 border-2 border-blue-300 rounded-xl p-4 mb-6 shadow-lg">
                   <div className="flex items-center justify-center gap-2 mb-3">
@@ -486,7 +489,7 @@ function Aperio() {
                     Perfect For You If...
                   </h2>
                 </div>
-                
+
                 {/* Content Card */}
                 <div className="bg-white/95 backdrop-blur-sm rounded-xl md:rounded-2xl p-4 md:p-6 lg:p-8 shadow-xl">
                   <ul className="space-y-2.5 md:space-y-4 lg:space-y-5">
@@ -505,7 +508,7 @@ function Aperio() {
                       </li>
                     ))}
                   </ul>
-                  
+
                   {/* Bottom CTA Section */}
                   <div className="mt-6 md:mt-8 lg:mt-10 md:mt-12 pt-6 md:pt-8 lg:pt-10 border-t-2 border-purple-200 bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg md:rounded-xl p-4 md:p-6 lg:p-8">
                     <p className="text-base md:text-xl lg:text-2xl xl:text-3xl text-purple-900 font-bold text-center flex flex-col sm:flex-row items-center justify-center gap-2 md:gap-3 lg:gap-4 mb-6 md:mb-8 lg:mb-10 leading-relaxed">
@@ -513,7 +516,7 @@ function Aperio() {
                       <span className="px-2">If you checked 2 or more, Aperio is built for you!</span>
                       <span className="text-3xl md:text-4xl lg:text-5xl animate-pulse">✨</span>
                     </p>
-                    
+
                     {/* CTA Buttons - Full width on mobile */}
                     <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center">
                       <a

@@ -3,8 +3,10 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useRole, ROLES } from '../../contexts/RoleContext';
 import Navigation from '../../components/layout/Navigation';
+import usePageTitle from '../../hooks/usePageTitle';
 
 function SignUp() {
+  const PageTitle = usePageTitle('Sign Up');
   const { login, signUp, loginWithGoogle, isAuthenticated, isLoading, syncUserProfile, syncGoogleUserProfile, signUpEmailPassword, authProvider, googleToken } = useAuth();
   const { currentRole, isLoadingRole } = useRole();
   const navigate = useNavigate();
@@ -22,7 +24,7 @@ function SignUp() {
   const [authError, setAuthError] = useState(null);
   const [isMicrosoftLoading, setIsMicrosoftLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
-  const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(true);
   const [pendingGoogleSignUp, setPendingGoogleSignUp] = useState(false);
 
   // Redirect if already authenticated
@@ -267,6 +269,7 @@ function SignUp() {
 
   return (
     <>
+      {PageTitle}
       <Navigation />
       <main className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 pt-16 md:pt-20 pb-4 overflow-hidden">
         <div className="container mx-auto px-4 py-6 md:py-8 flex items-center min-h-[calc(100vh-4rem)]">

@@ -2,8 +2,11 @@ import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Navigation from '../../components/layout/Navigation';
 import Footer from '../../components/layout/Footer';
+import usePageTitle from '../../hooks/usePageTitle';
 
 function TermsOfService() {
+  const PageTitle = usePageTitle('Terms of Service');
+
   // Scroll to top when component mounts
   useEffect(() => {
     window.scrollTo({
@@ -13,6 +16,7 @@ function TermsOfService() {
   }, []);
   return (
     <>
+      {PageTitle}
       <Navigation />
       <main>
         {/* Terms of Service Content */}
@@ -57,7 +61,7 @@ function TermsOfService() {
                   </p>
 
                   <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">3. User Accounts and Registration</h2>
-                  
+
                   <h3 className="text-xl font-semibold text-gray-900 mt-6 mb-3">3.1 Account Creation</h3>
                   <p className="text-gray-700 mb-3">
                     To access certain features, you must create an account and provide accurate, complete information. You are responsible for:
@@ -75,7 +79,7 @@ function TermsOfService() {
                   </p>
 
                   <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">4. Permitted Use and Restrictions</h2>
-                  
+
                   <h3 className="text-xl font-semibold text-gray-900 mt-6 mb-3">4.1 Permitted Use</h3>
                   <p className="text-gray-700 mb-6">
                     You may use the Services solely for lawful purposes in accordance with these Terms and applicable healthcare regulations.
@@ -98,7 +102,7 @@ function TermsOfService() {
                   </ul>
 
                   <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">5. Fees and Payment</h2>
-                  
+
                   <h3 className="text-xl font-semibold text-gray-900 mt-6 mb-3">5.1 Subscription Fees</h3>
                   <p className="text-gray-700 mb-6">
                     Services are provided on a subscription basis at the rates specified in your service agreement. Fees are non-refundable except as required by law or explicitly stated in writing.
@@ -118,7 +122,7 @@ function TermsOfService() {
                   </p>
 
                   <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">6. Intellectual Property Rights</h2>
-                  
+
                   <h3 className="text-xl font-semibold text-gray-900 mt-6 mb-3">6.1 Our Property</h3>
                   <p className="text-gray-700 mb-6">
                     All Services, including software, technology, content, trademarks, and documentation, are owned by Cloud Security Web LLC and protected by U.S. and international intellectual property laws. No ownership rights are transferred to you.
@@ -135,7 +139,7 @@ function TermsOfService() {
                   </p>
 
                   <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">7. HIPAA Compliance and Healthcare Regulations</h2>
-                  
+
                   <h3 className="text-xl font-semibold text-gray-900 mt-6 mb-3">7.1 Business Associate Agreement</h3>
                   <p className="text-gray-700 mb-6">
                     For customers who are HIPAA-covered entities, a separate Business Associate Agreement (BAA) must be executed. Services involving PHI are not authorized until a BAA is in place.
@@ -170,7 +174,7 @@ function TermsOfService() {
                   </ul>
 
                   <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">9. Service Availability and Support</h2>
-                  
+
                   <h3 className="text-xl font-semibold text-gray-900 mt-6 mb-3">9.1 Uptime</h3>
                   <p className="text-gray-700 mb-6">
                     We strive for 99.9% uptime but do not guarantee uninterrupted service. Scheduled maintenance windows may occur with reasonable notice.
@@ -187,7 +191,7 @@ function TermsOfService() {
                   </p>
 
                   <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">10. Term and Termination</h2>
-                  
+
                   <h3 className="text-xl font-semibold text-gray-900 mt-6 mb-3">10.1 Term</h3>
                   <p className="text-gray-700 mb-6">
                     These Terms remain in effect until terminated by either party.
@@ -221,7 +225,7 @@ function TermsOfService() {
                   </ul>
 
                   <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">11. WARRANTIES AND DISCLAIMERS</h2>
-                  
+
                   <h3 className="text-xl font-semibold text-gray-900 mt-6 mb-3">11.1 LIMITED WARRANTY</h3>
                   <p className="text-gray-700 mb-6">
                     WE WARRANT THAT SERVICES WILL SUBSTANTIALLY CONFORM TO THEIR DOCUMENTATION UNDER NORMAL USE. THIS IS YOUR SOLE AND EXCLUSIVE WARRANTY.
@@ -243,7 +247,7 @@ function TermsOfService() {
                   </p>
 
                   <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">12. LIMITATION OF LIABILITY</h2>
-                  
+
                   <h3 className="text-xl font-semibold text-gray-900 mt-6 mb-3">12.1 EXCLUSION OF DAMAGES</h3>
                   <p className="text-gray-700 mb-3">
                     <strong>TO THE MAXIMUM EXTENT PERMITTED BY LAW, IN NO EVENT SHALL CLOUD SECURITY WEB LLC, ITS AFFILIATES, OFFICERS, DIRECTORS, EMPLOYEES, OR AGENTS BE LIABLE FOR ANY:</strong>
@@ -283,7 +287,7 @@ function TermsOfService() {
                   </ul>
 
                   <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">14. Dispute Resolution</h2>
-                  
+
                   <h3 className="text-xl font-semibold text-gray-900 mt-6 mb-3">14.1 Governing Law</h3>
                   <p className="text-gray-700 mb-6">
                     These Terms are governed by the laws of the State of Delaware, without regard to conflict of law principles.
@@ -303,7 +307,7 @@ function TermsOfService() {
                   </p>
 
                   <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">15. General Provisions</h2>
-                  
+
                   <h3 className="text-xl font-semibold text-gray-900 mt-6 mb-3">15.1 Modifications to Terms</h3>
                   <p className="text-gray-700 mb-6">
                     We reserve the right to modify these Terms at any time. Changes become effective immediately upon posting. Continued use constitutes acceptance. We are not obligated to provide individual notice of changes.

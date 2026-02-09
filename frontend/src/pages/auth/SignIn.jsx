@@ -5,6 +5,7 @@ import { useRole, ROLES } from '../../contexts/RoleContext';
 import ElectronSignInModal from '../../components/auth/ElectronSignInModal';
 import Navigation from '../../components/layout/Navigation';
 import Footer from '../../components/layout/Footer';
+import usePageTitle from '../../hooks/usePageTitle';
 
 // Security validation function
 function isValidRedirectUri(uri) {
@@ -18,6 +19,7 @@ function isValidRedirectUri(uri) {
 }
 
 function SignIn() {
+  const PageTitle = usePageTitle('Sign In');
   const { login, loginWithGoogle, isAuthenticated, isLoading, account, getAccessToken, googleUser, syncUserProfile, syncGoogleUserProfile, clearGoogleAuth, signInEmailPassword } = useAuth();
   const { currentRole, isLoadingRole } = useRole();
   const navigate = useNavigate();
@@ -301,6 +303,7 @@ function SignIn() {
 
   return (
     <>
+      {PageTitle}
       <Navigation />
       <main className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 pt-16 md:pt-20 pb-4 overflow-hidden">
         <div className="container mx-auto px-4 py-6 md:py-8 flex items-center min-h-[calc(100vh-4rem)]">

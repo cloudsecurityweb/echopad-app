@@ -4,9 +4,11 @@ import Navigation from '../../components/layout/Navigation';
 import Footer from '../../components/layout/Footer';
 import { handleIntercomAction } from '../../utils/intercom';
 import { useAuth } from '../../contexts/AuthContext';
+import usePageTitle from '../../hooks/usePageTitle';
 
 function EchoPadInsights() {
   const { isAuthenticated, isLoading } = useAuth();
+  const PageTitle = usePageTitle('Echopad Insights');
 
   const handleIntercomClick = (e, action) => {
     e.preventDefault();
@@ -30,6 +32,7 @@ function EchoPadInsights() {
 
   return (
     <>
+      {PageTitle}
       <Navigation />
       <main>
         {/* Hero Section */}

@@ -77,9 +77,11 @@ import NotFound from './pages/NotFound';
 import HelpCenter from './pages/dashboard/HelpCenter';
 import HelpDocDetail from './pages/dashboard/HelpDocDetail';
 import ClientManagementPage from './pages/dashboard/super-admin/ClientManagementPage';
+import usePageTitle from './hooks/usePageTitle';
 
 function HomePage() {
   const location = useLocation();
+  const PageTitle = usePageTitle('Echopad AI - Healthcare AI Agent Platform | Reduce Costs 60%, Increase Revenue 20%');
 
   // Initialize scroll animations
   useScrollAnimations();
@@ -135,6 +137,7 @@ function HomePage() {
 
   return (
     <>
+      {PageTitle}
       <Navigation />
       <main>
         <Hero />
