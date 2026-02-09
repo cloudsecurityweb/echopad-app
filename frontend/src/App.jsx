@@ -41,6 +41,8 @@ import VerifyEmail from './pages/auth/VerifyEmail';
 import AcceptInvitation from './pages/auth/AcceptInvitation';
 import VerifyEmailSent from './pages/auth/VerifyEmailSent';
 import ResendVerification from './pages/auth/ResendVerification';
+import ForgotPassword from './pages/auth/ForgotPassword';
+import ResetPassword from './pages/auth/ResetPassword';
 import Dashboard from './pages/dashboard/Dashboard';
 import Profile from './pages/dashboard/Profile';
 import Products from './pages/dashboard/Products';
@@ -199,6 +201,8 @@ function App({ msalInstance }) {
                   <Route path="/verify-email" element={<VerifyEmail />} />
                   <Route path="/verify-email-sent" element={<VerifyEmailSent />} />
                   <Route path="/resend-verification" element={<ResendVerification />} />
+                  <Route path="/forgot-password" element={<ForgotPassword />} />
+                  <Route path="/reset-password" element={<ResetPassword />} />
                   <Route path="/accept-invitation" element={<AcceptInvitation />} />
                   <Route
                     path="/dashboard"

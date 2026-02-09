@@ -389,3 +389,109 @@ export async function sendInvitationEmail(email, token, inviterName, organizatio
     throw new Error(errorMessage);
   }
 }
+
+/**
+ * Send password reset email
+ * 
+ * @param {string} email - Recipient email address
+ * @param {string} token - Password reset token
+ * @param {string} name - Recipient name
+ * @returns {Promise<Object>} Email send result
+ */
+export async function sendPasswordResetEmail(email, token, name = "User") {
+  // Validate email service configuration
+  if (!isEmailConfigured()) {
+    throw new Error("Email service not configured. AZURE_COMMUNICATION_CONNECTION_STRING environment variable is required.");
+  }
+
+  // Validate required parameters
+  if (!email || !email.trim()) {
+    throw new Error("Email address is required");
+  }
+
+  if (!token || !token.trim()) {
+    throw new Error("Reset token is required");
+  }
+
+  // Create client using endpoint and credential explicitly
+  const endpointPrefix = EMAIL_ENDPOINT ? EMAIL_ENDPOINT.substring(0, 50) + '...' : 'NOT SET';
+  console.log(`📧 [RESET-EMAIL] Using endpoint: ${endpointPrefix}`);
+  console.log(`📧 [RESET-EMAIL] Creating EmailClient with explicit endpoint and credential...`);
+
+  let client;
+  if (EMAIL_ENDPOINT && EMAIL_ACCESS_KEY) {
+    const credential = new AzureKeyCredential(EMAIL_ACCESS_KEY);
+    client = new EmailClient(EMAIL_ENDPOINT, credential);
+  } else {
+    console.warn('⚠️  [RESET-EMAIL] Endpoint/credential not parsed, falling back to connection string');
+    client = new EmailClient(CONNECTION_STRING);
+  }
+
+  const resetLink = `${FRONTEND_URL}/reset-password?token=${encodeURIComponent(token)}`;
+
+  console.log(`📧 [RESET-EMAIL] Preparing password reset email for: ${email}`);
+  console.log(`   Reset link: ${resetLink.substring(0, 80)}...`);
+  console.log(`📧 [RESET-EMAIL] Using sender address: ${SENDER_EMAIL}`);
+
+  // Render HTML using Nunjucks
+  const html = nunjucks.render('auth/reset-password.njk', {
+    name,
+    resetLink,
+    frontendUrl: FRONTEND_URL,
+    logoUrl: LOGO_SRC_URL,
+    year: new Date().getFullYear()
+  });
+
+  const subject = "Reset your Echopad password";
+
+  // Generate plain text automatically
+  const plainText = convert(html, {
+    wordwrap: 130
+  });
+
+  const emailMessage = {
+    senderAddress: SENDER_EMAIL,
+    content: {
+      subject,
+      plainText,
+      html,
+    },
+    recipients: {
+      to: [{ address: email }],
+    },
+  };
+
+  try {
+    console.log(`📧 [RESET-EMAIL] Message structure:`, {
+      senderAddress: emailMessage.senderAddress,
+      hasContent: !!emailMessage.content,
+      hasSubject: !!emailMessage.content.subject,
+      recipientEmail: emailMessage.recipients.to[0].address,
+    });
+    console.log(`📧 [RESET-EMAIL] Sending password reset email via Azure Communication Services...`);
+    const poller = await client.beginSend(emailMessage);
+    const result = await poller.pollUntilDone();
+
+    console.log(`✅ [RESET-EMAIL] Password reset email sent successfully. Message ID: ${result.id}`);
+    return {
+      success: true,
+      messageId: result.id,
+    };
+  } catch (error) {
+    console.error("❌ [RESET-EMAIL] Failed to send password reset email:", {
+      email: email,
+      error: error.message,
+      errorCode: error.code,
+    });
+
+    let errorMessage = `Failed to send password reset email: ${error.message}`;
+
+    if (error.message?.includes('connection') || error.message?.includes('network')) {
+      errorMessage = "Failed to send password reset email: Network or connection error. Please try again later.";
+    } else if (error.message?.includes('authentication') || error.message?.includes('unauthorized')) {
+      errorMessage = "Failed to send password reset email: Authentication error. Please check Azure Communication Services configuration.";
+    }
+
+    throw new Error(errorMessage);
+  }
+}

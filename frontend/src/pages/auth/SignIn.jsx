@@ -569,7 +569,7 @@ function SignIn() {
                 {/* Forgot Password Link */}
                 <div className="flex justify-end">
                   <Link
-                    to="#"
+                    to="/forgot-password"
                     className="text-xs md:text-sm text-cyan-600 hover:text-cyan-700 font-medium transition-colors"
                   >
                     Forgot Password?

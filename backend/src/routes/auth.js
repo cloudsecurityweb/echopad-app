@@ -10,7 +10,7 @@ import { verifyGoogleToken } from '../middleware/googleAuth.js';
 import { verifyMagicToken, attachMagicUserFromDb } from '../middleware/magicAuth.js';
 import { verifyEmailPasswordToken, attachEmailPasswordUserFromDb } from '../middleware/emailPasswordAuth.js';
 import { signIn, signUp, getCurrentUser } from '../controllers/authController.js';
-import { signUpEmail, signInEmail, changePassword } from '../controllers/passwordAuthController.js';
+import { signUpEmail, signInEmail, changePassword, forgotPassword, resetPassword } from '../controllers/passwordAuthController.js';
 import { verifyEmail, resendVerificationEmail } from '../controllers/emailVerificationController.js';
 
 const router = express.Router();
@@ -190,6 +190,20 @@ router.get('/verify-email', verifyEmail);
  * Body: { email }
  */
 router.post('/resend-verification', resendVerificationEmail);
+
+/**
+ * POST /api/auth/forgot-password
+ * Request password reset email
+ * Body: { email }
+ */
+router.post('/forgot-password', forgotPassword);
+
+/**
+ * POST /api/auth/reset-password
+ * Reset password using token
+ * Body: { token, newPassword }
+ */
+router.post('/reset-password', resetPassword);
 
 /**
  * GET /api/auth/me
