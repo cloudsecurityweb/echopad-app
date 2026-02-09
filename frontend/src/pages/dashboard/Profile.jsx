@@ -138,7 +138,6 @@ function Profile() {
         },
         body: JSON.stringify({
           displayName: profileData.displayName,
-          email: authProvider === 'email' ? profileData.email : undefined, // Only allow email update for email/password users
           organizationName: isClientAdmin ? profileData.organizationName : undefined,
         }),
       });
@@ -338,23 +337,6 @@ function Profile() {
                 placeholder="Enter your display name"
               />
             </div>
-
-            {authProvider === 'email' && (
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  value={profileData.email}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
-                  placeholder="Enter your email"
-                />
-              </div>
-            )}
 
             {isClientAdmin && (
               <div>
