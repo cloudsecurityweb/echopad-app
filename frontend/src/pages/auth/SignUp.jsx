@@ -61,9 +61,10 @@ function SignUp() {
     completeGoogleSignUp();
   }, [pendingGoogleSignUp, authProvider, googleToken, syncGoogleUserProfile, navigate]);
 
+  // RFC 5322 inspired email validation - robust but not overly strict
   const validateEmail = (email) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
+    const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;
+    return emailRegex.test(email.trim());
   };
 
   const handleChange = (e) => {
@@ -72,12 +73,39 @@ function SignUp() {
       ...prev,
       [name]: value
     }));
-    // Clear error when user starts typing
+
+    // Real-time validation: clear error when input becomes valid
     if (errors[name]) {
-      setErrors(prev => ({
-        ...prev,
-        [name]: ''
-      }));
+      if (name === 'email') {
+        // Clear email error if value is now valid
+        if (value.trim() && validateEmail(value)) {
+          setErrors(prev => ({ ...prev, email: '' }));
+        }
+      } else if (name === 'password') {
+        // Clear password error if value meets requirements
+        if (value.length >= 6) {
+          setErrors(prev => ({ ...prev, password: '' }));
+        }
+      } else if (name === 'organizationName' || name === 'organizerName') {
+        // Clear name errors if value meets minimum length
+        if (value.trim().length >= 2) {
+          setErrors(prev => ({ ...prev, [name]: '' }));
+        }
+      } else {
+        // Default: clear on any input
+        setErrors(prev => ({ ...prev, [name]: '' }));
+      }
+    }
+  };
+
+  // Validate on blur for immediate feedback
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+
+    if (name === 'email' && value.trim()) {
+      if (!validateEmail(value)) {
+        setErrors(prev => ({ ...prev, email: 'Enter a valid email address' }));
+      }
     }
   };
 
@@ -442,7 +470,7 @@ function SignUp() {
               </div>
 
               {/* Form */}
-              <form onSubmit={handleSubmit} className="space-y-2.5 md:space-y-3">
+              <form onSubmit={handleSubmit} noValidate className="space-y-2.5 md:space-y-3">
                 {/* Organization Name Field */}
                 <div>
                   <label htmlFor="organizationName" className="block text-xs md:text-sm font-medium text-gray-700 mb-1">
@@ -518,6 +546,7 @@ function SignUp() {
                       name="email"
                       value={formData.email}
                       onChange={handleChange}
+                      onBlur={handleBlur}
                       className={`w-full pl-8 pr-3 py-2.5 md:py-3 text-sm md:text-base border-2 rounded-lg focus:outline-none focus:ring-2 transition-all ${errors.email
                         ? 'border-red-500 focus:ring-red-500'
                         : 'border-gray-300 focus:border-cyan-500 focus:ring-cyan-500'
