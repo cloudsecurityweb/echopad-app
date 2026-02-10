@@ -80,16 +80,16 @@ function Footer() {
               Healthcare AI platform that reduces provider burnout, cuts costs, and improves patient satisfaction.
             </p>
             <p className="text-sm text-gray-500">
-              Part of{' '}
-              <a
-                href="https://cloudsecurityweb.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-cyan-400 hover:text-cyan-300 font-medium transition-colors"
-              >
-                Cloud Security Web LLC
-              </a>
-            </p>
+            Part of{' '}
+            <a
+              href="https://cloudsecurityweb.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-cyan-400 hover:text-cyan-300 font-medium transition-colors"
+            >
+              Cloud Security Web LLC
+            </a>
+          </p>
           </div>
 
           {/* Quick Links */}
@@ -114,16 +114,6 @@ function Footer() {
                 >
                   <span className="w-0 h-0.5 bg-gradient-to-r from-cyan-400 to-blue-500 transition-all group-hover:w-4"></span>
                   Platform
-                </a>
-              </li>
-              <li>
-                <a
-                  href={isHomePage ? "#roi" : "/#roi"}
-                  onClick={(e) => !isHomePage && handleHashNavigation(e, '#roi')}
-                  className="text-gray-400 hover:text-cyan-400 transition-colors flex items-center gap-2 group"
-                >
-                  <span className="w-0 h-0.5 bg-gradient-to-r from-cyan-400 to-blue-500 transition-all group-hover:w-4"></span>
-                  ROI Calculator
                 </a>
               </li>
               <li>

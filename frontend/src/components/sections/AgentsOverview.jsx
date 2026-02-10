@@ -129,11 +129,11 @@ function AgentsOverview() {
             </div>
           </div>
 
-          {/* Coming Soon Products */}
+          {/* Early Access Products */}
           <div>
             <h4 className="text-sm md:text-base lg:text-lg xl:text-xl font-semibold text-gray-800 mb-2 md:mb-3 lg:mb-4 xl:mb-6 flex items-center gap-1.5 md:gap-2">
               <i className="bi bi-clock-history text-amber-500"></i>
-              Coming Soon
+              Early Access
             </h4>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-2 md:gap-3 lg:gap-4 xl:gap-5 2xl:gap-6">
               {upcomingProducts.map((agent, index) => (

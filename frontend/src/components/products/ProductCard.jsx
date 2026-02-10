@@ -64,10 +64,10 @@ function ProductCard({ icon, title, description, link, featured = false, comingS
         </div>
       )}
 
-      {/* Coming Soon badge */}
+      {/* Early Access badge */}
       {comingSoon && (
         <div className="absolute top-2 right-2 md:top-3 md:right-3 lg:top-4 lg:right-4 bg-gradient-to-r from-amber-500 to-orange-600 text-white text-xs font-bold px-1.5 md:px-2 lg:px-3 py-0.5 md:py-1 rounded-full shadow-lg">
-          COMING SOON
+          Early Access
         </div>
       )}
     </div>
