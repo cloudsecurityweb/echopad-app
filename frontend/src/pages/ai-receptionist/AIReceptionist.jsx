@@ -1,5 +1,4 @@
 import { useLayoutEffect } from 'react';
-import { Link } from 'react-router-dom';
 import Navigation from '../../components/layout/Navigation';
 import Footer from '../../components/layout/Footer';
 import { handleIntercomAction } from '../../utils/intercom';
@@ -42,6 +41,13 @@ function AIReceptionist() {
           <div className="container mx-auto px-4">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
               <div className="lg:col-span-5">
+                <a
+                  href="/#agents"
+                  className="inline-flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800 transition-colors mb-4 font-semibold hover:gap-3"
+                >
+                  <i className="bi bi-arrow-left"></i>
+                  View All Products
+                </a>
                 <div className="text-sm font-semibold text-blue-600 uppercase tracking-wider mb-4">
                   AI RECEPTIONIST
                 </div>
