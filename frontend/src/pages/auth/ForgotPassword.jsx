@@ -165,12 +165,15 @@ function ForgotPassword() {
                                 >
                                     Back to Sign In
                                 </Link>
-                                <Link
-                                    to="/sign-up"
-                                    className="block text-sm text-gray-600 hover:text-gray-700"
-                                >
-                                    Don't have an account? Sign up
-                                </Link>
+                                <p className="block text-sm text-gray-600">
+                                    Don't have an account?{' '}
+                                    <Link
+                                        to="/sign-up"
+                                        className="text-cyan-600 hover:text-cyan-700 font-medium"
+                                    >
+                                        Sign up
+                                    </Link>
+                                </p>
                             </div>
                         </div>
                     </section>

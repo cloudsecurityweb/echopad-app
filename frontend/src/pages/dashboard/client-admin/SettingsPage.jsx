@@ -1,26 +1,17 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { useRole } from '../../../contexts/RoleContext';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useOrganization } from '../../../hooks/useOrganization';
-import { useUsers } from '../../../hooks/useUsers';
 import AccountSettings from '../../../components/settings/AccountSettings';
 import ThemeSettings from '../../../components/settings/ThemeSettings';
 import ChangePasswordModal from '../../../components/ui/ChangePasswordModal';
 
 function SettingsPage() {
-  const { isClientAdmin } = useRole();
+  const { isClientAdmin, isUserAdmin } = useRole();
   const { authProvider } = useAuth();
   const { organization, loading, error, updateOrganization } = useOrganization();
-  const { users, loading: usersLoading, error: usersError } = useUsers();
   const [status, setStatus] = useState(null);
   const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
-
-  const admins = useMemo(() => {
-    if (!organization?.id) return [];
-    return users.filter(
-      (user) => user.organizationId === organization.id && user.role === 'clientAdmin'
-    );
-  }, [users, organization?.id]);
 
   const handleSave = async (updates) => {
     setStatus(null);
@@ -32,7 +23,7 @@ function SettingsPage() {
     }
   };
 
-  if (!isClientAdmin) {
+  if (!isClientAdmin && !isUserAdmin) {
     return (
       <div className="max-w-6xl mx-auto">
         <div className="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
@@ -49,15 +40,48 @@ function SettingsPage() {
         <p className="text-xl text-gray-600">Manage organization settings and preferences.</p>
       </div>
 
-      {(loading || usersLoading) && (
-        <div className="bg-white rounded-xl border border-gray-200 p-6 text-gray-600">
-          Loading settings...
+      {(loading) && (
+        <div className="animate-pulse space-y-6">
+          {/* Settings Cards Grid Skeleton */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Account Settings Skeleton */}
+            <div className="bg-white rounded-xl border border-gray-200 p-6 space-y-5">
+              <div className="h-6 w-40 bg-gray-200 rounded"></div>
+              {[...Array(3)].map((_, i) => (
+                <div key={i} className="space-y-2">
+                  <div className="h-4 w-28 bg-gray-200 rounded"></div>
+                  <div className="h-10 w-full bg-gray-200 rounded-lg"></div>
+                </div>
+              ))}
+              <div className="h-10 w-32 bg-gray-200 rounded-lg"></div>
+            </div>
+            {/* Theme Settings Skeleton */}
+            <div className="bg-white rounded-xl border border-gray-200 p-6 space-y-5">
+              <div className="h-6 w-36 bg-gray-200 rounded"></div>
+              <div className="grid grid-cols-3 gap-4">
+                {[...Array(3)].map((_, i) => (
+                  <div key={i} className="h-24 bg-gray-200 rounded-lg"></div>
+                ))}
+              </div>
+            </div>
+          </div>
+          {/* Security Section Skeleton */}
+          <div className="bg-white rounded-xl border border-gray-200 p-6">
+            <div className="h-6 w-24 bg-gray-200 rounded mb-4"></div>
+            <div className="flex items-center justify-between">
+              <div className="space-y-2">
+                <div className="h-4 w-24 bg-gray-200 rounded"></div>
+                <div className="h-3 w-56 bg-gray-200 rounded"></div>
+              </div>
+              <div className="h-10 w-36 bg-gray-200 rounded-lg"></div>
+            </div>
+          </div>
         </div>
       )}
 
-      {(error || usersError) && (
+      {(error ) && (
         <div className="bg-red-50 border border-red-200 rounded-xl p-6 text-red-700">
-          {error || usersError}
+          {error}
         </div>
       )}
 
@@ -70,10 +94,10 @@ function SettingsPage() {
         </div>
       )}
 
-      {!loading && !usersLoading && !error && !usersError && (
+      {!loading && !error && (
         <>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <AccountSettings organization={organization} admins={admins} onSave={handleSave} />
+            <AccountSettings organization={organization} onSave={handleSave} />
             <ThemeSettings />
           </div>
 

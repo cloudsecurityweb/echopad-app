@@ -11,3 +11,6 @@ export const createProduct = payload =>
 
 export const updateProduct = (productCode, payload) =>
   http.patch(`/api/products/${productCode}`, payload);
+
+export const deleteProduct = (productCode) =>
+  http.delete(`/api/products/${productCode}`);

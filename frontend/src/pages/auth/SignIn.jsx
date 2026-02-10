@@ -592,7 +592,7 @@ function SignIn() {
                   Don't have an account?{' '}
                   <Link
                     to="/sign-up"
-                    className="text-blue-600 hover:text-blue-700 font-semibold transition-colors"
+                    className="text-cyan-600 hover:text-cyan-700 font-semibold transition-colors"
                   >
                     Sign Up!
                   </Link>
@@ -603,9 +603,9 @@ function SignIn() {
               <div className="mt-3 md:mt-4 text-center">
                 <p className="text-gray-600 text-xs md:text-sm">
                   By signing in, you agree to our{' '}
-                  <Link to="/terms-of-service" className="text-blue-600 hover:text-blue-700">Terms of Service</Link>
+                  <Link to="/terms-of-service" className="text-cyan-600 hover:text-cyan-700">Terms of Service</Link>
                   {' '}and{' '}
-                  <Link to="/privacy-policy" className="text-blue-600 hover:text-blue-700">Privacy Policy</Link>
+                  <Link to="/privacy-policy" className="text-cyan-600 hover:text-cyan-700">Privacy Policy</Link>
                 </p>
               </div>
             </div>

@@ -34,9 +34,9 @@ function ProductModal({ isOpen, onClose, onSave, product }) {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSave(formData);
+    await onSave(formData);
   };
 
   if (!isOpen) {
@@ -44,7 +44,7 @@ function ProductModal({ isOpen, onClose, onSave, product }) {
   }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" style={{ backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' }}>
+    <div className="fixed inset-0 bg-white/60 flex items-center justify-center z-50 p-4" style={{ backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' }}>
       <div className="bg-white rounded-xl shadow-xl max-w-xl w-full">
         <div className="p-6 border-b border-gray-200">
           <div className="flex items-center justify-between">

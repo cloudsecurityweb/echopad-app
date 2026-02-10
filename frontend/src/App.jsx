@@ -58,6 +58,7 @@ import ClientFeedback from './pages/dashboard/ClientFeedback';
 import SuperAdminClients from './pages/dashboard/super-admin/Clients';
 import ClientDetail from './pages/dashboard/ClientDetail';
 import LicenseRequests from './pages/dashboard/super-admin/LicenseRequests';
+import EchopadAIScribeDownload from './pages/dashboard/downloads/EchopadAIScribeDownload';
 
 // Dashboard Layout
 import DashboardLayout from './components/layout/DashboardLayout';
@@ -216,6 +217,7 @@ function App({ msalInstance }) {
                     <Route path="client-admin" element={<Profile />} />
                     <Route path="profile" element={<Profile />} />
                     <Route path="productsowned" element={<ProductsOwned />} />
+                    <Route path="product/download/ai-scribe" element={<EchopadAIScribeDownload />} />
                     <Route path="products" element={<Products />} />
                     <Route path="clients" element={<SuperAdminClients />} />
                     <Route path="subscriptions" element={<Subscriptions />} />

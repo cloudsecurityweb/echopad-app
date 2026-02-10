@@ -261,7 +261,7 @@ function ResetPassword() {
                                 </Link>
                                 <Link
                                     to="/forgot-password"
-                                    className="block text-sm text-gray-600 hover:text-gray-700"
+                                    className="block text-sm text-cyan-600 hover:text-cyan-700 font-medium"
                                 >
                                     Request a new reset link
                                 </Link>
