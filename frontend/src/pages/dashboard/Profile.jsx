@@ -10,6 +10,7 @@ function Profile() {
 
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [isProfileLoading, setIsProfileLoading] = useState(true);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [profileData, setProfileData] = useState({
@@ -70,6 +71,8 @@ function Profile() {
             organizationName: userProfile.organization?.name || '',
           });
         }
+      } finally {
+        setIsProfileLoading(false);
       }
     };
     
@@ -233,27 +236,106 @@ function Profile() {
       </div>
 
       {/* PROFILE OVERVIEW */}
-      <section className="bg-white rounded-2xl border-2 border-gray-200 p-6 shadow-sm">
-        <div className="flex flex-col md:flex-row md:items-center gap-6">
-          {userInfo.picture ? (
-            <img
-              src={userInfo.picture}
-              alt={userInfo.name || 'User'}
-              className="w-24 h-24 rounded-full object-cover border-2 border-gray-200"
-            />
-          ) : (
-            <div className="w-24 h-24 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-full flex items-center justify-center text-white text-4xl font-bold">
-              {(userInfo.name || userInfo.email || 'U')
-                .charAt(0)
-                .toUpperCase()}
+      {isProfileLoading ? (
+        <div className="animate-pulse space-y-10">
+          {/* Profile Overview Skeleton */}
+          <section className="bg-white rounded-2xl border-2 border-gray-200 p-6 shadow-sm">
+            <div className="flex flex-col md:flex-row md:items-center gap-6">
+              <div className="w-24 h-24 bg-gray-200 rounded-full"></div>
+              <div className="flex-1 space-y-3">
+                <div className="h-6 w-48 bg-gray-200 rounded"></div>
+                <div className="h-4 w-64 bg-gray-200 rounded"></div>
+                <div className="flex gap-2 mt-2">
+                  <div className="h-6 w-16 bg-gray-200 rounded-full"></div>
+                  <div className="h-6 w-24 bg-gray-200 rounded-full"></div>
+                  <div className="h-6 w-20 bg-gray-200 rounded-full"></div>
+                </div>
+              </div>
+              <div className="h-10 w-28 bg-gray-200 rounded-lg"></div>
             </div>
-          )}
+          </section>
 
-          <div className="flex-1">
-            <h2 className="text-2xl font-semibold text-gray-900">
-              {userInfo.name || 'User'}
-            </h2>
-            <p className="text-gray-600">{userInfo.email}</p>
+          {/* Info Cards Skeleton */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {[...Array(2)].map((_, i) => (
+              <div key={i} className="bg-white rounded-2xl border border-gray-200 p-6 space-y-4">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-gray-200 rounded-lg"></div>
+                  <div className="h-5 w-36 bg-gray-200 rounded"></div>
+                </div>
+                <div className="space-y-3 pt-4 border-t border-gray-100">
+                  {[...Array(2)].map((_, j) => (
+                    <div key={j} className="flex justify-between py-2">
+                      <div className="h-4 w-20 bg-gray-200 rounded"></div>
+                      <div className="h-4 w-40 bg-gray-200 rounded"></div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Editable Profile Skeleton */}
+          <section className="bg-white rounded-2xl border border-gray-200 p-6 space-y-5">
+            <div className="flex justify-between">
+              <div className="h-6 w-48 bg-gray-200 rounded"></div>
+              <div className="h-10 w-28 bg-gray-200 rounded-lg"></div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {[...Array(3)].map((_, i) => (
+                <div key={i} className="space-y-2">
+                  <div className="h-4 w-24 bg-gray-200 rounded"></div>
+                  <div className="h-10 w-full bg-gray-200 rounded-lg"></div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Security Section Skeleton */}
+          <section className="bg-white rounded-2xl border border-gray-200 p-6 space-y-4">
+            <div className="h-6 w-52 bg-gray-200 rounded"></div>
+            <div className="h-4 w-80 bg-gray-200 rounded"></div>
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="flex justify-between items-center py-4">
+                <div className="space-y-2">
+                  <div className="h-4 w-36 bg-gray-200 rounded"></div>
+                  <div className="h-3 w-56 bg-gray-200 rounded"></div>
+                </div>
+                <div className="h-10 w-32 bg-gray-200 rounded-lg"></div>
+              </div>
+            ))}
+          </section>
+
+          {/* Support Skeleton */}
+          <section className="bg-gradient-to-r from-cyan-50 to-blue-50 rounded-2xl p-6 border border-cyan-200">
+            <div className="h-6 w-32 bg-cyan-200/60 rounded mb-3"></div>
+            <div className="h-4 w-80 bg-cyan-200/60 rounded mb-4"></div>
+            <div className="h-10 w-36 bg-cyan-200/60 rounded-lg"></div>
+          </section>
+        </div>
+      ) : (
+        <>
+          <section className="bg-white rounded-2xl border-2 border-gray-200 p-6 shadow-sm">
+            <div className="flex flex-col md:flex-row md:items-center gap-6">
+              {userInfo.picture ? (
+                <img
+                  src={userInfo.picture}
+                  alt={userInfo.name || 'User'}
+                  className="w-24 h-24 rounded-full object-cover border-2 border-gray-200"
+                />
+              ) : (
+                <div className="w-24 h-24 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-full flex items-center justify-center text-white text-4xl font-bold">
+                  {(userInfo.name || userInfo.email || 'U')
+                    .charAt(0)
+                    .toUpperCase()}
+                </div>
+              )}
+
+              <div className="flex-1">
+                <h2 className="text-2xl font-semibold text-gray-900">
+                  {userInfo.name || 'User'}
+                </h2>
+                <p className="text-gray-600">{userInfo.email}</p>
 
             <div className="flex flex-wrap items-center gap-2 mt-3">
               <Badge color="green">Active</Badge>
@@ -513,11 +595,13 @@ function Profile() {
         </button>
       </section>
 
-      {/* Change Password Modal */}
-      <ChangePasswordModal
-        isOpen={isChangePasswordOpen}
-        onClose={() => setIsChangePasswordOpen(false)}
-      />
+          {/* Change Password Modal */}
+          <ChangePasswordModal
+            isOpen={isChangePasswordOpen}
+            onClose={() => setIsChangePasswordOpen(false)}
+          />
+        </>
+      )}
     </div>
   );
 }

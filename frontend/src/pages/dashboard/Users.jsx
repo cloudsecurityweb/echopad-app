@@ -212,22 +212,89 @@ function Users() {
         </p>
       </div>
 
-      {/* Summary Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        {summaryStats.map((stat, index) => (
-          <div
-            key={index}
-            className="bg-white rounded-xl shadow-md p-6 border border-gray-200 hover:shadow-lg transition-shadow"
-          >
-            <div className="flex items-center justify-between mb-4">
-              <div className="text-3xl">{stat.icon}</div>
-              {stat.change ? <span className="text-sm font-semibold text-green-600">{stat.change}</span> : null}
-            </div>
-            <p className="text-sm text-gray-600 mb-1">{stat.label}</p>
-            <p className="text-3xl font-bold text-gray-900">{stat.value}</p>
+      {loading ? (
+        <div className="animate-pulse">
+          {/* Stat Cards Skeleton */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="bg-white rounded-xl shadow-md p-6 border border-gray-200">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="h-8 w-8 bg-gray-200 rounded"></div>
+                </div>
+                <div className="h-4 w-20 bg-gray-200 rounded mb-2"></div>
+                <div className="h-8 w-16 bg-gray-200 rounded"></div>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
+          {/* Filter Bar Skeleton */}
+          <div className="bg-white rounded-xl shadow-md p-6 border border-gray-200 mb-8">
+            <div className="flex flex-col md:flex-row gap-4">
+              <div className="flex-1 h-10 bg-gray-200 rounded-lg"></div>
+              <div className="h-10 w-48 bg-gray-200 rounded-lg"></div>
+              <div className="h-10 w-48 bg-gray-200 rounded-lg"></div>
+              <div className="h-10 w-32 bg-gray-200 rounded-lg"></div>
+            </div>
+          </div>
+          {/* Table Skeleton */}
+          <div className="bg-white rounded-xl shadow-md p-6 border border-gray-200 mb-8">
+            <div className="h-6 w-32 bg-gray-200 rounded mb-6"></div>
+            <div className="space-y-4">
+              <div className="flex gap-4 pb-3 border-b border-gray-200">
+                {[100, 160, 60, 60, 70, 80, 60].map((w, i) => (
+                  <div key={i} className="h-4 bg-gray-200 rounded" style={{ width: w }}></div>
+                ))}
+              </div>
+              {[...Array(5)].map((_, i) => (
+                <div key={i} className="flex gap-4 py-3">
+                  {[100, 160, 60, 60, 70, 80, 60].map((w, j) => (
+                    <div key={j} className="h-4 bg-gray-200 rounded" style={{ width: w }}></div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+          {/* Pending Invitations Skeleton */}
+          <div className="bg-white rounded-xl shadow-md p-6 border border-gray-200 mb-8">
+            <div className="h-6 w-44 bg-gray-200 rounded mb-6"></div>
+            <div className="space-y-3">
+              {[...Array(2)].map((_, i) => (
+                <div key={i} className="flex gap-4 py-3 border-b border-gray-100">
+                  <div className="h-4 w-48 bg-gray-200 rounded"></div>
+                  <div className="h-4 w-20 bg-gray-200 rounded"></div>
+                </div>
+              ))}
+            </div>
+          </div>
+          {/* Charts Skeleton */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <div className="bg-white rounded-xl shadow-md p-6 border border-gray-200">
+              <div className="h-5 w-44 bg-gray-200 rounded mb-4"></div>
+              <div className="h-[300px] bg-gray-100 rounded-lg"></div>
+            </div>
+            <div className="bg-white rounded-xl shadow-md p-6 border border-gray-200">
+              <div className="h-5 w-56 bg-gray-200 rounded mb-4"></div>
+              <div className="h-[300px] bg-gray-100 rounded-lg"></div>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <>
+          {/* Summary Stats Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            {summaryStats.map((stat, index) => (
+              <div
+                key={index}
+                className="bg-white rounded-xl shadow-md p-6 border border-gray-200 hover:shadow-lg transition-shadow"
+              >
+                <div className="flex items-center justify-between mb-4">
+                  <div className="text-3xl">{stat.icon}</div>
+                  {stat.change ? <span className="text-sm font-semibold text-green-600">{stat.change}</span> : null}
+                </div>
+                <p className="text-sm text-gray-600 mb-1">{stat.label}</p>
+                <p className="text-3xl font-bold text-gray-900">{stat.value}</p>
+              </div>
+            ))}
+          </div>
 
       {/* Filters and Search */}
       <div className="bg-white rounded-xl shadow-md p-6 border border-gray-200 mb-8">
@@ -272,86 +339,79 @@ function Users() {
         </div>
       </div>
 
-      {/* Users Table */}
-      <div className="bg-white rounded-xl shadow-md p-6 border border-gray-200 mb-8">
-        <h2 className="text-2xl font-semibold text-gray-900 mb-6">All Users</h2>
-        <div className="overflow-x-auto">
-          {loading ? (
-            <p className="py-8 text-center text-gray-500">Loading users...</p>
-          ) : (
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-gray-200">
-                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Name</th>
-                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Email</th>
-                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Role</th>
-                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Status</th>
-                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">AI Agents</th>
-                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Last Active</th>
-                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredUsers.map((user) => (
-                <tr key={user.id} className="border-b border-gray-100 hover:bg-gray-50">
-                  <td className="py-4 px-4 text-sm font-medium text-gray-900">{user.name}</td>
-                  <td className="py-4 px-4 text-sm text-gray-700">{user.email}</td>
-                  <td className="py-4 px-4">
-                    {editingUserId === user.id ? (
-                      <select
-                        value={user.role}
-                        onChange={(e) => handleInlineRoleChange(user, e.target.value)}
-                        onBlur={() => setEditingUserId(null)}
-                        disabled={updatingRole}
-                        className={`px-2.5 py-0.5 rounded-full text-xs font-medium border-2 focus:outline-none focus:ring-2 focus:ring-cyan-500 ${
-                          user.role === 'Admin'
-                            ? 'bg-purple-100 text-purple-800 border-purple-300'
-                            : 'bg-gray-100 text-gray-800 border-gray-300'
-                        }`}
-                        autoFocus
-                      >
-                        <option value="User">User</option>
-                        <option value="Admin">Admin</option>
-                      </select>
-                    ) : (
-                      <button
-                        onClick={() => setEditingUserId(user.id)}
-                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium transition-all hover:scale-105 cursor-pointer ${
-                          user.role === 'Admin'
-                            ? 'bg-purple-100 text-purple-800 hover:bg-purple-200'
-                            : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
-                        }`}
-                        title="Click to change role"
-                      >
-                        {user.role}
-                      </button>
-                    )}
-                  </td>
-                  <td className="py-4 px-4">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                      user.status === 'Active'
-                        ? 'bg-green-100 text-green-800'
-                        : 'bg-gray-100 text-gray-800'
-                    }`}>
-                      {user.status}
-                    </span>
-                  </td>
-                  <td className="py-4 px-4 text-sm text-gray-700">{user.products}</td>
-                  <td className="py-4 px-4 text-sm text-gray-500">{user.lastActive}</td>
-                  <td className="py-4 px-4">
-                    <UserManageDropdown
-                      user={user}
-                      onManageRole={handleOpenRoleModal}
-                      onRemoveUser={handleOpenDeleteModal}
-                    />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          )}
-        </div>
-      </div>
+          {/* Users Table */}
+          <div className="bg-white rounded-xl shadow-md p-6 border border-gray-200 mb-8">
+            <h2 className="text-2xl font-semibold text-gray-900 mb-6">All Users</h2>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-gray-200">
+                    <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Name</th>
+                    <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Email</th>
+                    <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Role</th>
+                    <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Status</th>
+                    <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">AI Agents</th>
+                    <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Last Active</th>
+                    <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredUsers.map((user) => (
+                    <tr key={user.id} className="border-b border-gray-100 hover:bg-gray-50">
+                      <td className="py-4 px-4 text-sm font-medium text-gray-900">{user.name}</td>
+                      <td className="py-4 px-4 text-sm text-gray-700">{user.email}</td>
+                      <td className="py-4 px-4">
+                        {editingUserId === user.id ? (
+                          <select
+                            value={user.role}
+                            onChange={(e) => handleInlineRoleChange(user, e.target.value)}
+                            onBlur={() => setEditingUserId(null)}
+                            disabled={updatingRole}
+                            className={`px-2.5 py-0.5 rounded-full text-xs font-medium border-2 focus:outline-none focus:ring-2 focus:ring-cyan-500 ${user.role === 'Admin'
+                              ? 'bg-purple-100 text-purple-800 border-purple-300'
+                              : 'bg-gray-100 text-gray-800 border-gray-300'
+                              }`}
+                            autoFocus
+                          >
+                            <option value="User">User</option>
+                            <option value="Admin">Admin</option>
+                          </select>
+                        ) : (
+                          <button
+                            onClick={() => setEditingUserId(user.id)}
+                            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium transition-all hover:scale-105 cursor-pointer ${user.role === 'Admin'
+                              ? 'bg-purple-100 text-purple-800 hover:bg-purple-200'
+                              : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                              }`}
+                            title="Click to change role"
+                          >
+                            {user.role}
+                          </button>
+                        )}
+                      </td>
+                      <td className="py-4 px-4">
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${user.status === 'Active'
+                          ? 'bg-green-100 text-green-800'
+                          : 'bg-gray-100 text-gray-800'
+                          }`}>
+                          {user.status}
+                        </span>
+                      </td>
+                      <td className="py-4 px-4 text-sm text-gray-700">{user.products}</td>
+                      <td className="py-4 px-4 text-sm text-gray-500">{user.lastActive}</td>
+                      <td className="py-4 px-4">
+                        <UserManageDropdown
+                          user={user}
+                          onManageRole={handleOpenRoleModal}
+                          onRemoveUser={handleOpenDeleteModal}
+                        />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
 
       {/* Pending invitations */}
       <div className="bg-white rounded-xl shadow-md p-6 border border-gray-200 mb-8">
@@ -424,22 +484,24 @@ function Users() {
           )}
         </div>
 
-        {/* Activity Timeline */}
-        <div className="bg-white rounded-xl shadow-md p-6 border border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">User Activity Timeline (Last 6 Days)</h2>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={activityTimeline}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="date" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Bar dataKey="active" stackId="a" fill="#10b981" name="Active" />
-              <Bar dataKey="inactive" stackId="a" fill="#6b7280" name="Inactive" />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
+            {/* Activity Timeline */}
+            <div className="bg-white rounded-xl shadow-md p-6 border border-gray-200">
+              <h2 className="text-xl font-semibold text-gray-900 mb-4">User Activity Timeline (Last 6 Days)</h2>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={activityTimeline}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="date" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Bar dataKey="active" stackId="a" fill="#10b981" name="Active" />
+                  <Bar dataKey="inactive" stackId="a" fill="#6b7280" name="Inactive" />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </>
+      )}
 
       {/* Invite User Modal */}
       <InviteUserModal
