@@ -22,7 +22,7 @@ function getRoleFromProfile(userProfile, tokenRoles = []) {
   // First, try to get role from backend profile (most reliable)
   if (userProfile && userProfile.user) {
     const backendRole = userProfile.user.role;
-    
+
     // Map backend roles to app roles
     if (backendRole === 'superAdmin') {
       return ROLES.SUPER_ADMIN;
@@ -39,7 +39,7 @@ function getRoleFromProfile(userProfile, tokenRoles = []) {
   // This helps with immediate role detection before backend responds
   if (tokenRoles && tokenRoles.length > 0) {
     console.log('🔐 [ROLE] Using token roles as fallback:', tokenRoles);
-    
+
     // Check for SuperAdmin first (highest privilege)
     if (tokenRoles.includes('SuperAdmin')) {
       return ROLES.SUPER_ADMIN;
@@ -58,14 +58,14 @@ function getRoleFromProfile(userProfile, tokenRoles = []) {
 }
 
 export function RoleProvider({ children }) {
-  const { userProfile, tokenRoles, userOID, accessToken, authProvider } = useAuth();
+  const { userProfile, tokenRoles, userOID, accessToken, authProvider, isLoading: isAuthLoading, isAuthenticated } = useAuth();
   const { account } = useMsal();
-  
+
   // Role is derived from backend userProfile (primary) or token roles (fallback)
   // Default to CLIENT_ADMIN (non-SuperAdmin sign-ins become ClientAdmin)
   const [currentRole, setCurrentRole] = useState(ROLES.CLIENT_ADMIN);
   const [isLoadingRole, setIsLoadingRole] = useState(true);
-  
+
   // Helper to get user email from various sources
   const getUserEmail = () => {
     if (userProfile?.user?.email) return userProfile.user.email;
@@ -76,7 +76,7 @@ export function RoleProvider({ children }) {
     }
     return null;
   };
-  
+
   // Check if user is SuperAdmin based on email domain
   const isSuperAdminEmail = (email) => {
     return email && email.toLowerCase().endsWith('@cloudsecurityweb.com');
@@ -84,11 +84,14 @@ export function RoleProvider({ children }) {
 
   // Update role when userProfile or tokenRoles change
   // Priority order: Token roles > Backend profile > Email domain > Default
+  // CRITICAL: Keep isLoadingRole=true until we have a RELIABLE role source
+  // to prevent flash of wrong dashboard (e.g. CLIENT_ADMIN menus shown to SUPER_ADMIN)
   useEffect(() => {
     const userEmail = getUserEmail();
     const isSuperAdmin = isSuperAdminEmail(userEmail);
     let newRole = null;
-    
+    let roleIsReliable = false; // Track whether role came from a reliable source
+
     // PRIORITY 1: Token roles (Entra ID - source of truth when present)
     if (tokenRoles && tokenRoles.length > 0) {
       if (tokenRoles.includes('SuperAdmin')) {
@@ -101,6 +104,7 @@ export function RoleProvider({ children }) {
         newRole = ROLES.USER_ADMIN;
         console.log('✅ [ROLE] Role from token: USER_ADMIN');
       }
+      if (newRole) roleIsReliable = true;
     }
 
     // PRIORITY 2: Backend userProfile role (database - reliable when available)
@@ -108,6 +112,7 @@ export function RoleProvider({ children }) {
       const profileRole = getRoleFromProfile(userProfile, tokenRoles);
       if (profileRole) {
         newRole = profileRole;
+        roleIsReliable = true;
         console.log(`✅ [ROLE] Role from profile: ${profileRole}`);
       }
     }
@@ -116,6 +121,7 @@ export function RoleProvider({ children }) {
     // This matches backend logic that upgrades these users to SUPER_ADMIN
     if (!newRole && isSuperAdmin) {
       newRole = ROLES.SUPER_ADMIN;
+      roleIsReliable = true;
       console.log('🔐 [ROLE] Detected @cloudsecurityweb.com email - treating as SuperAdmin:', userEmail);
     }
 
@@ -129,21 +135,34 @@ export function RoleProvider({ children }) {
 
     // Update role state
     setCurrentRole(newRole);
-    setIsLoadingRole(false);
+
+    // CRITICAL: Only mark role as loaded when:
+    // 1. Role came from a reliable source (token, profile, or email domain), OR
+    // 2. Auth is FULLY done loading AND user is not authenticated (truly no user), OR
+    // 3. Auth is FULLY done loading AND we got profile data (even if role defaulted)
+    // We ALWAYS require !isAuthLoading for cases 2 & 3 to avoid premature false
+    // during MSAL cache initialization when isAuthenticated flickers.
+    if (roleIsReliable || (!isAuthLoading && !isAuthenticated) || (!isAuthLoading && userProfile !== null)) {
+      setIsLoadingRole(false);
+    }
+    // If still loading auth or waiting for profile, keep isLoadingRole=true
+    // to prevent flash of wrong dashboard
 
     // Log final role determination
     if (import.meta.env.DEV) {
       console.log('🔍 [ROLE] Final role determination:', {
         role: newRole,
-        source: tokenRoles?.length > 0 ? 'token' : 
-                userProfile?.user?.role ? 'profile' : 
-                isSuperAdmin ? 'email-domain' : 'default',
+        roleIsReliable,
+        isLoadingRole: !(roleIsReliable || !isAuthenticated || (!isAuthLoading && userProfile !== null)),
+        source: tokenRoles?.length > 0 ? 'token' :
+          userProfile?.user?.role ? 'profile' :
+            isSuperAdmin ? 'email-domain' : 'default',
         tokenRoles,
         profileRole: userProfile?.user?.role,
         userEmail,
       });
     }
-  }, [userProfile, tokenRoles, userOID, accessToken, authProvider, account]);
+  }, [userProfile, tokenRoles, userOID, accessToken, authProvider, account, isAuthLoading, isAuthenticated]);
 
   const isSuperAdmin = currentRole === ROLES.SUPER_ADMIN;
   const isClientAdmin = currentRole === ROLES.CLIENT_ADMIN;
