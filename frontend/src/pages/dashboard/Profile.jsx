@@ -2,11 +2,12 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useRole } from '../../contexts/RoleContext';
 import ChangePasswordModal from '../../components/ui/ChangePasswordModal';
+import { showIntercom } from '../../utils/intercom';
 
 function Profile() {
   const { account, googleUser, authProvider, userProfile, getAccessToken, googleToken } = useAuth();
-  const { currentRole, isSuperAdmin, isClientAdmin, isUserAdmin } = useRole();
-  
+  const { isSuperAdmin, isClientAdmin, isUserAdmin } = useRole();
+
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState(null);
@@ -452,13 +453,15 @@ function Profile() {
         />
         <ActionRow
           title="Multi-Factor Authentication"
-          description="Add an extra layer of security to your account"
+          description="Coming soon — Add an extra layer of security to your account"
           action="Enable MFA"
+          disabled
         />
         <ActionRow
           title="Active Sessions"
-          description="View and manage logged-in devices"
+          description="Coming soon — View and manage logged-in devices"
           action="Manage Sessions"
+          disabled
         />
       </Section>
 
@@ -469,11 +472,13 @@ function Profile() {
       >
         <ToggleRow
           title="Email Notifications"
-          description="Receive important system and account updates"
+          description="Coming soon — Receive important system and account updates"
+          disabled
         />
         <ToggleRow
           title="Product Announcements"
-          description="Be notified about new Echopad features"
+          description="Coming soon — Be notified about new Echopad features"
+          disabled
         />
       </Section>
 
@@ -485,8 +490,9 @@ function Profile() {
         >
           <ActionRow
             title="User Access"
-            description="Invite, remove, or update user permissions"
+            description="Coming soon — Invite, remove, or update user permissions"
             action="Manage Access"
+            disabled
           />
         </Section>
       )}
@@ -500,8 +506,10 @@ function Profile() {
           If you have questions about your account or need assistance, our
           support team is here to help.
         </p>
-        <button className="px-5 py-2 rounded-lg bg-white border border-gray-300 text-gray-800 font-medium hover:bg-gray-50">
-          Contact Support
+        <button
+          onClick={() => showIntercom()}
+          className="px-5 py-2 rounded-lg bg-white border border-gray-300 text-gray-800 font-medium hover:bg-gray-50 cursor-pointer transition-colors"
+        >          Contact Support
         </button>
       </section>
 
@@ -545,7 +553,10 @@ function ActionRow({ title, description, action, onClick, disabled }) {
         <p className="text-sm text-gray-600">{description}</p>
       </div>
       <button
-        className={`px-4 py-2 rounded-lg bg-white border border-gray-300 text-gray-800 font-medium hover:bg-gray-50 transition-colors cursor-pointer ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+        className={`px-4 py-2 rounded-lg border font-medium transition-colors ${disabled
+          ? 'bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed opacity-60'
+          : 'bg-white border-gray-300 text-gray-800 hover:bg-gray-50 cursor-pointer'
+          }`}
         onClick={onClick}
         disabled={disabled}
       >
@@ -555,14 +566,14 @@ function ActionRow({ title, description, action, onClick, disabled }) {
   );
 }
 
-function ToggleRow({ title, description }) {
+function ToggleRow({ title, description, disabled }) {
   return (
-    <div className="py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <div className={`py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4 ${disabled ? 'opacity-60 cursor-not-allowed' : ''}`}>
       <div>
         <p className="font-medium text-gray-900">{title}</p>
         <p className="text-sm text-gray-600">{description}</p>
       </div>
-      <input type="checkbox" className="w-5 h-5 accent-cyan-600" />
+      <input type="checkbox" className={`w-5 h-5 accent-cyan-600 ${disabled ? 'cursor-not-allowed' : ''}`} disabled={disabled} />
     </div>
   );
 }

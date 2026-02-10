@@ -641,7 +641,7 @@ function SignUp() {
                   Already have an account?{' '}
                   <Link
                     to="/sign-in"
-                    className="text-blue-600 hover:text-blue-700 font-semibold transition-colors"
+                    className="text-cyan-600 hover:text-cyan-700 font-semibold transition-colors"
                   >
                     Sign In!
                   </Link>
