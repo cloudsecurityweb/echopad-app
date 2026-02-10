@@ -1,5 +1,5 @@
 import { getContainer } from "../config/cosmosClient.js";
-import createProduct  from "../models/product.model.js";
+import createProduct from "../models/product.model.js";
 
 export async function getProducts() {
   const container = getContainer("products");
@@ -32,6 +32,11 @@ export async function getProductByCode(productCode) {
   return resource;
 }
 
+export async function deleteProduct(productCode) {
+  const container = getContainer("products");
+  await container.item(productCode, productCode).delete();
+}
+
 export async function getProductById(productId, tenantId) {
   // NOTE: tenantId is ignored for now, as products are considered global.
   // The partition key for products is productCode, which is the same as productId.
@@ -43,19 +48,19 @@ export async function getProductsByTenant(tenantId, status = null) {
   if (!container) {
     throw new Error("Cosmos DB container not available");
   }
-  
+
   let query = "SELECT * FROM c WHERE c.tenantId = @tenantId";
   const parameters = [{ name: "@tenantId", value: tenantId }];
-  
+
   if (status) {
     query += " AND c.status = @status";
     parameters.push({ name: "@status", value: status });
   }
-  
+
   const { resources } = await container.items.query({
     query,
     parameters,
   }).fetchAll();
-  
+
   return resources;
 }

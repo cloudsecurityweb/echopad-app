@@ -1,10 +1,15 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { fetchProducts } from "../api/products.api";
 
 export function useProducts() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const refetch = useCallback(() => {
+    setRefreshKey(prev => prev + 1);
+  }, []);
 
   useEffect(() => {
     let isMounted = true;
@@ -32,7 +37,7 @@ export function useProducts() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [refreshKey]);
 
-  return { products, loading, error };
+  return { products, loading, error, refetch };
 }

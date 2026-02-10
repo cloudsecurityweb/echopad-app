@@ -1,13 +1,17 @@
 import { useState } from 'react';
 import { useProducts } from '../../../hooks/useProducts';
 import ProductModal from './components/ProductModal';
-import { createProduct, updateProduct } from '../../../api/products.api';
+import DeleteProductModal from './components/DeleteProductModal';
+import { createProduct, updateProduct, deleteProduct } from '../../../api/products.api';
+import { toast } from 'react-toastify';
 
 function SuperAdminProducts() {
-  const { products, loading: productsLoading, error: productsError, setRefreshKey } = useProducts();
+  const { products, loading: productsLoading, error: productsError, refetch } = useProducts();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [productToDelete, setProductToDelete] = useState(null);
 
   const handleOpenModal = (product = null) => {
     setSelectedProduct(product);
@@ -26,12 +30,28 @@ function SuperAdminProducts() {
       } else {
         await createProduct(productData);
       }
-      setRefreshKey(prev => prev + 1);
+      refetch();
       handleCloseModal();
     } catch (error) {
       console.error("Failed to save product:", error);
-      // You might want to show an error message to the user
+      toast.error(`Failed to save product: ${error?.response?.data?.message || error.message}`);
     }
+  };
+
+  const handleOpenDeleteModal = (product) => {
+    setProductToDelete(product);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleCloseDeleteModal = () => {
+    setProductToDelete(null);
+    setIsDeleteModalOpen(false);
+  };
+
+  const handleDelete = async (productCode) => {
+    await deleteProduct(productCode);
+    toast.success('Product deleted successfully');
+    refetch();
   };
 
 
@@ -93,11 +113,10 @@ function SuperAdminProducts() {
           <div key={product.id} className="bg-white rounded-xl shadow-md p-6 border border-gray-200 flex flex-col justify-between relative">
             {product.status && (
               <div className="absolute top-4 right-4">
-                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold ${
-                  product.status === 'ACTIVE' 
-                    ? 'bg-green-100 text-green-700'
-                    : 'bg-gray-100 text-gray-700'
-                }`}>
+                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold ${product.status === 'ACTIVE'
+                  ? 'bg-green-100 text-green-700'
+                  : 'bg-gray-100 text-gray-700'
+                  }`}>
                   {product.status}
                 </span>
               </div>
@@ -115,12 +134,23 @@ function SuperAdminProducts() {
             <div className="mt-4 pt-4 border-t border-gray-200 space-y-1">
               <p className="text-xs text-gray-500">Endpoint: {product.endpoint}</p>
             </div>
-            <button
-              onClick={() => handleOpenModal(product)}
-              className="mt-6 w-full px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-900 rounded-lg font-medium transition-colors text-sm"
-            >
-              Update
-            </button>
+            <div className="mt-6 flex gap-3">
+              <button
+                onClick={() => handleOpenModal(product)}
+                className="flex-1 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-900 rounded-lg font-medium transition-colors text-sm cursor-pointer"
+              >
+                Update
+              </button>
+              <button
+                onClick={() => handleOpenDeleteModal(product)}
+                className="px-4 py-2 text-red-600 bg-red-50 hover:bg-red-100 rounded-lg font-medium transition-colors text-sm cursor-pointer flex items-center gap-1.5"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+                Delete
+              </button>
+            </div>
           </div>
         ))}
       </div>
@@ -129,6 +159,12 @@ function SuperAdminProducts() {
         onClose={handleCloseModal}
         onSave={handleSave}
         product={selectedProduct}
+      />
+      <DeleteProductModal
+        isOpen={isDeleteModalOpen}
+        onClose={handleCloseDeleteModal}
+        onDelete={handleDelete}
+        product={productToDelete}
       />
     </div>
   );
