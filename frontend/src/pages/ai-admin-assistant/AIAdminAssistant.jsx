@@ -1,5 +1,5 @@
 import { useLayoutEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Navigation from '../../components/layout/Navigation';
 import Footer from '../../components/layout/Footer';
 import { handleIntercomAction } from '../../utils/intercom';
@@ -9,9 +9,27 @@ import usePageTitle from '../../hooks/usePageTitle';
 
 function AIAdminAssistant() {
   const PageTitle = usePageTitle('Echopad AI Admin Assistant');
+  const navigate = useNavigate();
   const handleIntercomClick = (e, action) => {
     e.preventDefault();
     handleIntercomAction(action);
+  };
+
+  const handleViewAllProductsClick = (e) => {
+    e.preventDefault();
+    navigate('/');
+    const headerOffset = 80;
+    setTimeout(() => {
+      const element = document.querySelector('#agents');
+      if (element) {
+        const elementPosition = element.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth'
+        });
+      }
+    }, 100);
   };
 
   // Scroll to top when component mounts (instant, no animation)
@@ -42,6 +60,14 @@ function AIAdminAssistant() {
           <div className="container mx-auto px-4">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
               <div className="lg:col-span-5">
+                <a
+                  href="/"
+                  className="inline-flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800 transition-colors mb-4 font-semibold hover:gap-3"
+                  onClick={handleViewAllProductsClick}
+                >
+                  <i className="bi bi-arrow-left"></i>
+                  View All Products
+                </a>
                 <div className="text-sm font-semibold text-blue-600 uppercase tracking-wider mb-4">
                   AI ADMIN ASSISTANT
                 </div>

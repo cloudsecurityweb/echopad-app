@@ -31,6 +31,30 @@ function Navigation() {
     }
   };
 
+  const scrollToSection = (e, selector) => {
+    e.preventDefault();
+    const headerOffset = 64;
+
+    const scroll = () => {
+      const element = document.querySelector(selector);
+      if (element) {
+        const elementPosition = element.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth'
+        });
+      }
+    };
+
+    if (isHomePage) {
+      scroll();
+    } else {
+      navigate('/');
+      setTimeout(scroll, 100);
+    }
+  };
+
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
@@ -152,37 +176,32 @@ function Navigation() {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-6">
-            {isHomePage ? (
-              <>
-                <a href="#agents" className="text-gray-700 hover:text-gray-900 font-semibold text-base relative group transition-colors">
-                  Products
-                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-cyan-500 to-blue-600 transition-all group-hover:w-full"></span>
-                </a>
-                <a href="#platform" className="text-gray-700 hover:text-gray-900 font-semibold text-base relative group transition-colors">
-                  Platform
-                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-cyan-500 to-blue-600 transition-all group-hover:w-full"></span>
-                </a>
-                <a href="#roi" className="text-gray-700 hover:text-gray-900 font-semibold text-base relative group transition-colors">
-                  ROI
-                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-cyan-500 to-blue-600 transition-all group-hover:w-full"></span>
-                </a>
-              </>
-            ) : (
-              <>
-                <Link to="/#agents" className="text-gray-700 hover:text-gray-900 font-semibold text-base relative group transition-colors">
-                  Products
-                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-cyan-500 to-blue-600 transition-all group-hover:w-full"></span>
-                </Link>
-                <Link to="/#platform" className="text-gray-700 hover:text-gray-900 font-semibold text-base relative group transition-colors">
-                  Platform
-                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-cyan-500 to-blue-600 transition-all group-hover:w-full"></span>
-                </Link>
-                <Link to="/#roi" className="text-gray-700 hover:text-gray-900 font-semibold text-base relative group transition-colors">
-                  ROI
-                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-cyan-500 to-blue-600 transition-all group-hover:w-full"></span>
-                </Link>
-              </>
-            )}
+            <>
+              <a
+                href="/"
+                onClick={(e) => scrollToSection(e, '#agents')}
+                className="text-gray-700 hover:text-gray-900 font-semibold text-base relative group transition-colors"
+              >
+                Products
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-cyan-500 to-blue-600 transition-all group-hover:w-full"></span>
+              </a>
+              <a
+                href="/"
+                onClick={(e) => scrollToSection(e, '#platform')}
+                className="text-gray-700 hover:text-gray-900 font-semibold text-base relative group transition-colors"
+              >
+                Platform
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-cyan-500 to-blue-600 transition-all group-hover:w-full"></span>
+              </a>
+              <a
+                href="/"
+                onClick={(e) => scrollToSection(e, '#roi')}
+                className="text-gray-700 hover:text-gray-900 font-semibold text-base relative group transition-colors"
+              >
+                ROI
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-cyan-500 to-blue-600 transition-all group-hover:w-full"></span>
+              </a>
+            </>
             {isAuthenticated && !isLoading ? (
               <>
                 {/* User Dropdown */}
@@ -313,55 +332,38 @@ function Navigation() {
         {/* Mobile Menu */}
         <div className={`md:hidden overflow-hidden transition-all duration-500 ease-in-out ${isMobileMenuOpen ? 'max-h-[600px] pb-6' : 'max-h-0'}`}>
           <div className="flex flex-col gap-4 pt-6 animate-slide-in-left">
-            {isHomePage ? (
-              <>
-                <a
-                  href="#agents"
-                  className="text-gray-700 hover:text-gray-900 transition-colors font-medium py-2 border-b border-gray-200 hover:border-cyan-500"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Products
-                </a>
-                <a
-                  href="#platform"
-                  className="text-gray-700 hover:text-gray-900 transition-colors font-medium py-2 border-b border-gray-200 hover:border-cyan-500"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Platform
-                </a>
-                <a
-                  href="#roi"
-                  className="text-gray-700 hover:text-gray-900 transition-colors font-medium py-2 border-b border-gray-200 hover:border-cyan-500"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  ROI
-                </a>
-              </>
-            ) : (
-              <>
-                <Link
-                  to="/#agents"
-                  className="text-gray-700 hover:text-gray-900 transition-colors font-medium py-2 border-b border-gray-200 hover:border-cyan-500"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Products
-                </Link>
-                <Link
-                  to="/#platform"
-                  className="text-gray-700 hover:text-gray-900 transition-colors font-medium py-2 border-b border-gray-200 hover:border-cyan-500"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Platform
-                </Link>
-                <Link
-                  to="/#roi"
-                  className="text-gray-700 hover:text-gray-900 transition-colors font-medium py-2 border-b border-gray-200 hover:border-cyan-500"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  ROI
-                </Link>
-              </>
-            )}
+            <>
+              <a
+                href="/"
+                className="text-gray-700 hover:text-gray-900 transition-colors font-medium py-2 border-b border-gray-200 hover:border-cyan-500"
+                onClick={(e) => {
+                  scrollToSection(e, '#agents');
+                  setIsMobileMenuOpen(false);
+                }}
+              >
+                Products
+              </a>
+              <a
+                href="/"
+                className="text-gray-700 hover:text-gray-900 transition-colors font-medium py-2 border-b border-gray-200 hover:border-cyan-500"
+                onClick={(e) => {
+                  scrollToSection(e, '#platform');
+                  setIsMobileMenuOpen(false);
+                }}
+              >
+                Platform
+              </a>
+              <a
+                href="/"
+                className="text-gray-700 hover:text-gray-900 transition-colors font-medium py-2 border-b border-gray-200 hover:border-cyan-500"
+                onClick={(e) => {
+                  scrollToSection(e, '#roi');
+                  setIsMobileMenuOpen(false);
+                }}
+              >
+                ROI
+              </a>
+            </>
             {isAuthenticated && !isLoading ? (
               <>
                 <Link

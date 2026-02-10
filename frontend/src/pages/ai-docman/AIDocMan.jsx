@@ -1,4 +1,5 @@
 import { useLayoutEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Navigation from '../../components/layout/Navigation';
 import Footer from '../../components/layout/Footer';
 import { handleIntercomAction } from '../../utils/intercom';
@@ -7,9 +8,27 @@ import usePageTitle from '../../hooks/usePageTitle';
 
 function AIDocMan() {
   const PageTitle = usePageTitle('Echopad AI Document Manager');
+  const navigate = useNavigate();
   const handleIntercomClick = (e, action) => {
     e.preventDefault();
     handleIntercomAction(action);
+  };
+
+  const handleViewAllProductsClick = (e) => {
+    e.preventDefault();
+    navigate('/');
+    const headerOffset = 80;
+    setTimeout(() => {
+      const element = document.querySelector('#agents');
+      if (element) {
+        const elementPosition = element.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth'
+        });
+      }
+    }, 100);
   };
 
   // Scroll to top when component mounts (instant, no animation)
@@ -39,8 +58,9 @@ function AIDocMan() {
         <section className="px-4 md:px-14 pt-32 pb-20 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
           <div className="container mx-auto px-4">
             <a
-              href="/#agents"
+              href="/"
               className="inline-flex items-center gap-2 text-sm text-indigo-400 hover:text-indigo-600 transition-colors mb-6 font-semibold hover:gap-3"
+              onClick={handleViewAllProductsClick}
             >
               <i className="bi bi-arrow-left"></i>
               View All Products

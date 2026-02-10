@@ -83,11 +83,9 @@ function DashboardNavbar({ onToggleSidebar }) {
   };
 
   // Determine what to display in navbar
-  // For ClientAdmin: Show organization name if available, otherwise user displayName
-  // For others: Show user displayName
-  const displayName = isClientAdmin && userInfo.organizationName 
-    ? userInfo.organizationName 
-    : userInfo.name;
+  // Always show the user's display name (or its fallbacks) in the navbar.
+  // Organization name can still be shown separately (e.g. as secondary text).
+  const displayName = userInfo.name;
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200 shadow-md">
@@ -212,7 +210,7 @@ function DashboardNavbar({ onToggleSidebar }) {
                     <div className="flex-1">
                       <p className="font-semibold text-gray-900">{displayName || 'User'}</p>
                       {isClientAdmin && userInfo.organizationName && (
-                        <p className="text-xs text-gray-500">{userInfo.name}</p>
+                        <p className="text-xs text-gray-500">{userInfo.organizationName}</p>
                       )}
                       <p className="text-sm text-gray-600">{userInfo.email}</p>
                       {isAuthenticated && (

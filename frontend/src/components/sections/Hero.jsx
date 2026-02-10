@@ -1,4 +1,18 @@
 function Hero() {
+  const handleExploreProductsClick = (e) => {
+    e.preventDefault();
+    const headerOffset = 80;
+    const element = document.querySelector('#agents');
+    if (element) {
+      const elementPosition = element.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      });
+    }
+  };
+
   return (
     <section id="hero" className="relative min-h-[80vh] md:min-h-[85vh] lg:min-h-[90vh] xl:min-h-screen flex items-center justify-center pt-12 md:pt-10 lg:pt-12 xl:pt-16 pb-12 md:pb-10 lg:pb-12 xl:pb-16 overflow-hidden bg-gradient-to-b from-blue-50 via-white to-purple-50">
       <div className="container mx-auto px-6 md:px-4">
@@ -47,7 +61,8 @@ function Hero() {
               Get Started
             </a>
             <a
-              href="#agents" 
+              href="/"
+              onClick={handleExploreProductsClick}
               className="inline-flex items-center justify-center gap-2 glass-card border-2 border-cyan-500/50 text-gray-800 px-6 md:px-5 lg:px-6 xl:px-8 py-3 md:py-2.5 lg:py-3 xl:py-4 rounded-xl hover:bg-cyan-50/50 hover:border-cyan-500 transition-all font-semibold text-sm md:text-sm lg:text-base xl:text-lg hover:scale-105 shadow-sm"
             >
               <i className="bi bi-grid-3x3-gap"></i>
