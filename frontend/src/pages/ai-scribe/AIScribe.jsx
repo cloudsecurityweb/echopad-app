@@ -1,5 +1,5 @@
 import { useState, useEffect, useLayoutEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Navigation from '../../components/layout/Navigation';
 import Footer from '../../components/layout/Footer';
 import { useAudioRecorder } from '../../hooks/useAudioRecorder';
@@ -14,6 +14,7 @@ import usePageTitle from '../../hooks/usePageTitle';
 
 function AIScribe() {
   const PageTitle = usePageTitle('Echopad AI Scribe');
+  const navigate = useNavigate();
   const { isAuthenticated, isLoading } = useAuth();
   const [expandedSections, setExpandedSections] = useState({});
   const [typingText, setTypingText] = useState('');
@@ -80,6 +81,23 @@ function AIScribe() {
     handleIntercomAction(action);
   };
 
+  const handleViewAllProductsClick = (e) => {
+    e.preventDefault();
+    navigate('/');
+    const headerOffset = 80;
+    setTimeout(() => {
+      const element = document.querySelector('#agents');
+      if (element) {
+        const elementPosition = element.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth'
+        });
+      }
+    }, 100);
+  };
+
   // Scroll to top when component mounts (instant, no animation)
   useLayoutEffect(() => {
     // Temporarily disable smooth scroll behavior
@@ -109,8 +127,9 @@ function AIScribe() {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
               <div className="lg:col-span-5">
                 <a
-                  href="/#agents"
+                  href="/"
                   className="inline-flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800 transition-colors mb-4 font-semibold hover:gap-3"
+                  onClick={handleViewAllProductsClick}
                 >
                   <i className="bi bi-arrow-left"></i>
                   View All Products

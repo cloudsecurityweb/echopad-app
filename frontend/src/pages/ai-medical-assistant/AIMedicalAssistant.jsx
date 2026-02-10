@@ -1,5 +1,5 @@
 import { useLayoutEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Navigation from '../../components/layout/Navigation';
 import Footer from '../../components/layout/Footer';
 import { handleIntercomAction } from '../../utils/intercom';
@@ -13,9 +13,27 @@ import usePageTitle from '../../hooks/usePageTitle';
 function AIMedicalAssistant() {
   const { isAuthenticated, isLoading } = useAuth();
   const PageTitle = usePageTitle('Echopad AI Medical Assistant');
+  const navigate = useNavigate();
   const handleIntercomClick = (e, action) => {
     e.preventDefault();
     handleIntercomAction(action);
+  };
+
+  const handleViewAllProductsClick = (e) => {
+    e.preventDefault();
+    navigate('/');
+    const headerOffset = 80;
+    setTimeout(() => {
+      const element = document.querySelector('#agents');
+      if (element) {
+        const elementPosition = element.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth'
+        });
+      }
+    }, 100);
   };
 
   // Scroll to top when component mounts (instant, no animation)
@@ -45,8 +63,9 @@ function AIMedicalAssistant() {
         <section className="px-4 md:px-14 pt-32 pb-20 bg-gradient-to-br from-teal-50 via-emerald-50 to-cyan-50">
           <div className="container mx-auto px-4">
             <a
-              href="/#agents"
+              href="/"
               className="inline-flex items-center gap-2 text-sm text-teal-400 hover:text-teal-600 transition-colors mb-6 font-semibold hover:gap-3"
+              onClick={handleViewAllProductsClick}
             >
               <i className="bi bi-arrow-left"></i>
               View All Products

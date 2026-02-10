@@ -12,14 +12,14 @@ function Footer() {
     handleIntercomAction(action);
   };
 
-  // Handle hash navigation from non-home pages
-  const handleHashNavigation = (e, hash) => {
+  // Handle section navigation with smooth scroll without updating URL hash
+  const handleSectionNavigation = (e, selector) => {
     e.preventDefault();
-    if (isHomePage) {
-      // On home page, just scroll to the section
-      const element = document.querySelector(hash);
+    const headerOffset = 80;
+
+    const scroll = () => {
+      const element = document.querySelector(selector);
       if (element) {
-        const headerOffset = 80;
         const elementPosition = element.getBoundingClientRect().top;
         const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
         window.scrollTo({
@@ -27,22 +27,17 @@ function Footer() {
           behavior: 'smooth'
         });
       }
+    };
+
+    if (isHomePage) {
+      // On home page, just scroll to the section
+      scroll();
     } else {
-      // Navigate to home page, then set hash and scroll
+      // Navigate to home page, then scroll to the section
       navigate('/');
       // Use setTimeout to ensure navigation completes before scrolling
       setTimeout(() => {
-        window.history.replaceState(null, '', hash);
-        const element = document.querySelector(hash);
-        if (element) {
-          const headerOffset = 80;
-          const elementPosition = element.getBoundingClientRect().top;
-          const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-          window.scrollTo({
-            top: offsetPosition,
-            behavior: 'smooth'
-          });
-        }
+        scroll();
       }, 100);
     }
   };
@@ -98,8 +93,8 @@ function Footer() {
             <ul className="space-y-3 text-sm">
               <li>
                 <a
-                  href={isHomePage ? "#agents" : "/#agents"}
-                  onClick={(e) => !isHomePage && handleHashNavigation(e, '#agents')}
+                  href="/"
+                  onClick={(e) => handleSectionNavigation(e, '#agents')}
                   className="text-gray-400 hover:text-cyan-400 transition-colors flex items-center gap-2 group"
                 >
                   <span className="w-0 h-0.5 bg-gradient-to-r from-cyan-400 to-blue-500 transition-all group-hover:w-4"></span>
@@ -108,8 +103,8 @@ function Footer() {
               </li>
               <li>
                 <a
-                  href={isHomePage ? "#platform" : "/#platform"}
-                  onClick={(e) => !isHomePage && handleHashNavigation(e, '#platform')}
+                  href="/"
+                  onClick={(e) => handleSectionNavigation(e, '#platform')}
                   className="text-gray-400 hover:text-cyan-400 transition-colors flex items-center gap-2 group"
                 >
                   <span className="w-0 h-0.5 bg-gradient-to-r from-cyan-400 to-blue-500 transition-all group-hover:w-4"></span>
@@ -163,8 +158,8 @@ function Footer() {
               </li>
               <li>
                 <a
-                  href={isHomePage ? "#agents" : "/#agents"}
-                  onClick={(e) => !isHomePage && handleHashNavigation(e, '#agents')}
+                  href="/"
+                  onClick={(e) => handleSectionNavigation(e, '#agents')}
                   className="text-gray-400 hover:text-cyan-400 transition-colors flex items-center gap-2 group"
                 >
                   <span className="w-0 h-0.5 bg-gradient-to-r from-cyan-400 to-blue-500 transition-all group-hover:w-4"></span>
