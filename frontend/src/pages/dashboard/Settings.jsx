@@ -1,11 +1,14 @@
+import { useState } from 'react';
 import { showIntercom } from '../../utils/intercom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useRole } from '../../contexts/RoleContext';
 import SettingsPage from './client-admin/SettingsPage';
+import ChangePasswordModal from '../../components/ui/ChangePasswordModal';
 
 function Settings() {
-  const { logout } = useAuth();
+  const { logout, authProvider } = useAuth();
   const { isSuperAdmin, isClientAdmin, isUserAdmin } = useRole();
+  const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
 
 
   const handleLogout = async () => {
@@ -42,7 +45,7 @@ function Settings() {
         </svg>
       ),
       actions: [
-        { label: 'Change Password', description: 'Update your account password', buttonText: 'Change Password' },
+        { label: 'Change Password', description: authProvider === 'email' ? 'Update your account password' : 'Password change is not available for social login accounts', buttonText: 'Change Password', action: () => setIsChangePasswordOpen(true), disabled: authProvider !== 'email' },
         { label: 'Two-Factor Authentication', description: 'Add an extra layer of security', buttonText: 'Enable 2FA' },
       ],
     },
@@ -136,24 +139,23 @@ function Settings() {
                   {action.link ? (
                     <a
                       href={action.link}
-                      className={`inline-flex items-center px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                        action.variant === 'danger'
-                          ? 'border-2 border-red-300 text-red-700 hover:border-red-400 hover:bg-red-50'
-                          : 'border-2 border-cyan-300 text-cyan-700 hover:border-cyan-400 hover:bg-cyan-50'
-                      }`}
+                      className={`inline-flex items-center px-4 py-2 rounded-lg text-sm font-medium transition-colors ${action.variant === 'danger'
+                        ? 'border-2 border-red-300 text-red-700 hover:border-red-400 hover:bg-red-50'
+                        : 'border-2 border-cyan-300 text-cyan-700 hover:border-cyan-400 hover:bg-cyan-50'
+                        }`}
                     >
                       {action.buttonText}
                     </a>
                   ) : (
                     <button
                       onClick={action.action}
-                      className={`inline-flex items-center px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                        action.variant === 'danger'
-                          ? 'border-2 border-red-300 text-red-700 hover:border-red-400 hover:bg-red-50'
-                          : action.variant === 'primary'
+                      disabled={action.disabled}
+                      className={`inline-flex items-center px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer ${action.variant === 'danger'
+                        ? 'border-2 border-red-300 text-red-700 hover:border-red-400 hover:bg-red-50'
+                        : action.variant === 'primary'
                           ? 'border-2 border-cyan-300 text-cyan-700 hover:border-cyan-400 hover:bg-cyan-50'
                           : 'border-2 border-gray-300 text-gray-700 hover:bg-gray-50'
-                      }`}
+                        } ${action.disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
                     >
                       {action.buttonText}
                     </button>
@@ -181,6 +183,12 @@ function Settings() {
           Contact Support
         </button>
       </div>
+
+      {/* Change Password Modal */}
+      <ChangePasswordModal
+        isOpen={isChangePasswordOpen}
+        onClose={() => setIsChangePasswordOpen(false)}
+      />
     </div>
   );
 }

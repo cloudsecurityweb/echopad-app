@@ -10,8 +10,10 @@ import { checkProductOwnership } from '../../utils/productOwnership';
 import { useAuth } from '../../contexts/AuthContext';
 import AnimatedAIScribeDemo from '../../components/transcription/AnimatedAIScribeDemo';
 import BeforeAfterSlider from '../../components/products/BeforeAfterSlider';
+import usePageTitle from '../../hooks/usePageTitle';
 
 function AIScribe() {
+  const PageTitle = usePageTitle('Echopad AI Scribe');
   const { isAuthenticated, isLoading } = useAuth();
   const [expandedSections, setExpandedSections] = useState({});
   const [typingText, setTypingText] = useState('');
@@ -98,6 +100,7 @@ function AIScribe() {
 
   return (
     <>
+      {PageTitle}
       <Navigation />
       <main>
         {/* Hero Section */}

@@ -10,7 +10,7 @@ const router = express.Router();
  * ANALYTICS (SUPER ADMIN ONLY)
  */
 
-router.get("/super-admin", verifyAnyAuth, requireRole(['SuperAdmin'], ['superAdmin']), getSuperAdminAnalytics);
+router.get("/super-admin", verifyAnyAuth, requireRole(['SuperAdmin', 'ClientAdmin', 'UserAdmin'], ['superAdmin', 'clientAdmin', 'userAdmin']), getSuperAdminAnalytics);
 
 /**
  * GET /api/analytics/org-summary

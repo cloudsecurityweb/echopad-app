@@ -514,3 +514,422 @@ export async function signInEmail(req, res) {
     });
   }
 }
+
+/**
+ * POST /api/auth/change-password
+ * Change password for authenticated user
+ * 
+ * Body:
+ * - oldPassword: string (required)
+ * - newPassword: string (required)
+ */
+export async function changePassword(req, res) {
+  if (!isConfigured()) {
+    return res.status(503).json({
+      success: false,
+      error: 'CosmosDB not configured',
+      message: 'COSMOS_ENDPOINT and COSMOS_KEY environment variables are required',
+    });
+  }
+
+  try {
+    const { oldPassword, newPassword } = req.body;
+    const userId = req.currentUser.id;
+    const tenantId = req.currentUser.tenantId;
+    const role = req.currentUser.role;
+
+    if (!oldPassword || !newPassword) {
+      return res.status(400).json({
+        success: false,
+        error: 'Validation failed',
+        message: 'Old password and new password are required',
+      });
+    }
+
+    if (!userId || !tenantId || !role) {
+      return res.status(401).json({
+        success: false,
+        error: 'Unauthorized',
+        message: 'User authentication information invalid',
+      });
+    }
+
+    // Get latest user data to verify old password
+    const user = await getUserById(userId, tenantId, role);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        error: 'User not found',
+        message: 'User record not found',
+      });
+    }
+
+    // Check if user is email/password user
+    if (!user.passwordHash) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid operation',
+        message: 'This account does not use a password. Please sign in with your social provider.',
+      });
+    }
+
+    // Verify old password
+    const isOldPasswordValid = await verifyPassword(oldPassword, user.passwordHash);
+    if (!isOldPasswordValid) {
+      return res.status(401).json({
+        success: false,
+        error: 'Invalid validation',
+        message: 'Current password is incorrect',
+      });
+    }
+
+    // Validate new password strength
+    const passwordValidation = validatePasswordStrength(newPassword);
+    if (!passwordValidation.isValid) {
+      return res.status(400).json({
+        success: false,
+        error: 'Password validation failed',
+        message: passwordValidation.errors.join(', '),
+      });
+    }
+
+    // Hash new password
+    const newPasswordHash = await hashPassword(newPassword);
+
+    // Update user with new password hash
+    try {
+      const { updateUser } = await import('../services/userService.js');
+      await updateUser(user.id, user.tenantId, { passwordHash: newPasswordHash }, user.id, user.role);
+
+      console.log(`✅ [CHANGE-PASSWORD] Password updated successfully for user: ${user.email}`);
+
+      res.status(200).json({
+        success: true,
+        message: 'Password updated successfully',
+      });
+    } catch (updateError) {
+      console.error('Failed to update password in database:', updateError);
+      throw new Error('Database update failed');
+    }
+
+  } catch (error) {
+    console.error('Change password error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Change password failed',
+      message: error.message,
+    });
+  }
+}
+
+/**
+ * Generate secure password reset token
+ */
+function generatePasswordResetToken() {
+  return `reset_${Date.now()}_${randomUUID().replace(/-/g, '')}`;
+}
+
+/**
+ * POST /api/auth/forgot-password
+ * Request password reset email
+ * 
+ * Body:
+ * - email: string (required)
+ */
+export async function forgotPassword(req, res) {
+  if (!isConfigured()) {
+    return res.status(503).json({
+      success: false,
+      error: 'CosmosDB not configured',
+      message: 'COSMOS_ENDPOINT and COSMOS_KEY environment variables are required',
+    });
+  }
+
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        error: 'Validation failed',
+        message: 'Email is required',
+      });
+    }
+
+    const normalizedEmail = email.toLowerCase().trim();
+
+    // Generic success message - same for valid and invalid emails (prevent user enumeration)
+    const successResponse = {
+      success: true,
+      message: 'If an account exists for this email, a password reset link has been sent.',
+    };
+
+    // Find user by email across all role containers
+    let user = null;
+    const roles = [USER_ROLES.CLIENT_ADMIN, USER_ROLES.SUPER_ADMIN, USER_ROLES.USER];
+
+    for (const role of roles) {
+      try {
+        const container = getContainer(getContainerNameByRole(role));
+        if (container) {
+          const { resources } = await container.items.query({
+            query: 'SELECT * FROM c WHERE c.email = @email',
+            parameters: [{ name: '@email', value: normalizedEmail }],
+          }, {
+            enableCrossPartitionQuery: true
+          }).fetchAll();
+
+          if (resources.length > 0) {
+            user = resources[0];
+            console.log(`🔍 [FORGOT-PASSWORD] Found user in ${role} container: ${user.id}`);
+            break;
+          }
+        }
+      } catch (error) {
+        console.warn(`Error searching ${role} container:`, error.message);
+      }
+    }
+
+    // If no user found or user doesn't have password (OAuth user), return generic success
+    if (!user || !user.passwordHash) {
+      console.log(`🔍 [FORGOT-PASSWORD] No email/password user found for: ${normalizedEmail}`);
+      return res.status(200).json(successResponse);
+    }
+
+    // Check if email service is configured
+    if (!isEmailConfigured()) {
+      console.error('❌ [FORGOT-PASSWORD] Email service not configured');
+      return res.status(200).json(successResponse); // Still return success to prevent enumeration
+    }
+
+    // Generate reset token
+    const resetToken = generatePasswordResetToken();
+    const expiresAt = new Date(Date.now() + 60 * 60 * 1000).toISOString(); // 1 hour
+
+    // Store token in emailVerifications container with type 'password_reset'
+    try {
+      const verificationContainer = getContainer(VERIFICATION_CONTAINER);
+      if (verificationContainer) {
+        // Import the TOKEN_TYPES
+        const { TOKEN_TYPES } = await import('../models/emailVerification.js');
+
+        await verificationContainer.items.create({
+          id: `reset_${randomUUID()}`,
+          tenantId: user.tenantId,
+          email: normalizedEmail,
+          token: resetToken,
+          type: TOKEN_TYPES.PASSWORD_RESET,
+          expiresAt: expiresAt,
+          verifiedAt: null,
+          usedAt: null,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        });
+        console.log(`✅ [FORGOT-PASSWORD] Reset token stored for: ${normalizedEmail}`);
+      }
+    } catch (error) {
+      console.error('Failed to store reset token:', error.message);
+      return res.status(200).json(successResponse); // Still return success
+    }
+
+    // Send reset email
+    try {
+      const { sendPasswordResetEmail } = await import('../services/emailService.js');
+      await sendPasswordResetEmail(normalizedEmail, resetToken, user.displayName || 'User');
+      console.log(`✅ [FORGOT-PASSWORD] Reset email sent to: ${normalizedEmail}`);
+    } catch (emailError) {
+      console.error('❌ [FORGOT-PASSWORD] Failed to send reset email:', emailError.message);
+      // Still return success to prevent enumeration
+    }
+
+    res.status(200).json(successResponse);
+  } catch (error) {
+    console.error('Forgot password error:', error);
+    // Return generic success even on error to prevent enumeration
+    res.status(200).json({
+      success: true,
+      message: 'If an account exists for this email, a password reset link has been sent.',
+    });
+  }
+}
+
+/**
+ * POST /api/auth/reset-password
+ * Reset password using token
+ * 
+ * Body:
+ * - token: string (required)
+ * - newPassword: string (required)
+ */
+export async function resetPassword(req, res) {
+  if (!isConfigured()) {
+    return res.status(503).json({
+      success: false,
+      error: 'CosmosDB not configured',
+      message: 'COSMOS_ENDPOINT and COSMOS_KEY environment variables are required',
+    });
+  }
+
+  try {
+    const { token, newPassword } = req.body;
+
+    if (!token || !newPassword) {
+      return res.status(400).json({
+        success: false,
+        error: 'Validation failed',
+        message: 'Token and new password are required',
+      });
+    }
+
+    // Validate password strength
+    const passwordValidation = validatePasswordStrength(newPassword);
+    if (!passwordValidation.isValid) {
+      return res.status(400).json({
+        success: false,
+        error: 'Password validation failed',
+        message: passwordValidation.errors.join(', '),
+      });
+    }
+
+    // Find reset token in emailVerifications container
+    const verificationContainer = getContainer(VERIFICATION_CONTAINER);
+    if (!verificationContainer) {
+      return res.status(500).json({
+        success: false,
+        error: 'Configuration error',
+        message: 'Verification system not available',
+      });
+    }
+
+    // Import TOKEN_TYPES and helper functions
+    const { TOKEN_TYPES, isVerificationExpired, isTokenUsed } = await import('../models/emailVerification.js');
+
+    // Find the reset token
+    let resetRecord = null;
+    try {
+      const { resources } = await verificationContainer.items.query({
+        query: 'SELECT * FROM c WHERE c.token = @token AND c.type = @type',
+        parameters: [
+          { name: '@token', value: token },
+          { name: '@type', value: TOKEN_TYPES.PASSWORD_RESET }
+        ],
+      }, {
+        enableCrossPartitionQuery: true
+      }).fetchAll();
+
+      if (resources.length > 0) {
+        resetRecord = resources[0];
+      }
+    } catch (error) {
+      console.error('Error finding reset token:', error.message);
+    }
+
+    if (!resetRecord) {
+      console.log(`❌ [RESET-PASSWORD] Token not found`);
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid token',
+        message: 'Invalid or expired password reset link. Please request a new one.',
+      });
+    }
+
+    // Check if token is expired
+    if (isVerificationExpired(resetRecord)) {
+      console.log(`❌ [RESET-PASSWORD] Token expired for: ${resetRecord.email}`);
+      return res.status(400).json({
+        success: false,
+        error: 'Token expired',
+        message: 'This password reset link has expired. Please request a new one.',
+      });
+    }
+
+    // Check if token has already been used
+    if (isTokenUsed(resetRecord)) {
+      console.log(`❌ [RESET-PASSWORD] Token already used for: ${resetRecord.email}`);
+      return res.status(400).json({
+        success: false,
+        error: 'Token already used',
+        message: 'This password reset link has already been used. Please request a new one.',
+      });
+    }
+
+    // Find user by email
+    let user = null;
+    const roles = [USER_ROLES.CLIENT_ADMIN, USER_ROLES.SUPER_ADMIN, USER_ROLES.USER];
+
+    for (const role of roles) {
+      try {
+        const container = getContainer(getContainerNameByRole(role));
+        if (container) {
+          const { resources } = await container.items.query({
+            query: 'SELECT * FROM c WHERE c.email = @email',
+            parameters: [{ name: '@email', value: resetRecord.email }],
+          }, {
+            enableCrossPartitionQuery: true
+          }).fetchAll();
+
+          if (resources.length > 0) {
+            user = resources[0];
+            console.log(`✅ [RESET-PASSWORD] Found user: ${user.id}, role: ${role}`);
+            break;
+          }
+        }
+      } catch (error) {
+        console.warn(`Error searching ${role} container:`, error.message);
+      }
+    }
+
+    if (!user) {
+      console.log(`❌ [RESET-PASSWORD] User not found for email: ${resetRecord.email}`);
+      return res.status(400).json({
+        success: false,
+        error: 'User not found',
+        message: 'Unable to reset password. Please contact support.',
+      });
+    }
+
+    // Hash new password
+    const newPasswordHash = await hashPassword(newPassword);
+
+    // Update user with new password
+    try {
+      const { updateUser } = await import('../services/userService.js');
+      await updateUser(user.id, user.tenantId, { passwordHash: newPasswordHash }, user.id, user.role);
+      console.log(`✅ [RESET-PASSWORD] Password updated for: ${user.email}`);
+    } catch (updateError) {
+      console.error('Failed to update password:', updateError.message);
+      return res.status(500).json({
+        success: false,
+        error: 'Update failed',
+        message: 'Failed to update password. Please try again.',
+      });
+    }
+
+    // Mark token as used
+    try {
+      const now = new Date().toISOString();
+      await verificationContainer.item(resetRecord.id, resetRecord.tenantId).replace({
+        ...resetRecord,
+        usedAt: now,
+        updatedAt: now,
+      });
+      console.log(`✅ [RESET-PASSWORD] Token marked as used`);
+    } catch (error) {
+      console.warn('Failed to mark token as used:', error.message);
+      // Continue - password was already updated
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Password has been reset successfully. You can now sign in with your new password.',
+    });
+  } catch (error) {
+    console.error('Reset password error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Reset failed',
+      message: error.message,
+    });
+  }
+}

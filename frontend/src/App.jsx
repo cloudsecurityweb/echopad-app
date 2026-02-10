@@ -41,6 +41,8 @@ import VerifyEmail from './pages/auth/VerifyEmail';
 import AcceptInvitation from './pages/auth/AcceptInvitation';
 import VerifyEmailSent from './pages/auth/VerifyEmailSent';
 import ResendVerification from './pages/auth/ResendVerification';
+import ForgotPassword from './pages/auth/ForgotPassword';
+import ResetPassword from './pages/auth/ResetPassword';
 import Dashboard from './pages/dashboard/Dashboard';
 import Profile from './pages/dashboard/Profile';
 import Products from './pages/dashboard/Products';
@@ -77,9 +79,11 @@ import NotFound from './pages/NotFound';
 import HelpCenter from './pages/dashboard/HelpCenter';
 import HelpDocDetail from './pages/dashboard/HelpDocDetail';
 import ClientManagementPage from './pages/dashboard/super-admin/ClientManagementPage';
+import usePageTitle from './hooks/usePageTitle';
 
 function HomePage() {
   const location = useLocation();
+  const PageTitle = usePageTitle('Echopad AI - Healthcare AI Agent Platform | Reduce Costs 60%, Increase Revenue 20%');
 
   // Initialize scroll animations
   useScrollAnimations();
@@ -135,6 +139,7 @@ function HomePage() {
 
   return (
     <>
+      {PageTitle}
       <Navigation />
       <main>
         <Hero />
@@ -196,6 +201,8 @@ function App({ msalInstance }) {
                   <Route path="/verify-email" element={<VerifyEmail />} />
                   <Route path="/verify-email-sent" element={<VerifyEmailSent />} />
                   <Route path="/resend-verification" element={<ResendVerification />} />
+                  <Route path="/forgot-password" element={<ForgotPassword />} />
+                  <Route path="/reset-password" element={<ResetPassword />} />
                   <Route path="/accept-invitation" element={<AcceptInvitation />} />
                   <Route
                     path="/dashboard"

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useRole } from '../../contexts/RoleContext';
+import ChangePasswordModal from '../../components/ui/ChangePasswordModal';
 
 function Profile() {
   const { account, googleUser, authProvider, userProfile, getAccessToken, googleToken } = useAuth();
@@ -15,7 +16,9 @@ function Profile() {
     email: '',
     organizationName: '',
   });
-  
+
+  const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
+
   // Fetch user profile from backend
   useEffect(() => {
     const fetchProfile = async () => {
@@ -325,7 +328,7 @@ function Profile() {
           <div className="space-y-4">
             <div>
               <label htmlFor="displayName" className="block text-sm font-medium text-gray-700 mb-1">
-                Display Name (Organizer Name)
+                Display Name (Organizer Name) *
               </label>
               <input
                 type="text"
@@ -333,9 +336,30 @@ function Profile() {
                 name="displayName"
                 value={profileData.displayName}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 ${!profileData.displayName.trim() ? 'border-red-300' : 'border-gray-300'
+                  }`}
                 placeholder="Enter your display name"
+                required
               />
+              {!profileData.displayName.trim() && (
+                <p className="mt-1 text-xs text-red-600">Display name is required</p>
+              )}
+            </div>
+
+            {/* Email is read-only */}
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                Email
+              </label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={profileData.email}
+                disabled
+                className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-gray-50 text-gray-500 cursor-not-allowed"
+              />
+              <p className="mt-1 text-xs text-gray-500">Email cannot be changed</p>
             </div>
 
             {isClientAdmin && (
@@ -364,8 +388,8 @@ function Profile() {
             <div className="flex gap-3 pt-4">
               <button
                 onClick={handleSave}
-                disabled={isSaving}
-                className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-lg hover:from-cyan-400 hover:to-blue-500 transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={isSaving || !profileData.displayName.trim()}
+                className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-lg hover:from-cyan-400 hover:to-blue-500 transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               >
                 {isSaving ? 'Saving...' : 'Save Changes'}
               </button>
@@ -421,8 +445,10 @@ function Profile() {
       >
         <ActionRow
           title="Password"
-          description="Change your account password"
+          description={authProvider === 'email' ? "Change your account password" : "Password change is not available for social login accounts"}
           action="Change Password"
+          onClick={() => setIsChangePasswordOpen(true)}
+          disabled={authProvider !== 'email'}
         />
         <ActionRow
           title="Multi-Factor Authentication"
@@ -478,6 +504,12 @@ function Profile() {
           Contact Support
         </button>
       </section>
+
+      {/* Change Password Modal */}
+      <ChangePasswordModal
+        isOpen={isChangePasswordOpen}
+        onClose={() => setIsChangePasswordOpen(false)}
+      />
     </div>
   );
 }
@@ -505,14 +537,18 @@ function InfoRow({ label, value }) {
   );
 }
 
-function ActionRow({ title, description, action }) {
+function ActionRow({ title, description, action, onClick, disabled }) {
   return (
     <div className="py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
       <div>
         <p className="font-medium text-gray-900">{title}</p>
         <p className="text-sm text-gray-600">{description}</p>
       </div>
-      <button className="px-4 py-2 rounded-lg bg-white border border-gray-300 text-gray-800 font-medium hover:bg-gray-50">
+      <button
+        className={`px-4 py-2 rounded-lg bg-white border border-gray-300 text-gray-800 font-medium hover:bg-gray-50 transition-colors cursor-pointer ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+        onClick={onClick}
+        disabled={disabled}
+      >
         {action}
       </button>
     </div>

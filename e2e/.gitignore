@@ -1,0 +1,16 @@
+# Dependencies
+node_modules/
+
+# Test results
+test-results/
+playwright-report/
+screenshots/
+
+# Environment files
+.env
+.env.local
+
+# IDE
+.idea/
+*.swp
+*.swo

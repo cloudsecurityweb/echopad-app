@@ -5,8 +5,10 @@ import Footer from '../../components/layout/Footer';
 import { handleIntercomAction } from '../../utils/intercom';
 import BuyNowCTA from '../../components/products/BuyNowCTA';
 import { getProductByRoute } from '../../data/products';
+import usePageTitle from '../../hooks/usePageTitle';
 
 function AIReceptionist() {
+  const PageTitle = usePageTitle('Echopad AI Receptionist');
   const handleIntercomClick = (e, action) => {
     e.preventDefault();
     handleIntercomAction(action);
@@ -32,6 +34,7 @@ function AIReceptionist() {
 
   return (
     <>
+      {PageTitle}
       <Navigation />
       <main>
         {/* Hero Section */}
@@ -45,13 +48,13 @@ function AIReceptionist() {
                 {(() => {
                   const product = getProductByRoute('/ai-receptionist');
                   if (!product?.usp) return null;
-                  
+
                   const parseUSP = (text) => {
                     const parts = [];
                     const regex = /(\d+[%+]?|\d+\s*(hours?|minutes?|%|calls?|%))/gi;
                     let lastIndex = 0;
                     let match;
-                    
+
                     while ((match = regex.exec(text)) !== null) {
                       if (match.index > lastIndex) {
                         parts.push({ text: text.substring(lastIndex, match.index), isNumber: false });
@@ -59,20 +62,20 @@ function AIReceptionist() {
                       parts.push({ text: match[0], isNumber: true });
                       lastIndex = regex.lastIndex;
                     }
-                    
+
                     if (lastIndex < text.length) {
                       parts.push({ text: text.substring(lastIndex), isNumber: false });
                     }
-                    
+
                     if (parts.length === 0) {
                       return [{ text, isNumber: false }];
                     }
-                    
+
                     return parts;
                   };
-                  
+
                   const uspParts = parseUSP(product.usp);
-                  
+
                   return (
                     <div className="mb-8 animate-fade-in-scale">
                       <div className="relative flex items-center gap-3 bg-gradient-to-br from-cyan-50 via-blue-50 to-purple-50 border-2 border-cyan-200/50 rounded-2xl px-6 py-4 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] group overflow-hidden min-w-0">
@@ -320,7 +323,7 @@ function AIReceptionist() {
               <p className="text-lg text-gray-600 max-w-3xl mx-auto mb-8">
                 Everything you need to know to make an informed decision and ensure successful deployment in your organization
               </p>
-              
+
               {/* Key Stats Banner */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto mb-12">
                 {[
@@ -466,7 +469,7 @@ function AIReceptionist() {
                 </div>
               ))}
             </div>
-            
+
             {/* CTA */}
             <div className="mt-12 text-center">
               <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 max-w-3xl mx-auto shadow-2xl">
