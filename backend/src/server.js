@@ -28,6 +28,7 @@ const allowedOrigins = [
   "http://localhost:5173", // Default Vite dev server
   "http://localhost:3000", // Alternative dev port
   "http://localhost", // Localhost without port
+  "https://labs.echopad.ai", // Development frontend URL
   FRONTEND_URL, // Production frontend URL
 ].filter(Boolean); // Remove any undefined values
 

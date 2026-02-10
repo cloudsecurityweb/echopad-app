@@ -2,8 +2,10 @@ import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Navigation from '../components/layout/Navigation';
 import Footer from '../components/layout/Footer';
+import usePageTitle from '../hooks/usePageTitle';
 
 export default function NotFound() {
+    const PageTitle = usePageTitle('Page Not Found');
     // Ensure instant scroll to top
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -11,6 +13,7 @@ export default function NotFound() {
 
     return (
         <>
+            {PageTitle}
             <Navigation />
 
             <main className="relative overflow-hidden bg-gradient-to-br from-cyan-50 via-white to-blue-50">

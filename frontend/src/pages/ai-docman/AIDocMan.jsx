@@ -3,8 +3,10 @@ import Navigation from '../../components/layout/Navigation';
 import Footer from '../../components/layout/Footer';
 import { handleIntercomAction } from '../../utils/intercom';
 import BeforeAfterSlider from '../../components/products/BeforeAfterSlider';
+import usePageTitle from '../../hooks/usePageTitle';
 
 function AIDocMan() {
+  const PageTitle = usePageTitle('Echopad AI Document Manager');
   const handleIntercomClick = (e, action) => {
     e.preventDefault();
     handleIntercomAction(action);
@@ -30,6 +32,7 @@ function AIDocMan() {
 
   return (
     <>
+      {PageTitle}
       <Navigation />
       <main>
         {/* Hero Section - Document Focused Design */}
@@ -42,7 +45,7 @@ function AIDocMan() {
               <i className="bi bi-arrow-left"></i>
               View All Products
             </a>
-            
+
             <div className="text-center mb-12">
               <div className="inline-flex items-center gap-2 bg-indigo-50 text-indigo-500 px-4 py-2 rounded-full text-sm font-semibold mb-4">
                 <i className="bi bi-file-earmark-text-fill"></i>
@@ -57,7 +60,7 @@ function AIDocMan() {
               <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
                 Turn messy dictation into perfectly formatted SOAP notes, H&Ps, and discharge summaries—instantly.
               </p>
-              
+
               {/* Speed Metrics */}
               <div className="flex flex-wrap items-center justify-center gap-6 mb-8">
                 <div className="bg-white rounded-xl px-6 py-3 shadow-lg border-2 border-indigo-100">
@@ -102,7 +105,7 @@ function AIDocMan() {
                   <h3 className="text-2xl font-bold text-gray-900 mb-2">See the Transformation</h3>
                   <p className="text-gray-600">Raw transcript → Perfectly formatted SOAP note</p>
                 </div>
-                
+
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   {/* Before */}
                   <div className="bg-red-50 rounded-2xl p-6 border-2 border-red-100">
@@ -343,7 +346,7 @@ function AIDocMan() {
               <p className="text-xl text-indigo-50 mb-8 max-w-2xl mx-auto">
                 See how much time your team could save with AI Document Manager
               </p>
-              
+
               <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border-2 border-white/20 max-w-2xl mx-auto">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                   <div>
@@ -359,7 +362,7 @@ function AIDocMan() {
                     <div className="text-indigo-50">Saved per assistant/month</div>
                   </div>
                 </div>
-                
+
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <a
                     href="#"
