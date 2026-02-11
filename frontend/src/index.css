@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+/* Custom breakpoint for large monitors (1920px+) */
+@theme {
+  --breakpoint-3xl: 1920px;
+}
+
 /* Global Box-Sizing Reset */
 *,
 *::before,
@@ -420,6 +425,18 @@ body {
 @media (min-width: 1280px) {
   .container {
     max-width: 1280px;
+  }
+}
+
+@media (min-width: 1536px) {
+  .container {
+    max-width: 1440px;
+  }
+}
+
+@media (min-width: 1920px) {
+  .container {
+    max-width: 1600px;
   }
 }
 
