@@ -143,27 +143,27 @@ function AIReminders() {
 
                 <div className="space-y-6 mb-8">
                   <div>
-                    <h4 className="flex items-center text-lg font-semibold text-gray-900 mb-3">
+                    <h2 className="flex items-center text-lg font-semibold text-gray-900 mb-3">
                       <i className="bi bi-briefcase-fill text-teal-500 mr-2"></i>
                       Business Value for Decision Makers
-                    </h4>
+                    </h2>
                     <p className="text-gray-600">
                       For healthcare leaders facing no-show revenue loss and patient engagement challenges, AI Patient Reminders delivers immediate ROI through reduced missed appointments, improved medication adherence, and enhanced patient satisfaction. Recover $50K-$200K annually per provider in lost revenue while improving quality metrics.
                     </p>
                   </div>
 
                   <div>
-                    <h4 className="flex items-center text-lg font-semibold text-gray-900 mb-3">
+                    <h2 className="flex items-center text-lg font-semibold text-gray-900 mb-3">
                       <i className="bi bi-info-circle text-teal-500 mr-2"></i>
                       What You See
-                    </h4>
+                    </h2>
                     <p className="text-gray-600">
                       When appointments are scheduled, AI creates personalized reminder sequences via SMS, email, and voice. Patients confirm attendance, and you track compliance in real-time.
                     </p>
                   </div>
 
                   <div>
-                    <h4 className="text-lg font-semibold text-gray-900 mb-3">Key Benefits</h4>
+                    <h2 className="text-lg font-semibold text-gray-900 mb-3">Key Benefits</h2>
                     <ul className="space-y-2">
                       {[
                         'Reduce no-shows and last-minute cancellations',
@@ -180,10 +180,10 @@ function AIReminders() {
                   </div>
 
                   <div>
-                    <h4 className="flex items-center text-lg font-semibold text-gray-900 mb-3">
+                    <h2 className="flex items-center text-lg font-semibold text-gray-900 mb-3">
                       <i className="bi bi-graph-up text-teal-500 mr-2"></i>
                       Impact Metrics
-                    </h4>
+                    </h2>
                     <div className="grid grid-cols-3 gap-4 mt-4">
                       {[
                         { value: '30%', label: 'Reduction in no-shows', icon: 'bi-graph-down-arrow' },
@@ -202,7 +202,7 @@ function AIReminders() {
                   </div>
 
                   <div>
-                    <h4 className="text-lg font-semibold text-gray-900 mb-3">Perfect For</h4>
+                    <h2 className="text-lg font-semibold text-gray-900 mb-3">Perfect For</h2>
                     <p className="text-gray-600">
                       Any practice struggling with no-shows, medication non-compliance, or patient engagement challenges.
                     </p>
@@ -481,7 +481,7 @@ function AIReminders() {
                       <i className={`bi ${feature.icon} text-white text-2xl`}></i>
                     </div>
                     <div>
-                      <h4 className="text-xl font-bold text-gray-900 mb-1">{feature.title}</h4>
+                      <h3 className="text-xl font-bold text-gray-900 mb-1">{feature.title}</h3>
                       <p className="text-sm text-blue-600 font-semibold">{feature.subtitle}</p>
                     </div>
                   </div>

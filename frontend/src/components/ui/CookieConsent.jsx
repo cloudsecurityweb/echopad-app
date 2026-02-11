@@ -83,6 +83,7 @@ function CookieConsent() {
                   <Link 
                     to="/privacy-policy" 
                     className="text-blue-400 hover:text-blue-300 underline ml-1"
+                    aria-label="Learn more about our privacy policy"
                   >
                     Learn more
                   </Link>
