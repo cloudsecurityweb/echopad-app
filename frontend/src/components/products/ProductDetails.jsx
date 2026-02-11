@@ -672,7 +672,7 @@ function ProductDetails() {
         {
           title: 'Clinical Quality Metrics',
           content: (
-            <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg p-4">
+            <div className="bg-gradient-to-br from-slate-50 to-white rounded-lg p-4">
               <div className="flex items-center justify-between mb-3">
                 <h4 className="font-semibold text-gray-900">Clinical Quality Metrics</h4>
                 <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">Live</span>
@@ -772,7 +772,7 @@ function ProductDetails() {
         {
           title: 'Active Referrals',
           content: (
-            <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg p-4 space-y-3">
+            <div className="bg-gradient-to-br from-slate-50 to-white rounded-lg p-4 space-y-3">
               {[
                 { patient: 'John Doe', specialty: 'Cardiology', status: 'Scheduled', statusClass: 'bg-green-100 text-green-700' },
                 { patient: 'Jane Smith', specialty: 'Orthopedics', status: 'Pending', statusClass: 'bg-yellow-100 text-yellow-700' },
@@ -928,7 +928,7 @@ function ProductDetails() {
               onClick={() => setActiveIndex(index)}
               className={`transition-all duration-300 ${
                 index === activeIndex
-                  ? 'w-2.5 h-2.5 sm:w-3 sm:h-3 bg-cyan-500 rounded-full'
+                  ? 'w-2.5 h-2.5 sm:w-3 sm:h-3 bg-blue-600 rounded-full'
                   : 'w-2 h-2 sm:w-2.5 sm:h-2.5 bg-gray-300 rounded-full hover:bg-gray-400 active:bg-gray-400'
               }`}
               aria-label={`Go to slide ${index + 1}`}

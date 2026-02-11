@@ -142,7 +142,7 @@ function Navigation() {
   const displayName = userProfile?.user?.displayName || userInfo.name || userInfo.email || 'User';
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-colors ${isMobileMenuOpen ? 'bg-white' : 'bg-gradient-to-b from-white to-transparent'}`}>
+    <nav className={`fixed top-0 left-0 right-0 z-50 transition-colors ${isMobileMenuOpen ? 'bg-white' : 'bg-white/95 backdrop-blur-sm'}`}>
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
@@ -157,7 +157,7 @@ function Navigation() {
               className="w-10 h-10 transition-transform group-hover:scale-110"
             />
             <span className="text-gray-900">
-              Echopad <span className="bg-gradient-to-r from-cyan-500 to-blue-600 bg-clip-text text-transparent">AI</span>
+              Echopad <span className="text-blue-700">AI</span>
             </span>
           </a>
 
@@ -183,7 +183,7 @@ function Navigation() {
                 className="text-gray-700 hover:text-gray-900 font-semibold text-base relative group transition-colors"
               >
                 Products
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-cyan-500 to-blue-600 transition-all group-hover:w-full"></span>
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 transition-all group-hover:w-full"></span>
               </a>
               <a
                 href="/"
@@ -191,7 +191,7 @@ function Navigation() {
                 className="text-gray-700 hover:text-gray-900 font-semibold text-base relative group transition-colors"
               >
                 Platform
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-cyan-500 to-blue-600 transition-all group-hover:w-full"></span>
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 transition-all group-hover:w-full"></span>
               </a>
               <a
                 href="/"
@@ -199,7 +199,7 @@ function Navigation() {
                 className="text-gray-700 hover:text-gray-900 font-semibold text-base relative group transition-colors"
               >
                 ROI
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-cyan-500 to-blue-600 transition-all group-hover:w-full"></span>
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 transition-all group-hover:w-full"></span>
               </a>
             </>
             {isAuthenticated && !isLoading ? (
@@ -208,7 +208,7 @@ function Navigation() {
                 <div className="relative" ref={dropdownRef}>
                   <button
                     onClick={toggleDropdown}
-                    className="flex items-center gap-2 text-gray-700 hover:text-gray-900 font-medium focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 rounded-lg p-1 transition-all hover:bg-gray-50/50"
+                    className="flex items-center gap-2 text-gray-700 hover:text-gray-900 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded-lg p-1 transition-all hover:bg-gray-50/50"
                     aria-expanded={isDropdownOpen}
                     aria-haspopup="true"
                     aria-label="User menu"
@@ -227,7 +227,7 @@ function Navigation() {
                         className="w-7 h-7 rounded-full object-cover"
                       />
                     ) : (
-                      <div className="w-7 h-7 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full flex items-center justify-center text-white text-xs font-bold">
+                      <div className="w-7 h-7 bg-blue-600 rounded-full flex items-center justify-center text-white text-xs font-bold">
                         {displayName.charAt(0).toUpperCase()}
                       </div>
                     )}
@@ -264,7 +264,7 @@ function Navigation() {
                       {/* Dashboard Link */}
                       <button
                         onClick={handleDashboardClick}
-                        className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-50/80 transition-colors flex items-center gap-3 focus:outline-none focus:bg-gray-50/80 focus:ring-2 focus:ring-cyan-500 focus:ring-inset"
+                        className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-50/80 transition-colors flex items-center gap-3 focus:outline-none focus:bg-gray-50/80 focus:ring-2 focus:ring-blue-500 focus:ring-inset"
                         role="menuitem"
                         tabIndex={0}
                         onKeyDown={(e) => {
@@ -274,7 +274,7 @@ function Navigation() {
                           }
                         }}
                       >
-                        <svg className="w-5 h-5 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                         </svg>
                         <span>Dashboard</span>
@@ -283,7 +283,7 @@ function Navigation() {
                       {/* Sign Out Button */}
                       <button
                         onClick={handleLogout}
-                        className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-50/80 transition-colors flex items-center gap-3 focus:outline-none focus:bg-gray-50/80 focus:ring-2 focus:ring-cyan-500 focus:ring-inset border-t border-gray-200"
+                        className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-50/80 transition-colors flex items-center gap-3 focus:outline-none focus:bg-gray-50/80 focus:ring-2 focus:ring-blue-500 focus:ring-inset border-t border-gray-200"
                         role="menuitem"
                         tabIndex={0}
                         onKeyDown={(e) => {
@@ -303,7 +303,7 @@ function Navigation() {
                 </div>
                 <a
                   href="#"
-                  className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-5 py-2 rounded-lg hover:from-cyan-400 hover:to-blue-500 transition-all font-semibold text-sm shadow-lg hover:shadow-cyan-500/50 hover:scale-105"
+                  className="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 transition-all font-semibold text-sm shadow-lg hover:scale-105"
                   onClick={(e) => handleIntercomClick(e, 'request-demo')}
                 >
                   Request Demo
@@ -319,7 +319,7 @@ function Navigation() {
                 </Link>
                 <a
                   href="#"
-                  className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-5 py-2 rounded-lg hover:from-cyan-400 hover:to-blue-500 transition-all font-semibold text-sm shadow-lg hover:shadow-cyan-500/50 hover:scale-105"
+                  className="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 transition-all font-semibold text-sm shadow-lg hover:scale-105"
                   onClick={(e) => handleIntercomClick(e, 'request-demo')}
                 >
                   Request Demo
@@ -335,7 +335,7 @@ function Navigation() {
             <>
               <a
                 href="/"
-                className="text-gray-700 hover:text-gray-900 transition-colors font-medium py-2 border-b border-gray-200 hover:border-cyan-500"
+                className="text-gray-700 hover:text-gray-900 transition-colors font-medium py-2 border-b border-gray-200 hover:border-blue-500"
                 onClick={(e) => {
                   scrollToSection(e, '#agents');
                   setIsMobileMenuOpen(false);
@@ -345,7 +345,7 @@ function Navigation() {
               </a>
               <a
                 href="/"
-                className="text-gray-700 hover:text-gray-900 transition-colors font-medium py-2 border-b border-gray-200 hover:border-cyan-500"
+                className="text-gray-700 hover:text-gray-900 transition-colors font-medium py-2 border-b border-gray-200 hover:border-blue-500"
                 onClick={(e) => {
                   scrollToSection(e, '#platform');
                   setIsMobileMenuOpen(false);
@@ -355,7 +355,7 @@ function Navigation() {
               </a>
               <a
                 href="/"
-                className="text-gray-700 hover:text-gray-900 transition-colors font-medium py-2 border-b border-gray-200 hover:border-cyan-500"
+                className="text-gray-700 hover:text-gray-900 transition-colors font-medium py-2 border-b border-gray-200 hover:border-blue-500"
                 onClick={(e) => {
                   scrollToSection(e, '#roi');
                   setIsMobileMenuOpen(false);
@@ -368,7 +368,7 @@ function Navigation() {
               <>
                 <Link
                   to="/dashboard"
-                  className="flex items-center gap-3 text-gray-700 hover:text-gray-900 transition-colors font-medium py-2 border-b border-gray-200 hover:border-cyan-500"
+                  className="flex items-center gap-3 text-gray-700 hover:text-gray-900 transition-colors font-medium py-2 border-b border-gray-200 hover:border-blue-500"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   {userInfo.picture ? (
@@ -378,7 +378,7 @@ function Navigation() {
                       className="w-10 h-10 rounded-full object-cover"
                     />
                   ) : (
-                    <div className="w-10 h-10 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full flex items-center justify-center text-white font-bold">
+                    <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold">
                       {displayName.charAt(0).toUpperCase()}
                     </div>
                   )}
@@ -390,10 +390,10 @@ function Navigation() {
                 {/* Dashboard Button - Show for all authenticated users */}
                 <Link
                   to="/dashboard"
-                  className="flex items-center gap-3 text-gray-700 hover:text-gray-900 transition-colors font-medium py-2 border-b border-gray-200 hover:border-cyan-500"
+                  className="flex items-center gap-3 text-gray-700 hover:text-gray-900 transition-colors font-medium py-2 border-b border-gray-200 hover:border-blue-500"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
-                  <svg className="w-5 h-5 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                   </svg>
                   <span>Dashboard</span>
@@ -409,7 +409,7 @@ function Navigation() {
                 </button>
                 <a
                   href="#"
-                  className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-5 py-3 rounded-lg hover:from-cyan-400 hover:to-blue-500 transition-all font-medium text-center shadow-lg"
+                  className="bg-blue-600 text-white px-5 py-3 rounded-lg hover:bg-blue-700 transition-all font-medium text-center shadow-lg"
                   onClick={(e) => {
                     handleIntercomClick(e, 'request-demo');
                     setIsMobileMenuOpen(false);
@@ -429,7 +429,7 @@ function Navigation() {
                 </Link>
                 <a
                   href="#"
-                  className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-5 py-3 rounded-lg hover:from-cyan-400 hover:to-blue-500 transition-all font-medium text-center shadow-lg"
+                  className="bg-blue-600 text-white px-5 py-3 rounded-lg hover:bg-blue-700 transition-all font-medium text-center shadow-lg"
                   onClick={(e) => {
                     handleIntercomClick(e, 'request-demo');
                     setIsMobileMenuOpen(false);

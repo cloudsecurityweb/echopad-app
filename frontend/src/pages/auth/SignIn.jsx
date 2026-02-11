@@ -324,7 +324,7 @@ function SignIn() {
     <>
       {PageTitle}
       <Navigation />
-      <main className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 pt-16 md:pt-20 pb-4 overflow-hidden">
+      <main className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 pt-16 md:pt-20 pb-4 overflow-hidden">
         <div className="container mx-auto px-4 py-6 md:py-8 flex items-center min-h-[calc(100vh-4rem)]">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 max-w-6xl mx-auto items-center w-full">
             {/* Left Side - CTA */}
@@ -332,7 +332,7 @@ function SignIn() {
               <div>
                 <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-2">
                   Welcome to{' '}
-                  <span className="bg-gradient-to-r from-cyan-600 via-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  <span className="text-blue-700">
                     Echopad AI
                   </span>
                 </h1>
@@ -343,7 +343,7 @@ function SignIn() {
 
               <div className="space-y-2 md:space-y-3">
                 <div className="flex items-start gap-2 md:gap-3">
-                  <div className="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <div className="w-8 h-8 md:w-10 md:h-10 bg-blue-600 rounded-xl flex items-center justify-center flex-shrink-0">
                     <i className="bi bi-lightning-charge-fill text-white text-base md:text-lg"></i>
                   </div>
                   <div>
@@ -353,7 +353,7 @@ function SignIn() {
                 </div>
 
                 <div className="flex items-start gap-2 md:gap-3">
-                  <div className="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-green-500 to-teal-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <div className="w-8 h-8 md:w-10 md:h-10 bg-blue-600 rounded-xl flex items-center justify-center flex-shrink-0">
                     <i className="bi bi-graph-up-arrow text-white text-base md:text-lg"></i>
                   </div>
                   <div>
@@ -363,7 +363,7 @@ function SignIn() {
                 </div>
 
                 <div className="flex items-start gap-2 md:gap-3">
-                  <div className="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <div className="w-8 h-8 md:w-10 md:h-10 bg-blue-600 rounded-xl flex items-center justify-center flex-shrink-0">
                     <i className="bi bi-people-fill text-white text-base md:text-lg"></i>
                   </div>
                   <div>
@@ -374,31 +374,31 @@ function SignIn() {
               </div>
 
               <div className="space-y-2 md:space-y-3">
-                <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl p-3 md:p-4 lg:p-5 shadow-lg">
+                <div className="bg-slate-900 rounded-xl p-3 md:p-4 lg:p-5 shadow-lg">
                   <div className="flex items-center gap-2 mb-2">
                     <i className="bi bi-shield-check text-white text-lg md:text-xl"></i>
                     <p className="text-white font-semibold text-sm md:text-base">
                       Secure & Compliant
                     </p>
                   </div>
-                  <p className="text-blue-100 text-xs md:text-sm">
+                  <p className="text-slate-300 text-xs md:text-sm">
                     HIPAA-compliant platform with enterprise-grade security. Your data is encrypted and protected.
                   </p>
                 </div>
 
                 <div className="grid grid-cols-3 gap-2 md:gap-3">
-                  <div className="bg-white rounded-lg p-2 md:p-3 text-center border-2 border-blue-100 shadow">
+                  <div className="bg-white rounded-lg p-2 md:p-3 text-center border-2 border-slate-200 shadow">
                     <i className="bi bi-clock-history text-blue-600 text-lg md:text-xl mb-1 block"></i>
                     <p className="text-xs font-semibold text-gray-900">Save 70%</p>
                     <p className="text-xs text-gray-600">Time on Charts</p>
                   </div>
-                  <div className="bg-white rounded-lg p-2 md:p-3 text-center border-2 border-green-100 shadow">
-                    <i className="bi bi-cash-stack text-green-600 text-lg md:text-xl mb-1 block"></i>
+                  <div className="bg-white rounded-lg p-2 md:p-3 text-center border-2 border-slate-200 shadow">
+                    <i className="bi bi-cash-stack text-blue-600 text-lg md:text-xl mb-1 block"></i>
                     <p className="text-xs font-semibold text-gray-900">$200K+</p>
                     <p className="text-xs text-gray-600">Annual Savings</p>
                   </div>
-                  <div className="bg-white rounded-lg p-2 md:p-3 text-center border-2 border-purple-100 shadow">
-                    <i className="bi bi-emoji-smile text-purple-600 text-lg md:text-xl mb-1 block"></i>
+                  <div className="bg-white rounded-lg p-2 md:p-3 text-center border-2 border-slate-200 shadow">
+                    <i className="bi bi-emoji-smile text-blue-600 text-lg md:text-xl mb-1 block"></i>
                     <p className="text-xs font-semibold text-gray-900">95%</p>
                     <p className="text-xs text-gray-600">Satisfaction</p>
                   </div>
@@ -407,7 +407,7 @@ function SignIn() {
             </div>
 
             {/* Right Side - Login Form */}
-            <div className="bg-white rounded-2xl shadow-2xl border-2 border-blue-100 p-4 md:p-5 lg:p-6">
+            <div className="bg-white rounded-2xl shadow-2xl border-2 border-slate-200 p-4 md:p-5 lg:p-6">
               <div className="text-center mb-3">
                 <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-1">Sign In</h2>
                 <p className="text-gray-600 text-sm md:text-base">Access your dashboard</p>
@@ -512,7 +512,7 @@ function SignIn() {
                       onBlur={handleBlur}
                       className={`w-full pl-8 pr-3 py-2.5 md:py-3 text-sm md:text-base border-2 rounded-lg focus:outline-none focus:ring-2 transition-all ${errors.email
                         ? 'border-red-500 focus:ring-red-500'
-                        : 'border-gray-300 focus:border-cyan-500 focus:ring-cyan-500'
+                        : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500'
                         }`}
                       placeholder="Email"
                     />
@@ -536,7 +536,7 @@ function SignIn() {
                       onChange={handleChange}
                       className={`w-full px-3 py-2.5 md:py-3 pr-8 text-sm md:text-base border-2 rounded-lg focus:outline-none focus:ring-2 transition-all ${errors.password
                         ? 'border-red-500 focus:ring-red-500'
-                        : 'border-gray-300 focus:border-cyan-500 focus:ring-cyan-500'
+                        : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500'
                         }`}
                       placeholder="Password"
                     />
@@ -566,7 +566,7 @@ function SignIn() {
                 <div className="flex justify-end">
                   <Link
                     to="/forgot-password"
-                    className="text-xs md:text-sm text-cyan-600 hover:text-cyan-700 font-medium transition-colors"
+                    className="text-xs md:text-sm text-blue-600 hover:text-blue-700 font-medium transition-colors"
                   >
                     Forgot Password?
                   </Link>
@@ -576,7 +576,7 @@ function SignIn() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-4 py-2.5 md:py-3 rounded-lg hover:from-cyan-400 hover:to-blue-500 transition-all text-sm md:text-base font-medium shadow-lg hover:shadow-cyan-500/50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full bg-blue-600 text-white px-4 py-2.5 md:py-3 rounded-lg hover:bg-blue-700 transition-all text-sm md:text-base font-medium shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isSubmitting ? 'Signing In...' : 'Login'}
                 </button>

@@ -73,13 +73,13 @@ function Aperio() {
                   APERIO
                 </div>
                 <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
-                  AI-Powered Referral Coordination That <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Closes the Loop</span>
+                  AI-Powered Referral Coordination That <span className="text-blue-700">Closes the Loop</span>
                 </h1>
 
                 {/* 3-Second Value Proposition - Smaller Size */}
-                <div className="bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 border-2 border-blue-300 rounded-xl p-4 mb-6 shadow-lg">
+                <div className="bg-gradient-to-br from-slate-50 via-white to-slate-100 border-2 border-slate-200 rounded-xl p-4 mb-6 shadow-lg">
                   <div className="flex items-center justify-center gap-2 mb-3">
-                    <div className="w-6 h-6 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                    <div className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center">
                       <i className="bi bi-lightning-charge-fill text-white text-xs"></i>
                     </div>
                     <h3 className="text-sm md:text-base font-bold text-gray-900">How It Works in 3 Seconds</h3>
@@ -115,7 +115,7 @@ function Aperio() {
                 </p>
 
                 {/* Interactive Stats Banner */}
-                <div className="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-600 rounded-2xl p-5 md:p-6 mb-6 shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-[1.02] animate-gradient-x overflow-hidden">
+                <div className="bg-gradient-to-r from-slate-800 via-slate-900 to-slate-800 rounded-2xl p-5 md:p-6 mb-6 shadow-2xl transition-all duration-300 hover:scale-[1.02] overflow-hidden">
                   <div className="flex flex-col items-center gap-4">
                     {/* Main Content - Real Impact, Real Results - Centered */}
                     <div className="flex flex-col items-center gap-3 md:gap-4 text-center">
@@ -127,7 +127,7 @@ function Aperio() {
                           Real Impact, Real Results
                         </div>
                         <div className="text-white text-base md:text-lg lg:text-xl font-bold leading-tight">
-                          Average Reduction: <span className="text-yellow-300">40% Referral Leakage</span>
+                          Average Reduction: <span className="text-blue-300">40% Referral Leakage</span>
                         </div>
                       </div>
                     </div>
@@ -168,7 +168,7 @@ function Aperio() {
                 <div className="space-y-6 mb-8">
                   <div>
                     <h4 className="flex items-center text-lg font-semibold text-gray-900 mb-3">
-                      <i className="bi bi-briefcase-fill text-teal-500 mr-2"></i>
+                      <i className="bi bi-briefcase-fill text-blue-600 mr-2"></i>
                       Business Value for Decision Makers
                     </h4>
                     <p className="text-gray-600">
@@ -178,7 +178,7 @@ function Aperio() {
 
                   <div>
                     <h4 className="flex items-center text-lg font-semibold text-gray-900 mb-3">
-                      <i className="bi bi-info-circle text-teal-500 mr-2"></i>
+                      <i className="bi bi-info-circle text-blue-600 mr-2"></i>
                       What You See
                     </h4>
                     <p className="text-gray-600">
@@ -205,7 +205,7 @@ function Aperio() {
 
                   <div>
                     <h4 className="flex items-center text-lg font-semibold text-gray-900 mb-3">
-                      <i className="bi bi-graph-up text-teal-500 mr-2"></i>
+                      <i className="bi bi-graph-up text-blue-600 mr-2"></i>
                       Impact Metrics
                     </h4>
                     <div className="grid grid-cols-3 gap-4 mt-4">
@@ -238,11 +238,11 @@ function Aperio() {
               <div className="lg:col-span-7">
                 <div className="bg-white rounded-2xl border-2 border-gray-200 p-6 shadow-lg">
                   <div className="mb-6 text-center">
-                    <div className="inline-block bg-blue-600 text-white text-xs font-bold px-4 py-2 rounded-lg uppercase tracking-wider mb-4 shadow-md">
+                    <div className="inline-block bg-slate-800 text-white text-xs font-bold px-4 py-2 rounded-lg uppercase tracking-wider mb-4 shadow-md">
                       LIVE DEMO
                     </div>
                     <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
-                      <span className="bg-gradient-to-r from-cyan-600 via-blue-600 to-purple-600 bg-clip-text text-transparent">
+                      <span className="text-gray-900">
                         Echopad Aperio
                       </span>
                     </h2>
@@ -401,7 +401,7 @@ function Aperio() {
         <section className="py-20 bg-white" aria-labelledby="how-it-works-heading">
           <div className="container mx-auto px-4">
             <div className="text-center mb-16">
-              <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-100 to-purple-100 text-blue-700 px-5 py-2 rounded-full text-sm font-semibold mb-4 shadow-md">
+              <div className="inline-flex items-center gap-2 bg-slate-100 text-blue-700 px-5 py-2 rounded-full text-sm font-semibold mb-4 shadow-md">
                 <i className="bi bi-gear-fill text-blue-600"></i>
                 Simple Process
               </div>
@@ -485,7 +485,7 @@ function Aperio() {
               <a
                 href="#"
                 onClick={(e) => handleIntercomClick(e, 'request-demo')}
-                className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:from-blue-700 hover:to-purple-700 transition-all shadow-lg hover:shadow-xl hover:scale-105"
+                className="inline-flex items-center gap-2 bg-blue-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-blue-700 transition-all shadow-lg hover:shadow-xl hover:scale-105"
               >
                 <i className="bi bi-play-circle-fill text-2xl"></i>
                 See It In Action
@@ -498,11 +498,11 @@ function Aperio() {
         <section className="py-12 md:py-20 bg-gradient-to-b from-gray-50 to-white">
           <div className="container mx-auto px-4">
             <div className="max-w-5xl mx-auto">
-              <div className="bg-gradient-to-br from-purple-600 via-blue-600 to-cyan-600 rounded-2xl md:rounded-3xl p-4 md:p-8 lg:p-12 shadow-2xl border-2 md:border-4 border-purple-200">
+              <div className="bg-gradient-to-br from-slate-800 via-slate-900 to-slate-800 rounded-2xl md:rounded-3xl p-4 md:p-8 lg:p-12 shadow-2xl border-2 md:border-4 border-slate-400/30">
                 {/* Header - Stack on mobile, side-by-side on desktop */}
                 <div className="flex flex-col md:flex-row items-center justify-center gap-3 md:gap-4 mb-6 md:mb-8">
                   <div className="w-12 h-12 md:w-14 md:h-14 bg-white rounded-full flex items-center justify-center animate-pulse flex-shrink-0">
-                    <i className="bi bi-check-circle-fill text-purple-600 text-2xl md:text-3xl"></i>
+                    <i className="bi bi-check-circle-fill text-blue-700 text-2xl md:text-3xl"></i>
                   </div>
                   <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white text-center">
                     Perfect For You If...
@@ -529,8 +529,8 @@ function Aperio() {
                   </ul>
 
                   {/* Bottom CTA Section */}
-                  <div className="mt-6 md:mt-8 lg:mt-10 md:mt-12 pt-6 md:pt-8 lg:pt-10 border-t-2 border-purple-200 bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg md:rounded-xl p-4 md:p-6 lg:p-8">
-                    <p className="text-base md:text-xl lg:text-2xl xl:text-3xl text-purple-900 font-bold text-center flex flex-col sm:flex-row items-center justify-center gap-2 md:gap-3 lg:gap-4 mb-6 md:mb-8 lg:mb-10 leading-relaxed">
+                  <div className="mt-6 md:mt-8 lg:mt-10 md:mt-12 pt-6 md:pt-8 lg:pt-10 border-t-2 border-slate-200 bg-gradient-to-r from-slate-50 to-white rounded-lg md:rounded-xl p-4 md:p-6 lg:p-8">
+                    <p className="text-base md:text-xl lg:text-2xl xl:text-3xl text-slate-900 font-bold text-center flex flex-col sm:flex-row items-center justify-center gap-2 md:gap-3 lg:gap-4 mb-6 md:mb-8 lg:mb-10 leading-relaxed">
                       <span className="text-3xl md:text-4xl lg:text-5xl animate-pulse">✨</span>
                       <span className="px-2">If you checked 2 or more, Aperio is built for you!</span>
                       <span className="text-3xl md:text-4xl lg:text-5xl animate-pulse">✨</span>
@@ -541,7 +541,7 @@ function Aperio() {
                       <a
                         href="#"
                         onClick={(e) => handleIntercomClick(e, 'request-demo')}
-                        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 md:gap-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 md:px-8 py-3 md:py-4 rounded-lg md:rounded-xl font-bold text-base md:text-lg hover:from-blue-700 hover:to-purple-700 transition-all shadow-lg hover:shadow-xl hover:scale-105"
+                        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 md:gap-3 bg-blue-600 text-white px-6 md:px-8 py-3 md:py-4 rounded-lg md:rounded-xl font-bold text-base md:text-lg hover:bg-blue-700 transition-all shadow-lg hover:shadow-xl hover:scale-105"
                       >
                         <i className="bi bi-calendar-check-fill text-xl md:text-2xl"></i>
                         <span>Get Started - Book Demo</span>
@@ -566,7 +566,7 @@ function Aperio() {
         <section className="py-20 bg-gradient-to-b from-white to-gray-50" aria-labelledby="implementation-guide-heading">
           <div className="container mx-auto px-4">
             <div className="text-center mb-16">
-              <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-100 to-purple-100 text-blue-700 px-5 py-2 rounded-full text-sm font-semibold mb-4 shadow-md">
+              <div className="inline-flex items-center gap-2 bg-slate-100 text-blue-700 px-5 py-2 rounded-full text-sm font-semibold mb-4 shadow-md">
                 <i className="bi bi-heart-pulse-fill text-blue-600"></i>
                 For Healthcare Leaders
               </div>
@@ -717,11 +717,11 @@ function Aperio() {
         </section>
 
         {/* CTA Section */}
-        <section className="py-20 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 relative overflow-hidden">
+        <section className="py-20 bg-gradient-to-br from-slate-800 via-slate-900 to-slate-800 relative overflow-hidden">
           {/* Decorative Elements */}
           <div className="absolute inset-0 opacity-10">
             <div className="absolute top-10 left-10 w-72 h-72 bg-white rounded-full blur-3xl"></div>
-            <div className="absolute bottom-10 right-10 w-96 h-96 bg-purple-300 rounded-full blur-3xl"></div>
+            <div className="absolute bottom-10 right-10 w-96 h-96 bg-blue-300 rounded-full blur-3xl"></div>
           </div>
 
           <div className="container mx-auto px-4 relative z-10">
@@ -729,7 +729,7 @@ function Aperio() {
               <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
                 Transform Your Referral Process Today
               </h2>
-              <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
+              <p className="text-xl text-slate-300 mb-8 max-w-2xl mx-auto">
                 Join leading healthcare organizations using Aperio to reduce referral leakage and improve care coordination
               </p>
 
@@ -745,7 +745,7 @@ function Aperio() {
                 <a
                   href="#"
                   onClick={(e) => handleIntercomClick(e, 'show-roi')}
-                  className="inline-flex items-center gap-3 bg-blue-800 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-blue-900 transition-all border-2 border-blue-400 hover:border-blue-300"
+                  className="inline-flex items-center gap-3 bg-slate-700 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-slate-600 transition-all border-2 border-slate-400 hover:border-slate-300"
                 >
                   <i className="bi bi-calculator text-2xl"></i>
                   Calculate ROI
@@ -759,7 +759,7 @@ function Aperio() {
                   { icon: 'bi-headset', text: '24/7 Clinical Support' },
                 ].map((feature, idx) => (
                   <div key={idx} className="flex items-center gap-3 text-white justify-center">
-                    <i className={`bi ${feature.icon} text-2xl text-blue-200`}></i>
+                    <i className={`bi ${feature.icon} text-2xl text-slate-300`}></i>
                     <span className="font-semibold">{feature.text}</span>
                   </div>
                 ))}

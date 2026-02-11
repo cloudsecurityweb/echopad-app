@@ -23,7 +23,7 @@ function ProductDetail({
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 lg:gap-8 pt-4 md:pt-6 pb-6 md:pb-8 px-4 md:px-6">
             {/* Left Column - Content */}
             <div>
-              <div className="text-xs font-semibold bg-gradient-to-r from-cyan-500 to-blue-600 bg-clip-text text-transparent uppercase tracking-wider mb-2">
+              <div className="text-xs font-semibold text-blue-700 uppercase tracking-wider mb-2">
                 {label}
               </div>
               <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900 mb-3 md:mb-4">{title}</h2>
@@ -37,7 +37,7 @@ function ProductDetail({
                     <ul className="space-y-2 md:space-y-3">
                       {section.items.map((item, itemIndex) => (
                         <li key={itemIndex} className="flex items-start gap-2 md:gap-3 text-sm md:text-base text-gray-600">
-                          <i className="bi bi-check-circle-fill text-green-500 mt-0.5 md:mt-1 flex-shrink-0"></i>
+                          <i className="bi bi-check-circle-fill text-blue-600 mt-0.5 md:mt-1 flex-shrink-0"></i>
                           <span>{item}</span>
                         </li>
                       ))}
@@ -47,7 +47,7 @@ function ProductDetail({
                     <div className="space-y-3 md:space-y-4">
                       {section.processSteps.map((step, stepIndex) => (
                         <div key={stepIndex} className="flex gap-3 md:gap-4">
-                          <div className="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-cyan-500 to-blue-600 text-white rounded-full flex items-center justify-center font-bold flex-shrink-0 shadow-lg text-sm md:text-base">
+                          <div className="w-8 h-8 md:w-10 md:h-10 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold flex-shrink-0 shadow-lg text-sm md:text-base">
                             {stepIndex + 1}
                           </div>
                           <div>
@@ -63,7 +63,7 @@ function ProductDetail({
 
               <a 
                 href="#" 
-                className="inline-flex items-center gap-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-5 md:px-6 py-2.5 md:py-3 rounded-xl font-semibold text-sm md:text-base shadow-lg"
+                className="inline-flex items-center gap-2 bg-blue-600 text-white px-5 md:px-6 py-2.5 md:py-3 rounded-xl font-semibold text-sm md:text-base shadow-lg hover:bg-blue-700 transition-colors"
                 onClick={(e) => handleIntercomClick(e, 'request-demo')}
               >
                 See It In Action
@@ -74,11 +74,11 @@ function ProductDetail({
             {visualization && (
               <div className="rounded-2xl p-4 md:p-5 lg:p-6 bg-gray-50 border border-gray-200">
                 <div className="mb-4 md:mb-6 text-center">
-                  <div className="inline-block bg-blue-600 text-white text-xs font-bold px-4 py-2 rounded-lg uppercase tracking-wider mb-4 shadow-md">
+                  <div className="inline-block bg-slate-800 text-white text-xs font-bold px-4 py-2 rounded-lg uppercase tracking-wider mb-4 shadow-md">
                     LIVE DEMO
                   </div>
                   <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
-                    <span className="bg-gradient-to-r from-cyan-600 via-blue-600 to-purple-600 bg-clip-text text-transparent">
+                    <span className="text-gray-900">
                       {title}
                     </span>
                   </h2>
@@ -93,7 +93,7 @@ function ProductDetail({
                   <div key={index}>
                     <div className="mb-3 md:mb-4">
                       <div className="flex items-center gap-2 md:gap-3 mb-2 md:mb-3">
-                        <span className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-xs font-bold px-2 md:px-3 py-1 md:py-1.5 rounded-lg shadow-lg">
+                        <span className="bg-blue-600 text-white text-xs font-bold px-2 md:px-3 py-1 md:py-1.5 rounded-lg shadow-lg">
                           STEP {index + 1}
                         </span>
                         <span className="font-semibold text-sm md:text-base text-gray-900">{step.title}</span>
@@ -104,7 +104,7 @@ function ProductDetail({
                     </div>
                     {index < visualization.steps.length - 1 && (
                       <div className="flex justify-center my-3 md:my-4">
-                        <i className="bi bi-arrow-down text-cyan-500 text-xl md:text-2xl animate-pulse"></i>
+                        <i className="bi bi-arrow-down text-slate-500 text-xl md:text-2xl animate-pulse"></i>
                       </div>
                     )}
                   </div>

@@ -104,22 +104,22 @@ function AIReminders() {
 
                   return (
                     <div className="mb-8 animate-fade-in-scale">
-                      <div className="relative flex items-center gap-3 bg-gradient-to-br from-cyan-50 via-blue-50 to-purple-50 border-2 border-cyan-200/50 rounded-2xl px-6 py-4 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] group overflow-hidden min-w-0">
-                        <div className="absolute inset-0 bg-gradient-to-r from-cyan-400/20 via-blue-400/20 to-purple-400/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                      <div className="relative flex items-center gap-3 bg-gradient-to-br from-slate-50 via-white to-slate-100 border-2 border-slate-200 rounded-2xl px-6 py-4 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] group overflow-hidden min-w-0">
+                        <div className="absolute inset-0 bg-gradient-to-r from-blue-200/20 via-slate-200/20 to-blue-200/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                         <div className="relative z-10 flex-shrink-0">
                           <div className="w-12 h-12 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg animate-pulse-glow">
                             <i className="bi bi-lightning-charge-fill text-white text-xl"></i>
                           </div>
                         </div>
                         <div className="relative z-10 min-w-0 flex-1">
-                          <div className="text-xs font-semibold text-cyan-600 uppercase tracking-wider mb-1 break-words">
+                          <div className="text-xs font-semibold text-blue-700 uppercase tracking-wider mb-1 break-words">
                             ROI Promise
                           </div>
                           <div className="text-xl md:text-2xl lg:text-3xl font-bold break-words whitespace-normal">
                             {uspParts.map((part, idx) => {
                               if (part.isNumber) {
                                 return (
-                                  <span key={idx} className="animate-gradient-text bg-clip-text text-transparent bg-gradient-to-r from-cyan-600 via-blue-600 to-purple-600">
+                                  <span key={idx} className="animate-gradient-text bg-clip-text text-transparent bg-gradient-to-r from-blue-700 to-blue-600">
                                     {part.text}
                                   </span>
                                 );
@@ -128,8 +128,8 @@ function AIReminders() {
                             })}
                           </div>
                         </div>
-                        <div className="absolute -top-2 -right-2 w-4 h-4 bg-yellow-400 rounded-full animate-pulse opacity-75"></div>
-                        <div className="absolute -bottom-1 -left-1 w-3 h-3 bg-cyan-400 rounded-full animate-pulse opacity-60" style={{ animationDelay: '0.5s' }}></div>
+                        <div className="absolute -top-2 -right-2 w-4 h-4 bg-slate-300 rounded-full animate-pulse opacity-75"></div>
+                        <div className="absolute -bottom-1 -left-1 w-3 h-3 bg-blue-300 rounded-full animate-pulse opacity-60" style={{ animationDelay: '0.5s' }}></div>
                       </div>
                     </div>
                   );
@@ -144,7 +144,7 @@ function AIReminders() {
                 <div className="space-y-6 mb-8">
                   <div>
                     <h4 className="flex items-center text-lg font-semibold text-gray-900 mb-3">
-                      <i className="bi bi-briefcase-fill text-teal-500 mr-2"></i>
+                      <i className="bi bi-briefcase-fill text-blue-600 mr-2"></i>
                       Business Value for Decision Makers
                     </h4>
                     <p className="text-gray-600">
@@ -154,7 +154,7 @@ function AIReminders() {
 
                   <div>
                     <h4 className="flex items-center text-lg font-semibold text-gray-900 mb-3">
-                      <i className="bi bi-info-circle text-teal-500 mr-2"></i>
+                      <i className="bi bi-info-circle text-blue-600 mr-2"></i>
                       What You See
                     </h4>
                     <p className="text-gray-600">
@@ -181,7 +181,7 @@ function AIReminders() {
 
                   <div>
                     <h4 className="flex items-center text-lg font-semibold text-gray-900 mb-3">
-                      <i className="bi bi-graph-up text-teal-500 mr-2"></i>
+                      <i className="bi bi-graph-up text-blue-600 mr-2"></i>
                       Impact Metrics
                     </h4>
                     <div className="grid grid-cols-3 gap-4 mt-4">
@@ -214,11 +214,11 @@ function AIReminders() {
               <div className="lg:col-span-7">
                 <div className="bg-white rounded-2xl border-2 border-gray-200 p-6 shadow-lg">
                   <div className="mb-6 text-center">
-                    <div className="inline-block bg-blue-600 text-white text-xs font-bold px-4 py-2 rounded-lg uppercase tracking-wider mb-4 shadow-md">
+                    <div className="inline-block bg-slate-800 text-white text-xs font-bold px-4 py-2 rounded-lg uppercase tracking-wider mb-4 shadow-md">
                       LIVE DEMO
                     </div>
                     <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
-                      <span className="bg-gradient-to-r from-cyan-600 via-blue-600 to-purple-600 bg-clip-text text-transparent">
+                      <span className="text-gray-900">
                         Echopad AI Reminders
                       </span>
                     </h2>
@@ -346,15 +346,15 @@ function AIReminders() {
         </section>
 
         {/* Strategic Implementation Section */}
-        <section className="py-20 bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
+        <section className="py-20 bg-gradient-to-br from-slate-50 via-white to-slate-100">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
-              <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-100 to-purple-100 px-5 py-2 rounded-full mb-4">
+              <div className="inline-flex items-center gap-2 bg-slate-100 px-5 py-2 rounded-full mb-4">
                 <i className="bi bi-shield-check text-blue-600"></i>
                 <span className="text-sm font-bold text-blue-700 uppercase tracking-wider">Implementation Roadmap</span>
               </div>
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                Strategic Implementation Guide for <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Healthcare Leaders</span>
+                Strategic Implementation Guide for <span className="text-blue-700">Healthcare Leaders</span>
               </h2>
               <p className="text-lg text-gray-600 max-w-3xl mx-auto mb-8">
                 Everything you need to know to make an informed decision and ensure successful deployment in your organization
@@ -477,7 +477,7 @@ function AIReminders() {
                   className="glass-card rounded-2xl p-6 h-full hover-lift shadow-sm"
                 >
                   <div className="flex items-center gap-4 mb-6">
-                    <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <div className="w-16 h-16 bg-blue-600 rounded-xl flex items-center justify-center flex-shrink-0">
                       <i className={`bi ${feature.icon} text-white text-2xl`}></i>
                     </div>
                     <div>
@@ -508,17 +508,17 @@ function AIReminders() {
 
             {/* CTA */}
             <div className="mt-12 text-center">
-              <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 max-w-3xl mx-auto shadow-2xl">
+              <div className="bg-slate-900 rounded-2xl p-8 max-w-3xl mx-auto shadow-2xl">
                 <h3 className="text-2xl md:text-3xl font-bold text-white mb-4">
                   Ready to Reduce No-Shows and Boost Revenue?
                 </h3>
-                <p className="text-blue-100 mb-6 text-lg">
+                <p className="text-slate-300 mb-6 text-lg">
                   Join innovative healthcare organizations already recovering $50K+ annually with automated reminders
                 </p>
                 <a
                   href="#"
                   onClick={(e) => handleIntercomClick(e, 'request-demo')}
-                  className="inline-flex items-center gap-2 bg-white text-blue-600 px-8 py-4 rounded-lg hover:bg-gray-100 transition-colors font-bold text-lg shadow-xl"
+                  className="inline-flex items-center gap-2 bg-white text-slate-900 px-8 py-4 rounded-lg hover:bg-gray-100 transition-colors font-bold text-lg shadow-xl"
                 >
                   <i className="bi bi-rocket-takeoff-fill"></i>
                   Start Your Implementation Today

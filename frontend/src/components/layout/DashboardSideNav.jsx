@@ -237,12 +237,12 @@ function DashboardSideNav({ isOpen, onClose, isCollapsed, onToggleCollapse }) {
                   }}
                   className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 focus:outline-none ${isCollapsed && !isMobile ? 'justify-center' : ''
                     } ${active
-                      ? `bg-gradient-to-r from-cyan-50 to-blue-50 text-cyan-700 font-semibold ${isCollapsed && !isMobile ? '' : 'border-l-4 border-cyan-600'}`
+                      ? `bg-gradient-to-r from-slate-100 to-blue-50 text-blue-700 font-semibold ${isCollapsed && !isMobile ? '' : 'border-l-4 border-blue-600'}`
                       : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
                     }`}
                   title={isCollapsed && !isMobile ? item.label : ''}
                 >
-                  <span className={`${active ? 'text-cyan-600' : 'text-gray-500'} ${isCollapsed && !isMobile ? 'flex-shrink-0' : ''}`}>
+                  <span className={`${active ? 'text-blue-600' : 'text-gray-500'} ${isCollapsed && !isMobile ? 'flex-shrink-0' : ''}`}>
                     {item.icon}
                   </span>
                   <span className={`transition-opacity duration-300 ${isCollapsed && !isMobile ? 'opacity-0 w-0 overflow-hidden' : 'opacity-100'}`}>

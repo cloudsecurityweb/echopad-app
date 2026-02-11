@@ -11,7 +11,7 @@ function Contact() {
     <FullScreenSection id="contact" className="bg-white">
       <div className="container mx-auto px-4">
         <div className="max-w-5xl 2xl:max-w-6xl 3xl:max-w-7xl mx-auto">
-          <div className="rounded-2xl border border-gray-200/80 bg-gradient-to-br from-white via-white to-cyan-50/40 p-4 md:p-5 lg:p-6 xl:p-8 2xl:p-10 3xl:p-14 shadow-sm">
+          <div className="rounded-2xl border border-gray-200/80 bg-gradient-to-br from-white via-white to-slate-50/60 p-4 md:p-5 lg:p-6 xl:p-8 2xl:p-10 3xl:p-14 shadow-sm">
             <div className="flex flex-col gap-3 md:gap-4 lg:gap-6 xl:gap-8 2xl:gap-10 3xl:gap-12 md:flex-row md:items-center md:justify-between">
               <div className="text-center md:text-left md:max-w-2xl 2xl:max-w-3xl 3xl:max-w-4xl">
                 <div className="text-xs 2xl:text-sm 3xl:text-base font-semibold text-gray-500 uppercase tracking-widest mb-1.5 md:mb-2 lg:mb-3 2xl:mb-4">

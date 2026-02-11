@@ -20,9 +20,9 @@ function DashboardNavbar({ onToggleSidebar }) {
   };
   
   const getRoleColor = () => {
-    if (isSuperAdmin) return 'bg-purple-100 text-purple-700';
+    if (isSuperAdmin) return 'bg-slate-200 text-slate-700';
     if (isClientAdmin) return 'bg-blue-100 text-blue-700';
-    return 'bg-cyan-100 text-cyan-700';
+    return 'bg-slate-100 text-slate-700';
   };
 
   const handleLogout = async () => {
@@ -116,7 +116,7 @@ function DashboardNavbar({ onToggleSidebar }) {
                 className="w-8 h-8"
               />
               <span className="text-xl font-bold text-gray-900">
-                Echopad <span className="bg-gradient-to-r from-cyan-500 to-blue-600 bg-clip-text text-transparent">AI</span>
+                Echopad <span className="text-blue-700">AI</span>
               </span>
             </a>
           </div>
@@ -134,7 +134,7 @@ function DashboardNavbar({ onToggleSidebar }) {
                     className="w-10 h-10 rounded-full object-cover border-2 border-gray-200"
                   />
                 ) : (
-                  <div className="w-10 h-10 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full flex items-center justify-center text-white text-sm font-bold border-2 border-gray-200">
+                  <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-bold border-2 border-gray-200">
                     {(userInfo.name || userInfo.email || 'U').charAt(0).toUpperCase()}
                   </div>
                 )}
@@ -203,7 +203,7 @@ function DashboardNavbar({ onToggleSidebar }) {
                         className="w-12 h-12 rounded-full object-cover border-2 border-gray-200"
                       />
                     ) : (
-                      <div className="w-12 h-12 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full flex items-center justify-center text-white font-bold border-2 border-gray-200">
+                      <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold border-2 border-gray-200">
                         {(userInfo.name || userInfo.email || 'U').charAt(0).toUpperCase()}
                       </div>
                     )}

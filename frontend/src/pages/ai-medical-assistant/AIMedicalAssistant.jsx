@@ -60,11 +60,11 @@ function AIMedicalAssistant() {
       <Navigation />
       <main>
         {/* Hero Section - Clinical Workflow Design */}
-        <section className="px-4 md:px-14 pt-32 pb-20 bg-gradient-to-br from-teal-50 via-emerald-50 to-cyan-50">
+        <section className="px-4 md:px-14 pt-32 pb-20 bg-gradient-to-br from-slate-50 via-white to-slate-100">
           <div className="container mx-auto px-4">
             <a
               href="/"
-              className="inline-flex items-center gap-2 text-sm text-teal-400 hover:text-teal-600 transition-colors mb-6 font-semibold hover:gap-3"
+              className="inline-flex items-center gap-2 text-sm text-blue-700 hover:text-blue-900 transition-colors mb-6 font-semibold hover:gap-3"
               onClick={handleViewAllProductsClick}
             >
               <i className="bi bi-arrow-left"></i>
@@ -73,13 +73,13 @@ function AIMedicalAssistant() {
 
             <div className="max-w-6xl mx-auto">
               <div className="text-center mb-12">
-                <div className="inline-flex items-center gap-2 bg-teal-50 text-teal-500 px-4 py-2 rounded-full text-sm font-semibold mb-4">
+                <div className="inline-flex items-center gap-2 bg-slate-100 text-blue-700 px-4 py-2 rounded-full text-sm font-semibold mb-4">
                   <i className="bi bi-heart-pulse-fill"></i>
                   AI MEDICAL ASSISTANT
                 </div>
                 <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 mb-4">
                   Complete Visit
-                  <span className="block bg-gradient-to-r from-teal-400 via-emerald-400 to-cyan-400 bg-clip-text text-transparent">
+                  <span className="block text-blue-700">
                     Documentation
                   </span>
                 </h1>
@@ -108,7 +108,7 @@ function AIMedicalAssistant() {
                   <a
                     href="#"
                     onClick={(e) => handleIntercomClick(e, 'request-demo')}
-                    className="inline-flex items-center justify-center gap-3 bg-gradient-to-r from-teal-400 to-emerald-400 text-white px-8 py-4 rounded-xl font-bold text-lg hover:from-teal-500 hover:to-emerald-500 transition-all shadow-xl hover:shadow-2xl hover:scale-105"
+                    className="inline-flex items-center justify-center gap-3 bg-blue-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-blue-700 transition-all shadow-xl hover:shadow-2xl hover:scale-105"
                   >
                     <i className="bi bi-calendar-check text-xl"></i>
                     Schedule a Demo
@@ -116,7 +116,7 @@ function AIMedicalAssistant() {
                   <a
                     href="#"
                     onClick={(e) => handleIntercomClick(e, 'sign-up')}
-                    className="inline-flex items-center justify-center gap-3 bg-white text-teal-400 px-8 py-4 rounded-xl font-bold text-lg hover:bg-teal-50 transition-all border-2 border-teal-300 shadow-lg hover:shadow-xl"
+                    className="inline-flex items-center justify-center gap-3 bg-white text-blue-700 px-8 py-4 rounded-xl font-bold text-lg hover:bg-slate-50 transition-all border-2 border-slate-300 shadow-lg hover:shadow-xl"
                   >
                     <i className="bi bi-rocket-takeoff text-xl"></i>
                     Start Free Trial
@@ -125,7 +125,7 @@ function AIMedicalAssistant() {
               </div>
 
               {/* Visit Process Timeline */}
-              <div className="bg-white rounded-3xl shadow-2xl p-8 border-2 border-teal-100">
+              <div className="bg-white rounded-3xl shadow-2xl p-8 border-2 border-slate-200">
                 <h3 className="text-2xl font-bold text-gray-900 mb-6 text-center">Complete Visit Documentation Process</h3>
 
                 <div className="space-y-6">
@@ -247,7 +247,7 @@ function AIMedicalAssistant() {
         </section>
 
         {/* Benefits Grid */}
-        <section className="py-20 bg-gradient-to-br from-teal-50 to-emerald-50">
+        <section className="py-20 bg-gradient-to-br from-slate-50 to-slate-100">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
               <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
@@ -364,10 +364,10 @@ function AIMedicalAssistant() {
         </section>
 
         {/* Buy Now Section */}
-        <section className="py-20 bg-gradient-to-br from-cyan-50 to-blue-50">
+        <section className="py-20 bg-gradient-to-br from-slate-50 to-white">
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto">
-              <div className="bg-white rounded-2xl border-2 border-cyan-100 p-8 md:p-12 shadow-lg">
+              <div className="bg-white rounded-2xl border-2 border-slate-200 p-8 md:p-12 shadow-lg">
                 {(() => {
                   const product = getProductByRoute('/ai-medical-assistant');
                   if (!product) return null;
@@ -382,7 +382,7 @@ function AIMedicalAssistant() {
                         </p>
                         {!isLoading && isAuthenticated && (
                           <div className="mb-6">
-                            <div className="inline-flex items-baseline gap-2 bg-gradient-to-r from-cyan-50 to-blue-50 px-6 py-3 rounded-lg border border-cyan-100">
+                            <div className="inline-flex items-baseline gap-2 bg-slate-50 px-6 py-3 rounded-lg border border-slate-200">
                               <span className="text-4xl font-bold text-gray-900">{product.price}</span>
                               <span className="text-sm text-gray-600">{product.pricePeriod}</span>
                             </div>
@@ -392,7 +392,7 @@ function AIMedicalAssistant() {
                           {!isLoading && !isAuthenticated ? (
                             <Link
                               to={`/sign-in?redirect=${encodeURIComponent(window.location.pathname)}`}
-                              className="inline-flex items-center justify-center gap-2 w-full px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-lg hover:from-cyan-400 hover:to-blue-500 transition-all text-base font-medium shadow-lg hover:shadow-cyan-500/50"
+                              className="inline-flex items-center justify-center gap-2 w-full px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all text-base font-medium shadow-lg"
                             >
                               <i className="bi bi-lock-fill"></i>
                               Sign in to view pricing
@@ -437,13 +437,13 @@ function AIMedicalAssistant() {
         </section>
 
         {/* Final CTA Section */}
-        <section className="py-20 bg-gradient-to-br from-teal-300 via-emerald-300 to-cyan-300 text-white">
+        <section className="py-20 bg-gradient-to-br from-slate-800 via-slate-900 to-slate-800 text-white">
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto text-center">
               <h2 className="text-4xl md:text-5xl font-bold mb-6">
                 Ready to Reduce Documentation Time by 80%?
               </h2>
-              <p className="text-xl text-teal-50 mb-8 max-w-2xl mx-auto">
+              <p className="text-xl text-slate-300 mb-8 max-w-2xl mx-auto">
                 Join healthcare providers using AI Medical Assistant to eliminate documentation burden and focus on patient care
               </p>
 
@@ -451,7 +451,7 @@ function AIMedicalAssistant() {
                 <a
                   href="#"
                   onClick={(e) => handleIntercomClick(e, 'request-demo')}
-                  className="inline-flex items-center gap-3 bg-white text-teal-500 px-8 py-4 rounded-xl font-bold text-lg hover:bg-teal-50 transition-all shadow-xl hover:shadow-2xl hover:scale-105"
+                  className="inline-flex items-center gap-3 bg-white text-slate-900 px-8 py-4 rounded-xl font-bold text-lg hover:bg-slate-50 transition-all shadow-xl hover:shadow-2xl hover:scale-105"
                 >
                   <i className="bi bi-calendar-check text-2xl"></i>
                   Schedule a Demo
@@ -459,22 +459,22 @@ function AIMedicalAssistant() {
                 <a
                   href="#"
                   onClick={(e) => handleIntercomClick(e, 'sign-up')}
-                  className="inline-flex items-center gap-3 bg-teal-700 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-teal-800 transition-all border-2 border-teal-400 shadow-xl"
+                  className="inline-flex items-center gap-3 bg-slate-700 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-slate-600 transition-all border-2 border-slate-400 shadow-xl"
                 >
                   <i className="bi bi-rocket-takeoff text-2xl"></i>
                   Start Free Trial
                 </a>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-3xl mx-auto pt-8 border-t border-teal-400/30">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-3xl mx-auto pt-8 border-t border-slate-500/40">
                 {[
                   { icon: 'bi-shield-check', text: 'HIPAA Compliant' },
                   { icon: 'bi-heart-pulse', text: '100% Visit Capture' },
                   { icon: 'bi-headset', text: '24/7 Support' },
                 ].map((feature, idx) => (
                   <div key={idx} className="flex flex-col items-center gap-2">
-                    <i className={`bi ${feature.icon} text-3xl text-teal-200`}></i>
-                    <span className="font-semibold text-teal-100">{feature.text}</span>
+                    <i className={`bi ${feature.icon} text-3xl text-slate-300`}></i>
+                    <span className="font-semibold text-slate-200">{feature.text}</span>
                   </div>
                 ))}
               </div>

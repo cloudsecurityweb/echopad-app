@@ -80,7 +80,7 @@ function DashboardLayout() {
 
       {/* Main Content */}
       <main
-        className={`min-h-screen bg-white pt-16 transition-all duration-300 ${getContentMargin()}`}
+        className={`min-h-screen bg-slate-50 pt-16 transition-all duration-300 ${getContentMargin()}`}
       >
         <div className="px-4 py-12">
           <Outlet />

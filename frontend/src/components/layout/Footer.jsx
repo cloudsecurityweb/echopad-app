@@ -1,16 +1,10 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { handleIntercomAction } from '../../utils/intercom';
 import echopadLogo from '../../assets/images/logos/echopad-logo.svg';
 
 function Footer() {
   const location = useLocation();
   const navigate = useNavigate();
   const isHomePage = location.pathname === '/';
-
-  const handleIntercomClick = (e, action) => {
-    e.preventDefault();
-    handleIntercomAction(action);
-  };
 
   // Scroll to hero section (same behavior as navbar logo)
   const handleLogoClick = (e) => {
@@ -93,7 +87,7 @@ function Footer() {
               />
               <span className="text-xl font-bold">
                 Echopad{' '}
-                <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+                <span className="text-blue-400">
                   AI
                 </span>
               </span>
@@ -110,7 +104,7 @@ function Footer() {
                 href="https://cloudsecurityweb.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-cyan-400 hover:text-cyan-300 font-medium transition-colors"
+                className="text-blue-400 hover:text-blue-300 font-medium transition-colors"
               >
                 Cloud Security Web LLC
               </a>
@@ -129,9 +123,9 @@ function Footer() {
                   onClick={(e) =>
                     handleSectionNavigation(e, '#agents')
                   }
-                  className="text-gray-400 hover:text-cyan-400 transition-colors flex items-center gap-2 group"
+                  className="text-gray-400 hover:text-blue-300 transition-colors flex items-center gap-2 group"
                 >
-                  <span className="w-0 h-0.5 bg-gradient-to-r from-cyan-400 to-blue-500 transition-all group-hover:w-4" />
+                  <span className="w-0 h-0.5 bg-blue-400 transition-all group-hover:w-4" />
                   Products
                 </a>
               </li>
@@ -141,9 +135,9 @@ function Footer() {
                   onClick={(e) =>
                     handleSectionNavigation(e, '#platform')
                   }
-                  className="text-gray-400 hover:text-cyan-400 transition-colors flex items-center gap-2 group"
+                  className="text-gray-400 hover:text-blue-300 transition-colors flex items-center gap-2 group"
                 >
-                  <span className="w-0 h-0.5 bg-gradient-to-r from-cyan-400 to-blue-500 transition-all group-hover:w-4" />
+                  <span className="w-0 h-0.5 bg-blue-400 transition-all group-hover:w-4" />
                   Platform
                 </a>
               </li>
@@ -153,9 +147,9 @@ function Footer() {
                   onClick={(e) =>
                     handlePageNavigation(e, '/privacy-policy')
                   }
-                  className="text-gray-400 hover:text-cyan-400 transition-colors flex items-center gap-2 group"
+                  className="text-gray-400 hover:text-blue-300 transition-colors flex items-center gap-2 group"
                 >
-                  <span className="w-0 h-0.5 bg-gradient-to-r from-cyan-400 to-blue-500 transition-all group-hover:w-4" />
+                  <span className="w-0 h-0.5 bg-blue-400 transition-all group-hover:w-4" />
                   Privacy Policy
                 </Link>
               </li>
@@ -165,9 +159,9 @@ function Footer() {
                   onClick={(e) =>
                     handlePageNavigation(e, '/terms-of-service')
                   }
-                  className="text-gray-400 hover:text-cyan-400 transition-colors flex items-center gap-2 group"
+                  className="text-gray-400 hover:text-blue-300 transition-colors flex items-center gap-2 group"
                 >
-                  <span className="w-0 h-0.5 bg-gradient-to-r from-cyan-400 to-blue-500 transition-all group-hover:w-4" />
+                  <span className="w-0 h-0.5 bg-blue-400 transition-all group-hover:w-4" />
                   Terms of Service
                 </Link>
               </li>
@@ -183,27 +177,27 @@ function Footer() {
               <li>
                 <Link
                   to="/ai-scribe"
-                  className="text-gray-400 hover:text-cyan-400 transition-colors flex items-center gap-2 group"
+                  className="text-gray-400 hover:text-blue-300 transition-colors flex items-center gap-2 group"
                 >
-                  <span className="w-0 h-0.5 bg-gradient-to-r from-cyan-400 to-blue-500 transition-all group-hover:w-4" />
+                  <span className="w-0 h-0.5 bg-blue-400 transition-all group-hover:w-4" />
                   AI Scribe
                 </Link>
               </li>
               <li>
                 <Link
                   to="/echopad-insights"
-                  className="text-gray-400 hover:text-cyan-400 transition-colors flex items-center gap-2 group"
+                  className="text-gray-400 hover:text-blue-300 transition-colors flex items-center gap-2 group"
                 >
-                  <span className="w-0 h-0.5 bg-gradient-to-r from-cyan-400 to-blue-500 transition-all group-hover:w-4" />
+                  <span className="w-0 h-0.5 bg-blue-400 transition-all group-hover:w-4" />
                   Insights
                 </Link>
               </li>
               <li>
                 <Link
                   to="/aperio"
-                  className="text-gray-400 hover:text-cyan-400 transition-colors flex items-center gap-2 group"
+                  className="text-gray-400 hover:text-blue-300 transition-colors flex items-center gap-2 group"
                 >
-                  <span className="w-0 h-0.5 bg-gradient-to-r from-cyan-400 to-blue-500 transition-all group-hover:w-4" />
+                  <span className="w-0 h-0.5 bg-blue-400 transition-all group-hover:w-4" />
                   Aperio
                 </Link>
               </li>
@@ -213,9 +207,9 @@ function Footer() {
                   onClick={(e) =>
                     handleSectionNavigation(e, '#agents')
                   }
-                  className="text-gray-400 hover:text-cyan-400 transition-colors flex items-center gap-2 group"
+                  className="text-gray-400 hover:text-blue-300 transition-colors flex items-center gap-2 group"
                 >
-                  <span className="w-0 h-0.5 bg-gradient-to-r from-cyan-400 to-blue-500 transition-all group-hover:w-4" />
+                  <span className="w-0 h-0.5 bg-blue-400 transition-all group-hover:w-4" />
                   View All Products
                 </a>
               </li>

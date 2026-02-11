@@ -55,11 +55,11 @@ function AIDocMan() {
       <Navigation />
       <main>
         {/* Hero Section - Document Focused Design */}
-        <section className="px-4 md:px-14 pt-32 pb-20 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
+        <section className="px-4 md:px-14 pt-32 pb-20 bg-gradient-to-br from-slate-50 via-white to-slate-100">
           <div className="container mx-auto px-4">
             <a
               href="/"
-              className="inline-flex items-center gap-2 text-sm text-indigo-400 hover:text-indigo-600 transition-colors mb-6 font-semibold hover:gap-3"
+              className="inline-flex items-center gap-2 text-sm text-blue-700 hover:text-blue-900 transition-colors mb-6 font-semibold hover:gap-3"
               onClick={handleViewAllProductsClick}
             >
               <i className="bi bi-arrow-left"></i>
@@ -67,13 +67,13 @@ function AIDocMan() {
             </a>
 
             <div className="text-center mb-12">
-              <div className="inline-flex items-center gap-2 bg-indigo-50 text-indigo-500 px-4 py-2 rounded-full text-sm font-semibold mb-4">
+              <div className="inline-flex items-center gap-2 bg-slate-100 text-blue-700 px-4 py-2 rounded-full text-sm font-semibold mb-4">
                 <i className="bi bi-file-earmark-text-fill"></i>
                 AI DOCUMENT MANAGER
               </div>
               <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 mb-4">
                 Transform Transcripts in
-                <span className="block bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                <span className="block text-blue-700">
                   3 Seconds
                 </span>
               </h1>
@@ -83,16 +83,16 @@ function AIDocMan() {
 
               {/* Speed Metrics */}
               <div className="flex flex-wrap items-center justify-center gap-6 mb-8">
-                <div className="bg-white rounded-xl px-6 py-3 shadow-lg border-2 border-indigo-100">
-                  <div className="text-3xl font-bold text-indigo-400">3 sec</div>
+                <div className="bg-white rounded-xl px-6 py-3 shadow-lg border-2 border-slate-200">
+                  <div className="text-3xl font-bold text-gray-900">3 sec</div>
                   <div className="text-sm text-gray-600">Processing Time</div>
                 </div>
-                <div className="bg-white rounded-xl px-6 py-3 shadow-lg border-2 border-purple-100">
-                  <div className="text-3xl font-bold text-purple-400">60 min</div>
+                <div className="bg-white rounded-xl px-6 py-3 shadow-lg border-2 border-slate-200">
+                  <div className="text-3xl font-bold text-gray-900">60 min</div>
                   <div className="text-sm text-gray-600">Saved Daily</div>
                 </div>
-                <div className="bg-white rounded-xl px-6 py-3 shadow-lg border-2 border-pink-100">
-                  <div className="text-3xl font-bold text-pink-400">95%</div>
+                <div className="bg-white rounded-xl px-6 py-3 shadow-lg border-2 border-slate-200">
+                  <div className="text-3xl font-bold text-gray-900">95%</div>
                   <div className="text-sm text-gray-600">Accuracy</div>
                 </div>
               </div>
@@ -102,7 +102,7 @@ function AIDocMan() {
                 <a
                   href="#"
                   onClick={(e) => handleIntercomClick(e, 'request-demo')}
-                  className="inline-flex items-center justify-center gap-3 bg-gradient-to-r from-indigo-400 to-purple-400 text-white px-8 py-4 rounded-xl font-bold text-lg hover:from-indigo-500 hover:to-purple-500 transition-all shadow-xl hover:shadow-2xl hover:scale-105"
+                  className="inline-flex items-center justify-center gap-3 bg-blue-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-blue-700 transition-all shadow-xl hover:shadow-2xl hover:scale-105"
                 >
                   <i className="bi bi-calendar-check text-xl"></i>
                   Schedule a Demo
@@ -110,7 +110,7 @@ function AIDocMan() {
                 <a
                   href="#"
                   onClick={(e) => handleIntercomClick(e, 'sign-up')}
-                  className="inline-flex items-center justify-center gap-3 bg-white text-indigo-400 px-8 py-4 rounded-xl font-bold text-lg hover:bg-indigo-50 transition-all border-2 border-indigo-300 shadow-lg hover:shadow-xl"
+                  className="inline-flex items-center justify-center gap-3 bg-white text-blue-700 px-8 py-4 rounded-xl font-bold text-lg hover:bg-slate-50 transition-all border-2 border-slate-300 shadow-lg hover:shadow-xl"
                 >
                   <i className="bi bi-rocket-takeoff text-xl"></i>
                   Start Free Trial
@@ -120,7 +120,7 @@ function AIDocMan() {
 
             {/* Before/After Document Comparison */}
             <div className="max-w-6xl mx-auto">
-              <div className="bg-white rounded-3xl shadow-2xl p-6 md:p-8 border-2 border-indigo-100">
+              <div className="bg-white rounded-3xl shadow-2xl p-6 md:p-8 border-2 border-slate-200">
                 <div className="text-center mb-6">
                   <h3 className="text-2xl font-bold text-gray-900 mb-2">See the Transformation</h3>
                   <p className="text-gray-600">Raw transcript → Perfectly formatted SOAP note</p>
@@ -201,7 +201,7 @@ function AIDocMan() {
               ].map((template, idx) => (
                 <div
                   key={idx}
-                  className="bg-gradient-to-br from-gray-50 to-white rounded-xl p-4 border-2 border-gray-200 hover:border-indigo-300 hover:shadow-lg transition-all cursor-pointer group"
+                  className="bg-gradient-to-br from-gray-50 to-white rounded-xl p-4 border-2 border-gray-200 hover:border-blue-300 hover:shadow-lg transition-all cursor-pointer group"
                 >
                   <div className={`w-12 h-12 bg-gradient-to-br ${template.color} rounded-lg flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform`}>
                     <i className={`bi ${template.icon} text-white text-xl`}></i>
@@ -216,7 +216,7 @@ function AIDocMan() {
               <a
                 href="#"
                 onClick={(e) => handleIntercomClick(e, 'request-demo')}
-                className="inline-flex items-center gap-2 text-indigo-400 font-semibold hover:text-indigo-600"
+                className="inline-flex items-center gap-2 text-blue-700 font-semibold hover:text-blue-900"
               >
                 View All Templates
                 <i className="bi bi-arrow-right"></i>
@@ -226,7 +226,7 @@ function AIDocMan() {
         </section>
 
         {/* Process Timeline Section */}
-        <section className="py-20 bg-gradient-to-br from-indigo-50 to-purple-50">
+        <section className="py-20 bg-gradient-to-br from-slate-50 to-slate-100">
           <div className="container mx-auto px-4">
             <div className="text-center mb-16">
               <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
@@ -240,7 +240,7 @@ function AIDocMan() {
             <div className="max-w-4xl mx-auto">
               <div className="relative">
                 {/* Timeline Line */}
-                <div className="hidden md:block absolute top-1/2 left-0 right-0 h-1 bg-gradient-to-r from-indigo-300 via-purple-300 to-pink-300 transform -translate-y-1/2"></div>
+                <div className="hidden md:block absolute top-1/2 left-0 right-0 h-1 bg-gradient-to-r from-slate-300 via-blue-300 to-slate-300 transform -translate-y-1/2"></div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
                   {[
@@ -357,13 +357,13 @@ function AIDocMan() {
         </section>
 
         {/* ROI Calculator Section */}
-        <section className="py-20 bg-gradient-to-br from-indigo-300 via-purple-300 to-pink-300 text-white">
+        <section className="py-20 bg-gradient-to-br from-slate-800 via-slate-900 to-slate-800 text-white">
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto text-center">
               <h2 className="text-4xl md:text-5xl font-bold mb-6">
                 Calculate Your Time Savings
               </h2>
-              <p className="text-xl text-indigo-50 mb-8 max-w-2xl mx-auto">
+              <p className="text-xl text-slate-300 mb-8 max-w-2xl mx-auto">
                 See how much time your team could save with AI Document Manager
               </p>
 
@@ -371,15 +371,15 @@ function AIDocMan() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                   <div>
                     <div className="text-4xl font-bold mb-2">60 min</div>
-                    <div className="text-indigo-50">Saved per assistant/day</div>
+                    <div className="text-slate-300">Saved per assistant/day</div>
                   </div>
                   <div>
                     <div className="text-4xl font-bold mb-2">5 hrs</div>
-                    <div className="text-indigo-50">Saved per assistant/week</div>
+                    <div className="text-slate-300">Saved per assistant/week</div>
                   </div>
                   <div>
                     <div className="text-4xl font-bold mb-2">20 hrs</div>
-                    <div className="text-indigo-50">Saved per assistant/month</div>
+                    <div className="text-slate-300">Saved per assistant/month</div>
                   </div>
                 </div>
 
@@ -387,7 +387,7 @@ function AIDocMan() {
                   <a
                     href="#"
                     onClick={(e) => handleIntercomClick(e, 'request-demo')}
-                    className="inline-flex items-center justify-center gap-3 bg-white text-indigo-500 px-8 py-4 rounded-xl font-bold text-lg hover:bg-indigo-50 transition-all shadow-xl hover:shadow-2xl hover:scale-105"
+                    className="inline-flex items-center justify-center gap-3 bg-white text-slate-900 px-8 py-4 rounded-xl font-bold text-lg hover:bg-slate-50 transition-all shadow-xl hover:shadow-2xl hover:scale-105"
                   >
                     <i className="bi bi-calculator text-2xl"></i>
                     Calculate Your ROI
@@ -395,7 +395,7 @@ function AIDocMan() {
                   <a
                     href="#"
                     onClick={(e) => handleIntercomClick(e, 'sign-up')}
-                    className="inline-flex items-center justify-center gap-3 bg-indigo-700 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-indigo-800 transition-all border-2 border-white/30 shadow-xl"
+                    className="inline-flex items-center justify-center gap-3 bg-slate-700 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-slate-600 transition-all border-2 border-white/30 shadow-xl"
                   >
                     <i className="bi bi-rocket-takeoff text-2xl"></i>
                     Start Free Trial
@@ -421,7 +421,7 @@ function AIDocMan() {
                 <a
                   href="#"
                   onClick={(e) => handleIntercomClick(e, 'request-demo')}
-                  className="inline-flex items-center gap-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:from-indigo-700 hover:to-purple-700 transition-all shadow-xl hover:shadow-2xl hover:scale-105"
+                  className="inline-flex items-center gap-3 bg-blue-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-blue-700 transition-all shadow-xl hover:shadow-2xl hover:scale-105"
                 >
                   <i className="bi bi-calendar-check text-2xl"></i>
                   Schedule a Demo
@@ -443,7 +443,7 @@ function AIDocMan() {
                   { icon: 'bi-headset', text: '24/7 Support' },
                 ].map((feature, idx) => (
                   <div key={idx} className="flex flex-col items-center gap-2">
-                    <i className={`bi ${feature.icon} text-3xl text-indigo-300`}></i>
+                    <i className={`bi ${feature.icon} text-3xl text-blue-300`}></i>
                     <span className="font-semibold text-gray-300">{feature.text}</span>
                   </div>
                 ))}

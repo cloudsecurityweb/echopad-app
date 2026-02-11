@@ -78,7 +78,7 @@ function EchoPadInsights() {
                 </p>
 
                 {/* Interactive Stats Banner */}
-                <div className="bg-gradient-to-r from-purple-500 via-blue-500 to-teal-600 rounded-2xl p-5 md:p-6 mb-6 shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-[1.02] animate-gradient-x overflow-hidden">
+                <div className="bg-gradient-to-r from-slate-800 via-slate-900 to-slate-800 rounded-2xl p-5 md:p-6 mb-6 shadow-2xl transition-all duration-300 hover:scale-[1.02] overflow-hidden">
                   <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 min-w-0">
                     <div className="flex items-center gap-3 md:gap-4 min-w-0 flex-1">
                       <div className="w-12 h-12 md:w-14 md:h-14 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center flex-shrink-0">
@@ -89,7 +89,7 @@ function EchoPadInsights() {
                           Revenue Intelligence
                         </div>
                         <div className="text-white text-lg md:text-xl lg:text-2xl font-bold break-words whitespace-normal">
-                          Identify: <span className="text-yellow-300">$500K+</span> Annually
+                          Identify: <span className="text-blue-300">$500K+</span> Annually
                         </div>
                       </div>
                     </div>
@@ -111,7 +111,7 @@ function EchoPadInsights() {
                   <a
                     href="#"
                     onClick={(e) => handleIntercomClick(e, 'request-demo')}
-                    className="inline-flex items-center justify-center gap-3 bg-purple-600 text-white px-6 py-3 rounded-xl font-bold text-base hover:bg-purple-700 transition-all shadow-lg hover:shadow-xl hover:scale-105"
+                    className="inline-flex items-center justify-center gap-3 bg-blue-600 text-white px-6 py-3 rounded-xl font-bold text-base hover:bg-blue-700 transition-all shadow-lg hover:shadow-xl hover:scale-105"
                   >
                     <i className="bi bi-calendar-check text-xl"></i>
                     Request a Demo
@@ -119,7 +119,7 @@ function EchoPadInsights() {
                   <a
                     href="#"
                     onClick={(e) => handleIntercomClick(e, 'sign-up')}
-                    className="inline-flex items-center justify-center gap-3 bg-white text-purple-600 px-6 py-3 rounded-xl font-bold text-base hover:bg-gray-50 transition-all border-2 border-purple-600 hover:border-purple-700"
+                    className="inline-flex items-center justify-center gap-3 bg-white text-blue-700 px-6 py-3 rounded-xl font-bold text-base hover:bg-gray-50 transition-all border-2 border-blue-700 hover:border-blue-800"
                   >
                     <i className="bi bi-play-circle text-xl"></i>
                     See How It Works
@@ -129,7 +129,7 @@ function EchoPadInsights() {
                 <div className="space-y-6 mb-8">
                   <div>
                     <h4 className="flex items-center text-lg font-semibold text-gray-900 mb-3">
-                      <i className="bi bi-briefcase-fill text-purple-500 mr-2"></i>
+                      <i className="bi bi-briefcase-fill text-blue-600 mr-2"></i>
                       For Healthcare Leaders & CFOs
                     </h4>
                     <p className="text-gray-600">
@@ -139,7 +139,7 @@ function EchoPadInsights() {
 
                   <div>
                     <h4 className="flex items-center text-lg font-semibold text-gray-900 mb-3">
-                      <i className="bi bi-info-circle text-purple-500 mr-2"></i>
+                      <i className="bi bi-info-circle text-blue-600 mr-2"></i>
                       What You Get
                     </h4>
                     <p className="text-gray-600">
@@ -166,7 +166,7 @@ function EchoPadInsights() {
 
                   <div>
                     <h4 className="flex items-center text-lg font-semibold text-gray-900 mb-3">
-                      <i className="bi bi-graph-up text-purple-500 mr-2"></i>
+                      <i className="bi bi-graph-up text-blue-600 mr-2"></i>
                       Impact Metrics
                     </h4>
                     <div className="grid grid-cols-3 gap-4 mt-4">
@@ -176,8 +176,8 @@ function EchoPadInsights() {
                         { value: '100%', label: 'Data transparency', icon: 'bi-shield-check' },
                       ].map((metric, idx) => (
                         <div key={idx} className="bg-gray-50 rounded-lg p-4 text-center">
-                          <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-2">
-                            <i className={`bi ${metric.icon} text-purple-600 text-xl`}></i>
+                          <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-2">
+                            <i className={`bi ${metric.icon} text-blue-600 text-xl`}></i>
                           </div>
                           <div className="font-bold text-gray-900 mb-1">{metric.value}</div>
                           <div className="text-sm text-gray-600">{metric.label}</div>
@@ -193,11 +193,11 @@ function EchoPadInsights() {
                 {/* Step-by-Step Flow Visualization */}
                 <div className="bg-white rounded-3xl p-6 border border-gray-200 shadow-xl">
                   <div className="text-center mb-6">
-                    <div className="inline-block bg-blue-600 text-white text-xs font-bold px-4 py-2 rounded-lg uppercase tracking-wider mb-4 shadow-md">
+                    <div className="inline-block bg-slate-800 text-white text-xs font-bold px-4 py-2 rounded-lg uppercase tracking-wider mb-4 shadow-md">
                       LIVE DEMO
                     </div>
                     <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
-                      <span className="bg-gradient-to-r from-cyan-600 via-blue-600 to-purple-600 bg-clip-text text-transparent">
+                      <span className="text-gray-900">
                         Insights
                       </span>
                     </h2>
@@ -354,7 +354,7 @@ function EchoPadInsights() {
 
             {/* CTA Below Visualization */}
             <div className="text-center mt-12">
-              <div className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl p-8 shadow-xl">
+              <div className="bg-slate-900 rounded-2xl p-8 shadow-xl">
                 <h3 className="text-2xl md:text-3xl font-bold text-white mb-4">
                   Ready to Discover Your Revenue Opportunities?
                 </h3>
@@ -365,7 +365,7 @@ function EchoPadInsights() {
                   <a
                     href="#"
                     onClick={(e) => handleIntercomClick(e, 'request-demo')}
-                    className="inline-flex items-center justify-center gap-3 bg-white text-purple-600 px-8 py-4 rounded-xl font-bold text-lg hover:bg-gray-100 transition-all shadow-lg hover:shadow-xl hover:scale-105"
+                  className="inline-flex items-center justify-center gap-3 bg-white text-slate-900 px-8 py-4 rounded-xl font-bold text-lg hover:bg-gray-100 transition-all shadow-lg hover:shadow-xl hover:scale-105"
                   >
                     <i className="bi bi-calendar-check text-2xl"></i>
                     Get Free Analysis
@@ -373,7 +373,7 @@ function EchoPadInsights() {
                   <a
                     href="#"
                     onClick={(e) => handleIntercomClick(e, 'sign-up')}
-                    className="inline-flex items-center justify-center gap-3 bg-purple-800 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-purple-900 transition-all shadow-lg hover:shadow-xl hover:scale-105 border-2 border-white/20"
+                  className="inline-flex items-center justify-center gap-3 bg-slate-700 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-slate-600 transition-all shadow-lg hover:shadow-xl hover:scale-105 border-2 border-white/20"
                   >
                     <i className="bi bi-chat-dots text-2xl"></i>
                     Talk to an Expert
@@ -504,8 +504,8 @@ function EchoPadInsights() {
               ].map((useCase, idx) => (
                 <div key={idx} className="bg-gradient-to-br from-gray-50 to-white border border-gray-200 rounded-xl p-8 shadow-lg">
                   <div className="flex items-center gap-4 mb-6">
-                    <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <i className={`bi ${useCase.icon} text-purple-600 text-2xl`}></i>
+                    <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <i className={`bi ${useCase.icon} text-blue-600 text-2xl`}></i>
                     </div>
                     <h3 className="text-xl font-bold text-gray-900">{useCase.title}</h3>
                   </div>
@@ -522,8 +522,8 @@ function EchoPadInsights() {
                     </ul>
                   </div>
 
-                  <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
-                    <h4 className="text-sm font-semibold text-purple-900 mb-2">How EchoPad Helps:</h4>
+                  <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
+                    <h4 className="text-sm font-semibold text-slate-900 mb-2">How EchoPad Helps:</h4>
                     <p className="text-sm text-gray-700">{useCase.solution}</p>
                   </div>
                 </div>
@@ -533,7 +533,7 @@ function EchoPadInsights() {
         </section>
 
         {/* Platform Capabilities Section */}
-        <section className="py-20 bg-gradient-to-br from-purple-600 to-blue-600">
+        <section className="py-20 bg-gradient-to-br from-slate-800 to-slate-900">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
               <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
@@ -566,7 +566,7 @@ function EchoPadInsights() {
               <a
                 href="#"
                 onClick={(e) => handleIntercomClick(e, 'request-demo')}
-                className="inline-flex items-center justify-center gap-3 bg-white text-purple-600 px-8 py-4 rounded-xl font-bold text-lg hover:bg-gray-100 transition-all shadow-lg hover:shadow-xl hover:scale-105"
+                  className="inline-flex items-center justify-center gap-3 bg-white text-slate-900 px-8 py-4 rounded-xl font-bold text-lg hover:bg-gray-100 transition-all shadow-lg hover:shadow-xl hover:scale-105"
               >
                 <i className="bi bi-rocket-takeoff text-2xl"></i>
                 Start Optimizing Revenue Today
@@ -638,7 +638,7 @@ function EchoPadInsights() {
                       <i className={`bi ${faq.icon} text-${faq.color}-600 text-xl`}></i>
                     </div>
                     <div>
-                      <div className="text-xs font-semibold text-purple-600 uppercase tracking-wide mb-1">{faq.category}</div>
+                      <div className="text-xs font-semibold text-blue-700 uppercase tracking-wide mb-1">{faq.category}</div>
                       <h3 className="text-lg font-bold text-gray-900">{faq.question}</h3>
                     </div>
                   </div>
@@ -653,7 +653,7 @@ function EchoPadInsights() {
               <a
                 href="#"
                 onClick={(e) => handleIntercomClick(e, 'sign-up')}
-                className="inline-flex items-center justify-center gap-2 text-purple-600 hover:text-purple-700 font-semibold transition-colors"
+                className="inline-flex items-center justify-center gap-2 text-blue-700 hover:text-blue-900 font-semibold transition-colors"
               >
                 <i className="bi bi-chat-dots text-xl"></i>
                 Chat with our team
@@ -677,7 +677,7 @@ function EchoPadInsights() {
                 <a
                   href="#"
                   onClick={(e) => handleIntercomClick(e, 'request-demo')}
-                  className="inline-flex items-center justify-center gap-3 bg-purple-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-purple-700 transition-all shadow-lg hover:shadow-xl hover:scale-105"
+                  className="inline-flex items-center justify-center gap-3 bg-blue-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-blue-700 transition-all shadow-lg hover:shadow-xl hover:scale-105"
                 >
                   <i className="bi bi-calendar-check text-2xl"></i>
                   Schedule Your Demo
