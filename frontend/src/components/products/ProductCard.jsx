@@ -27,6 +27,7 @@ function ProductCard({ icon, title, description, link, featured = false, comingS
             <Link
               to={link}
               className="inline-flex items-center gap-1.5 md:gap-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-2.5 md:px-3 lg:px-4 xl:px-5 py-1 md:py-1.5 lg:py-2 xl:py-2.5 rounded-lg hover:from-cyan-400 hover:to-blue-500 font-medium text-xs md:text-sm lg:text-base group/link transition-all hover:scale-105 shadow-lg"
+              aria-label={`Learn more about ${title}`}
             >
               {linkContent}
             </Link>
@@ -34,6 +35,7 @@ function ProductCard({ icon, title, description, link, featured = false, comingS
             <a
               href={link}
               className="inline-flex items-center gap-1.5 md:gap-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-2.5 md:px-3 lg:px-4 xl:px-5 py-1 md:py-1.5 lg:py-2 xl:py-2.5 rounded-lg hover:from-cyan-400 hover:to-blue-500 font-medium text-xs md:text-sm lg:text-base group/link transition-all hover:scale-105 shadow-lg"
+              aria-label={`Learn more about ${title}`}
             >
               {linkContent}
             </a>
@@ -43,6 +45,7 @@ function ProductCard({ icon, title, description, link, featured = false, comingS
             <Link
               to={link}
               className="inline-flex items-center gap-1.5 md:gap-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-2.5 md:px-3 lg:px-4 xl:px-5 py-1 md:py-1.5 lg:py-2 xl:py-2.5 rounded-lg hover:from-cyan-400 hover:to-blue-500 font-medium text-xs md:text-sm lg:text-base group/link transition-all hover:scale-105 shadow-lg"
+              aria-label={`Learn more about ${title}`}
             >
               {linkContent}
             </Link>
@@ -50,6 +53,7 @@ function ProductCard({ icon, title, description, link, featured = false, comingS
             <a
               href={link}
               className="inline-flex items-center gap-1.5 md:gap-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-2.5 md:px-3 lg:px-4 xl:px-5 py-1 md:py-1.5 lg:py-2 xl:py-2.5 rounded-lg hover:from-cyan-400 hover:to-blue-500 font-medium text-xs md:text-sm lg:text-base group/link transition-all hover:scale-105 shadow-lg"
+              aria-label={`Learn more about ${title}`}
             >
               {linkContent}
             </a>

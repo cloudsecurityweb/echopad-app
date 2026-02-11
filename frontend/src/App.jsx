@@ -84,7 +84,7 @@ import usePageTitle from './hooks/usePageTitle';
 
 function HomePage() {
   const location = useLocation();
-  const PageTitle = usePageTitle('Echopad AI - Healthcare AI Agent Platform | Reduce Costs 60%, Increase Revenue 20%');
+  const PageTitle = usePageTitle('Echopad AI - Healthcare AI Agent Platform | Reduce Costs 60%, Increase Revenue 20%', '');
 
   // Initialize scroll animations
   useScrollAnimations();

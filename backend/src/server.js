@@ -25,11 +25,18 @@ app.use('/public', express.static(path.join(__dirname, 'public')));
 // Allow requests from localhost (development) and production frontend URL
 const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
 const allowedOrigins = [
-  "http://localhost:5173", // Default Vite dev server
-  "http://localhost:3000", // Alternative dev port
-  "http://localhost", // Localhost without port
-  "https://labs.echopad.ai", // Development frontend URL
-  FRONTEND_URL, // Production frontend URL
+  "http://localhost:5173",
+  "http://localhost:3000",
+  "http://localhost",
+  "https://labs.echopad.ai",
+  "https://www.labs.echopad.ai",
+  "https://echopad.ai",
+  "https://www.echopad.ai",
+  "https://polite-ground-0602c481e.2.azurestaticapps.net",
+  "https://www.polite-ground-0602c481e.2.azurestaticapps.net",
+  "https://calm-smoke-0ef35d31e.4.azurestaticapps.net",
+  "https://www.calm-smoke-0ef35d31e.4.azurestaticapps.net",
+  FRONTEND_URL,
 ].filter(Boolean); // Remove any undefined values
 
 // Remove duplicates and normalize (remove trailing slashes)
@@ -44,16 +51,16 @@ const corsOptions = {
     console.log(`🔍 [CORS] Request from origin: ${origin || 'no origin'}`);
     console.log(`🔍 [CORS] Allowed origins: ${uniqueOrigins.join(", ")}`);
     console.log(`🔍 [CORS] NODE_ENV: ${process.env.NODE_ENV || 'not set'}`);
-    
+
     // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) {
       console.log(`✅ [CORS] Allowing request with no origin`);
       return callback(null, true);
     }
-    
+
     // Normalize origin (remove trailing slash for comparison)
     const normalizedOrigin = origin.replace(/\/$/, '');
-    
+
     // Check if origin is in allowed list (exact match or normalized)
     if (uniqueOrigins.includes(origin) || uniqueOrigins.includes(normalizedOrigin)) {
       console.log(`✅ [CORS] Origin ${origin} is allowed`);
@@ -73,7 +80,7 @@ const corsOptions = {
             return url;
           }
         });
-        
+
         if (allowedHosts.includes(originHost)) {
           console.log(`✅ [CORS] Allowing origin ${origin} (hostname match: ${originHost})`);
           callback(null, true);
@@ -93,7 +100,75 @@ const corsOptions = {
   optionsSuccessStatus: 204, // Some legacy browsers (IE11, various SmartTVs) choke on 204
 };
 
+import helmet from "helmet";
+
+// ... imports
+
 // Middleware
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: [
+        "'self'",
+        "'unsafe-inline'",
+        "https://www.googletagmanager.com",
+        "https://widget.intercom.io",
+        "https://js.intercomcdn.com",
+        "https://alcdn.msauth.net",
+        "https://*.b2clogin.com",
+        "https://accounts.google.com"
+      ],
+      styleSrc: [
+        "'self'",
+        "'unsafe-inline'",
+        "https://fonts.googleapis.com",
+        "https://cdn.jsdelivr.net"
+      ],
+      imgSrc: ["'self'", "data:", "https:"],
+      connectSrc: [
+        "'self'",
+        "http://localhost:*",
+        "ws://localhost:*",
+        "https://polite-ground-0602c481e.2.azurestaticapps.net",
+        "https://www.polite-ground-0602c481e.2.azurestaticapps.net",
+        "https://calm-smoke-0ef35d31e.4.azurestaticapps.net",
+        "https://www.calm-smoke-0ef35d31e.4.azurestaticapps.net",
+        "https://labs.echopad.ai",
+        "https://www.labs.echopad.ai",
+        "https://echopad.ai",
+        "https://www.echopad.ai",
+        "https://login.microsoftonline.com",
+        "https://graph.microsoft.com",
+        "https://*.b2clogin.com",
+        "https://www.google-analytics.com",
+        "https://api-iam.intercom.io",
+        "wss://*.intercom.io",
+        "wss://*.intercom-messenger.com",
+        "https://cdn.jsdelivr.net"
+      ],
+      fontSrc: [
+        "'self'",
+        "https://fonts.gstatic.com",
+        "https://cdn.jsdelivr.net",
+        "https://fonts.intercomcdn.com"
+      ],
+      objectSrc: ["'none'"],
+      upgradeInsecureRequests: [],
+    },
+  },
+  crossOriginEmbedderPolicy: false,
+}));
+
+// Set Permissions-Policy header
+app.use((req, res, next) => {
+  res.setHeader(
+    "Permissions-Policy",
+    "geolocation=(), microphone=(), camera=(), fullscreen=(self)"
+  );
+  next();
+});
+
 app.use(cors(corsOptions));
 app.use(express.json());
 
@@ -111,7 +186,7 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`📡 Health check: http://localhost:${PORT}/health`);
   console.log(`👥 Users API: http://localhost:${PORT}/api/users`);
-  
+
   // Test Cosmos DB connection and ensure containers on startup (non-blocking)
   if (isConfigured()) {
     testConnection()
@@ -124,7 +199,7 @@ app.listen(PORT, '0.0.0.0', () => {
             if (result.errors.length > 0) {
               console.warn(`⚠️  Some containers had errors: ${result.errors.length}`);
             }
-            
+
             // Start warmup service to prevent cold starts
             // Runs every 5 minutes to keep Cosmos DB serverless account warm
             startWarmup(5);
