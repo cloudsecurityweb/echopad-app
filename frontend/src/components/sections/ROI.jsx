@@ -48,19 +48,19 @@ function ROI() {
               <div>
                 <h3 className="text-sm md:text-base lg:text-lg xl:text-xl font-semibold text-gray-900 text-center mb-2 md:mb-3 lg:mb-4 xl:mb-6">Implementation Timeline</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-1.5 md:gap-2 lg:gap-3 xl:gap-4">
-                  <div className="glass-card rounded-xl p-2.5 md:p-3 lg:p-4 xl:p-5 text-center hover-scale shadow-sm">
+                  <div className="glass-card rounded-xl p-2.5 md:p-3 lg:p-4 xl:p-5 text-center hover-lift shadow-sm">
                     <div className="text-xs md:text-sm lg:text-base xl:text-lg font-semibold text-gray-900 mb-0.5 md:mb-1">Week 1</div>
                     <p className="text-xs md:text-sm text-gray-600">Onboarding & Configuration</p>
                   </div>
-                  <div className="glass-card rounded-xl p-2.5 md:p-3 lg:p-4 xl:p-5 text-center hover-scale shadow-sm">
+                  <div className="glass-card rounded-xl p-2.5 md:p-3 lg:p-4 xl:p-5 text-center hover-lift shadow-sm">
                     <div className="text-xs md:text-sm lg:text-base xl:text-lg font-semibold text-gray-900 mb-0.5 md:mb-1">Week 2</div>
                     <p className="text-xs md:text-sm text-gray-600">Staff Training (2 hours)</p>
                   </div>
-                  <div className="glass-card rounded-xl p-2.5 md:p-3 lg:p-4 xl:p-5 text-center hover-scale shadow-sm">
+                  <div className="glass-card rounded-xl p-2.5 md:p-3 lg:p-4 xl:p-5 text-center hover-lift shadow-sm">
                     <div className="text-xs md:text-sm lg:text-base xl:text-lg font-semibold text-gray-900 mb-0.5 md:mb-1">Week 3</div>
                     <p className="text-xs md:text-sm text-gray-600">Pilot with 3 Providers</p>
                   </div>
-                  <div className="glass-card rounded-xl p-2.5 md:p-3 lg:p-4 xl:p-5 text-center hover-scale shadow-sm">
+                  <div className="glass-card rounded-xl p-2.5 md:p-3 lg:p-4 xl:p-5 text-center hover-lift shadow-sm">
                     <div className="text-xs md:text-sm lg:text-base xl:text-lg font-semibold text-gray-900 mb-0.5 md:mb-1">Week 4</div>
                     <p className="text-xs md:text-sm text-gray-600">Full Deployment</p>
                   </div>

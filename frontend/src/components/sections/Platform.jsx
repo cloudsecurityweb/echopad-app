@@ -52,12 +52,14 @@ function Platform() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 md:gap-3 lg:gap-4 xl:gap-5 2xl:gap-6">
           {features.map((feature, index) => (
-            <div key={index} className="glass-card p-2.5 md:p-3 lg:p-4 xl:p-5 2xl:p-6 rounded-2xl border border-gray-200/70 hover-lift group animate-fade-in-scale shadow-sm" style={{ animationDelay: `${index * 100}ms` }}>
-              <div className="w-9 h-9 md:w-10 md:h-10 lg:w-12 lg:h-12 xl:w-14 xl:h-14 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-xl flex items-center justify-center mb-2 md:mb-3 lg:mb-4 xl:mb-5 group-hover:scale-110 group-hover:rotate-6 transition-transform shadow-lg">
-                <i className={`bi ${feature.icon} text-white text-sm md:text-base lg:text-lg xl:text-xl`}></i>
+            <div key={index} className="animate-fade-in-scale" style={{ animationDelay: `${index * 100}ms` }}>
+              <div className="glass-card p-2.5 md:p-3 lg:p-4 xl:p-5 2xl:p-6 rounded-2xl hover-lift shadow-sm h-full">
+                <div className="w-9 h-9 md:w-10 md:h-10 lg:w-12 lg:h-12 xl:w-14 xl:h-14 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-xl flex items-center justify-center mb-2 md:mb-3 lg:mb-4 xl:mb-5 shadow-lg">
+                  <i className={`bi ${feature.icon} text-white text-sm md:text-base lg:text-lg xl:text-xl`}></i>
+                </div>
+                <h4 className="text-sm md:text-base lg:text-lg xl:text-xl font-bold text-gray-900 mb-1.5 md:mb-2 lg:mb-3">{feature.title}</h4>
+                <p className="text-xs md:text-sm lg:text-base text-gray-600 leading-relaxed">{feature.description}</p>
               </div>
-              <h4 className="text-sm md:text-base lg:text-lg xl:text-xl font-bold text-gray-900 mb-1.5 md:mb-2 lg:mb-3 group-hover:text-cyan-600 transition-colors">{feature.title}</h4>
-              <p className="text-xs md:text-sm lg:text-base text-gray-600 leading-relaxed">{feature.description}</p>
             </div>
           ))}
         </div>

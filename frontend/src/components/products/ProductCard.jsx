@@ -12,15 +12,12 @@ function ProductCard({ icon, title, description, link, featured = false, comingS
   );
 
   return (
-    <div className={`glass-card rounded-2xl p-2.5 md:p-3 lg:p-4 xl:p-5 2xl:p-6 hover-lift relative overflow-hidden group shadow-sm ${featured ? 'ring-2 ring-cyan-500/50' : ''} ${comingSoon ? 'opacity-90' : ''}`}>
-      {/* Gradient overlay on hover */}
-      <div className="absolute inset-0 bg-gradient-to-br from-cyan-50 to-blue-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-
+    <div className={`glass-card rounded-2xl p-2.5 md:p-3 lg:p-4 xl:p-5 2xl:p-6 hover-lift relative overflow-hidden shadow-sm ${featured ? 'ring-2 ring-cyan-500/50' : ''} ${comingSoon ? 'opacity-90' : ''}`}>
       <div className="relative z-10">
-        <div className={`w-9 h-9 md:w-10 md:h-10 lg:w-12 lg:h-12 xl:w-14 xl:h-16 rounded-xl flex items-center justify-center mb-1.5 md:mb-2 lg:mb-3 xl:mb-4 2xl:mb-5 transition-transform group-hover:scale-110 group-hover:rotate-6 ${featured ? 'bg-gradient-to-br from-cyan-500 to-blue-600 shadow-lg shadow-cyan-500/50' : comingSoon ? 'bg-gradient-to-br from-gray-200 to-gray-300' : 'bg-gradient-to-br from-gray-100 to-gray-200'}`}>
+        <div className={`w-9 h-9 md:w-10 md:h-10 lg:w-12 lg:h-12 xl:w-14 xl:h-16 rounded-xl flex items-center justify-center mb-1.5 md:mb-2 lg:mb-3 xl:mb-4 2xl:mb-5 ${featured ? 'bg-gradient-to-br from-cyan-500 to-blue-600 shadow-lg shadow-cyan-500/50' : comingSoon ? 'bg-gradient-to-br from-gray-200 to-gray-300' : 'bg-gradient-to-br from-gray-100 to-gray-200'}`}>
           <i className={`bi ${icon} ${featured ? 'text-white' : 'text-cyan-600'} text-base md:text-lg lg:text-xl xl:text-2xl`}></i>
         </div>
-        <h4 className="text-sm md:text-base lg:text-lg xl:text-xl font-bold text-gray-900 mb-1 md:mb-1.5 lg:mb-2 xl:mb-3 group-hover:text-cyan-600 transition-colors">{title}</h4>
+        <h4 className="text-sm md:text-base lg:text-lg xl:text-xl font-bold text-gray-900 mb-1 md:mb-1.5 lg:mb-2 xl:mb-3">{title}</h4>
         <p className="text-xs md:text-sm lg:text-base text-gray-600 mb-2 md:mb-3 lg:mb-4 xl:mb-5 2xl:mb-6 leading-relaxed">{description}</p>
         {!comingSoon ? (
           isInternalLink ? (
