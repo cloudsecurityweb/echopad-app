@@ -93,7 +93,61 @@ const corsOptions = {
   optionsSuccessStatus: 204, // Some legacy browsers (IE11, various SmartTVs) choke on 204
 };
 
+import helmet from "helmet";
+
+// ... imports
+
 // Middleware
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: [
+        "'self'",
+        "'unsafe-inline'",
+        "https://www.googletagmanager.com",
+        "https://widget.intercom.io",
+        "https://js.intercomcdn.com",
+        "https://alcdn.msauth.net",
+        "https://*.b2clogin.com"
+      ],
+      styleSrc: [
+        "'self'",
+        "'unsafe-inline'",
+        "https://fonts.googleapis.com",
+        "https://cdn.jsdelivr.net"
+      ],
+      imgSrc: ["'self'", "data:", "https:"],
+      connectSrc: [
+        "'self'",
+        "https://login.microsoftonline.com",
+        "https://graph.microsoft.com",
+        "https://*.b2clogin.com",
+        "https://www.google-analytics.com",
+        "https://api-iam.intercom.io",
+        "wss://nexus-websocket-a.intercom.io"
+      ],
+      fontSrc: [
+        "'self'",
+        "https://fonts.gstatic.com",
+        "https://cdn.jsdelivr.net"
+      ],
+      objectSrc: ["'none'"],
+      upgradeInsecureRequests: [],
+    },
+  },
+  crossOriginEmbedderPolicy: false,
+}));
+
+// Set Permissions-Policy header
+app.use((req, res, next) => {
+  res.setHeader(
+    "Permissions-Policy",
+    "geolocation=(), microphone=(), camera=(), fullscreen=(self)"
+  );
+  next();
+});
+
 app.use(cors(corsOptions));
 app.use(express.json());
 
