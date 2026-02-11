@@ -145,8 +145,11 @@ app.use(helmet({
         "https://api-iam.intercom.io",
         "wss://*.intercom.io",
         "wss://*.intercom-messenger.com",
-        "https://cdn.jsdelivr.net"
+        "https://cdn.jsdelivr.net",
+        "https://echopad-app-service-bwd0bqd7g7ehb5c7.westus2-01.azurewebsites.net",
+        "https://echopad-prod-api.azurewebsites.net"
       ],
+      mediaSrc: ["'self'", "https://js.intercomcdn.com"],
       fontSrc: [
         "'self'",
         "https://fonts.gstatic.com",
