@@ -519,12 +519,12 @@ function AIScribe() {
               ].map((section) => (
                 <article
                   key={section.id}
-                  className="bg-white rounded-3xl border border-gray-200 p-8 hover:shadow-xl hover:border-blue-200 transition-all duration-300 group"
+                  className="glass-card rounded-2xl p-8 hover-lift shadow-sm"
                   aria-labelledby={`${section.id}-heading`}
                 >
                   {/* Section Header */}
                   <div className="flex items-center gap-4 mb-6">
-                    <div className="w-14 h-14 bg-gradient-to-br from-blue-600 to-blue-400 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                    <div className="w-14 h-14 bg-gradient-to-br from-blue-600 to-blue-400 rounded-2xl flex items-center justify-center shadow-lg">
                       <i className={`bi ${section.icon} text-white text-2xl`} aria-hidden="true"></i>
                     </div>
                     <div className="flex-1">

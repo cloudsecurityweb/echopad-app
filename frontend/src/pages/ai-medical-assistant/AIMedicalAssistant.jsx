@@ -234,7 +234,7 @@ function AIMedicalAssistant() {
               ].map((item, idx) => (
                 <div
                   key={idx}
-                  className={`bg-gradient-to-br ${item.bgClass} rounded-xl p-6 border-2 ${item.borderClass} hover:shadow-lg transition-all text-center`}
+                  className="glass-card rounded-xl p-6 hover-lift shadow-sm text-center"
                 >
                   <div className={`w-14 h-14 bg-gradient-to-br ${item.iconClass} rounded-xl flex items-center justify-center mx-auto mb-3 shadow-lg`}>
                     <i className={`bi ${item.icon} text-white text-2xl`}></i>
@@ -296,7 +296,7 @@ function AIMedicalAssistant() {
               ].map((benefit, idx) => (
                 <div
                   key={idx}
-                  className="bg-white rounded-2xl p-6 border-2 border-teal-100 hover:border-teal-300 hover:shadow-xl transition-all"
+                  className="glass-card rounded-2xl p-6 hover-lift shadow-sm"
                 >
                   <div className={`w-14 h-14 bg-gradient-to-br ${benefit.color} rounded-xl flex items-center justify-center mb-4 shadow-lg`}>
                     <i className={`bi ${benefit.icon} text-white text-2xl`}></i>
@@ -350,7 +350,7 @@ function AIMedicalAssistant() {
               ].map((useCase, idx) => (
                 <div
                   key={idx}
-                  className={`bg-gradient-to-br ${useCase.bgClass} rounded-2xl p-6 border-2 ${useCase.borderClass} hover:shadow-xl transition-all`}
+                  className="glass-card rounded-2xl p-6 hover-lift shadow-sm"
                 >
                   <div className={`w-14 h-14 bg-gradient-to-br ${useCase.iconClass} rounded-xl flex items-center justify-center mb-4 shadow-lg`}>
                     <i className={`bi ${useCase.icon} text-white text-2xl`}></i>

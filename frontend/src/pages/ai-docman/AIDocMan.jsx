@@ -343,9 +343,9 @@ function AIDocMan() {
               ].map((feature, idx) => (
                 <div
                   key={idx}
-                  className="bg-gradient-to-br from-gray-50 to-white rounded-2xl p-6 border-2 border-gray-200 hover:border-indigo-200 hover:shadow-xl transition-all group"
+                  className="glass-card rounded-2xl p-6 hover-lift shadow-sm"
                 >
-                  <div className={`w-14 h-14 bg-gradient-to-br ${feature.color} rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg`}>
+                  <div className={`w-14 h-14 bg-gradient-to-br ${feature.color} rounded-xl flex items-center justify-center mb-4 shadow-lg`}>
                     <i className={`bi ${feature.icon} text-white text-2xl`}></i>
                   </div>
                   <h3 className="text-xl font-bold text-gray-900 mb-2">{feature.title}</h3>
