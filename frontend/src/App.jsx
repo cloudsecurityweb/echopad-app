@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { MsalProvider } from '@azure/msal-react';
 import { GoogleOAuthProvider } from '@react-oauth/google';
@@ -80,6 +80,15 @@ import HelpCenter from './pages/dashboard/HelpCenter';
 import HelpDocDetail from './pages/dashboard/HelpDocDetail';
 import ClientManagementPage from './pages/dashboard/super-admin/ClientManagementPage';
 import usePageTitle from './hooks/usePageTitle';
+
+// Scroll to top on route change
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  return null;
+}
 
 function HomePage() {
   const location = useLocation();
@@ -184,6 +193,7 @@ function App({ msalInstance }) {
           <AuthProvider>
             <RoleProvider>
               <BrowserRouter>
+                <ScrollToTop />
                 <Routes>
                   <Route path="/" element={<HomePage />} />
                   <Route path="/ai-scribe" element={<AIScribe />} />
