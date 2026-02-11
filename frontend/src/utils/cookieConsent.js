@@ -3,6 +3,11 @@
  * Ensures GDPR compliance by preventing any tracking before user consent
  */
 
+/** Dev-only logger */
+const log = (...args) => {
+  if (import.meta.env.DEV) console.log('[Cookie Consent]', ...args);
+};
+
 // Check if user has given consent
 export const hasConsent = () => {
   const consent = localStorage.getItem('cookieConsent');
@@ -39,11 +44,11 @@ export const clearConsent = () => {
 // Initialize analytics only if consent is given
 export const initializeAnalyticsIfConsented = () => {
   if (!hasConsent()) {
-    console.log('[Cookie Consent] Analytics blocked - no user consent');
+    log('Analytics blocked - no user consent');
     return false;
   }
   
-  console.log('[Cookie Consent] User has consented - initializing analytics');
+  log('User has consented - initializing analytics');
   
   // Initialize Google Analytics (if configured)
   if (window.gtag && typeof window.gtag === 'function') {
@@ -89,14 +94,14 @@ export const blockAnalyticsIfNoConsent = () => {
     });
   }
   
-  console.log('[Cookie Consent] Analytics blocked - awaiting user consent');
+  log('Analytics blocked - awaiting user consent');
   return true; // Blocked
 };
 
 // Safe localStorage wrapper that respects consent
 export const setAnalyticsCookie = (key, value) => {
   if (!hasConsent()) {
-    console.warn('[Cookie Consent] Attempted to set analytics cookie without consent:', key);
+    log('Attempted to set analytics cookie without consent:', key);
     return false;
   }
   
@@ -126,7 +131,7 @@ export const getAnalyticsCookie = (key) => {
 // Track event only if consent is given
 export const trackEvent = (eventName, eventData = {}) => {
   if (!hasConsent()) {
-    console.log('[Cookie Consent] Event tracking blocked:', eventName);
+    log('Event tracking blocked:', eventName);
     return false;
   }
   

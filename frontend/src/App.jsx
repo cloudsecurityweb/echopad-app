@@ -71,9 +71,11 @@ import ErrorBoundary from './components/ui/ErrorBoundary';
 
 // Utils
 import { initGoogleAnalytics } from './utils/analytics';
-import { initIntercom } from './utils/intercom';
+import { loadIntercomScript, bootIntercomAnonymous, bootIntercom, shutdownIntercom } from './utils/intercom';
+import { fetchIntercomIdentity } from './api/intercom.api';
 import { useScrollAnimations } from './hooks/useAnimation';
 import { initializeConsentManagement, hasConsent } from './utils/cookieConsent';
+import { useAuth } from './contexts/AuthContext';
 
 import NotFound from './pages/NotFound';
 import HelpCenter from './pages/dashboard/HelpCenter';
@@ -96,20 +98,6 @@ function HomePage() {
 
   // Initialize scroll animations
   useScrollAnimations();
-
-  // Initialize analytics and Intercom only if user has consented
-  useEffect(() => {
-    // Initialize consent management first
-    initializeConsentManagement();
-
-    // Only initialize analytics if user has given consent
-    if (hasConsent()) {
-      initGoogleAnalytics();
-      initIntercom();
-    } else {
-      console.log('[Cookie Consent] Analytics blocked - awaiting user consent');
-    }
-  }, []);
 
   // Handle hash navigation - scroll to section when navigating from other pages
   useEffect(() => {
@@ -164,25 +152,54 @@ function HomePage() {
   );
 }
 
-function App({ msalInstance }) {
-  // Initialize consent management and conditionally initialize analytics
+/**
+ * Upgrades Intercom to an identity-verified session when the user logs in.
+ * Falls back to anonymous mode (launcher still visible) on logout.
+ * Must be rendered inside AuthProvider.
+ */
+function IntercomBootstrap() {
+  const { isAuthenticated, userProfile } = useAuth();
+
   useEffect(() => {
-    // Initialize consent management first - blocks analytics by default
+    if (!hasConsent()) return;
+
+    if (isAuthenticated && userProfile?.user) {
+      // Upgrade anonymous session → identity-verified session
+      fetchIntercomIdentity()
+        .then((data) => {
+          if (data?.appId && data?.userHash) {
+            bootIntercom(data);
+          }
+        })
+        .catch(() => {
+          // Identity fetch failed — stay in anonymous mode, launcher still shows
+        });
+    } else if (!isAuthenticated) {
+      // User logged out — revert to anonymous mode so launcher stays visible
+      shutdownIntercom({ rebootAnonymous: true });
+    }
+  }, [isAuthenticated, userProfile]);
+
+  return null;
+}
+
+function App({ msalInstance }) {
+  // Initialize consent management and conditionally load analytics scripts
+  useEffect(() => {
     initializeConsentManagement();
 
-    // Only initialize analytics if user has given consent
     if (hasConsent()) {
       initGoogleAnalytics();
-      initIntercom();
-    } else {
-      console.log('[Cookie Consent] Analytics and tracking blocked - awaiting user consent');
+      loadIntercomScript();
+      // Boot in anonymous mode so the launcher icon is always visible
+      bootIntercomAnonymous();
     }
 
-    // Set up a global function for deferred initialization after consent
+    // Deferred initialization — called by CookieConsent when user accepts
     window.initializeAnalytics = () => {
-      console.log('[Cookie Consent] User consented - initializing analytics now');
       initGoogleAnalytics();
-      initIntercom();
+      loadIntercomScript();
+      bootIntercomAnonymous();
     };
   }, []);
 
@@ -244,6 +261,7 @@ function App({ msalInstance }) {
                   </Route>
                   <Route path="*" element={<NotFound />} />
                 </Routes>
+                <IntercomBootstrap />
                 <CookieConsent />
                 <ToastContainer position="top-right" autoClose={5000} />
               </BrowserRouter>
