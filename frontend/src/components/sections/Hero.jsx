@@ -27,9 +27,15 @@ function Hero() {
 
           {/* Main Heading with Gradient Text */}
           <h1 className="text-3xl sm:text-4xl md:text-3xl lg:text-4xl xl:text-5xl 2xl:text-6xl 3xl:text-7xl font-bold mb-4 md:mb-3 lg:mb-4 xl:mb-5 2xl:mb-6 3xl:mb-8 leading-tight animate-fade-in-scale animation-delay-100">
-            <span className="text-gray-900">AI Agents That Automate</span>
+            <span className="text-gray-900">
+              AI Agents That Automate
+            </span>
+
             <br />
-            <span className="animate-gradient-text">Your Entire Clinical Workflow</span>
+
+            <span className="animate-gradient-text">
+              Your Entire Clinical Workflow
+            </span>
           </h1>
 
           {/* Subtitle */}
