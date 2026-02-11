@@ -423,7 +423,7 @@ function SignIn() {
                   type="button"
                   onClick={() => handleSocialLogin('Microsoft')}
                   disabled={isMicrosoftLoading || isGoogleLoading || isLoading}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 border-2 border-gray-300 rounded-lg hover:border-gray-400 transition-all font-medium text-sm md:text-base text-gray-700 bg-white disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 border-2 border-gray-300 rounded-lg hover:border-gray-400 transition-all font-medium text-sm md:text-base text-gray-700 bg-white disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                 >
                   {isMicrosoftLoading ? (
                     <>
@@ -450,7 +450,7 @@ function SignIn() {
                   type="button"
                   onClick={() => handleSocialLogin('Google')}
                   disabled={isGoogleLoading || isMicrosoftLoading || isLoading}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 border-2 border-gray-300 rounded-lg hover:border-gray-400 transition-all font-medium text-sm md:text-base text-gray-700 bg-white disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 border-2 border-gray-300 rounded-lg hover:border-gray-400 transition-all font-medium text-sm md:text-base text-gray-700 bg-white disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                 >
                   {isGoogleLoading ? (
                     <>
@@ -580,7 +580,7 @@ function SignIn() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-4 py-2.5 md:py-3 rounded-lg hover:from-cyan-400 hover:to-blue-500 transition-all text-sm md:text-base font-medium shadow-lg hover:shadow-cyan-500/50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-4 py-2.5 md:py-3 rounded-lg hover:from-cyan-400 hover:to-blue-500 transition-all text-sm md:text-base font-medium shadow-lg hover:shadow-cyan-500/50 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                 >
                   {isSubmitting ? 'Signing In...' : 'Login'}
                 </button>

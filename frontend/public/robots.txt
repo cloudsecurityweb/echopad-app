@@ -46,9 +46,9 @@ Disallow: /sign-up
 Crawl-delay: 1
 
 # Sitemap location
-Sitemap: https://echopadai.com/sitemap.xml
+Sitemap: https://echopad.ai/sitemap.xml
 
 # LLM-friendly content for AI inference and citation
 # LLMS.txt is a curated guide directing AI agents to high-quality,
 # structured content optimized for accurate inference and citations
-LLMS: https://echopadai.com/llms.txt
+LLMS: https://echopad.ai/llms.txt
