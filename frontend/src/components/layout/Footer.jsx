@@ -121,18 +121,6 @@ function Footer() {
                 <a
                   href="/"
                   onClick={(e) =>
-                    handleSectionNavigation(e, '#agents')
-                  }
-                  className="text-gray-400 hover:text-blue-300 transition-colors flex items-center gap-2 group"
-                >
-                  <span className="w-0 h-0.5 bg-blue-400 transition-all group-hover:w-4" />
-                  Products
-                </a>
-              </li>
-              <li>
-                <a
-                  href="/"
-                  onClick={(e) =>
                     handleSectionNavigation(e, '#platform')
                   }
                   className="text-gray-400 hover:text-blue-300 transition-colors flex items-center gap-2 group"
