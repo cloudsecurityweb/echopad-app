@@ -25,11 +25,18 @@ app.use('/public', express.static(path.join(__dirname, 'public')));
 // Allow requests from localhost (development) and production frontend URL
 const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
 const allowedOrigins = [
-  "http://localhost:5173", // Default Vite dev server
-  "http://localhost:3000", // Alternative dev port
-  "http://localhost", // Localhost without port
-  "https://labs.echopad.ai", // Development frontend URL
-  FRONTEND_URL, // Production frontend URL
+  "http://localhost:5173",
+  "http://localhost:3000",
+  "http://localhost",
+  "https://labs.echopad.ai",
+  "https://www.labs.echopad.ai",
+  "https://echopad.ai",
+  "https://www.echopad.ai",
+  "https://polite-ground-0602c481e.2.azurestaticapps.net",
+  "https://www.polite-ground-0602c481e.2.azurestaticapps.net",
+  "https://calm-smoke-0ef35d31e.4.azurestaticapps.net",
+  "https://www.calm-smoke-0ef35d31e.4.azurestaticapps.net",
+  FRONTEND_URL,
 ].filter(Boolean); // Remove any undefined values
 
 // Remove duplicates and normalize (remove trailing slashes)
@@ -120,6 +127,16 @@ app.use(helmet({
       imgSrc: ["'self'", "data:", "https:"],
       connectSrc: [
         "'self'",
+        "http://localhost:*",
+        "ws://localhost:*",
+        "https://polite-ground-0602c481e.2.azurestaticapps.net",
+        "https://www.polite-ground-0602c481e.2.azurestaticapps.net",
+        "https://calm-smoke-0ef35d31e.4.azurestaticapps.net",
+        "https://www.calm-smoke-0ef35d31e.4.azurestaticapps.net",
+        "https://labs.echopad.ai",
+        "https://www.labs.echopad.ai",
+        "https://echopad.ai",
+        "https://www.echopad.ai",
         "https://login.microsoftonline.com",
         "https://graph.microsoft.com",
         "https://*.b2clogin.com",
