@@ -5,15 +5,31 @@ import { useAuth } from '../../contexts/AuthContext';
 import echopadLogo from '../../assets/images/logos/echopad-logo.svg';
 
 function Navigation() {
-  const { isAuthenticated, account, googleUser, authProvider, userProfile, logout, isLoading } = useAuth();
+  const {
+    isAuthenticated,
+    account,
+    googleUser,
+    authProvider,
+    userProfile,
+    logout,
+    isLoading
+  } = useAuth();
+
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
   const dropdownRef = useRef(null);
   const location = useLocation();
   const navigate = useNavigate();
 
+  const isHomePage = location.pathname === '/';
+
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
   };
 
   const handleIntercomClick = (e, action) => {
@@ -31,6 +47,11 @@ function Navigation() {
     }
   };
 
+  const handleDashboardClick = () => {
+    setIsDropdownOpen(false);
+    navigate('/dashboard');
+  };
+
   const scrollToSection = (e, selector) => {
     e.preventDefault();
     const headerOffset = 64;
@@ -39,7 +60,9 @@ function Navigation() {
       const element = document.querySelector(selector);
       if (element) {
         const elementPosition = element.getBoundingClientRect().top;
-        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+        const offsetPosition =
+          elementPosition + window.pageYOffset - headerOffset;
+
         window.scrollTo({
           top: offsetPosition,
           behavior: 'smooth'
@@ -55,53 +78,38 @@ function Navigation() {
     }
   };
 
-  const toggleDropdown = () => {
-    setIsDropdownOpen(!isDropdownOpen);
-  };
-
-  const handleDashboardClick = () => {
-    setIsDropdownOpen(false);
-    navigate('/dashboard');
-  };
-
-  // Handle logo click - navigate to home and scroll to hero section
   const handleLogoClick = (e) => {
     e.preventDefault();
-    if (isHomePage) {
-      // On home page, just scroll to the hero section
+
+    const scrollToHero = () => {
       const element = document.querySelector('#hero');
       if (element) {
         const headerOffset = 64;
         const elementPosition = element.getBoundingClientRect().top;
-        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+        const offsetPosition =
+          elementPosition + window.pageYOffset - headerOffset;
+
         window.scrollTo({
           top: offsetPosition,
           behavior: 'smooth'
         });
       }
+    };
+
+    if (isHomePage) {
+      scrollToHero();
     } else {
-      // Navigate to home page, then scroll to hero section
       navigate('/');
-      // Use setTimeout to ensure navigation completes before scrolling
-      setTimeout(() => {
-        const element = document.querySelector('#hero');
-        if (element) {
-          const headerOffset = 64;
-          const elementPosition = element.getBoundingClientRect().top;
-          const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-          window.scrollTo({
-            top: offsetPosition,
-            behavior: 'smooth'
-          });
-        }
-      }, 100);
+      setTimeout(scrollToHero, 100);
     }
   };
 
-  // Close dropdown when clicking outside or pressing Escape
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target)
+      ) {
         setIsDropdownOpen(false);
       }
     };
@@ -123,28 +131,29 @@ function Navigation() {
     };
   }, [isDropdownOpen]);
 
-  // For hash links, use regular anchor tags, for routes use Link
-  const isHomePage = location.pathname === '/';
+  const userInfo =
+    authProvider === 'google'
+      ? {
+          name: googleUser?.name,
+          email: googleUser?.email,
+          picture: googleUser?.picture
+        }
+      : {
+          name: account?.name,
+          email: account?.username
+        };
 
-  // Get user info based on provider
-  const userInfo = authProvider === 'google'
-    ? {
-      name: googleUser?.name,
-      email: googleUser?.email,
-      picture: googleUser?.picture
-    }
-    : {
-      name: account?.name,
-      email: account?.username
-    };
-
-  // Prefer backend display name when signed in, then provider name, then email
-  const displayName = userProfile?.user?.displayName || userInfo.name || userInfo.email || 'User';
+  const displayName =
+    userProfile?.user?.displayName ||
+    userInfo.name ||
+    userInfo.email ||
+    'User';
 
   return (
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-colors ${isMobileMenuOpen ? 'bg-white' : 'bg-gradient-to-b from-white to-transparent'}`}>
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
+
           {/* Logo */}
           <a
             href="/"
@@ -162,49 +171,37 @@ function Navigation() {
           </a>
 
           <div className="flex items-center gap-2">
-            {/* Mobile Menu Toggle - Right burger (always visible on mobile) */}
+
+            {/* Mobile Toggle */}
             <button
-              className="md:hidden flex flex-col gap-1 p-2 relative"
+              className="md:hidden flex flex-col gap-1 p-2"
               onClick={toggleMobileMenu}
-              aria-label="Toggle mobile menu"
             >
-              <span className={`block w-5 h-0.5 bg-gray-900 transition-all duration-300 ${isMobileMenuOpen ? 'rotate-45 translate-y-1.5' : ''}`}></span>
-              <span className={`block w-5 h-0.5 bg-gray-900 transition-all duration-300 ${isMobileMenuOpen ? 'opacity-0' : ''}`}></span>
-              <span className={`block w-5 h-0.5 bg-gray-900 transition-all duration-300 ${isMobileMenuOpen ? '-rotate-45 -translate-y-1.5' : ''}`}></span>
+              <span className={`block w-5 h-0.5 bg-gray-900 transition-all ${isMobileMenuOpen ? 'rotate-45 translate-y-1.5' : ''}`}></span>
+              <span className={`block w-5 h-0.5 bg-gray-900 transition-all ${isMobileMenuOpen ? 'opacity-0' : ''}`}></span>
+              <span className={`block w-5 h-0.5 bg-gray-900 transition-all ${isMobileMenuOpen ? '-rotate-45 -translate-y-1.5' : ''}`}></span>
             </button>
           </div>
 
-          {/* Desktop Navigation */}
+          {/* Desktop Nav */}
           <div className="hidden md:flex items-center gap-6">
             <>
-              <a
-                href="/"
-                onClick={(e) => scrollToSection(e, '#agents')}
-                className="text-gray-700 hover:text-gray-900 font-semibold text-base relative group transition-colors"
-              >
+              <a href="/" onClick={(e) => scrollToSection(e, '#agents')} className="relative group text-gray-700 font-semibold">
                 Products
                 <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-cyan-500 to-blue-600 transition-all group-hover:w-full"></span>
               </a>
-              <a
-                href="/"
-                onClick={(e) => scrollToSection(e, '#platform')}
-                className="text-gray-700 hover:text-gray-900 font-semibold text-base relative group transition-colors"
-              >
+              <a href="/" onClick={(e) => scrollToSection(e, '#platform')} className="relative group text-gray-700 font-semibold">
                 Platform
                 <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-cyan-500 to-blue-600 transition-all group-hover:w-full"></span>
               </a>
-              <a
-                href="/"
-                onClick={(e) => scrollToSection(e, '#roi')}
-                className="text-gray-700 hover:text-gray-900 font-semibold text-base relative group transition-colors"
-              >
+              <a href="/" onClick={(e) => scrollToSection(e, '#roi')} className="relative group text-gray-700 font-semibold">
                 ROI
                 <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-cyan-500 to-blue-600 transition-all group-hover:w-full"></span>
               </a>
             </>
+
             {isAuthenticated && !isLoading ? (
               <>
-                {/* User Dropdown */}
                 <div className="relative" ref={dropdownRef}>
                   <button
                     onClick={toggleDropdown}
@@ -221,28 +218,15 @@ function Navigation() {
                     }}
                   >
                     {userInfo.picture ? (
-                      <img
-                        src={userInfo.picture}
-                        alt={displayName}
-                        className="w-7 h-7 rounded-full object-cover"
-                      />
+                      <img src={userInfo.picture} alt={displayName} className="w-7 h-7 rounded-full" />
                     ) : (
                       <div className="w-7 h-7 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full flex items-center justify-center text-white text-xs font-bold">
                         {displayName.charAt(0).toUpperCase()}
                       </div>
                     )}
                     <span className="hidden lg:inline text-sm font-semibold">{displayName}</span>
-                    <svg
-                      className={`w-4 h-4 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`}
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
                   </button>
 
-                  {/* Dropdown Menu */}
                   {isDropdownOpen && (
                     <div
                       className="absolute right-0 mt-2 w-64 glass-card rounded-xl py-2 z-50 animate-fade-in-scale"
@@ -301,6 +285,8 @@ function Navigation() {
                     </div>
                   )}
                 </div>
+
+                {/* ✅ Request Demo (Desktop Auth) */}
                 <a
                   href="#"
                   className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-5 py-2 rounded-lg hover:from-cyan-400 hover:to-blue-500 transition-all font-semibold text-sm shadow-lg hover:shadow-cyan-500/50 hover:scale-105"
@@ -311,12 +297,11 @@ function Navigation() {
               </>
             ) : (
               <>
-                <Link
-                  to="/sign-in"
-                  className="border-2 border-gray-300 text-gray-700 px-5 py-2 rounded-lg hover:bg-gray-50 transition-all font-semibold text-sm"
-                >
+                <Link to="/sign-in" className="border-2 border-gray-300 text-gray-700 px-5 py-2 rounded-lg">
                   Sign in
                 </Link>
+
+                {/* ✅ Request Demo (Desktop Guest) */}
                 <a
                   href="#"
                   className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-5 py-2 rounded-lg hover:from-cyan-400 hover:to-blue-500 transition-all font-semibold text-sm shadow-lg hover:shadow-cyan-500/50 hover:scale-105"
@@ -447,4 +432,3 @@ function Navigation() {
 }
 
 export default Navigation;
-
