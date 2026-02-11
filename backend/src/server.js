@@ -51,16 +51,16 @@ const corsOptions = {
     console.log(`🔍 [CORS] Request from origin: ${origin || 'no origin'}`);
     console.log(`🔍 [CORS] Allowed origins: ${uniqueOrigins.join(", ")}`);
     console.log(`🔍 [CORS] NODE_ENV: ${process.env.NODE_ENV || 'not set'}`);
-    
+
     // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) {
       console.log(`✅ [CORS] Allowing request with no origin`);
       return callback(null, true);
     }
-    
+
     // Normalize origin (remove trailing slash for comparison)
     const normalizedOrigin = origin.replace(/\/$/, '');
-    
+
     // Check if origin is in allowed list (exact match or normalized)
     if (uniqueOrigins.includes(origin) || uniqueOrigins.includes(normalizedOrigin)) {
       console.log(`✅ [CORS] Origin ${origin} is allowed`);
@@ -80,7 +80,7 @@ const corsOptions = {
             return url;
           }
         });
-        
+
         if (allowedHosts.includes(originHost)) {
           console.log(`✅ [CORS] Allowing origin ${origin} (hostname match: ${originHost})`);
           callback(null, true);
@@ -116,7 +116,8 @@ app.use(helmet({
         "https://widget.intercom.io",
         "https://js.intercomcdn.com",
         "https://alcdn.msauth.net",
-        "https://*.b2clogin.com"
+        "https://*.b2clogin.com",
+        "https://accounts.google.com"
       ],
       styleSrc: [
         "'self'",
@@ -142,12 +143,15 @@ app.use(helmet({
         "https://*.b2clogin.com",
         "https://www.google-analytics.com",
         "https://api-iam.intercom.io",
-        "wss://nexus-websocket-a.intercom.io"
+        "wss://*.intercom.io",
+        "wss://*.intercom-messenger.com",
+        "https://cdn.jsdelivr.net"
       ],
       fontSrc: [
         "'self'",
         "https://fonts.gstatic.com",
-        "https://cdn.jsdelivr.net"
+        "https://cdn.jsdelivr.net",
+        "https://fonts.intercomcdn.com"
       ],
       objectSrc: ["'none'"],
       upgradeInsecureRequests: [],
@@ -182,7 +186,7 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`📡 Health check: http://localhost:${PORT}/health`);
   console.log(`👥 Users API: http://localhost:${PORT}/api/users`);
-  
+
   // Test Cosmos DB connection and ensure containers on startup (non-blocking)
   if (isConfigured()) {
     testConnection()
@@ -195,7 +199,7 @@ app.listen(PORT, '0.0.0.0', () => {
             if (result.errors.length > 0) {
               console.warn(`⚠️  Some containers had errors: ${result.errors.length}`);
             }
-            
+
             // Start warmup service to prevent cold starts
             // Runs every 5 minutes to keep Cosmos DB serverless account warm
             startWarmup(5);
