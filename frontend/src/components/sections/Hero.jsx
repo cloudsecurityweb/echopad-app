@@ -20,17 +20,41 @@ function Hero() {
       <div className="container mx-auto px-6 md:px-4">
         <div className="text-center max-w-3xl lg:max-w-4xl xl:max-w-5xl 2xl:max-w-6xl 3xl:max-w-7xl mx-auto relative z-10">
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 glass-card px-4 md:px-3 lg:px-4 xl:px-6 2xl:px-7 3xl:px-8 py-1 md:py-1.5 lg:py-2 xl:py-3 2xl:py-3.5 3xl:py-4 rounded-full text-sm md:text-xs 2xl:text-sm 3xl:text-base font-semibold mb-5 md:mb-4 lg:mb-5 xl:mb-6 2xl:mb-8 3xl:mb-10 animate-fade-in-scale">
-            <i className="bi bi-lightning-charge-fill text-blue-600 animate-pulse text-xs md:text-sm 2xl:text-base 3xl:text-lg"></i>
-            <span className="text-gray-800">AI-Powered Healthcare Automation</span>
-          </div>
+          <div className="inline-flex items-center gap-2 glass-card
+px-4 md:px-3 lg:px-4 xl:px-6 2xl:px-7 3xl:px-8 
+py-1 md:py-1.5 lg:py-2 xl:py-3 2xl:py-3.5 3xl:py-4 
+rounded-full 
+text-sm md:text-xs 2xl:text-sm 3xl:text-base 
+font-semibold 
+mb-2 md:mb-2 lg:mb-3 xl:mb-3 2xl:mb-4 3xl:mb-5 
+animate-fade-in-scale mt-10 md:mt-0"
+>
+  <i className="bi bi-lightning-charge-fill text-blue-600 animate-pulse 
+  text-xs md:text-sm 2xl:text-base 3xl:text-lg"></i>
 
-          {/* Main Heading with Gradient Text */}
-          <h1 className="text-3xl sm:text-4xl md:text-3xl lg:text-4xl xl:text-5xl 2xl:text-6xl 3xl:text-7xl font-bold mb-4 md:mb-3 lg:mb-4 xl:mb-5 2xl:mb-6 3xl:mb-8 leading-tight animate-fade-in-scale animation-delay-100">
-            <span className="text-gray-900">AI Agents That Automate</span>
-            <br />
-            <span className="animate-gradient-text">Your Entire Clinical Workflow</span>
-          </h1>
+  <span className="text-gray-800">
+    AI-Powered Healthcare Automation
+  </span>
+</div>
+
+{/* Main Heading with Gradient Text */}
+<h1 className="text-3xl sm:text-4xl md:text-3xl lg:text-4xl xl:text-5xl 
+2xl:text-6xl 3xl:text-7xl 
+font-bold 
+mb-4 md:mb-3 lg:mb-4 xl:mb-5 2xl:mb-6 3xl:mb-8 
+leading-tight 
+animate-fade-in-scale animation-delay-100"
+>
+  <span className="text-gray-900">
+    AI Agents That Automate
+  </span>
+
+  <br />
+
+  <span className="animate-gradient-text">
+    Your Entire Clinical Workflow
+  </span>
+</h1>
 
           {/* Subtitle */}
           <p className="text-sm sm:text-base md:text-base lg:text-base xl:text-lg 2xl:text-xl 3xl:text-2xl text-gray-600 mb-5 md:mb-4 lg:mb-5 xl:mb-6 2xl:mb-8 3xl:mb-10 max-w-3xl 2xl:max-w-4xl 3xl:max-w-5xl mx-auto animate-fade-in-scale animation-delay-200">

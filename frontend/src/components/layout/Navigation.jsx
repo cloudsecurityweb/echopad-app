@@ -151,7 +151,7 @@ function Navigation() {
 
   return (
     <nav
-      className={`fixed top-3 inset-x-3 z-50 rounded-2xl shadow-xl shadow-blue-50 opacity-90 border border-white/20 transition-colors ${
+      className={`fixed top-3 inset-x-3 z-50 rounded-2xl shadow-xl shadow-blue-100 opacity-90 border border-white/20 transition-colors ${
         isMobileMenuOpen ? 'bg-white' : 'bg-white/95 backdrop-blur-sm'
       }`}
     >
