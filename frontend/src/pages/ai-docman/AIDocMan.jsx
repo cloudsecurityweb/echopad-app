@@ -406,47 +406,44 @@ function AIDocMan() {
           </div>
         </section>
 
-        {/* Final CTA Section */}
-        <section className="py-20 bg-gray-900 text-white">
-          <div className="container mx-auto px-4">
-            <div className="max-w-4xl mx-auto text-center">
-              <h2 className="text-4xl md:text-5xl font-bold mb-6">
-                Ready to Save 60 Minutes Daily?
-              </h2>
-              <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-                Join healthcare teams using AI Document Manager to eliminate manual formatting and improve documentation quality
-              </p>
-
-              <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-                <a
-                  href="#"
-                  onClick={(e) => handleIntercomClick(e, 'request-demo')}
-                  className="inline-flex items-center gap-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:from-indigo-700 hover:to-purple-700 transition-all shadow-xl hover:shadow-2xl hover:scale-105"
-                >
-                  <i className="bi bi-calendar-check text-2xl"></i>
-                  Schedule a Demo
-                </a>
-                <a
-                  href="#"
-                  onClick={(e) => handleIntercomClick(e, 'sign-up')}
-                  className="inline-flex items-center gap-3 bg-white text-gray-900 px-8 py-4 rounded-xl font-bold text-lg hover:bg-gray-100 transition-all shadow-xl"
-                >
-                  <i className="bi bi-rocket-takeoff text-2xl"></i>
-                  Start Free Trial
-                </a>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-3xl mx-auto pt-8 border-t border-gray-700">
-                {[
-                  { icon: 'bi-shield-check', text: 'HIPAA Compliant' },
-                  { icon: 'bi-lightning-charge', text: '3-Second Processing' },
-                  { icon: 'bi-headset', text: '24/7 Support' },
-                ].map((feature, idx) => (
-                  <div key={idx} className="flex flex-col items-center gap-2">
-                    <i className={`bi ${feature.icon} text-3xl text-indigo-300`}></i>
-                    <span className="font-semibold text-gray-300">{feature.text}</span>
+        {/* Schedule a Demo - Contact-style */}
+        <section className="py-12 md:py-20 bg-white">
+          <div className="container mx-auto px-4 w-full">
+            <div className="max-w-4xl mx-auto">
+              <div className="rounded-2xl md:rounded-3xl border border-gray-200 bg-white p-6 md:p-10 lg:p-12 shadow-lg shadow-gray-200/60">
+                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8 lg:gap-10">
+                  <div className="flex-1 min-w-0">
+                    <div className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-3">
+                      Get Started
+                    </div>
+                    <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
+                      Ready to see AI Document Manager in action?
+                    </h2>
+                    <p className="text-base md:text-lg text-gray-600 mb-2 leading-relaxed">
+                      Book a quick walkthrough and leave with a clear automation plan.
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      15-minute call, no obligation.
+                    </p>
                   </div>
-                ))}
+                  <div className="flex flex-col sm:flex-row lg:flex-col xl:flex-row items-stretch sm:items-center gap-3 flex-shrink-0">
+                    <a
+                      href="#"
+                      className="inline-flex items-center justify-center gap-2 bg-gray-900 text-white px-6 py-3.5 rounded-xl hover:bg-gray-800 transition-colors font-semibold text-sm shadow-md min-w-[140px]"
+                      onClick={(e) => handleIntercomClick(e, 'request-demo')}
+                    >
+                      <i className="bi bi-chat-dots-fill text-white text-lg" aria-hidden="true" />
+                      Book a Demo
+                    </a>
+                    <a
+                      href="/sign-up"
+                      className="inline-flex items-center justify-center gap-2 bg-white text-gray-700 px-6 py-3.5 rounded-xl border-2 border-gray-300 hover:bg-gray-50 hover:border-gray-400 transition-colors font-medium text-sm min-w-[140px]"
+                    >
+                      <i className="bi bi-rocket-takeoff text-cyan-500 text-lg" aria-hidden="true" />
+                      Get Started
+                    </a>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
