@@ -33,7 +33,7 @@ function Platform() {
   ];
 
   return (
-    <section id="platform" className="relative min-h-screen min-h-[100dvh] pt-20 pb-8 scroll-mt-20 flex flex-col justify-center bg-gradient-to-b from-white via-blue-50/30 to-white overflow-hidden">
+    <section id="platform" className="relative py-16 md:py-20 scroll-mt-20 flex flex-col justify-center bg-gradient-to-b from-white via-blue-50/30 to-white overflow-hidden">
       <div className="absolute -top-24 -right-24 w-72 h-72 rounded-full bg-cyan-200/20 blur-3xl"></div>
       <div className="absolute -bottom-28 -left-24 w-80 h-80 rounded-full bg-blue-200/15 blur-3xl"></div>
 

@@ -213,7 +213,7 @@ function DashboardSideNav({ isOpen, onClose, isCollapsed, onToggleCollapse }) {
     <>
       {/* Side Navigation - separate container with margin (matches navbar padding) */}
       <aside
-        className={`fixed top-[7rem] left-4 bottom-4 z-40 transform transition-all duration-300 ease-in-out
+        className={`fixed top-[6rem] left-4 bottom-4 z-40 transform transition-all duration-300 ease-in-out
           rounded-2xl border border-gray-200/50 bg-white/95 backdrop-blur-md shadow-lg shadow-blue-200/50
           ${isOpen ? 'translate-x-0' : '-translate-x-full'} ${effectiveWidth}`}
       >

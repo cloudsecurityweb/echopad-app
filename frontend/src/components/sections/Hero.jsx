@@ -16,7 +16,7 @@ function Hero() {
   };
 
   return (
-    <FullScreenSection id="hero" className="bg-gradient-to-b from-blue-50 via-white to-purple-50">
+    <FullScreenSection id="hero" fullHeight className="bg-gradient-to-b from-blue-50 via-white to-purple-50">
       <div className="container mx-auto px-4 flex-1 flex flex-col justify-center">
         <div className="text-center max-w-3xl mx-auto relative z-10">
           {/* Badge */}
