@@ -12,51 +12,66 @@ function Footer() {
     handleIntercomAction(action);
   };
 
-  // Handle hash navigation from non-home pages
-  const handleHashNavigation = (e, hash) => {
+  // Scroll to hero section (same behavior as navbar logo)
+  const handleLogoClick = (e) => {
     e.preventDefault();
-    if (isHomePage) {
-      // On home page, just scroll to the section
-      const element = document.querySelector(hash);
+
+    const scrollToHero = () => {
+      const element = document.querySelector('#hero');
       if (element) {
         const headerOffset = 80;
         const elementPosition = element.getBoundingClientRect().top;
-        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+        const offsetPosition =
+          elementPosition + window.pageYOffset - headerOffset;
+
         window.scrollTo({
           top: offsetPosition,
-          behavior: 'smooth'
+          behavior: 'smooth',
         });
       }
+    };
+
+    if (isHomePage) {
+      scrollToHero();
     } else {
-      // Navigate to home page, then set hash and scroll
       navigate('/');
-      // Use setTimeout to ensure navigation completes before scrolling
-      setTimeout(() => {
-        window.history.replaceState(null, '', hash);
-        const element = document.querySelector(hash);
-        if (element) {
-          const headerOffset = 80;
-          const elementPosition = element.getBoundingClientRect().top;
-          const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-          window.scrollTo({
-            top: offsetPosition,
-            behavior: 'smooth'
-          });
-        }
-      }, 100);
+      setTimeout(scrollToHero, 100);
     }
   };
 
-  // Handle navigation to pages that should start at top
+  // Handle section navigation with smooth scroll
+  const handleSectionNavigation = (e, selector) => {
+    e.preventDefault();
+    const headerOffset = 80;
+
+    const scroll = () => {
+      const element = document.querySelector(selector);
+      if (element) {
+        const elementPosition = element.getBoundingClientRect().top;
+        const offsetPosition =
+          elementPosition + window.pageYOffset - headerOffset;
+
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth',
+        });
+      }
+    };
+
+    if (isHomePage) {
+      scroll();
+    } else {
+      navigate('/');
+      setTimeout(scroll, 100);
+    }
+  };
+
+  // Handle page navigation
   const handlePageNavigation = (e, path) => {
     e.preventDefault();
     navigate(path);
-    // Scroll to top after navigation
     setTimeout(() => {
-      window.scrollTo({
-        top: 0,
-        behavior: 'smooth'
-      });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }, 100);
   };
 
@@ -66,19 +81,29 @@ function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Brand Section */}
           <div className="lg:col-span-2">
-            <div className="flex items-center gap-2 mb-4">
+            <a
+              href="/"
+              onClick={handleLogoClick}
+              className="flex items-center gap-2 mb-4 cursor-pointer group"
+            >
               <img
                 src={echopadLogo}
                 alt="Echopad AI Logo"
-                className="w-10 h-10 opacity-90"
+                className="w-10 h-10 opacity-90 transition-transform group-hover:scale-110"
               />
               <span className="text-xl font-bold">
-                Echopad <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">AI</span>
+                Echopad{' '}
+                <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+                  AI
+                </span>
               </span>
-            </div>
+            </a>
+
             <p className="text-gray-400 mb-4 leading-relaxed">
-              Healthcare AI platform that reduces provider burnout, cuts costs, and improves patient satisfaction.
+              Healthcare AI platform that reduces provider burnout, cuts costs,
+              and improves patient satisfaction.
             </p>
+
             <p className="text-sm text-gray-500">
               Part of{' '}
               <a
@@ -94,55 +119,43 @@ function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h4 className="text-sm font-semibold mb-4 text-white">Quick Links</h4>
+            <h4 className="text-sm font-semibold mb-4 text-white">
+              Quick Links
+            </h4>
             <ul className="space-y-3 text-sm">
               <li>
                 <a
-                  href={isHomePage ? "#agents" : "/#agents"}
-                  onClick={(e) => !isHomePage && handleHashNavigation(e, '#agents')}
+                  href="/"
+                  onClick={(e) =>
+                    handleSectionNavigation(e, '#platform')
+                  }
                   className="text-gray-400 hover:text-cyan-400 transition-colors flex items-center gap-2 group"
                 >
-                  <span className="w-0 h-0.5 bg-gradient-to-r from-cyan-400 to-blue-500 transition-all group-hover:w-4"></span>
-                  Products
-                </a>
-              </li>
-              <li>
-                <a
-                  href={isHomePage ? "#platform" : "/#platform"}
-                  onClick={(e) => !isHomePage && handleHashNavigation(e, '#platform')}
-                  className="text-gray-400 hover:text-cyan-400 transition-colors flex items-center gap-2 group"
-                >
-                  <span className="w-0 h-0.5 bg-gradient-to-r from-cyan-400 to-blue-500 transition-all group-hover:w-4"></span>
+                  <span className="w-0 h-0.5 bg-gradient-to-r from-cyan-400 to-blue-500 transition-all group-hover:w-4" />
                   Platform
                 </a>
               </li>
               <li>
-                <a
-                  href={isHomePage ? "#roi" : "/#roi"}
-                  onClick={(e) => !isHomePage && handleHashNavigation(e, '#roi')}
+                <Link
+                  to="/privacy-policy"
+                  onClick={(e) =>
+                    handlePageNavigation(e, '/privacy-policy')
+                  }
                   className="text-gray-400 hover:text-cyan-400 transition-colors flex items-center gap-2 group"
                 >
-                  <span className="w-0 h-0.5 bg-gradient-to-r from-cyan-400 to-blue-500 transition-all group-hover:w-4"></span>
-                  ROI Calculator
-                </a>
-              </li>
-              <li>
-                <Link 
-                  to="/privacy-policy" 
-                  onClick={(e) => handlePageNavigation(e, '/privacy-policy')}
-                  className="text-gray-400 hover:text-cyan-400 transition-colors flex items-center gap-2 group"
-                >
-                  <span className="w-0 h-0.5 bg-gradient-to-r from-cyan-400 to-blue-500 transition-all group-hover:w-4"></span>
+                  <span className="w-0 h-0.5 bg-gradient-to-r from-cyan-400 to-blue-500 transition-all group-hover:w-4" />
                   Privacy Policy
                 </Link>
               </li>
               <li>
-                <Link 
-                  to="/terms-of-service" 
-                  onClick={(e) => handlePageNavigation(e, '/terms-of-service')}
+                <Link
+                  to="/terms-of-service"
+                  onClick={(e) =>
+                    handlePageNavigation(e, '/terms-of-service')
+                  }
                   className="text-gray-400 hover:text-cyan-400 transition-colors flex items-center gap-2 group"
                 >
-                  <span className="w-0 h-0.5 bg-gradient-to-r from-cyan-400 to-blue-500 transition-all group-hover:w-4"></span>
+                  <span className="w-0 h-0.5 bg-gradient-to-r from-cyan-400 to-blue-500 transition-all group-hover:w-4" />
                   Terms of Service
                 </Link>
               </li>
@@ -151,33 +164,46 @@ function Footer() {
 
           {/* Products */}
           <div>
-            <h4 className="text-sm font-semibold mb-4 text-white">Products</h4>
+            <h4 className="text-sm font-semibold mb-4 text-white">
+              Products
+            </h4>
             <ul className="space-y-3 text-sm">
               <li>
-                <Link to="/ai-scribe" className="text-gray-400 hover:text-cyan-400 transition-colors flex items-center gap-2 group">
-                  <span className="w-0 h-0.5 bg-gradient-to-r from-cyan-400 to-blue-500 transition-all group-hover:w-4"></span>
+                <Link
+                  to="/ai-scribe"
+                  className="text-gray-400 hover:text-cyan-400 transition-colors flex items-center gap-2 group"
+                >
+                  <span className="w-0 h-0.5 bg-gradient-to-r from-cyan-400 to-blue-500 transition-all group-hover:w-4" />
                   AI Scribe
                 </Link>
               </li>
               <li>
-                <Link to="/benchmark" className="text-gray-400 hover:text-cyan-400 transition-colors flex items-center gap-2 group">
-                  <span className="w-0 h-0.5 bg-gradient-to-r from-cyan-400 to-blue-500 transition-all group-hover:w-4"></span>
-                  Benchmark
+                <Link
+                  to="/echopad-insights"
+                  className="text-gray-400 hover:text-cyan-400 transition-colors flex items-center gap-2 group"
+                >
+                  <span className="w-0 h-0.5 bg-gradient-to-r from-cyan-400 to-blue-500 transition-all group-hover:w-4" />
+                  Insights
                 </Link>
               </li>
               <li>
-                <Link to="/aperio" className="text-gray-400 hover:text-cyan-400 transition-colors flex items-center gap-2 group">
-                  <span className="w-0 h-0.5 bg-gradient-to-r from-cyan-400 to-blue-500 transition-all group-hover:w-4"></span>
+                <Link
+                  to="/aperio"
+                  className="text-gray-400 hover:text-cyan-400 transition-colors flex items-center gap-2 group"
+                >
+                  <span className="w-0 h-0.5 bg-gradient-to-r from-cyan-400 to-blue-500 transition-all group-hover:w-4" />
                   Aperio
                 </Link>
               </li>
               <li>
                 <a
-                  href={isHomePage ? "#agents" : "/#agents"}
-                  onClick={(e) => !isHomePage && handleHashNavigation(e, '#agents')}
+                  href="/"
+                  onClick={(e) =>
+                    handleSectionNavigation(e, '#agents')
+                  }
                   className="text-gray-400 hover:text-cyan-400 transition-colors flex items-center gap-2 group"
                 >
-                  <span className="w-0 h-0.5 bg-gradient-to-r from-cyan-400 to-blue-500 transition-all group-hover:w-4"></span>
+                  <span className="w-0 h-0.5 bg-gradient-to-r from-cyan-400 to-blue-500 transition-all group-hover:w-4" />
                   View All Products
                 </a>
               </li>
@@ -188,7 +214,10 @@ function Footer() {
         {/* Footer Bottom */}
         <div className="mt-8 pt-6 border-t border-gray-700">
           <p className="text-xs text-gray-500 mb-4 leading-relaxed">
-            <strong className="text-gray-400">Disclaimer:</strong> Performance metrics are based on industry estimates and aggregated data. Actual results vary by organization size, specialty, workflows, and EHR system. Metrics are not guarantees. We recommend a personalized consultation to assess your specific use case. Epic, Cerner, Athena, MEDITECH, and all other product and company names mentioned are trademarks or registered trademarks of their respective owners. Echopad AI is not affiliated with, endorsed by, or sponsored by these companies.
+            <strong className="text-gray-400">Disclaimer:</strong> Performance
+            metrics are based on industry estimates and aggregated data. Actual
+            results vary by organization size, specialty, workflows, and EHR
+            system. Metrics are not guarantees.
           </p>
           <p className="text-xs text-gray-500 text-center">
             &copy; 2026 Echopad AI. All rights reserved.

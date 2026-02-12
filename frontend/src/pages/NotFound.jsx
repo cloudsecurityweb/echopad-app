@@ -2,18 +2,21 @@ import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Navigation from '../components/layout/Navigation';
 import Footer from '../components/layout/Footer';
+import usePageTitle from '../hooks/usePageTitle';
 
 export default function NotFound() {
+    const PageTitle = usePageTitle('Page Not Found');
     // Ensure instant scroll to top
     useEffect(() => {
         window.scrollTo(0, 0);
     }, []);
 
     return (
-        <>
+        <div className="min-h-screen flex flex-col">
+            {PageTitle}
             <Navigation />
 
-            <main className="relative overflow-hidden bg-gradient-to-br from-cyan-50 via-white to-blue-50">
+            <main className="flex-1 relative overflow-hidden bg-gradient-to-br from-cyan-50 via-white to-blue-50">
                 {/* Decorative blurred gradients */}
                 <div className="absolute -top-24 -left-24 w-96 h-96 bg-cyan-300/20 rounded-full blur-3xl" />
                 <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-blue-300/20 rounded-full blur-3xl" />
@@ -63,6 +66,6 @@ export default function NotFound() {
             </main>
 
             <Footer />
-        </>
+        </div>
     );
 }

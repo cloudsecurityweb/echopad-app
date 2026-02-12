@@ -63,7 +63,7 @@ function ProfileSection() {
                         Control permissions for other account handlers.
                     </p>
                     <button className="text-cyan-600 font-medium text-sm">
-                        Manage Access (Coming Soon)
+                        Manage Access (Early Access)
                     </button>
                 </Card>
             </div>

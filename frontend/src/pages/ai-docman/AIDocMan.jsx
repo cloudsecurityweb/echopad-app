@@ -1,13 +1,34 @@
 import { useLayoutEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Navigation from '../../components/layout/Navigation';
 import Footer from '../../components/layout/Footer';
 import { handleIntercomAction } from '../../utils/intercom';
 import BeforeAfterSlider from '../../components/products/BeforeAfterSlider';
+import usePageTitle from '../../hooks/usePageTitle';
 
 function AIDocMan() {
+  const PageTitle = usePageTitle('Echopad AI Document Manager');
+  const navigate = useNavigate();
   const handleIntercomClick = (e, action) => {
     e.preventDefault();
     handleIntercomAction(action);
+  };
+
+  const handleViewAllProductsClick = (e) => {
+    e.preventDefault();
+    navigate('/');
+    const headerOffset = 80;
+    setTimeout(() => {
+      const element = document.querySelector('#agents');
+      if (element) {
+        const elementPosition = element.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth'
+        });
+      }
+    }, 100);
   };
 
   // Scroll to top when component mounts (instant, no animation)
@@ -29,20 +50,22 @@ function AIDocMan() {
   }, []);
 
   return (
-    <>
+    <div className="min-h-screen flex flex-col">
+      {PageTitle}
       <Navigation />
-      <main>
+      <main className="flex-1">
         {/* Hero Section - Document Focused Design */}
         <section className="px-4 md:px-14 pt-32 pb-20 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
           <div className="container mx-auto px-4">
             <a
-              href="/#agents"
+              href="/"
               className="inline-flex items-center gap-2 text-sm text-indigo-400 hover:text-indigo-600 transition-colors mb-6 font-semibold hover:gap-3"
+              onClick={handleViewAllProductsClick}
             >
               <i className="bi bi-arrow-left"></i>
               View All Products
             </a>
-            
+
             <div className="text-center mb-12">
               <div className="inline-flex items-center gap-2 bg-indigo-50 text-indigo-500 px-4 py-2 rounded-full text-sm font-semibold mb-4">
                 <i className="bi bi-file-earmark-text-fill"></i>
@@ -57,7 +80,7 @@ function AIDocMan() {
               <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
                 Turn messy dictation into perfectly formatted SOAP notes, H&Ps, and discharge summaries—instantly.
               </p>
-              
+
               {/* Speed Metrics */}
               <div className="flex flex-wrap items-center justify-center gap-6 mb-8">
                 <div className="bg-white rounded-xl px-6 py-3 shadow-lg border-2 border-indigo-100">
@@ -99,10 +122,10 @@ function AIDocMan() {
             <div className="max-w-6xl mx-auto">
               <div className="bg-white rounded-3xl shadow-2xl p-6 md:p-8 border-2 border-indigo-100">
                 <div className="text-center mb-6">
-                  <h3 className="text-2xl font-bold text-gray-900 mb-2">See the Transformation</h3>
+                  <h2 className="text-2xl font-bold text-gray-900 mb-2">See the Transformation</h2>
                   <p className="text-gray-600">Raw transcript → Perfectly formatted SOAP note</p>
                 </div>
-                
+
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   {/* Before */}
                   <div className="bg-red-50 rounded-2xl p-6 border-2 border-red-100">
@@ -320,9 +343,9 @@ function AIDocMan() {
               ].map((feature, idx) => (
                 <div
                   key={idx}
-                  className="bg-gradient-to-br from-gray-50 to-white rounded-2xl p-6 border-2 border-gray-200 hover:border-indigo-200 hover:shadow-xl transition-all group"
+                  className="glass-card rounded-2xl p-6 hover-lift shadow-sm"
                 >
-                  <div className={`w-14 h-14 bg-gradient-to-br ${feature.color} rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg`}>
+                  <div className={`w-14 h-14 bg-gradient-to-br ${feature.color} rounded-xl flex items-center justify-center mb-4 shadow-lg`}>
                     <i className={`bi ${feature.icon} text-white text-2xl`}></i>
                   </div>
                   <h3 className="text-xl font-bold text-gray-900 mb-2">{feature.title}</h3>
@@ -343,7 +366,7 @@ function AIDocMan() {
               <p className="text-xl text-indigo-50 mb-8 max-w-2xl mx-auto">
                 See how much time your team could save with AI Document Manager
               </p>
-              
+
               <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border-2 border-white/20 max-w-2xl mx-auto">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                   <div>
@@ -359,7 +382,7 @@ function AIDocMan() {
                     <div className="text-indigo-50">Saved per assistant/month</div>
                   </div>
                 </div>
-                
+
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <a
                     href="#"
@@ -383,54 +406,51 @@ function AIDocMan() {
           </div>
         </section>
 
-        {/* Final CTA Section */}
-        <section className="py-20 bg-gray-900 text-white">
-          <div className="container mx-auto px-4">
-            <div className="max-w-4xl mx-auto text-center">
-              <h2 className="text-4xl md:text-5xl font-bold mb-6">
-                Ready to Save 60 Minutes Daily?
-              </h2>
-              <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-                Join healthcare teams using AI Document Manager to eliminate manual formatting and improve documentation quality
-              </p>
-
-              <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-                <a
-                  href="#"
-                  onClick={(e) => handleIntercomClick(e, 'request-demo')}
-                  className="inline-flex items-center gap-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:from-indigo-700 hover:to-purple-700 transition-all shadow-xl hover:shadow-2xl hover:scale-105"
-                >
-                  <i className="bi bi-calendar-check text-2xl"></i>
-                  Schedule a Demo
-                </a>
-                <a
-                  href="#"
-                  onClick={(e) => handleIntercomClick(e, 'sign-up')}
-                  className="inline-flex items-center gap-3 bg-white text-gray-900 px-8 py-4 rounded-xl font-bold text-lg hover:bg-gray-100 transition-all shadow-xl"
-                >
-                  <i className="bi bi-rocket-takeoff text-2xl"></i>
-                  Start Free Trial
-                </a>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-3xl mx-auto pt-8 border-t border-gray-700">
-                {[
-                  { icon: 'bi-shield-check', text: 'HIPAA Compliant' },
-                  { icon: 'bi-lightning-charge', text: '3-Second Processing' },
-                  { icon: 'bi-headset', text: '24/7 Support' },
-                ].map((feature, idx) => (
-                  <div key={idx} className="flex flex-col items-center gap-2">
-                    <i className={`bi ${feature.icon} text-3xl text-indigo-300`}></i>
-                    <span className="font-semibold text-gray-300">{feature.text}</span>
+        {/* Schedule a Demo - Contact-style */}
+        <section className="py-12 md:py-20 bg-white">
+          <div className="container mx-auto px-4 w-full">
+            <div className="max-w-4xl mx-auto">
+              <div className="rounded-2xl md:rounded-3xl border border-gray-200 bg-white p-6 md:p-10 lg:p-12 shadow-lg shadow-gray-200/60">
+                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8 lg:gap-10">
+                  <div className="flex-1 min-w-0">
+                    <div className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-3">
+                      Get Started
+                    </div>
+                    <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
+                      Ready to see AI Document Manager in action?
+                    </h2>
+                    <p className="text-base md:text-lg text-gray-600 mb-2 leading-relaxed">
+                      Book a quick walkthrough and leave with a clear automation plan.
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      15-minute call, no obligation.
+                    </p>
                   </div>
-                ))}
+                  <div className="flex flex-col sm:flex-row lg:flex-col xl:flex-row items-stretch sm:items-center gap-3 flex-shrink-0">
+                    <a
+                      href="#"
+                      className="inline-flex items-center justify-center gap-2 bg-gray-900 text-white px-6 py-3.5 rounded-xl hover:bg-gray-800 transition-colors font-semibold text-sm shadow-md min-w-[140px]"
+                      onClick={(e) => handleIntercomClick(e, 'request-demo')}
+                    >
+                      <i className="bi bi-chat-dots-fill text-white text-lg" aria-hidden="true" />
+                      Book a Demo
+                    </a>
+                    <a
+                      href="/sign-up"
+                      className="inline-flex items-center justify-center gap-2 bg-white text-gray-700 px-6 py-3.5 rounded-xl border-2 border-gray-300 hover:bg-gray-50 hover:border-gray-400 transition-colors font-medium text-sm min-w-[140px]"
+                    >
+                      <i className="bi bi-rocket-takeoff text-cyan-500 text-lg" aria-hidden="true" />
+                      Get Started
+                    </a>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </section>
       </main>
       <Footer />
-    </>
+    </div>
   );
 }
 

@@ -3,8 +3,11 @@ import { Link } from 'react-router-dom';
 import Navigation from '../../components/layout/Navigation';
 import Footer from '../../components/layout/Footer';
 import { handleIntercomAction } from '../../utils/intercom';
+import usePageTitle from '../../hooks/usePageTitle';
 
 function PrivacyPolicy() {
+  const PageTitle = usePageTitle('Privacy Policy');
+
   // Scroll to top when component mounts
   useEffect(() => {
     window.scrollTo({
@@ -19,9 +22,10 @@ function PrivacyPolicy() {
   };
 
   return (
-    <>
+    <div className="min-h-screen flex flex-col">
+      {PageTitle}
       <Navigation />
-      <main>
+      <main className="flex-1">
         {/* Privacy Policy Content */}
         <section className="pt-32 pb-20 bg-white">
           <div className="container mx-auto px-4">
@@ -49,7 +53,7 @@ function PrivacyPolicy() {
                   </p>
 
                   <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">2. Information Collection</h2>
-                  
+
                   <h3 className="text-xl font-semibold text-gray-900 mt-6 mb-3">2.1 Information You Voluntarily Provide</h3>
                   <p className="text-gray-700 mb-3">
                     When you interact with our Services, we collect and retain all information you provide to us, including but not limited to:
@@ -97,7 +101,7 @@ function PrivacyPolicy() {
                   <p className="text-gray-700 mb-4">
                     Cloud Security Web LLC reserves the right to use all collected information for any lawful business purpose, including without limitation:
                   </p>
-                  
+
                   <h3 className="text-xl font-semibold text-gray-900 mt-6 mb-3">3.1 Service Provision and Improvement</h3>
                   <ul className="list-disc pl-6 mb-6 space-y-2 text-gray-700">
                     <li>Providing, maintaining, improving, and enhancing all aspects of our Services</li>
@@ -142,7 +146,7 @@ function PrivacyPolicy() {
                   <p className="text-gray-700 mb-4">
                     Cloud Security Web LLC may share your information with third parties under various circumstances:
                   </p>
-                  
+
                   <h3 className="text-xl font-semibold text-gray-900 mt-6 mb-3">4.1 Service Providers and Vendors</h3>
                   <p className="text-gray-700 mb-6">
                     We engage third-party companies and individuals to facilitate our Services, including cloud hosting providers, data storage services, analytics platforms, customer relationship management systems, payment processors, and marketing services. These service providers may have access to your information solely to perform specific tasks on our behalf.
@@ -209,7 +213,7 @@ function PrivacyPolicy() {
                   </p>
 
                   <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">7. Your Rights and Choices</h2>
-                  
+
                   <h3 className="text-xl font-semibold text-gray-900 mt-6 mb-3">7.1 Access and Correction</h3>
                   <p className="text-gray-700 mb-3">
                     You may request access to your personal information or request corrections to inaccurate data. However, we reserve the right to:
@@ -379,7 +383,7 @@ function PrivacyPolicy() {
         </section>
       </main>
       <Footer />
-    </>
+    </div>
   );
 }
 

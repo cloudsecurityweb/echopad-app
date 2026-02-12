@@ -10,7 +10,7 @@ import { verifyGoogleToken } from '../middleware/googleAuth.js';
 import { verifyMagicToken, attachMagicUserFromDb } from '../middleware/magicAuth.js';
 import { verifyEmailPasswordToken, attachEmailPasswordUserFromDb } from '../middleware/emailPasswordAuth.js';
 import { signIn, signUp, getCurrentUser } from '../controllers/authController.js';
-import { signUpEmail, signInEmail } from '../controllers/passwordAuthController.js';
+import { signUpEmail, signInEmail, changePassword, forgotPassword, resetPassword } from '../controllers/passwordAuthController.js';
 import { verifyEmail, resendVerificationEmail } from '../controllers/emailVerificationController.js';
 
 const router = express.Router();
@@ -170,6 +170,14 @@ router.post('/sign-up-email', signUpEmail);
 router.post('/sign-in-email', signInEmail);
 
 /**
+ * POST /api/auth/change-password
+ * Change password for authenticated user
+ * Body: { oldPassword, newPassword }
+ * Requires: Authorization header
+ */
+router.post('/change-password', detectAuthProvider, changePassword);
+
+/**
  * GET /api/auth/verify-email
  * Verify email address using token
  * Query: ?email=xxx&token=xxx
@@ -182,6 +190,20 @@ router.get('/verify-email', verifyEmail);
  * Body: { email }
  */
 router.post('/resend-verification', resendVerificationEmail);
+
+/**
+ * POST /api/auth/forgot-password
+ * Request password reset email
+ * Body: { email }
+ */
+router.post('/forgot-password', forgotPassword);
+
+/**
+ * POST /api/auth/reset-password
+ * Reset password using token
+ * Body: { token, newPassword }
+ */
+router.post('/reset-password', resetPassword);
 
 /**
  * GET /api/auth/me

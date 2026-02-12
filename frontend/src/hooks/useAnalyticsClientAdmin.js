@@ -3,7 +3,7 @@ import http from '../api/http';
 
 export function useAnalyticsClientAdmin(organizationId) {
   const [summary, setSummary] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(!!organizationId);
   const [error, setError] = useState(null);
 
   const fetchSummary = useCallback(async () => {

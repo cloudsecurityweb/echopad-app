@@ -1,16 +1,36 @@
 import { useLayoutEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Navigation from '../../components/layout/Navigation';
 import Footer from '../../components/layout/Footer';
 import { handleIntercomAction } from '../../utils/intercom';
 import BuyNowCTA from '../../components/products/BuyNowCTA';
 import { getProductByRoute } from '../../data/products';
 import BeforeAfterSlider from '../../components/products/BeforeAfterSlider';
+import usePageTitle from '../../hooks/usePageTitle';
 
 function Aperio() {
+  const PageTitle = usePageTitle('Echopad Aperio');
+  const navigate = useNavigate();
   const handleIntercomClick = (e, action) => {
     e.preventDefault();
     handleIntercomAction(action);
+  };
+
+  const handleViewAllProductsClick = (e) => {
+    e.preventDefault();
+    navigate('/');
+    const headerOffset = 80;
+    setTimeout(() => {
+      const element = document.querySelector('#agents');
+      if (element) {
+        const elementPosition = element.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth'
+        });
+      }
+    }, 100);
   };
 
   // Scroll to top when component mounts (instant, no animation)
@@ -32,17 +52,19 @@ function Aperio() {
   }, []);
 
   return (
-    <>
+    <div className="min-h-screen flex flex-col">
+      {PageTitle}
       <Navigation />
-      <main>
+      <main className="flex-1">
         {/* Hero Section */}
         <section className="px-4 md:px-14 pt-32 pb-20 bg-white">
           <div className="container mx-auto px-4">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
               <div className="lg:col-span-5">
                 <a
-                  href="/#agents"
+                  href="/"
                   className="inline-flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800 transition-colors mb-4 font-semibold hover:gap-3"
+                  onClick={handleViewAllProductsClick}
                 >
                   <i className="bi bi-arrow-left"></i>
                   View All Products
@@ -53,14 +75,14 @@ function Aperio() {
                 <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
                   AI-Powered Referral Coordination That <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Closes the Loop</span>
                 </h1>
-                
+
                 {/* 3-Second Value Proposition - Smaller Size */}
                 <div className="bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 border-2 border-blue-300 rounded-xl p-4 mb-6 shadow-lg">
                   <div className="flex items-center justify-center gap-2 mb-3">
                     <div className="w-6 h-6 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
                       <i className="bi bi-lightning-charge-fill text-white text-xs"></i>
                     </div>
-                    <h3 className="text-sm md:text-base font-bold text-gray-900">How It Works in 3 Seconds</h3>
+                    <h2 className="text-sm md:text-base font-bold text-gray-900">How It Works in 3 Seconds</h2>
                   </div>
                   <div className="flex items-center justify-center gap-3 md:gap-4 flex-wrap">
                     <div className="flex flex-col items-center gap-1 bg-white px-3 py-2 rounded-lg shadow-md border border-blue-200">
@@ -145,27 +167,27 @@ function Aperio() {
 
                 <div className="space-y-6 mb-8">
                   <div>
-                    <h4 className="flex items-center text-lg font-semibold text-gray-900 mb-3">
+                    <h2 className="flex items-center text-lg font-semibold text-gray-900 mb-3">
                       <i className="bi bi-briefcase-fill text-teal-500 mr-2"></i>
                       Business Value for Decision Makers
-                    </h4>
+                    </h2>
                     <p className="text-gray-600">
                       For healthcare leaders facing referral leakage and care coordination challenges, Aperio delivers immediate ROI through improved patient retention, reduced administrative burden, and enhanced care continuity.
                     </p>
                   </div>
 
                   <div>
-                    <h4 className="flex items-center text-lg font-semibold text-gray-900 mb-3">
+                    <h2 className="flex items-center text-lg font-semibold text-gray-900 mb-3">
                       <i className="bi bi-info-circle text-teal-500 mr-2"></i>
                       What You See
-                    </h4>
+                    </h2>
                     <p className="text-gray-600">
                       When a referral is created, AI automatically tracks status, sends reminders, and ensures patients complete their referred appointments—all without manual staff intervention.
                     </p>
                   </div>
 
                   <div>
-                    <h4 className="text-lg font-semibold text-gray-900 mb-3">Key Benefits</h4>
+                    <h2 className="text-lg font-semibold text-gray-900 mb-3">Key Benefits</h2>
                     <ul className="space-y-2">
                       {[
                         'Reduce referral leakage and improve care continuity',
@@ -182,10 +204,10 @@ function Aperio() {
                   </div>
 
                   <div>
-                    <h4 className="flex items-center text-lg font-semibold text-gray-900 mb-3">
+                    <h2 className="flex items-center text-lg font-semibold text-gray-900 mb-3">
                       <i className="bi bi-graph-up text-teal-500 mr-2"></i>
                       Impact Metrics
-                    </h4>
+                    </h2>
                     <div className="grid grid-cols-3 gap-4 mt-4">
                       {[
                         { value: '40%', label: 'Reduction in referral leakage', icon: 'bi-graph-down-arrow' },
@@ -204,7 +226,7 @@ function Aperio() {
                   </div>
 
                   <div>
-                    <h4 className="text-lg font-semibold text-gray-900 mb-3">Perfect For</h4>
+                    <h2 className="text-lg font-semibold text-gray-900 mb-3">Perfect For</h2>
                     <p className="text-gray-600">
                       Primary care practices, specialty clinics, and health systems looking to improve referral completion rates and care coordination.
                     </p>
@@ -472,67 +494,42 @@ function Aperio() {
           </div>
         </section>
 
-        {/* Perfect For You If Section - Above Footer CTA */}
-        <section className="py-12 md:py-20 bg-gradient-to-b from-gray-50 to-white">
-          <div className="container mx-auto px-4">
-            <div className="max-w-5xl mx-auto">
-              <div className="bg-gradient-to-br from-purple-600 via-blue-600 to-cyan-600 rounded-2xl md:rounded-3xl p-4 md:p-8 lg:p-12 shadow-2xl border-2 md:border-4 border-purple-200">
-                {/* Header - Stack on mobile, side-by-side on desktop */}
-                <div className="flex flex-col md:flex-row items-center justify-center gap-3 md:gap-4 mb-6 md:mb-8">
-                  <div className="w-12 h-12 md:w-14 md:h-14 bg-white rounded-full flex items-center justify-center animate-pulse flex-shrink-0">
-                    <i className="bi bi-check-circle-fill text-purple-600 text-2xl md:text-3xl"></i>
-                  </div>
-                  <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white text-center">
-                    Perfect For You If...
-                  </h2>
-                </div>
-                
-                {/* Content Card */}
-                <div className="bg-white/95 backdrop-blur-sm rounded-xl md:rounded-2xl p-4 md:p-6 lg:p-8 shadow-xl">
-                  <ul className="space-y-2.5 md:space-y-4 lg:space-y-5">
-                    {[
-                      'You lose patients to referral leakage and out-of-network care',
-                      'Your staff spends hours on phone calls tracking referral status',
-                      'Patients miss specialist appointments due to poor follow-up',
-                      'You want to improve care coordination and patient outcomes',
-                      'Your referral completion rates are below industry standards',
-                    ].map((item, idx) => (
-                      <li key={idx} className="flex items-start gap-2.5 md:gap-3 lg:gap-4 text-gray-800 hover:bg-blue-50 p-2.5 md:p-3 lg:p-4 rounded-lg md:rounded-xl transition-all">
-                        <div className="w-6 h-6 md:w-8 md:h-8 lg:w-10 lg:h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                          <i className="bi bi-check-lg text-white text-sm md:text-base lg:text-xl font-bold"></i>
-                        </div>
-                        <span className="font-semibold text-sm md:text-base lg:text-lg xl:text-xl leading-relaxed pt-0.5">{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  
-                  {/* Bottom CTA Section */}
-                  <div className="mt-6 md:mt-8 lg:mt-10 md:mt-12 pt-6 md:pt-8 lg:pt-10 border-t-2 border-purple-200 bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg md:rounded-xl p-4 md:p-6 lg:p-8">
-                    <p className="text-base md:text-xl lg:text-2xl xl:text-3xl text-purple-900 font-bold text-center flex flex-col sm:flex-row items-center justify-center gap-2 md:gap-3 lg:gap-4 mb-6 md:mb-8 lg:mb-10 leading-relaxed">
-                      <span className="text-3xl md:text-4xl lg:text-5xl animate-pulse">✨</span>
-                      <span className="px-2">If you checked 2 or more, Aperio is built for you!</span>
-                      <span className="text-3xl md:text-4xl lg:text-5xl animate-pulse">✨</span>
-                    </p>
-                    
-                    {/* CTA Buttons - Full width on mobile */}
-                    <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center">
-                      <a
-                        href="#"
-                        onClick={(e) => handleIntercomClick(e, 'request-demo')}
-                        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 md:gap-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 md:px-8 py-3 md:py-4 rounded-lg md:rounded-xl font-bold text-base md:text-lg hover:from-blue-700 hover:to-purple-700 transition-all shadow-lg hover:shadow-xl hover:scale-105"
-                      >
-                        <i className="bi bi-calendar-check-fill text-xl md:text-2xl"></i>
-                        <span>Get Started - Book Demo</span>
-                      </a>
-                      <a
-                        href="#"
-                        onClick={(e) => handleIntercomClick(e, 'sign-up')}
-                        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 md:gap-3 bg-white text-blue-600 px-6 md:px-8 py-3 md:py-4 rounded-lg md:rounded-xl font-bold text-base md:text-lg hover:bg-gray-50 transition-all border-2 border-blue-600 shadow-lg hover:shadow-xl hover:scale-105"
-                      >
-                        <i className="bi bi-rocket-takeoff-fill text-xl md:text-2xl"></i>
-                        <span>Start Free Trial</span>
-                      </a>
+        {/* Perfect For You - Contact-style */}
+        <section className="py-12 md:py-20 bg-white">
+          <div className="container mx-auto px-4 w-full">
+            <div className="max-w-4xl mx-auto">
+              <div className="rounded-2xl md:rounded-3xl border border-gray-200 bg-white p-6 md:p-10 lg:p-12 shadow-lg shadow-gray-200/60">
+                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8 lg:gap-10">
+                  <div className="flex-1 min-w-0">
+                    <div className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-3">
+                      Perfect For You
                     </div>
+                    <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
+                      Perfect For You If...
+                    </h2>
+                    <p className="text-base md:text-lg text-gray-600 mb-2 leading-relaxed">
+                      You lose patients to referral leakage, your staff spends hours tracking referral status, or referral completion rates are below industry standards. If you checked 2 or more, Aperio is built for you.
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      Multi-specialty practices, primary care networks, and health systems.
+                    </p>
+                  </div>
+                  <div className="flex flex-col sm:flex-row lg:flex-col xl:flex-row items-stretch sm:items-center gap-3 flex-shrink-0">
+                    <a
+                      href="#"
+                      className="inline-flex items-center justify-center gap-2 bg-gray-900 text-white px-6 py-3.5 rounded-xl hover:bg-gray-800 transition-colors font-semibold text-sm shadow-md min-w-[140px]"
+                      onClick={(e) => handleIntercomClick(e, 'request-demo')}
+                    >
+                      <i className="bi bi-chat-dots-fill text-white text-lg" aria-hidden="true" />
+                      Book a Demo
+                    </a>
+                    <a
+                      href="/sign-up"
+                      className="inline-flex items-center justify-center gap-2 bg-white text-gray-700 px-6 py-3.5 rounded-xl border-2 border-gray-300 hover:bg-gray-50 hover:border-gray-400 transition-colors font-medium text-sm min-w-[140px]"
+                    >
+                      <i className="bi bi-rocket-takeoff text-cyan-500 text-lg" aria-hidden="true" />
+                      Get Started
+                    </a>
                   </div>
                 </div>
               </div>
@@ -657,12 +654,12 @@ function Aperio() {
               ].map((section) => (
                 <article
                   key={section.id}
-                  className="bg-white rounded-3xl border border-gray-200 p-8 hover:shadow-xl hover:border-blue-200 transition-all duration-300 group"
+                  className="glass-card rounded-2xl p-8 hover-lift shadow-sm"
                   aria-labelledby={`${section.id}-heading`}
                 >
                   {/* Section Header */}
                   <div className="flex items-center gap-4 mb-6">
-                    <div className="w-14 h-14 bg-gradient-to-br from-blue-600 to-blue-400 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                    <div className="w-14 h-14 bg-gradient-to-br from-blue-600 to-blue-400 rounded-2xl flex items-center justify-center shadow-lg">
                       <i className={`bi ${section.icon} text-white text-2xl`} aria-hidden="true"></i>
                     </div>
                     <div className="flex-1">
@@ -694,60 +691,51 @@ function Aperio() {
           </div>
         </section>
 
-        {/* CTA Section */}
-        <section className="py-20 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 relative overflow-hidden">
-          {/* Decorative Elements */}
-          <div className="absolute inset-0 opacity-10">
-            <div className="absolute top-10 left-10 w-72 h-72 bg-white rounded-full blur-3xl"></div>
-            <div className="absolute bottom-10 right-10 w-96 h-96 bg-purple-300 rounded-full blur-3xl"></div>
-          </div>
-
-          <div className="container mx-auto px-4 relative z-10">
-            <div className="max-w-4xl mx-auto text-center">
-              <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-                Transform Your Referral Process Today
-              </h2>
-              <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
-                Join leading healthcare organizations using Aperio to reduce referral leakage and improve care coordination
-              </p>
-
-              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
-                <a
-                  href="#"
-                  onClick={(e) => handleIntercomClick(e, 'request-demo')}
-                  className="inline-flex items-center gap-3 bg-white text-blue-600 px-8 py-4 rounded-xl font-bold text-lg hover:bg-gray-100 transition-all shadow-xl hover:shadow-2xl hover:scale-105"
-                >
-                  <i className="bi bi-calendar-check text-2xl"></i>
-                  Schedule a Demo
-                </a>
-                <a
-                  href="#"
-                  onClick={(e) => handleIntercomClick(e, 'show-roi')}
-                  className="inline-flex items-center gap-3 bg-blue-800 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-blue-900 transition-all border-2 border-blue-400 hover:border-blue-300"
-                >
-                  <i className="bi bi-calculator text-2xl"></i>
-                  Calculate ROI
-                </a>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-3xl mx-auto">
-                {[
-                  { icon: 'bi-shield-check', text: 'HIPAA & SOC 2 Compliant' },
-                  { icon: 'bi-clock-history', text: 'Live in < 2 Weeks' },
-                  { icon: 'bi-headset', text: '24/7 Clinical Support' },
-                ].map((feature, idx) => (
-                  <div key={idx} className="flex items-center gap-3 text-white justify-center">
-                    <i className={`bi ${feature.icon} text-2xl text-blue-200`}></i>
-                    <span className="font-semibold">{feature.text}</span>
+        {/* Schedule a Demo - Contact-style */}
+        <section className="py-12 md:py-20 bg-white">
+          <div className="container mx-auto px-4 w-full">
+            <div className="max-w-4xl mx-auto">
+              <div className="rounded-2xl md:rounded-3xl border border-gray-200 bg-white p-6 md:p-10 lg:p-12 shadow-lg shadow-gray-200/60">
+                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8 lg:gap-10">
+                  <div className="flex-1 min-w-0">
+                    <div className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-3">
+                      Get Started
+                    </div>
+                    <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
+                      Ready to see Aperio in action?
+                    </h2>
+                    <p className="text-base md:text-lg text-gray-600 mb-2 leading-relaxed">
+                      Book a quick walkthrough and leave with a clear automation plan.
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      15-minute call, no obligation.
+                    </p>
                   </div>
-                ))}
+                  <div className="flex flex-col sm:flex-row lg:flex-col xl:flex-row items-stretch sm:items-center gap-3 flex-shrink-0">
+                    <a
+                      href="#"
+                      className="inline-flex items-center justify-center gap-2 bg-gray-900 text-white px-6 py-3.5 rounded-xl hover:bg-gray-800 transition-colors font-semibold text-sm shadow-md min-w-[140px]"
+                      onClick={(e) => handleIntercomClick(e, 'request-demo')}
+                    >
+                      <i className="bi bi-chat-dots-fill text-white text-lg" aria-hidden="true" />
+                      Book a Demo
+                    </a>
+                    <a
+                      href="/sign-up"
+                      className="inline-flex items-center justify-center gap-2 bg-white text-gray-700 px-6 py-3.5 rounded-xl border-2 border-gray-300 hover:bg-gray-50 hover:border-gray-400 transition-colors font-medium text-sm min-w-[140px]"
+                    >
+                      <i className="bi bi-rocket-takeoff text-cyan-500 text-lg" aria-hidden="true" />
+                      Get Started
+                    </a>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </section>
       </main>
       <Footer />
-    </>
+    </div>
   );
 }
 

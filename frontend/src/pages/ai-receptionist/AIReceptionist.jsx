@@ -1,15 +1,35 @@
 import { useLayoutEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Navigation from '../../components/layout/Navigation';
 import Footer from '../../components/layout/Footer';
 import { handleIntercomAction } from '../../utils/intercom';
 import BuyNowCTA from '../../components/products/BuyNowCTA';
 import { getProductByRoute } from '../../data/products';
+import usePageTitle from '../../hooks/usePageTitle';
 
 function AIReceptionist() {
+  const PageTitle = usePageTitle('Echopad AI Receptionist');
+  const navigate = useNavigate();
   const handleIntercomClick = (e, action) => {
     e.preventDefault();
     handleIntercomAction(action);
+  };
+
+  const handleViewAllProductsClick = (e) => {
+    e.preventDefault();
+    navigate('/');
+    const headerOffset = 80;
+    setTimeout(() => {
+      const element = document.querySelector('#agents');
+      if (element) {
+        const elementPosition = element.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth'
+        });
+      }
+    }, 100);
   };
 
   // Scroll to top when component mounts (instant, no animation)
@@ -31,27 +51,36 @@ function AIReceptionist() {
   }, []);
 
   return (
-    <>
+    <div className="min-h-screen flex flex-col">
+      {PageTitle}
       <Navigation />
-      <main>
+      <main className="flex-1">
         {/* Hero Section */}
         <section className="px-4 md:px-14 pt-32 pb-20 bg-white">
           <div className="container mx-auto px-4">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
               <div className="lg:col-span-5">
+                <a
+                  href="/"
+                  className="inline-flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800 transition-colors mb-4 font-semibold hover:gap-3"
+                  onClick={handleViewAllProductsClick}
+                >
+                  <i className="bi bi-arrow-left"></i>
+                  View All Products
+                </a>
                 <div className="text-sm font-semibold text-blue-600 uppercase tracking-wider mb-4">
                   AI RECEPTIONIST
                 </div>
                 {(() => {
                   const product = getProductByRoute('/ai-receptionist');
                   if (!product?.usp) return null;
-                  
+
                   const parseUSP = (text) => {
                     const parts = [];
                     const regex = /(\d+[%+]?|\d+\s*(hours?|minutes?|%|calls?|%))/gi;
                     let lastIndex = 0;
                     let match;
-                    
+
                     while ((match = regex.exec(text)) !== null) {
                       if (match.index > lastIndex) {
                         parts.push({ text: text.substring(lastIndex, match.index), isNumber: false });
@@ -59,20 +88,20 @@ function AIReceptionist() {
                       parts.push({ text: match[0], isNumber: true });
                       lastIndex = regex.lastIndex;
                     }
-                    
+
                     if (lastIndex < text.length) {
                       parts.push({ text: text.substring(lastIndex), isNumber: false });
                     }
-                    
+
                     if (parts.length === 0) {
                       return [{ text, isNumber: false }];
                     }
-                    
+
                     return parts;
                   };
-                  
+
                   const uspParts = parseUSP(product.usp);
-                  
+
                   return (
                     <div className="mb-8 animate-fade-in-scale">
                       <div className="relative flex items-center gap-3 bg-gradient-to-br from-cyan-50 via-blue-50 to-purple-50 border-2 border-cyan-200/50 rounded-2xl px-6 py-4 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] group overflow-hidden min-w-0">
@@ -114,27 +143,27 @@ function AIReceptionist() {
 
                 <div className="space-y-6 mb-8">
                   <div>
-                    <h4 className="flex items-center text-lg font-semibold text-gray-900 mb-3">
+                    <h2 className="flex items-center text-lg font-semibold text-gray-900 mb-3">
                       <i className="bi bi-briefcase-fill text-teal-500 mr-2"></i>
                       Business Value for Decision Makers
-                    </h4>
+                    </h2>
                     <p className="text-gray-600">
                       For healthcare leaders facing high call volumes and front-desk staffing costs, AI Receptionist delivers immediate ROI through 24/7 availability, reduced staffing needs, and improved patient satisfaction. Handle 80% of calls automatically while reducing front-desk costs by $60K-$120K annually.
                     </p>
                   </div>
 
                   <div>
-                    <h4 className="flex items-center text-lg font-semibold text-gray-900 mb-3">
+                    <h2 className="flex items-center text-lg font-semibold text-gray-900 mb-3">
                       <i className="bi bi-info-circle text-teal-500 mr-2"></i>
                       What You See
-                    </h4>
+                    </h2>
                     <p className="text-gray-600">
                       Patients call anytime, day or night. AI answers instantly, understands their request, books appointments, provides information, or escalates to staff—all in natural conversation.
                     </p>
                   </div>
 
                   <div>
-                    <h4 className="text-lg font-semibold text-gray-900 mb-3">Key Benefits</h4>
+                    <h2 className="text-lg font-semibold text-gray-900 mb-3">Key Benefits</h2>
                     <ul className="space-y-2">
                       {[
                         'Answer patient calls and messages 24/7, including after hours',
@@ -151,10 +180,10 @@ function AIReceptionist() {
                   </div>
 
                   <div>
-                    <h4 className="flex items-center text-lg font-semibold text-gray-900 mb-3">
+                    <h2 className="flex items-center text-lg font-semibold text-gray-900 mb-3">
                       <i className="bi bi-graph-up text-teal-500 mr-2"></i>
                       Impact Metrics
-                    </h4>
+                    </h2>
                     <div className="grid grid-cols-3 gap-4 mt-4">
                       {[
                         { value: '80%', label: 'Calls handled automatically', icon: 'bi-telephone' },
@@ -173,7 +202,7 @@ function AIReceptionist() {
                   </div>
 
                   <div>
-                    <h4 className="text-lg font-semibold text-gray-900 mb-3">Perfect For</h4>
+                    <h2 className="text-lg font-semibold text-gray-900 mb-3">Perfect For</h2>
                     <p className="text-gray-600">
                       Any practice experiencing high call volumes, after-hours requests, or front-desk staff burnout.
                     </p>
@@ -320,7 +349,7 @@ function AIReceptionist() {
               <p className="text-lg text-gray-600 max-w-3xl mx-auto mb-8">
                 Everything you need to know to make an informed decision and ensure successful deployment in your organization
               </p>
-              
+
               {/* Key Stats Banner */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto mb-12">
                 {[
@@ -329,7 +358,7 @@ function AIReceptionist() {
                   { icon: 'bi-currency-dollar', value: '$60K+', label: 'Annual Savings' },
                   { icon: 'bi-graph-up-arrow', value: '24/7', label: 'Availability' },
                 ].map((stat, idx) => (
-                  <div key={idx} className="bg-white rounded-xl p-4 shadow-lg border-2 border-blue-100">
+                  <div key={idx} className="glass-card rounded-xl p-4 hover-lift shadow-sm">
                     <i className={`bi ${stat.icon} text-3xl text-blue-600 mb-2 block`}></i>
                     <div className="text-2xl font-bold text-gray-900">{stat.value}</div>
                     <div className="text-xs text-gray-600">{stat.label}</div>
@@ -435,14 +464,14 @@ function AIReceptionist() {
               ].map((feature, idx) => (
                 <div
                   key={idx}
-                  className="bg-white rounded-2xl border-2 border-blue-200 p-6 h-full shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] group"
+                  className="glass-card rounded-2xl p-6 h-full hover-lift shadow-sm"
                 >
                   <div className="flex items-center gap-4 mb-6">
-                    <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
+                    <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center flex-shrink-0">
                       <i className={`bi ${feature.icon} text-white text-2xl`}></i>
                     </div>
                     <div>
-                      <h4 className="text-xl font-bold text-gray-900 mb-1">{feature.title}</h4>
+                      <h3 className="text-xl font-bold text-gray-900 mb-1">{feature.title}</h3>
                       <p className="text-sm text-blue-600 font-semibold">{feature.subtitle}</p>
                     </div>
                   </div>
@@ -466,7 +495,7 @@ function AIReceptionist() {
                 </div>
               ))}
             </div>
-            
+
             {/* CTA */}
             <div className="mt-12 text-center">
               <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 max-w-3xl mx-auto shadow-2xl">
@@ -491,7 +520,7 @@ function AIReceptionist() {
 
       </main>
       <Footer />
-    </>
+    </div>
   );
 }
 

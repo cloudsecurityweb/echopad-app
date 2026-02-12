@@ -1,11 +1,30 @@
 import { useProducts } from '../../../hooks/useProducts';
 import { Link } from 'react-router-dom';
+import DashboardSectionLayout from '../../../components/layout/DashboardSectionLayout';
 
 function UserAdminProducts() {
   const { products, loading, error } = useProducts();
 
   if (loading) {
-    return <div>Loading products...</div>;
+    return (
+      <div className="max-w-7xl mx-auto animate-pulse space-y-6">
+        <div className="mb-8">
+          <div className="h-10 w-48 bg-gray-200 rounded mb-4"></div>
+          <div className="h-5 w-80 bg-gray-200 rounded"></div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="bg-white rounded-xl shadow-md p-6 border border-gray-200 space-y-4">
+              <div className="w-12 h-12 bg-gray-200 rounded-lg"></div>
+              <div className="h-5 w-36 bg-gray-200 rounded"></div>
+              <div className="h-4 w-full bg-gray-200 rounded"></div>
+              <div className="h-4 w-3/4 bg-gray-200 rounded"></div>
+              <div className="h-10 w-full bg-gray-200 rounded-lg mt-2"></div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
   }
 
   if (error) {
@@ -13,11 +32,11 @@ function UserAdminProducts() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto space-y-6">
-      <div className="mb-8">
-        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Our Products</h1>
-        <p className="text-xl text-gray-600">Browse and learn more about our available products.</p>
-      </div>
+    <DashboardSectionLayout
+      title="Our Products"
+      description="Browse and learn more about our available products."
+    >
+    <div className="max-w-7xl mx-auto space-y-8">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {products.map((product) => (
           <div key={product.id} className="bg-white rounded-xl shadow-md p-6 border border-gray-200 flex flex-col justify-between">
@@ -42,6 +61,7 @@ function UserAdminProducts() {
         ))}
       </div>
     </div>
+    </DashboardSectionLayout>
   );
 }
 

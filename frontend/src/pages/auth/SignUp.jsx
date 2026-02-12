@@ -3,8 +3,11 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useRole, ROLES } from '../../contexts/RoleContext';
 import Navigation from '../../components/layout/Navigation';
+import TermsAgreementModal from '../../components/auth/TermsAgreementModal';
+import usePageTitle from '../../hooks/usePageTitle';
 
 function SignUp() {
+  const PageTitle = usePageTitle('Sign Up');
   const { login, signUp, loginWithGoogle, isAuthenticated, isLoading, syncUserProfile, syncGoogleUserProfile, signUpEmailPassword, authProvider, googleToken } = useAuth();
   const { currentRole, isLoadingRole } = useRole();
   const navigate = useNavigate();
@@ -24,6 +27,8 @@ function SignUp() {
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [pendingGoogleSignUp, setPendingGoogleSignUp] = useState(false);
+  const [showTermsModal, setShowTermsModal] = useState(false);
+  const [pendingProvider, setPendingProvider] = useState(null); // 'Microsoft' | 'Google'
 
   // Redirect if already authenticated
   useEffect(() => {
@@ -59,9 +64,10 @@ function SignUp() {
     completeGoogleSignUp();
   }, [pendingGoogleSignUp, authProvider, googleToken, syncGoogleUserProfile, navigate]);
 
+  // RFC 5322 inspired email validation - robust but not overly strict
   const validateEmail = (email) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
+    const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;
+    return emailRegex.test(email.trim());
   };
 
   const handleChange = (e) => {
@@ -70,12 +76,39 @@ function SignUp() {
       ...prev,
       [name]: value
     }));
-    // Clear error when user starts typing
+
+    // Real-time validation: clear error when input becomes valid
     if (errors[name]) {
-      setErrors(prev => ({
-        ...prev,
-        [name]: ''
-      }));
+      if (name === 'email') {
+        // Clear email error if value is now valid
+        if (value.trim() && validateEmail(value)) {
+          setErrors(prev => ({ ...prev, email: '' }));
+        }
+      } else if (name === 'password') {
+        // Clear password error if value meets requirements
+        if (value.length >= 6) {
+          setErrors(prev => ({ ...prev, password: '' }));
+        }
+      } else if (name === 'organizationName' || name === 'organizerName') {
+        // Clear name errors if value meets minimum length
+        if (value.trim().length >= 2) {
+          setErrors(prev => ({ ...prev, [name]: '' }));
+        }
+      } else {
+        // Default: clear on any input
+        setErrors(prev => ({ ...prev, [name]: '' }));
+      }
+    }
+  };
+
+  // Validate on blur for immediate feedback
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+
+    if (name === 'email' && value.trim()) {
+      if (!validateEmail(value)) {
+        setErrors(prev => ({ ...prev, email: 'Enter a valid email address' }));
+      }
     }
   };
 
@@ -190,29 +223,15 @@ function SignUp() {
     }
   };
 
-  const handleSocialLogin = async (provider) => {
-    // Check if terms are accepted
-    if (!acceptedTerms) {
-      setErrors(prev => ({
-        ...prev,
-        termsAccepted: 'You must accept the Terms and Conditions to sign up'
-      }));
-      setAuthError('Please accept the Terms and Conditions to continue.');
-      return;
-    }
-
+  const performSocialLogin = async (provider) => {
     if (provider === 'Microsoft') {
       setIsMicrosoftLoading(true);
       setAuthError(null);
       try {
         await signUp('popup');
-
-        // Profile sync will happen automatically in AuthContext once MSAL is ready
-        // No need to sync here - it was causing timing issues and loops
-        // Redirect will happen via useEffect when isAuthenticated becomes true
+        // Profile sync will happen automatically
       } catch (error) {
         console.error('Microsoft login error:', error);
-        // Check if error is about email verification
         if (error.requiresVerification) {
           navigate('/verify-email-sent', {
             state: {
@@ -239,7 +258,6 @@ function SignUp() {
         setPendingGoogleSignUp(true);
       } catch (error) {
         console.error('Google login error:', error);
-        // Check if error is about email verification
         if (error.requiresVerification) {
           navigate('/verify-email-sent', {
             state: {
@@ -265,8 +283,35 @@ function SignUp() {
     }
   };
 
+  const handleSocialLogin = (provider) => {
+    // Check if terms are accepted
+    if (!acceptedTerms) {
+      setPendingProvider(provider);
+      setShowTermsModal(true);
+      return;
+    }
+
+    performSocialLogin(provider);
+  };
+
+  const handleTermsConfirmed = () => {
+    setAcceptedTerms(true);
+    setShowTermsModal(false);
+
+    // Clear any previous terms error
+    if (errors.termsAccepted) {
+      setErrors(prev => ({ ...prev, termsAccepted: '' }));
+    }
+
+    if (pendingProvider) {
+      performSocialLogin(pendingProvider);
+      setPendingProvider(null);
+    }
+  };
+
   return (
     <>
+      {PageTitle}
       <Navigation />
       <main className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 pt-16 md:pt-20 pb-4 overflow-hidden">
         <div className="container mx-auto px-4 py-6 md:py-8 flex items-center min-h-[calc(100vh-4rem)]">
@@ -369,8 +414,8 @@ function SignUp() {
                 <button
                   type="button"
                   onClick={() => handleSocialLogin('Microsoft')}
-                  disabled={isMicrosoftLoading || isGoogleLoading || isLoading || !acceptedTerms}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 border-2 border-gray-300 rounded-lg hover:border-gray-400 transition-all font-medium text-sm md:text-base text-gray-700 bg-white disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={isMicrosoftLoading || isGoogleLoading || isLoading}
+                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 border-2 border-gray-300 rounded-lg hover:border-gray-400 transition-all font-medium text-sm md:text-base text-gray-700 bg-white disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                 >
                   {isMicrosoftLoading ? (
                     <>
@@ -396,8 +441,8 @@ function SignUp() {
                 <button
                   type="button"
                   onClick={() => handleSocialLogin('Google')}
-                  disabled={isGoogleLoading || isMicrosoftLoading || isLoading || !acceptedTerms}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 border-2 border-gray-300 rounded-lg hover:border-gray-400 transition-all font-medium text-sm md:text-base text-gray-700 bg-white disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={isGoogleLoading || isMicrosoftLoading || isLoading}
+                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 border-2 border-gray-300 rounded-lg hover:border-gray-400 transition-all font-medium text-sm md:text-base text-gray-700 bg-white disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                 >
                   {isGoogleLoading ? (
                     <>
@@ -439,7 +484,7 @@ function SignUp() {
               </div>
 
               {/* Form */}
-              <form onSubmit={handleSubmit} className="space-y-2.5 md:space-y-3">
+              <form onSubmit={handleSubmit} noValidate className="space-y-2.5 md:space-y-3">
                 {/* Organization Name Field */}
                 <div>
                   <label htmlFor="organizationName" className="block text-xs md:text-sm font-medium text-gray-700 mb-1">
@@ -515,6 +560,7 @@ function SignUp() {
                       name="email"
                       value={formData.email}
                       onChange={handleChange}
+                      onBlur={handleBlur}
                       className={`w-full pl-8 pr-3 py-2.5 md:py-3 text-sm md:text-base border-2 rounded-lg focus:outline-none focus:ring-2 transition-all ${errors.email
                         ? 'border-red-500 focus:ring-red-500'
                         : 'border-gray-300 focus:border-cyan-500 focus:ring-cyan-500'
@@ -595,9 +641,10 @@ function SignUp() {
 
                 {/* Submit Button */}
                 <button
-                  type="submit"
+                  type="button"
+                  onClick={handleSubmit}
                   disabled={isSubmitting || !acceptedTerms}
-                  className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-4 py-2.5 md:py-3 rounded-lg hover:from-cyan-400 hover:to-blue-500 transition-all text-sm md:text-base font-medium shadow-lg hover:shadow-cyan-500/50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-4 py-2.5 md:py-3 rounded-lg hover:from-cyan-400 hover:to-blue-500 transition-all text-sm md:text-base font-medium shadow-lg hover:shadow-cyan-500/50 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                 >
                   {isSubmitting ? 'Creating Account...' : 'Sign Up'}
                 </button>
@@ -609,7 +656,7 @@ function SignUp() {
                   Already have an account?{' '}
                   <Link
                     to="/sign-in"
-                    className="text-blue-600 hover:text-blue-700 font-semibold transition-colors"
+                    className="text-cyan-600 hover:text-cyan-700 font-semibold transition-colors"
                   >
                     Sign In!
                   </Link>
@@ -619,6 +666,14 @@ function SignUp() {
           </div>
         </div>
       </main>
+
+      {/* Terms Agreement Modal */}
+      <TermsAgreementModal
+        isOpen={showTermsModal}
+        onClose={() => setShowTermsModal(false)}
+        onConfirm={handleTermsConfirmed}
+        providerName={pendingProvider}
+      />
     </>
   );
 }

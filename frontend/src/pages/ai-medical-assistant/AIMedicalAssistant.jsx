@@ -1,5 +1,5 @@
 import { useLayoutEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Navigation from '../../components/layout/Navigation';
 import Footer from '../../components/layout/Footer';
 import { handleIntercomAction } from '../../utils/intercom';
@@ -8,12 +8,32 @@ import BeforeAfterSlider from '../../components/products/BeforeAfterSlider';
 import { getProductByRoute } from '../../data/products';
 import { checkProductOwnership } from '../../utils/productOwnership';
 import { useAuth } from '../../contexts/AuthContext';
+import usePageTitle from '../../hooks/usePageTitle';
 
 function AIMedicalAssistant() {
   const { isAuthenticated, isLoading } = useAuth();
+  const PageTitle = usePageTitle('Echopad AI Medical Assistant');
+  const navigate = useNavigate();
   const handleIntercomClick = (e, action) => {
     e.preventDefault();
     handleIntercomAction(action);
+  };
+
+  const handleViewAllProductsClick = (e) => {
+    e.preventDefault();
+    navigate('/');
+    const headerOffset = 80;
+    setTimeout(() => {
+      const element = document.querySelector('#agents');
+      if (element) {
+        const elementPosition = element.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth'
+        });
+      }
+    }, 100);
   };
 
   // Scroll to top when component mounts (instant, no animation)
@@ -35,26 +55,28 @@ function AIMedicalAssistant() {
   }, []);
 
   return (
-    <>
+    <div className="min-h-screen flex flex-col">
+      {PageTitle}
       <Navigation />
-      <main>
+      <main className="flex-1">
         {/* Hero Section - Clinical Workflow Design */}
         <section className="px-4 md:px-14 pt-32 pb-20 bg-gradient-to-br from-teal-50 via-emerald-50 to-cyan-50">
           <div className="container mx-auto px-4">
             <a
-              href="/#agents"
+              href="/"
               className="inline-flex items-center gap-2 text-sm text-teal-400 hover:text-teal-600 transition-colors mb-6 font-semibold hover:gap-3"
+              onClick={handleViewAllProductsClick}
             >
               <i className="bi bi-arrow-left"></i>
               View All Products
             </a>
-            
+
             <div className="max-w-6xl mx-auto">
               <div className="text-center mb-12">
-                <div className="inline-flex items-center gap-2 bg-teal-50 text-teal-500 px-4 py-2 rounded-full text-sm font-semibold mb-4">
+                <h6 className="inline-flex items-center gap-2 bg-teal-50 text-teal-500 px-4 py-2 rounded-full text-sm font-semibold mb-4">
                   <i className="bi bi-heart-pulse-fill"></i>
                   AI MEDICAL ASSISTANT
-                </div>
+                </h6>
                 <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 mb-4">
                   Complete Visit
                   <span className="block bg-gradient-to-r from-teal-400 via-emerald-400 to-cyan-400 bg-clip-text text-transparent">
@@ -64,7 +86,7 @@ function AIMedicalAssistant() {
                 <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
                   Record entire patient sessions and automatically generate comprehensive, EHR-ready charts with structured clinical data.
                 </p>
-                
+
                 {/* Clinical Metrics */}
                 <div className="flex flex-wrap items-center justify-center gap-6 mb-8">
                   <div className="bg-white rounded-xl px-6 py-3 shadow-lg border-2 border-teal-100">
@@ -83,29 +105,29 @@ function AIMedicalAssistant() {
 
                 {/* CTA Buttons */}
                 <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-                <a
-                  href="#"
-                  onClick={(e) => handleIntercomClick(e, 'request-demo')}
-                  className="inline-flex items-center justify-center gap-3 bg-gradient-to-r from-teal-400 to-emerald-400 text-white px-8 py-4 rounded-xl font-bold text-lg hover:from-teal-500 hover:to-emerald-500 transition-all shadow-xl hover:shadow-2xl hover:scale-105"
-                >
-                  <i className="bi bi-calendar-check text-xl"></i>
-                  Schedule a Demo
-                </a>
-                <a
-                  href="#"
-                  onClick={(e) => handleIntercomClick(e, 'sign-up')}
-                  className="inline-flex items-center justify-center gap-3 bg-white text-teal-400 px-8 py-4 rounded-xl font-bold text-lg hover:bg-teal-50 transition-all border-2 border-teal-300 shadow-lg hover:shadow-xl"
-                >
-                  <i className="bi bi-rocket-takeoff text-xl"></i>
-                  Start Free Trial
-                </a>
+                  <a
+                    href="#"
+                    onClick={(e) => handleIntercomClick(e, 'request-demo')}
+                    className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-teal-400 to-emerald-400 text-white px-8 py-4 rounded-xl font-bold text-lg hover:from-teal-500 hover:to-emerald-500 transition-all shadow-xl hover:shadow-2xl hover:scale-105"
+                  >
+                    <i className="bi bi-calendar-check text-xl"></i>
+                    Book a Demo
+                  </a>
+                  <a
+                    href="#"
+                    onClick={(e) => handleIntercomClick(e, 'sign-up')}
+                    className="inline-flex items-center justify-center gap-2 bg-white text-teal-400 px-8 py-4 rounded-xl font-bold text-lg hover:bg-teal-50 transition-all border-2 border-teal-300 shadow-lg hover:shadow-xl"
+                  >
+                    <i className="bi bi-rocket-takeoff text-xl"></i>
+                    Get Started
+                  </a>
                 </div>
               </div>
 
               {/* Visit Process Timeline */}
               <div className="bg-white rounded-3xl shadow-2xl p-8 border-2 border-teal-100">
                 <h3 className="text-2xl font-bold text-gray-900 mb-6 text-center">Complete Visit Documentation Process</h3>
-                
+
                 <div className="space-y-6">
                   {/* Recording Phase */}
                   <div className="flex items-start gap-4">
@@ -212,7 +234,7 @@ function AIMedicalAssistant() {
               ].map((item, idx) => (
                 <div
                   key={idx}
-                  className={`bg-gradient-to-br ${item.bgClass} rounded-xl p-6 border-2 ${item.borderClass} hover:shadow-lg transition-all text-center`}
+                  className="glass-card rounded-xl p-6 hover-lift shadow-sm text-center"
                 >
                   <div className={`w-14 h-14 bg-gradient-to-br ${item.iconClass} rounded-xl flex items-center justify-center mx-auto mb-3 shadow-lg`}>
                     <i className={`bi ${item.icon} text-white text-2xl`}></i>
@@ -274,7 +296,7 @@ function AIMedicalAssistant() {
               ].map((benefit, idx) => (
                 <div
                   key={idx}
-                  className="bg-white rounded-2xl p-6 border-2 border-teal-100 hover:border-teal-300 hover:shadow-xl transition-all"
+                  className="glass-card rounded-2xl p-6 hover-lift shadow-sm"
                 >
                   <div className={`w-14 h-14 bg-gradient-to-br ${benefit.color} rounded-xl flex items-center justify-center mb-4 shadow-lg`}>
                     <i className={`bi ${benefit.icon} text-white text-2xl`}></i>
@@ -287,56 +309,45 @@ function AIMedicalAssistant() {
           </div>
         </section>
 
-        {/* Use Cases Section */}
-        <section className="py-20 bg-white">
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-12">
-              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-                Perfect For Your Practice
-              </h2>
-              <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                Ideal for practices that need comprehensive visit documentation
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-              {[
-                {
-                  title: 'Primary Care',
-                  description: 'Complete documentation for routine visits, follow-ups, and annual exams',
-                  icon: 'bi-heart-pulse',
-                  bgClass: 'from-teal-50 to-white',
-                  borderClass: 'border-teal-100 hover:border-teal-300',
-                  iconClass: 'from-teal-300 to-teal-400',
-                },
-                {
-                  title: 'Urgent Care',
-                  description: 'Fast documentation for high-volume, time-sensitive patient encounters',
-                  icon: 'bi-clock',
-                  bgClass: 'from-emerald-50 to-white',
-                  borderClass: 'border-emerald-100 hover:border-emerald-300',
-                  iconClass: 'from-emerald-300 to-emerald-400',
-                },
-                {
-                  title: 'Specialty Clinics',
-                  description: 'Specialty-specific documentation with custom templates and workflows',
-                  icon: 'bi-hospital',
-                  bgClass: 'from-cyan-50 to-white',
-                  borderClass: 'border-cyan-100 hover:border-cyan-300',
-                  iconClass: 'from-cyan-300 to-cyan-400',
-                },
-              ].map((useCase, idx) => (
-                <div
-                  key={idx}
-                  className={`bg-gradient-to-br ${useCase.bgClass} rounded-2xl p-6 border-2 ${useCase.borderClass} hover:shadow-xl transition-all`}
-                >
-                  <div className={`w-14 h-14 bg-gradient-to-br ${useCase.iconClass} rounded-xl flex items-center justify-center mb-4 shadow-lg`}>
-                    <i className={`bi ${useCase.icon} text-white text-2xl`}></i>
+        {/* Perfect For You - Contact-style */}
+        <section className="py-12 md:py-20 bg-white">
+          <div className="container mx-auto px-4 w-full">
+            <div className="max-w-4xl mx-auto">
+              <div className="rounded-2xl md:rounded-3xl border border-gray-200 bg-white p-6 md:p-10 lg:p-12 shadow-lg shadow-gray-200/60">
+                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8 lg:gap-10">
+                  <div className="flex-1 min-w-0">
+                    <div className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-3">
+                      Perfect For You
+                    </div>
+                    <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
+                      Perfect For Your Practice
+                    </h2>
+                    <p className="text-base md:text-lg text-gray-600 mb-2 leading-relaxed">
+                      Ideal for primary care, urgent care, and specialty clinics that need comprehensive visit documentation—reduce documentation time by 80% and focus on patient care.
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      Complete documentation for routine visits, follow-ups, and annual exams.
+                    </p>
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">{useCase.title}</h3>
-                  <p className="text-gray-600">{useCase.description}</p>
+                  <div className="flex flex-col sm:flex-row lg:flex-col xl:flex-row items-stretch sm:items-center gap-3 flex-shrink-0">
+                    <a
+                      href="#"
+                      className="inline-flex items-center justify-center gap-2 bg-gray-900 text-white px-6 py-3.5 rounded-xl hover:bg-gray-800 transition-colors font-semibold text-sm shadow-md min-w-[140px]"
+                      onClick={(e) => handleIntercomClick(e, 'request-demo')}
+                    >
+                      <i className="bi bi-chat-dots-fill text-white text-lg" aria-hidden="true" />
+                      Book a Demo
+                    </a>
+                    <a
+                      href="/sign-up"
+                      className="inline-flex items-center justify-center gap-2 bg-white text-gray-700 px-6 py-3.5 rounded-xl border-2 border-gray-300 hover:bg-gray-50 hover:border-gray-400 transition-colors font-medium text-sm min-w-[140px]"
+                    >
+                      <i className="bi bi-rocket-takeoff text-cyan-500 text-lg" aria-hidden="true" />
+                      Get Started
+                    </a>
+                  </div>
                 </div>
-              ))}
+              </div>
             </div>
           </div>
         </section>
@@ -414,54 +425,52 @@ function AIMedicalAssistant() {
           </div>
         </section>
 
-        {/* Final CTA Section */}
-        <section className="py-20 bg-gradient-to-br from-teal-300 via-emerald-300 to-cyan-300 text-white">
-          <div className="container mx-auto px-4">
-            <div className="max-w-4xl mx-auto text-center">
-              <h2 className="text-4xl md:text-5xl font-bold mb-6">
-                Ready to Reduce Documentation Time by 80%?
-              </h2>
-              <p className="text-xl text-teal-50 mb-8 max-w-2xl mx-auto">
-                Join healthcare providers using AI Medical Assistant to eliminate documentation burden and focus on patient care
-              </p>
-
-              <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+        {/* Schedule a Demo - Contact-style */}
+        <section className="py-12 md:py-20 bg-white">
+          <div className="container mx-auto px-4 w-full">
+            <div className="max-w-4xl mx-auto">
+              <div className="rounded-2xl md:rounded-3xl border border-gray-200 bg-white p-6 md:p-10 lg:p-12 shadow-lg shadow-gray-200/60">
+                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8 lg:gap-10">
+                  <div className="flex-1 min-w-0">
+                    <div className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-3">
+                      Get Started
+                    </div>
+                    <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
+                      Ready to see AI Medical Assistant in action?
+                    </h2>
+                    <p className="text-base md:text-lg text-gray-600 mb-2 leading-relaxed">
+                      Book a quick walkthrough and leave with a clear automation plan.
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      15-minute call, no obligation.
+                    </p>
+                  </div>
+                  <div className="flex flex-col sm:flex-row lg:flex-col xl:flex-row items-stretch sm:items-center gap-3 flex-shrink-0">
                 <a
                   href="#"
                   onClick={(e) => handleIntercomClick(e, 'request-demo')}
-                    className="inline-flex items-center gap-3 bg-white text-teal-500 px-8 py-4 rounded-xl font-bold text-lg hover:bg-teal-50 transition-all shadow-xl hover:shadow-2xl hover:scale-105"
+                  className="inline-flex items-center gap-2 bg-gray-900 text-white px-6 py-3.5 rounded-xl hover:bg-gray-800 font-semibold text-sm shadow-md min-w-[140px] transition-colors"
                 >
-                  <i className="bi bi-calendar-check text-2xl"></i>
-                  Schedule a Demo
+                  <i className="bi bi-chat-dots-fill text-white text-lg"></i>
+                  Book a Demo
                 </a>
                 <a
                   href="#"
                   onClick={(e) => handleIntercomClick(e, 'sign-up')}
-                  className="inline-flex items-center gap-3 bg-teal-700 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-teal-800 transition-all border-2 border-teal-400 shadow-xl"
+                  className="inline-flex items-center gap-2 bg-white text-gray-700 px-6 py-3.5 rounded-xl border-2 border-gray-300 hover:bg-gray-50 hover:border-gray-400 font-medium text-sm min-w-[140px]"
                 >
-                  <i className="bi bi-rocket-takeoff text-2xl"></i>
-                  Start Free Trial
+                  <i className="bi bi-rocket-takeoff text-cyan-500 text-lg"></i>
+                  Get Started
                 </a>
               </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-3xl mx-auto pt-8 border-t border-teal-400/30">
-                {[
-                  { icon: 'bi-shield-check', text: 'HIPAA Compliant' },
-                  { icon: 'bi-heart-pulse', text: '100% Visit Capture' },
-                  { icon: 'bi-headset', text: '24/7 Support' },
-                ].map((feature, idx) => (
-                  <div key={idx} className="flex flex-col items-center gap-2">
-                    <i className={`bi ${feature.icon} text-3xl text-teal-200`}></i>
-                    <span className="font-semibold text-teal-100">{feature.text}</span>
-                  </div>
-                ))}
+                </div>
               </div>
             </div>
           </div>
         </section>
       </main>
       <Footer />
-    </>
+    </div>
   );
 }
 

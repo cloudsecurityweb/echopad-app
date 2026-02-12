@@ -14,6 +14,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts';
+import DashboardSectionLayout from '../../components/layout/DashboardSectionLayout';
 
 function Activity() {
   const { isClientAdmin } = useRole();
@@ -82,19 +83,13 @@ function Activity() {
   });
 
   return (
-    <div className="max-w-7xl mx-auto">
-      {/* Page Header */}
-      <div className="mb-8">
-        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-          Activity
-        </h1>
-        <p className="text-xl text-gray-600">
-          Monitor user activity and system events
-        </p>
-      </div>
-
+    <DashboardSectionLayout
+      title="Activity"
+      description="Monitor user activity and system events"
+    >
+    <div className="max-w-7xl mx-auto space-y-8">
       {/* Summary Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {summaryStats.map((stat, index) => (
           <div
             key={index}
@@ -253,6 +248,7 @@ function Activity() {
         </ResponsiveContainer>
       </div>
     </div>
+    </DashboardSectionLayout>
   );
 }
 

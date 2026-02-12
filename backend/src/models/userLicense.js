@@ -16,6 +16,7 @@ export function createUserLicense(data) {
     productId: data.productId,
     assignedBy: data.assignedBy,
     assignedAt: data.assignedAt || now,
+    expiresAt: data.expiresAt || null,
     entityType: "userLicense",
   };
 }
@@ -30,6 +31,10 @@ export function validateUserLicense(data) {
   if (!data.licenseId) errors.push("licenseId is required");
   if (!data.productId) errors.push("productId is required");
   if (!data.assignedBy) errors.push("assignedBy is required");
+
+  if (data.expiresAt && isNaN(Date.parse(data.expiresAt))) {
+    errors.push("expiresAt must be a valid date string");
+  }
 
   return {
     isValid: errors.length === 0,

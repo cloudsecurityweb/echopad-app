@@ -71,7 +71,7 @@ function Dashboard() {
       });
 
       try {
-        // Default landing for client admins is subscriptions page
+        // Default landing for all roles is profile page
         let targetRoute = '/dashboard/subscriptions';
 
         if (roleToUse === ROLES.SUPER_ADMIN) {

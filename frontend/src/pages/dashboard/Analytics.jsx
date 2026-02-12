@@ -14,6 +14,7 @@ import {
 import { useRole } from '../../contexts/RoleContext';
 import AnalyticsPage from './client-admin/AnalyticsPage';
 import { useSuperAdminAnalytics } from '../../hooks/useSuperAdminAnalytics';
+import DashboardSectionLayout from '../../components/layout/DashboardSectionLayout';
 
 function formatMetricLabel(key) {
   return key
@@ -51,16 +52,6 @@ function Analytics() {
 
   if (isClientAdmin || isUserAdmin) {
     return <AnalyticsPage />;
-  }
-
-  if (!isSuperAdmin) {
-    return (
-      <div className="max-w-6xl mx-auto">
-        <div className="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
-          <p className="text-red-700">You don't have permission to access this page.</p>
-        </div>
-      </div>
-    );
   }
 
   const dashboardMetrics = analytics?.dashboard?.data || {};
@@ -108,19 +99,57 @@ function Analytics() {
   }, [totals]);
 
   return (
+    <DashboardSectionLayout
+      title="Analytics"
+      description="Platform-wide insights for super admin monitoring"
+    >
     <div className="max-w-7xl mx-auto space-y-8">
-      <div>
-        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-          Analytics
-        </h1>
-        <p className="text-xl text-gray-600">
-          Platform-wide insights for super admin monitoring
-        </p>
-      </div>
-
       {loading && (
-        <div className="bg-white rounded-xl border border-gray-200 p-6 text-gray-600">
-          Loading analytics...
+        <div className="animate-pulse space-y-8">
+          {/* Stat Cards Skeleton */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <div className="h-3 w-24 bg-gray-200 rounded mb-3"></div>
+                <div className="h-8 w-16 bg-gray-200 rounded"></div>
+              </div>
+            ))}
+          </div>
+          {/* Metrics Explorer Skeleton */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-6">
+            <div className="flex justify-between">
+              <div className="h-6 w-40 bg-gray-200 rounded"></div>
+              <div className="h-6 w-24 bg-gray-200 rounded-full"></div>
+            </div>
+            <div className="flex gap-4">
+              <div className="flex-1 h-10 bg-gray-200 rounded-lg"></div>
+              <div className="h-10 w-36 bg-gray-200 rounded-lg"></div>
+              <div className="h-10 w-36 bg-gray-200 rounded-lg"></div>
+              <div className="h-10 w-28 bg-gray-200 rounded-lg"></div>
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2 bg-gray-50 border border-gray-200 rounded-xl p-4">
+                <div className="h-[320px] bg-gray-100 rounded-lg"></div>
+              </div>
+              <div className="bg-gray-50 border border-gray-200 rounded-xl p-4">
+                <div className="h-4 w-24 bg-gray-200 rounded mb-4"></div>
+                <div className="h-[320px] bg-gray-100 rounded-lg"></div>
+              </div>
+            </div>
+          </div>
+          {/* Details Table Skeleton */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-4">
+            <div className="h-6 w-32 bg-gray-200 rounded"></div>
+            <div className="space-y-3">
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="flex justify-between py-3 border-b border-gray-100">
+                  <div className="h-4 w-40 bg-gray-200 rounded"></div>
+                  <div className="h-4 w-20 bg-gray-200 rounded"></div>
+                  <div className="h-4 w-16 bg-gray-200 rounded"></div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       )}
 
@@ -298,6 +327,7 @@ function Analytics() {
         </>
       )}
     </div>
+    </DashboardSectionLayout>
   );
 }
 
