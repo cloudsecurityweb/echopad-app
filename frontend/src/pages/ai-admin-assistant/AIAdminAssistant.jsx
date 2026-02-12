@@ -51,10 +51,10 @@ function AIAdminAssistant() {
   }, []);
 
   return (
-    <>
+    <div className="min-h-screen flex flex-col">
       {PageTitle}
       <Navigation />
-      <main>
+      <main className="flex-1">
         {/* Hero Section */}
         <section className="px-4 md:px-14 pt-32 pb-20 bg-white">
           <div className="container mx-auto px-4">
@@ -445,7 +445,7 @@ function AIAdminAssistant() {
 
       </main>
       <Footer />
-    </>
+    </div>
   );
 }
 

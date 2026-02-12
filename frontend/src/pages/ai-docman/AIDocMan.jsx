@@ -50,10 +50,10 @@ function AIDocMan() {
   }, []);
 
   return (
-    <>
+    <div className="min-h-screen flex flex-col">
       {PageTitle}
       <Navigation />
-      <main>
+      <main className="flex-1">
         {/* Hero Section - Document Focused Design */}
         <section className="px-4 md:px-14 pt-32 pb-20 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
           <div className="container mx-auto px-4">
@@ -453,7 +453,7 @@ function AIDocMan() {
         </section>
       </main>
       <Footer />
-    </>
+    </div>
   );
 }
 

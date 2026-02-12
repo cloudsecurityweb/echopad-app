@@ -135,10 +135,10 @@ function HomePage() {
   }, [location.pathname, location.hash]);
 
   return (
-    <>
+    <div className="min-h-screen flex flex-col">
       {PageTitle}
       <Navigation />
-      <main>
+      <main className="flex-1">
         <Hero />
         <TrustBar />
         <AgentsOverview />
@@ -148,7 +148,7 @@ function HomePage() {
         <Contact />
       </main>
       <Footer />
-    </>
+    </div>
   );
 }
 

@@ -55,10 +55,10 @@ function AIMedicalAssistant() {
   }, []);
 
   return (
-    <>
+    <div className="min-h-screen flex flex-col">
       {PageTitle}
       <Navigation />
-      <main>
+      <main className="flex-1">
         {/* Hero Section - Clinical Workflow Design */}
         <section className="px-4 md:px-14 pt-32 pb-20 bg-gradient-to-br from-teal-50 via-emerald-50 to-cyan-50">
           <div className="container mx-auto px-4">
@@ -483,7 +483,7 @@ function AIMedicalAssistant() {
         </section>
       </main>
       <Footer />
-    </>
+    </div>
   );
 }
 
