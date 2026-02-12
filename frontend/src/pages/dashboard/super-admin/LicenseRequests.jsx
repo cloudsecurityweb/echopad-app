@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useRole } from '../../../contexts/RoleContext';
 import http from '../../../api/http';
+import DashboardSectionLayout from '../../../components/layout/DashboardSectionLayout';
 
 
 const REQUESTED_STATUS = 'requested';
@@ -113,14 +114,11 @@ export default function LicenseRequests() {
     };
 
     return (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative">
-            <div className="mb-8">
-                <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">License Requests</h1>
-                <p className="text-xl text-gray-600">
-                    Review and manage pending license requests from Clients.
-                </p>
-            </div>
-
+        <DashboardSectionLayout
+            title="License Requests"
+            description="Review and manage pending license requests from Clients."
+        >
+        <div className="max-w-7xl mx-auto space-y-8">
             {error && (
                 <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-6 flex items-center gap-3">
                     <Icons.AlertCircle />
@@ -284,5 +282,6 @@ export default function LicenseRequests() {
                 </div>
             )}
         </div>
+        </DashboardSectionLayout>
     );
 }

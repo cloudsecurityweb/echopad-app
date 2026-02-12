@@ -5,6 +5,7 @@ import { useOrgProducts } from '../../../hooks/useOrgProducts';
 import { useOrgLicenses } from '../../../hooks/useOrgLicenses';
 import { useProducts } from '../../../hooks/useProducts';
 import ProductGrid from '../../../components/store/ProductGrid';
+import DashboardSectionLayout from '../../../components/layout/DashboardSectionLayout';
 import { handleIntercomAction } from '../../../utils/intercom';
 
 function StorePage() {
@@ -33,14 +34,11 @@ function StorePage() {
   }, [orgProducts, licenses]);
 
   return (
-    <div className="max-w-7xl mx-auto space-y-6">
-      <div>
-        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Store</h1>
-        <p className="text-xl text-gray-600">
-          Browse available products for {organization?.name || 'your organization'}.
-        </p>
-      </div>
-
+    <DashboardSectionLayout
+      title="Store"
+      description={`Browse available products for ${organization?.name || 'your organization'}.`}
+    >
+    <div className="max-w-7xl mx-auto space-y-8">
       {(orgProductsLoading || licensesLoading) && (
         <div className="bg-white rounded-xl border border-gray-200 p-6 text-gray-600">
           Loading products...
@@ -65,6 +63,7 @@ function StorePage() {
         </button>
       </div>
     </div>
+    </DashboardSectionLayout>
   );
 }
 

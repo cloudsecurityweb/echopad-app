@@ -14,6 +14,7 @@ import {
 import { useRole } from '../../contexts/RoleContext';
 import AnalyticsPage from './client-admin/AnalyticsPage';
 import { useSuperAdminAnalytics } from '../../hooks/useSuperAdminAnalytics';
+import DashboardSectionLayout from '../../components/layout/DashboardSectionLayout';
 
 function formatMetricLabel(key) {
   return key
@@ -98,16 +99,11 @@ function Analytics() {
   }, [totals]);
 
   return (
+    <DashboardSectionLayout
+      title="Analytics"
+      description="Platform-wide insights for super admin monitoring"
+    >
     <div className="max-w-7xl mx-auto space-y-8">
-      <div>
-        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-          Analytics
-        </h1>
-        <p className="text-xl text-gray-600">
-          Platform-wide insights for super admin monitoring
-        </p>
-      </div>
-
       {loading && (
         <div className="bg-white rounded-xl border border-gray-200 p-6 text-gray-600">
           Loading analytics...
@@ -288,6 +284,7 @@ function Analytics() {
         </>
       )}
     </div>
+    </DashboardSectionLayout>
   );
 }
 

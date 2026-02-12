@@ -10,6 +10,7 @@ import { useUserLicenses } from '../../../hooks/useUserLicenses';
 import { useProductUsage } from '../../../hooks/useProductUsage';
 import SubscriptionTabs from '../../../components/subscription/SubscriptionTabs';
 import ProductTab from '../../../components/subscription/ProductTab';
+import DashboardSectionLayout from '../../../components/layout/DashboardSectionLayout';
 import { toast } from 'react-toastify';
 
 function SubscriptionsPage() {
@@ -84,16 +85,11 @@ function SubscriptionsPage() {
   const isLoading = orgProductsLoading || licensesLoading || usersLoading || userLicensesLoading;
 
   return (
-    <div className="max-w-7xl mx-auto relative">
-      <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Subscription</h1>
-          <p className="text-xl text-gray-600">
-            Manage products and licenses for {organization?.name || 'your organization'}.
-          </p>
-        </div>
-      </div>
-
+    <DashboardSectionLayout
+      title="Subscription"
+      description={`Manage products and licenses for ${organization?.name || 'your organization'}.`}
+    >
+    <div className="max-w-7xl mx-auto relative space-y-8">
       {isLoading && (
         <div className="bg-white rounded-xl border border-gray-200 p-6 text-gray-600">
           Loading subscriptions...
@@ -233,6 +229,7 @@ function SubscriptionsPage() {
         </div>
       )}
     </div>
+    </DashboardSectionLayout>
   );
 }
 

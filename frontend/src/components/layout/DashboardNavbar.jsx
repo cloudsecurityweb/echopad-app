@@ -88,15 +88,15 @@ function DashboardNavbar({ onToggleSidebar }) {
   const displayName = userInfo.name;
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200 shadow-md">
-      <div className="px-4 md:px-6">
+    <nav className="fixed top-0 left-0 right-0 z-50 p-4">
+      <div className="container mx-auto px-4 rounded-2xl backdrop-blur-md transition-colors shadow-lg shadow-blue-200/50 border border-gray-200/50 bg-white/95">
         <div className="flex items-center justify-between h-16">
-          {/* Left Section: Matrix Icon + Brand Name */}
+          {/* Left Section: Sidebar Toggle + Brand Name */}
           <div className="flex items-center gap-4">
-            {/* Matrix Icon Button */}
+            {/* Sidebar Toggle */}
             <button
               onClick={onToggleSidebar}
-              className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              className="p-2 rounded-lg hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2"
               aria-label="Toggle sidebar"
             >
               <svg className="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -104,18 +104,18 @@ function DashboardNavbar({ onToggleSidebar }) {
               </svg>
             </button>
 
-            {/* Brand Name */}
-            <a 
-              href="/" 
+            {/* Brand Name - same as homepage */}
+            <a
+              href="/"
               onClick={handleLogoClick}
-              className="flex items-center gap-2 cursor-pointer"
+              className="flex items-center gap-2 text-xl font-bold group cursor-pointer"
             >
-              <img 
-                src={echopadLogo} 
-                alt="Echopad AI Logo" 
-                className="w-8 h-8"
+              <img
+                src={echopadLogo}
+                alt="Echopad AI Logo"
+                className="w-10 h-10 transition-transform group-hover:scale-110"
               />
-              <span className="text-xl font-bold text-gray-900">
+              <span className="text-gray-900">
                 Echopad <span className="bg-gradient-to-r from-cyan-500 to-blue-600 bg-clip-text text-transparent">AI</span>
               </span>
             </a>
@@ -151,50 +151,40 @@ function DashboardNavbar({ onToggleSidebar }) {
                   </span>
                 )}
 
-                {/* Sign Out Button */}
+                {/* Sign Out Button - same style as homepage Sign in */}
                 <button
                   onClick={handleLogout}
-                  className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all font-medium text-sm"
+                  className="border-2 border-gray-300 text-gray-700 px-5 py-2 rounded-lg hover:bg-gray-50 transition-all font-medium text-sm"
                 >
-                  Sign Out
+                  Sign out
                 </button>
               </div>
 
-              {/* Mobile View - Burger Menu */}
+              {/* Mobile View - same hamburger as homepage */}
               <div className="md:hidden">
                 <button
                   onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                  className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                  className="flex flex-col gap-1 p-2"
                   aria-label="Toggle mobile menu"
                 >
-                  <svg className="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path 
-                      strokeLinecap="round" 
-                      strokeLinejoin="round" 
-                      strokeWidth={2} 
-                      d={isMobileMenuOpen 
-                        ? "M6 18L18 6M6 6l12 12" 
-                        : "M4 6h16M4 12h16M4 18h16"
-                      }
-                    />
-                  </svg>
+                  <span className={`block w-5 h-0.5 bg-gray-900 transition-all ${isMobileMenuOpen ? 'rotate-45 translate-y-1.5' : ''}`}></span>
+                  <span className={`block w-5 h-0.5 bg-gray-900 transition-all ${isMobileMenuOpen ? 'opacity-0' : ''}`}></span>
+                  <span className={`block w-5 h-0.5 bg-gray-900 transition-all ${isMobileMenuOpen ? '-rotate-45 -translate-y-1.5' : ''}`}></span>
                 </button>
               </div>
             </>
           )}
         </div>
 
-        {/* Mobile Menu Dropdown */}
-        <div className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${
-          isMobileMenuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
-        }`}>
+        {/* Mobile Menu Dropdown - same style as homepage */}
+        <div className={`md:hidden overflow-hidden transition-all duration-500 ease-in-out ${isMobileMenuOpen ? 'max-h-[600px] pb-6' : 'max-h-0'}`}>
           {!isLoading && isMobileMenuOpen && (
-            <div className="border-t border-gray-200 bg-white">
-              <div className="px-4 py-4 space-y-4">
+            <div className="flex flex-col gap-4 pt-6 animate-slide-in-left border-t border-gray-200">
+              <div className="px-0 space-y-4">
               {/* Profile Section */}
               {isAuthenticated ? (
                 <>
-                  <div className="flex items-center gap-3 pb-4 border-b border-gray-200">
+                  <div className="flex items-center gap-3 pb-4 border-b border-gray-200 hover:border-cyan-500 transition-colors">
                     {/* User Profile Picture */}
                     {userInfo.picture ? (
                       <img 
@@ -221,25 +211,25 @@ function DashboardNavbar({ onToggleSidebar }) {
                     </div>
                   </div>
 
-                  {/* Sign Out Button */}
+                  {/* Sign Out Button - match homepage */}
                   <button
                     onClick={() => {
                       handleLogout();
                       setIsMobileMenuOpen(false);
                     }}
-                    className="w-full px-4 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all font-medium text-center"
+                    className="w-full px-4 py-3 border-2 border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all font-medium text-center"
                   >
-                    Sign Out
+                    Sign out
                   </button>
                 </>
               ) : (
                 <div className="space-y-3">
                   <Link
                     to="/sign-in"
-                    className="block w-full px-4 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all font-medium text-center"
+                    className="block w-full px-4 py-3 border-2 border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all font-medium text-center"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
-                    Sign In
+                    Sign in
                   </Link>
                 </div>
               )}

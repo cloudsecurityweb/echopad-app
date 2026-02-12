@@ -1,5 +1,6 @@
 import { useProducts } from '../../../hooks/useProducts';
 import { Link } from 'react-router-dom';
+import DashboardSectionLayout from '../../../components/layout/DashboardSectionLayout';
 
 function UserAdminProducts() {
   const { products, loading, error } = useProducts();
@@ -13,11 +14,11 @@ function UserAdminProducts() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto space-y-6">
-      <div className="mb-8">
-        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Our Products</h1>
-        <p className="text-xl text-gray-600">Browse and learn more about our available products.</p>
-      </div>
+    <DashboardSectionLayout
+      title="Our Products"
+      description="Browse and learn more about our available products."
+    >
+    <div className="max-w-7xl mx-auto space-y-8">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {products.map((product) => (
           <div key={product.id} className="bg-white rounded-xl shadow-md p-6 border border-gray-200 flex flex-col justify-between">
@@ -42,6 +43,7 @@ function UserAdminProducts() {
         ))}
       </div>
     </div>
+    </DashboardSectionLayout>
   );
 }
 

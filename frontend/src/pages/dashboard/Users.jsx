@@ -9,6 +9,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { showNotification } from '../../utils/notifications';
 import { useUsers } from '../../hooks/useUsers';
 import { getPendingInvitations } from '../../utils/invitation-service';
+import DashboardSectionLayout from '../../components/layout/DashboardSectionLayout';
 import {
   PieChart,
   Pie,
@@ -201,17 +202,11 @@ function Users() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto">
-      {/* Page Header */}
-      <div className="mb-8">
-        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-          Users
-        </h1>
-        <p className="text-xl text-gray-600">
-          Manage users within your organization
-        </p>
-      </div>
-
+    <DashboardSectionLayout
+      title="Users"
+      description="Manage users within your organization"
+    >
+    <div className="max-w-7xl mx-auto space-y-8">
       {/* Summary Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         {summaryStats.map((stat, index) => (
@@ -473,6 +468,7 @@ function Users() {
         onSuccess={handleUserDeleted}
       />
     </div>
+    </DashboardSectionLayout>
   );
 }
 

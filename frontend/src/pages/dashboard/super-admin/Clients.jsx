@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../contexts/AuthContext';
 import { listOrganizationsDetails } from '../../../api/organizations.api';
+import DashboardSectionLayout from '../../../components/layout/DashboardSectionLayout';
 // Removed: ManageOrgModal
 
 const ITEMS_PER_PAGE = 10; // Number of items per page for pagination
@@ -51,17 +52,12 @@ function SuperAdminClients() {
   );
 
   return (
-    <div className="max-w-7xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-          Clients
-        </h1>
-        <p className="text-xl text-gray-600">
-          Manage and monitor all platform clients
-        </p>
-      </div>
-
-      <div className="bg-white rounded-xl shadow-md p-6 border border-gray-200 mb-8">
+    <DashboardSectionLayout
+      title="Clients"
+      description="Manage and monitor all platform clients"
+    >
+    <div className="max-w-7xl mx-auto space-y-8">
+      <div className="bg-white rounded-xl shadow-md p-6 border border-gray-200">
         <div className="flex flex-col md:flex-row gap-4">
           <div className="flex-1">
             <input
@@ -165,6 +161,7 @@ function SuperAdminClients() {
         </div>
       </div>
     </div>
+    </DashboardSectionLayout>
   );
 }
 

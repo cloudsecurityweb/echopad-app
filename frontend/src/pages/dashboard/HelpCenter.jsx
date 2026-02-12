@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import HelpDocCard from '../../components/help/HelpDocCard';
 import HelpEditorModal from '../../components/help/HelpEditorModal';
+import DashboardSectionLayout from '../../components/layout/DashboardSectionLayout';
 import { useHelpCenterDocs } from '../../hooks/useHelpCenterDocs';
 import { createHelpDoc, updateHelpDoc } from '../../api/helpCenter.api';
 import { useRole } from '../../contexts/RoleContext';
@@ -77,30 +78,24 @@ export default function HelpCenter() {
     }
   };
 
+  const description = (isClientAdmin || isUserAdmin)
+    ? "Find answers and guides to help you get the most out of Echopad."
+    : "Manage documentation and support content for Echopad users";
+
   return (
-    <div className="space-y-8">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Help Center</h1>
-          <p className="text-gray-600">
-            {(isClientAdmin || isUserAdmin)
-              ? "Find answers and guides to help you get the most out of Echopad."
-              : "Manage documentation and support content for Echopad users"}
-          </p>
-        </div>
-
-        {isSuperAdmin && (
-          <button
-            onClick={openCreate}
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-lg font-medium shadow hover:from-cyan-400 hover:to-blue-500 transition"
-          >
-            <i className="bi bi-plus-circle-fill"></i>
-            New Article
-          </button>
-        )}
-      </div>
-
+    <DashboardSectionLayout
+      title="Help Center"
+      description={description}
+      actions={isSuperAdmin && (
+        <button
+          onClick={openCreate}
+          className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-lg font-medium shadow hover:from-cyan-400 hover:to-blue-500 transition"
+        >
+          <i className="bi bi-plus-circle-fill"></i>
+          New Article
+        </button>
+      )}
+    >
       {/* Search + Filters */}
       <div className="bg-white border-2 border-gray-200 rounded-xl p-4 flex flex-col md:flex-row gap-4">
         <input
@@ -176,6 +171,6 @@ export default function HelpCenter() {
           isSaving={isSaving}
         />
       )}
-    </div>
+    </DashboardSectionLayout>
   );
 }

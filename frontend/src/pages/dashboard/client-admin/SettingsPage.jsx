@@ -6,6 +6,7 @@ import { useUsers } from '../../../hooks/useUsers';
 import AccountSettings from '../../../components/settings/AccountSettings';
 import ThemeSettings from '../../../components/settings/ThemeSettings';
 import ChangePasswordModal from '../../../components/ui/ChangePasswordModal';
+import DashboardSectionLayout from '../../../components/layout/DashboardSectionLayout';
 
 function SettingsPage() {
   const { isClientAdmin } = useRole();
@@ -43,12 +44,11 @@ function SettingsPage() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6">
-      <div>
-        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Settings</h1>
-        <p className="text-xl text-gray-600">Manage organization settings and preferences.</p>
-      </div>
-
+    <DashboardSectionLayout
+      title="Settings"
+      description="Manage organization settings and preferences."
+    >
+    <div className="max-w-6xl mx-auto space-y-8">
       {(loading || usersLoading) && (
         <div className="bg-white rounded-xl border border-gray-200 p-6 text-gray-600">
           Loading settings...
@@ -107,6 +107,7 @@ function SettingsPage() {
         onClose={() => setIsChangePasswordOpen(false)}
       />
     </div>
+    </DashboardSectionLayout>
   );
 }
 

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useRole } from '../../contexts/RoleContext';
 import ChangePasswordModal from '../../components/ui/ChangePasswordModal';
+import DashboardSectionLayout from '../../components/layout/DashboardSectionLayout';
 
 function Profile() {
   const { account, googleUser, authProvider, userProfile, getAccessToken, googleToken } = useAuth();
@@ -217,20 +218,17 @@ function Profile() {
     },
   ];
 
-  return (
-    <div className="max-w-6xl mx-auto space-y-10">
-      {/* PAGE HEADER */}
-      <div>
-        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-3">
-          Profile
-        </h1>
-        <p className="text-xl text-gray-600">
-          {isSuperAdmin && 'Super Admin account information and system access'}
-          {isClientAdmin && 'Client Admin account and organization settings'}
-          {isUserAdmin && 'Manage your personal account information'}
-        </p>
-      </div>
+  const description =
+    (isSuperAdmin && 'Super Admin account information and system access') ||
+    (isClientAdmin && 'Client Admin account and organization settings') ||
+    'Manage your personal account information';
 
+  return (
+    <DashboardSectionLayout
+      title="Profile"
+      description={description}
+    >
+      <div className="max-w-6xl mx-auto space-y-10">
       {/* PROFILE OVERVIEW */}
       <section className="bg-white rounded-2xl border-2 border-gray-200 p-6 shadow-sm">
         <div className="flex flex-col md:flex-row md:items-center gap-6">
@@ -510,7 +508,8 @@ function Profile() {
         isOpen={isChangePasswordOpen}
         onClose={() => setIsChangePasswordOpen(false)}
       />
-    </div>
+      </div>
+    </DashboardSectionLayout>
   );
 }
 

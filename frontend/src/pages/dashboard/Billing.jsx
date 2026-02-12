@@ -13,6 +13,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts';
+import DashboardSectionLayout from '../../components/layout/DashboardSectionLayout';
 
 function Billing() {
   const { isClientAdmin } = useRole();
@@ -84,19 +85,13 @@ function Billing() {
   });
 
   return (
-    <div className="max-w-7xl mx-auto">
-      {/* Page Header */}
-      <div className="mb-8">
-        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-          Billing
-        </h1>
-        <p className="text-xl text-gray-600">
-          View and manage your organization's billing and invoices
-        </p>
-      </div>
-
+    <DashboardSectionLayout
+      title="Billing"
+      description="View and manage your organization's billing and invoices"
+    >
+    <div className="max-w-7xl mx-auto space-y-8">
       {/* Summary Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {summaryStats.map((stat, index) => (
           <div
             key={index}
@@ -258,6 +253,7 @@ function Billing() {
         </div>
       </div>
     </div>
+    </DashboardSectionLayout>
   );
 }
 

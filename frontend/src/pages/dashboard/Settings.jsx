@@ -4,6 +4,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useRole } from '../../contexts/RoleContext';
 import SettingsPage from './client-admin/SettingsPage';
 import ChangePasswordModal from '../../components/ui/ChangePasswordModal';
+import DashboardSectionLayout from '../../components/layout/DashboardSectionLayout';
 
 function Settings() {
   const { logout, authProvider } = useAuth();
@@ -82,17 +83,14 @@ function Settings() {
     return <SettingsPage />;
   }
 
-  return (
-    <div className="max-w-4xl mx-auto flex-1">
-      <div className="mb-6">
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-1">Settings</h1>
-        <p className="text-sm text-gray-600">
-          {isSuperAdmin && 'Platform-wide settings'}
-          {isClientAdmin && 'Organization settings'}
-          {isUserAdmin && 'Account settings and preferences'}
-        </p>
-      </div>
+  const description =
+    (isSuperAdmin && 'Platform-wide settings') ||
+    (isClientAdmin && 'Organization settings') ||
+    'Account settings and preferences';
 
+  return (
+    <DashboardSectionLayout title="Settings" description={description}>
+    <div className="max-w-4xl mx-auto flex-1">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
         {settingsSections.map((section) => (
           <div
@@ -177,6 +175,7 @@ function Settings() {
         onClose={() => setIsChangePasswordOpen(false)}
       />
     </div>
+    </DashboardSectionLayout>
   );
 }
 

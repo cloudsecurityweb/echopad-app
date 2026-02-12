@@ -51,19 +51,15 @@ function DashboardLayout() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Calculate content margin based on sidebar state
+  // Content margin = sidebar left margin (left-4) + sidebar width, minimal gap
   const getContentMargin = () => {
     if (isMobile) {
-      // Mobile: no margin, sidebar pushes content
       return 'ml-0';
     }
-    // Desktop: margin based on sidebar open state and collapsed state
     if (!isSideNavOpen) {
-      // Sidebar is closed: no margin
       return 'ml-0';
     }
-    // Sidebar is open: margin based on collapsed state
-    return isCollapsed ? 'md:ml-20' : 'md:ml-72';
+    return isCollapsed ? 'md:ml-24' : 'md:ml-[19rem]'; // right after sidebar (1rem + w-20 or w-72)
   };
 
   return (
@@ -78,11 +74,11 @@ function DashboardLayout() {
         onToggleCollapse={toggleCollapse}
       />
 
-      {/* Main Content */}
+      {/* Main Content - pt matches navbar height (p-4 + h-16 + p-4) */}
       <main
-        className={`min-h-screen min-h-[100dvh] bg-white pt-16 transition-all duration-300 ${getContentMargin()}`}
+        className={`min-h-screen min-h-[100dvh] bg-white pt-24 transition-all duration-300 ${getContentMargin()}`}
       >
-        <div className="px-4 py-6 min-h-[calc(100vh-4rem)] flex flex-col">
+        <div className="px-4 py-6 min-h-[calc(100vh-6rem)] flex flex-col">
           <Outlet />
         </div>
       </main>
