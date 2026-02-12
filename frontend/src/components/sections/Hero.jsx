@@ -20,7 +20,7 @@ function Hero() {
       <div className="container mx-auto px-6 md:px-4">
         <div className="text-center max-w-3xl lg:max-w-4xl xl:max-w-5xl 2xl:max-w-6xl 3xl:max-w-7xl mx-auto relative z-10">
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 glass-card px-4 md:px-3 lg:px-4 xl:px-6 2xl:px-7 3xl:px-8 py-1 md:py-1.5 lg:py-2 xl:py-3 2xl:py-3.5 3xl:py-4 rounded-full text-sm md:text-xs 2xl:text-sm 3xl:text-base font-semibold mb-5 md:mb-4 lg:mb-5 xl:mb-6 2xl:mb-8 3xl:mb-10 animate-fade-in-scale">
+          <div className="inline-flex items-center gap-2 glass-card px-4 md:px-3 lg:px-4 xl:px-6 2xl:px-7 3xl:px-8 py-1 md:py-1.5 lg:py-2 xl:py-3 2xl:py-3.5 3xl:py-4 rounded-full text-sm md:text-xs 2xl:text-sm 3xl:text-base font-semibold sm:mt-16 mb-5 md:mb-4 lg:mb-5 xl:mb-6 2xl:mb-8 3xl:mb-10 animate-fade-in-scale">
             <i className="bi bi-lightning-charge-fill text-cyan-500 animate-pulse text-xs md:text-sm 2xl:text-base 3xl:text-lg"></i>
             <span className="text-gray-800">AI-Powered Healthcare Automation</span>
           </div>

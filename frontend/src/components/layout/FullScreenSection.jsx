@@ -8,8 +8,8 @@ function FullScreenSection({
   const baseClasses = [
     'relative',
     'min-h-screen',
-    'pt-16',
-    'scroll-mt-16',
+    'pt-24',
+    'scroll-mt-24',
     centered ? 'flex flex-col items-center justify-center' : '',
     'overflow-hidden',
   ]

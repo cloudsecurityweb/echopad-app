@@ -151,7 +151,7 @@ function Navigation() {
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 p-4">
-      <div className={`container mx-auto px-4 rounded-2xl backdrop-blur-md transition-colors ${isMobileMenuOpen ? 'bg-white' : 'bg-white/95'}`}>
+      <div className={`container mx-auto px-4 rounded-2xl backdrop-blur-md transition-colors shadow-lg shadow-blue-200/50 border border-gray-200/50 ${isMobileMenuOpen ? 'bg-white' : 'bg-white/95'}`}>
         <div className="flex items-center justify-between h-16">
 
           {/* Logo */}
