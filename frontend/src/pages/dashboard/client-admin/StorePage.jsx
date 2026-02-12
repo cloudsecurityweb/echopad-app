@@ -13,7 +13,7 @@ function StorePage() {
   const { organization, orgId } = useOrganization();
   const { orgProducts, loading: orgProductsLoading } = useOrgProducts(orgId);
   const { licenses, loading: licensesLoading } = useOrgLicenses(orgId);
-  const { products } = useProducts();
+  const { products, loading: productsLoading } = useProducts();
 
   if (!isClientAdmin) {
     return (
@@ -42,6 +42,30 @@ function StorePage() {
       {(orgProductsLoading || licensesLoading) && (
         <div className="bg-white rounded-xl border border-gray-200 p-6 text-gray-600">
           Loading products...
+    <div className="max-w-7xl mx-auto space-y-6">
+      <div>
+        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Store</h1>
+        <p className="text-xl text-gray-600">
+          Browse available products for {organization?.name || 'your organization'}.
+        </p>
+      </div>
+
+      {(orgProductsLoading || licensesLoading || productsLoading) && (
+        <div className="animate-pulse grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="bg-white rounded-xl border border-gray-200 p-6 space-y-4">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-gray-200 rounded-lg"></div>
+                <div className="flex-1 space-y-2">
+                  <div className="h-5 w-32 bg-gray-200 rounded"></div>
+                  <div className="h-3 w-20 bg-gray-200 rounded"></div>
+                </div>
+              </div>
+              <div className="h-4 w-full bg-gray-200 rounded"></div>
+              <div className="h-4 w-3/4 bg-gray-200 rounded"></div>
+              <div className="h-10 w-full bg-gray-200 rounded-lg mt-2"></div>
+            </div>
+          ))}
         </div>
       )}
 

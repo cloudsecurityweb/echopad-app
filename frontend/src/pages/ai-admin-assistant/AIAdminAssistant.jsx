@@ -143,27 +143,27 @@ function AIAdminAssistant() {
 
                 <div className="space-y-6 mb-8">
                   <div>
-                    <h4 className="flex items-center text-lg font-semibold text-gray-900 mb-3">
+                    <h2 className="flex items-center text-lg font-semibold text-gray-900 mb-3">
                       <i className="bi bi-briefcase-fill text-teal-500 mr-2"></i>
                       Business Value for Decision Makers
-                    </h4>
+                    </h2>
                     <p className="text-gray-600">
                       For healthcare leaders facing administrative overhead and staff burnout, AI Admin Assistant delivers immediate ROI through automated workflows, reduced manual data entry, and improved operational efficiency. Automate 60% of administrative tasks while freeing staff to focus on patient care and strategic initiatives.
                     </p>
                   </div>
 
                   <div>
-                    <h4 className="flex items-center text-lg font-semibold text-gray-900 mb-3">
+                    <h2 className="flex items-center text-lg font-semibold text-gray-900 mb-3">
                       <i className="bi bi-info-circle text-teal-500 mr-2"></i>
                       What You See
-                    </h4>
+                    </h2>
                     <p className="text-gray-600">
                       Emails arrive, forms are submitted, referrals come in. AI reads them, extracts key information, updates systems, drafts responses, and notifies the right people—all automatically.
                     </p>
                   </div>
 
                   <div>
-                    <h4 className="text-lg font-semibold text-gray-900 mb-3">Key Benefits</h4>
+                    <h2 className="text-lg font-semibold text-gray-900 mb-3">Key Benefits</h2>
                     <ul className="space-y-2">
                       {[
                         'Automate referrals, forms, and routine administrative tasks',
@@ -180,10 +180,10 @@ function AIAdminAssistant() {
                   </div>
 
                   <div>
-                    <h4 className="flex items-center text-lg font-semibold text-gray-900 mb-3">
+                    <h2 className="flex items-center text-lg font-semibold text-gray-900 mb-3">
                       <i className="bi bi-graph-up text-teal-500 mr-2"></i>
                       Impact Metrics
-                    </h4>
+                    </h2>
                     <div className="grid grid-cols-3 gap-4 mt-4">
                       {[
                         { value: '3+ hours', label: 'Saved per admin/day', icon: 'bi-clock-history' },
@@ -202,7 +202,7 @@ function AIAdminAssistant() {
                   </div>
 
                   <div>
-                    <h4 className="text-lg font-semibold text-gray-900 mb-3">Perfect For</h4>
+                    <h2 className="text-lg font-semibold text-gray-900 mb-3">Perfect For</h2>
                     <p className="text-gray-600">
                       Practices with high administrative burden, referral coordination, or staff struggling with repetitive data entry tasks.
                     </p>
@@ -412,7 +412,7 @@ function AIAdminAssistant() {
                       <i className={`bi ${feature.icon} text-white text-2xl`}></i>
                     </div>
                     <div>
-                      <h4 className="text-xl font-bold text-gray-900 mb-1">{feature.title}</h4>
+                      <h3 className="text-xl font-bold text-gray-900 mb-1">{feature.title}</h3>
                       <p className="text-sm text-blue-600 font-semibold">{feature.subtitle}</p>
                     </div>
                   </div>

@@ -37,7 +37,7 @@ export default function HelpCenter() {
       const matchesSearch = !searchTerm.trim()
         ? true
         : doc.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          doc.content?.toLowerCase().includes(searchTerm.toLowerCase());
+        doc.content?.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesCategory = categoryFilter === "all" || doc.category === categoryFilter;
       const matchesStatus = isClientAdmin || statusFilter === "all" || doc.status === statusFilter;
       return matchesSearch && matchesCategory && matchesStatus;
@@ -119,10 +119,10 @@ export default function HelpCenter() {
 
         {isSuperAdmin && (
           <select
-                    className="border border-gray-300 rounded-lg px-4 py-2 text-sm"
-                    value={statusFilter}
-                    onChange={(e) => setStatusFilter(e.target.value)}
-                  >            <option value="all">All Status</option>
+            className="border border-gray-300 rounded-lg px-4 py-2 text-sm"
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+          >            <option value="all">All Status</option>
             <option value="published">Published</option>
             <option value="draft">Draft</option>
             <option value="archived">Archived</option>
@@ -132,8 +132,22 @@ export default function HelpCenter() {
 
       {/* Docs Grid */}
       {loading && (
-        <div className="bg-white border border-gray-200 rounded-xl p-6 text-gray-600">
-          Loading help docs...
+        <div className="animate-pulse grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="bg-white border border-gray-200 rounded-xl p-6 space-y-4">
+              <div className="flex items-center gap-3">
+                <div className="h-6 w-20 bg-gray-200 rounded-full"></div>
+                <div className="h-6 w-16 bg-gray-200 rounded-full"></div>
+              </div>
+              <div className="h-5 w-48 bg-gray-200 rounded"></div>
+              <div className="h-4 w-full bg-gray-200 rounded"></div>
+              <div className="h-4 w-3/4 bg-gray-200 rounded"></div>
+              <div className="flex justify-between items-center pt-4 border-t border-gray-100">
+                <div className="h-3 w-24 bg-gray-200 rounded"></div>
+                <div className="h-8 w-20 bg-gray-200 rounded-lg"></div>
+              </div>
+            </div>
+          ))}
         </div>
       )}
 

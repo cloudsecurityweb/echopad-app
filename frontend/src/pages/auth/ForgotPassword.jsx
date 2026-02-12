@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import AuthPageHeader from '../../components/auth/AuthPageHeader';
+import Navigation from '../../components/layout/Navigation';
+import Footer from '../../components/layout/Footer';
 import usePageTitle from '../../hooks/usePageTitle';
 
 function ForgotPassword() {
@@ -87,10 +88,10 @@ function ForgotPassword() {
     return (
         <>
             {PageTitle}
-            <div className="min-h-screen bg-white">
-                <AuthPageHeader />
-                <main className="flex items-center justify-center py-4 min-h-[calc(100vh-4rem)]">
-                    <section className="w-full max-w-md px-4">
+            <Navigation />
+            <main className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 pt-16 md:pt-20 pb-4 overflow-hidden flex items-center justify-center">
+                <section className="w-full max-w-md px-4">
+                    <div className="bg-white rounded-2xl shadow-xl border-2 border-blue-100 p-6">
                         <div className="text-center">
                             <div className="mb-4">
                                 <svg className="h-16 w-16 text-cyan-600 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -165,16 +166,22 @@ function ForgotPassword() {
                                 >
                                     Back to Sign In
                                 </Link>
-                                <Link
-                                    to="/sign-up"
-                                    className="block text-sm text-gray-600 hover:text-gray-700"
-                                >
-                                    Don't have an account? Sign up
-                                </Link>
+                                <p className="block text-sm text-gray-600">
+                                    Don't have an account?{' '}
+                                    <Link
+                                        to="/sign-up"
+                                        className="text-cyan-600 hover:text-cyan-700 font-medium"
+                                    >
+                                        Sign up
+                                    </Link>
+                                </p>
                             </div>
                         </div>
-                    </section>
-                </main>
+                    </div>
+                </section>
+            </main>
+            <div className="hidden xl:block">
+                <Footer />
             </div>
         </>
     );

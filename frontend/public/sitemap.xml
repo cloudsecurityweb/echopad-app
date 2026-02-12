@@ -8,7 +8,7 @@
   
   <!-- Home Page -->
   <url>
-    <loc>https://echopadai.com/</loc>
+    <loc>https://echopad.ai/</loc>
     <lastmod>2026-01-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
@@ -16,86 +16,71 @@
   
   <!-- Product Pages -->
   <url>
-    <loc>https://echopadai.com/ai-scribe</loc>
+    <loc>https://echopad.ai/ai-scribe</loc>
     <lastmod>2026-01-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   
   <url>
-    <loc>https://echopadai.com/echopad-insights</loc>
+    <loc>https://echopad.ai/ai-docman</loc>
+    <lastmod>2026-01-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://echopad.ai/ai-medical-assistant</loc>
+    <lastmod>2026-01-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://echopad.ai/echopad-insights</loc>
     <lastmod>2026-01-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   
   <url>
-    <loc>https://echopadai.com/echopad-insights</loc>
+    <loc>https://echopad.ai/aperio</loc>
     <lastmod>2026-01-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   
   <url>
-    <loc>https://echopadai.com/aperio</loc>
-    <lastmod>2026-01-24</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  
-  <url>
-    <loc>https://echopadai.com/ai-receptionist</loc>
+    <loc>https://echopad.ai/ai-receptionist</loc>
     <lastmod>2026-01-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   
   <url>
-    <loc>https://echopadai.com/ai-admin-assistant</loc>
+    <loc>https://echopad.ai/ai-admin-assistant</loc>
     <lastmod>2026-01-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   
   <url>
-    <loc>https://echopadai.com/ai-patient-reminders</loc>
+    <loc>https://echopad.ai/ai-reminders</loc>
     <lastmod>2026-01-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-  </url>
-  
-  <!-- Information Pages -->
-  <url>
-    <loc>https://echopadai.com/about</loc>
-    <lastmod>2026-01-24</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  
-  <url>
-    <loc>https://echopadai.com/pricing</loc>
-    <lastmod>2026-01-24</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  
-  <url>
-    <loc>https://echopadai.com/contact</loc>
-    <lastmod>2026-01-24</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
   </url>
   
   <!-- Legal Pages -->
   <url>
-    <loc>https://echopadai.com/privacy-policy</loc>
+    <loc>https://echopad.ai/privacy-policy</loc>
     <lastmod>2026-01-24</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://echopadai.com/terms-of-service</loc>
+    <loc>https://echopad.ai/terms-of-service</loc>
     <lastmod>2026-01-24</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.5</priority>

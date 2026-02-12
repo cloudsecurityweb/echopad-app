@@ -73,10 +73,10 @@ function AIMedicalAssistant() {
 
             <div className="max-w-6xl mx-auto">
               <div className="text-center mb-12">
-                <div className="inline-flex items-center gap-2 bg-teal-50 text-teal-500 px-4 py-2 rounded-full text-sm font-semibold mb-4">
+                <h6 className="inline-flex items-center gap-2 bg-teal-50 text-teal-500 px-4 py-2 rounded-full text-sm font-semibold mb-4">
                   <i className="bi bi-heart-pulse-fill"></i>
                   AI MEDICAL ASSISTANT
-                </div>
+                </h6>
                 <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 mb-4">
                   Complete Visit
                   <span className="block bg-gradient-to-r from-teal-400 via-emerald-400 to-cyan-400 bg-clip-text text-transparent">

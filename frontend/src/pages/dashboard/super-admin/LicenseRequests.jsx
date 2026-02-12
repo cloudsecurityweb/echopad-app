@@ -127,8 +127,35 @@ export default function LicenseRequests() {
             )}
 
             {loading ? (
-                <div className="flex justify-center py-12">
-                    <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-600"></div>
+                <div className="animate-pulse space-y-6">
+                    <div className="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden">
+                        <div className="overflow-x-auto">
+                            <div className="p-6 space-y-4">
+                                {/* Table Header */}
+                                <div className="flex gap-6 pb-3 border-b border-gray-200">
+                                    {[140, 120, 60, 80, 100].map((w, i) => (
+                                        <div key={i} className="h-4 bg-gray-200 rounded" style={{ width: w }}></div>
+                                    ))}
+                                </div>
+                                {/* Table Rows */}
+                                {[...Array(4)].map((_, i) => (
+                                    <div key={i} className="flex gap-6 py-4 border-b border-gray-100">
+                                        <div className="space-y-2" style={{ width: 140 }}>
+                                            <div className="h-4 w-32 bg-gray-200 rounded"></div>
+                                            <div className="h-3 w-20 bg-gray-200 rounded"></div>
+                                        </div>
+                                        <div className="h-4 w-28 bg-gray-200 rounded" style={{ width: 120 }}></div>
+                                        <div className="h-6 w-16 bg-gray-200 rounded-full"></div>
+                                        <div className="h-4 w-20 bg-gray-200 rounded"></div>
+                                        <div className="flex gap-2">
+                                            <div className="h-8 w-20 bg-gray-200 rounded-lg"></div>
+                                            <div className="h-8 w-16 bg-gray-200 rounded-lg"></div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
                 </div>
             ) : requests.length === 0 ? (
                 <div className="bg-white rounded-xl shadow-md border border-gray-200 p-12 text-center">

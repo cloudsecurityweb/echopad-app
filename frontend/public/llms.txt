@@ -4,23 +4,23 @@
 
 ## About Echopad AI
 
-[Homepage](https://echopadai.com): Echopad AI is a comprehensive healthcare AI agent platform specializing in clinical documentation, patient engagement, and operational automation. Built for healthcare providers to reduce administrative burden and improve patient care quality.
+[Homepage](https://echopad.ai): Echopad AI is a comprehensive healthcare AI agent platform specializing in clinical documentation, patient engagement, and operational automation. Built for healthcare providers to reduce administrative burden and improve patient care quality.
 
 ## AI Products & Solutions
 
-[AI Scribe](https://echopadai.com/ai-scribe): Automated clinical documentation that reduces charting time by 70%. HIPAA-compliant AI transcription with real-time ambient listening, automatic SOAP note generation, and seamless EHR integration (Epic, Cerner, Athena). Pricing starts at $299/month. Supports multiple specialties and generates billable documentation.
+[AI Scribe](https://echopad.ai/ai-scribe): Automated clinical documentation that reduces charting time by 70%. HIPAA-compliant AI transcription with real-time ambient listening, automatic SOAP note generation, and seamless EHR integration (Epic, Cerner, Athena). Pricing starts at $299/month. Supports multiple specialties and generates billable documentation.
 
-[AI Receptionist](https://echopadai.com/ai-receptionist): 24/7 automated call handling and appointment scheduling that reduces no-shows by 30% and saves $60K+ annually. Features intelligent call routing, appointment confirmation, patient intake, insurance verification, and multi-language support. Pricing at $599/month. Handles 1000+ calls monthly.
+[AI Receptionist](https://echopad.ai/ai-receptionist): 24/7 automated call handling and appointment scheduling that reduces no-shows by 30% and saves $60K+ annually. Features intelligent call routing, appointment confirmation, patient intake, insurance verification, and multi-language support. Pricing at $599/month. Handles 1000+ calls monthly.
 
-[AI Admin Assistant](https://echopadai.com/ai-admin-assistant): Workflow automation that saves 3+ hours per admin per day. Automates prior authorizations, insurance verification, claims processing, patient follow-ups, and administrative task management. Pricing at $399/month. Reduces administrative costs by 60%.
+[AI Admin Assistant](https://echopad.ai/ai-admin-assistant): Workflow automation that saves 3+ hours per admin per day. Automates prior authorizations, insurance verification, claims processing, patient follow-ups, and administrative task management. Pricing at $399/month. Reduces administrative costs by 60%.
 
-[AI Patient Reminders](https://echopadai.com/ai-patient-reminders): Automated patient reminder system that reduces no-shows by 30% and recovers $50K+ annually. Features intelligent appointment reminders, medication reminders, follow-up scheduling, and multi-channel communication (SMS, email, voice). Pricing at $299/month.
+[AI Patient Reminders](https://echopad.ai/ai-patient-reminders): Automated patient reminder system that reduces no-shows by 30% and recovers $50K+ annually. Features intelligent appointment reminders, medication reminders, follow-up scheduling, and multi-channel communication (SMS, email, voice). Pricing at $299/month.
 
-[Benchmark - Performance Analytics](https://echopadai.com/benchmark): Comprehensive healthcare operations analytics and performance tracking. Real-time dashboards, provider productivity metrics, revenue cycle analytics, and operational KPIs. Pricing at $499/month. Provides actionable insights for practice optimization.
+[Benchmark - Performance Analytics](https://echopad.ai/benchmark): Comprehensive healthcare operations analytics and performance tracking. Real-time dashboards, provider productivity metrics, revenue cycle analytics, and operational KPIs. Pricing at $499/month. Provides actionable insights for practice optimization.
 
-[Aperio - Referral Management](https://echopadai.com/aperio): Automated referral management system that reduces processing time by 80%. Features automated referral tracking, specialist network coordination, patient communication, and outcomes monitoring. Pricing at $399/month. Improves care coordination and patient retention.
+[Aperio - Referral Management](https://echopad.ai/aperio): Automated referral management system that reduces processing time by 80%. Features automated referral tracking, specialist network coordination, patient communication, and outcomes monitoring. Pricing at $399/month. Improves care coordination and patient retention.
 
-[EchoPad Insights](https://echopadai.com/echopad-insights): Advanced analytics platform providing deep insights into practice performance, patient outcomes, and operational efficiency. Custom reporting, predictive analytics, and AI-powered recommendations.
+[EchoPad Insights](https://echopad.ai/echopad-insights): Advanced analytics platform providing deep insights into practice performance, patient outcomes, and operational efficiency. Custom reporting, predictive analytics, and AI-powered recommendations.
 
 ## Key Benefits & ROI
 
@@ -51,14 +51,14 @@ Individual product pricing ranges from $299 to $599 per month. Custom enterprise
 
 ## Contact & Support
 
-[Contact Us](https://echopadai.com/contact): Sales inquiries, product demos, and partnership opportunities
-[Pricing Information](https://echopadai.com/pricing): Detailed pricing for all products and custom enterprise solutions
-[About Echopad AI](https://echopadai.com/about): Company background, mission, and leadership team
+[Contact Us](https://echopad.ai/contact): Sales inquiries, product demos, and partnership opportunities
+[Pricing Information](https://echopad.ai/pricing): Detailed pricing for all products and custom enterprise solutions
+[About Echopad AI](https://echopad.ai/about): Company background, mission, and leadership team
 
 ## Legal & Compliance
 
-[Privacy Policy](https://echopadai.com/privacy-policy): Comprehensive privacy policy covering data handling, HIPAA compliance, and user rights
-[Terms of Service](https://echopadai.com/terms-of-service): Terms of service, licensing agreements, and usage guidelines
+[Privacy Policy](https://echopad.ai/privacy-policy): Comprehensive privacy policy covering data handling, HIPAA compliance, and user rights
+[Terms of Service](https://echopad.ai/terms-of-service): Terms of service, licensing agreements, and usage guidelines
 
 ---
 

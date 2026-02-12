@@ -79,7 +79,7 @@ function Settings() {
     },
   ];
 
-  if (isClientAdmin) {
+  if (isClientAdmin || isUserAdmin) {
     return <SettingsPage />;
   }
 

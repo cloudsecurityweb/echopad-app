@@ -45,6 +45,18 @@ export const getProductByCode = asyncHandler(async (req, res) => {
   }
 })
 
+export const deleteProduct = asyncHandler(async (req, res) => {
+  const { productCode } = req.params;
+  try {
+    await productService.deleteProduct(productCode);
+    res.status(200).json(
+      new ApiResponse(200, null, "product deleted successfully")
+    );
+  } catch (err) {
+    throw new ApiError(400, err.message || "Failed to delete product");
+  }
+})
+
 export const getProductsByTenant = asyncHandler(async (req, res) => {
   const { tenantId } = req.params;
   const { status } = req.query;

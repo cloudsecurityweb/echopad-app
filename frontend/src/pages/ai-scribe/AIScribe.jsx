@@ -147,7 +147,7 @@ function AIScribe() {
                     <div className="w-6 h-6 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center">
                       <i className="bi bi-lightning-charge-fill text-white text-xs"></i>
                     </div>
-                    <h3 className="text-sm md:text-base font-bold text-gray-900">How It Works in 3 Seconds</h3>
+                    <h2 className="text-sm md:text-base font-bold text-gray-900">How It Works in 3 Seconds</h2>
                   </div>
                   <div className="flex items-center justify-center gap-3 md:gap-4 flex-wrap">
                     <div className="flex flex-col items-center gap-1 bg-white px-3 py-2 rounded-lg shadow-md border border-blue-200">
@@ -230,27 +230,27 @@ function AIScribe() {
 
                 <div className="space-y-6 mb-8">
                   <div>
-                    <h4 className="flex items-center text-lg font-semibold text-gray-900 mb-3">
+                    <h2 className="flex items-center text-lg font-semibold text-gray-900 mb-3">
                       <i className="bi bi-briefcase-fill text-teal-500 mr-2"></i>
                       Business Value for Decision Makers
-                    </h4>
+                    </h2>
                     <p className="text-gray-600">
                       For healthcare leaders facing provider burnout and documentation backlogs, AI Scribe delivers immediate ROI through reduced overtime costs, improved billing accuracy, and enhanced provider satisfaction. Deploy in days, not months with zero disruption to clinical workflows.
                     </p>
                   </div>
 
                   <div>
-                    <h4 className="flex items-center text-lg font-semibold text-gray-900 mb-3">
+                    <h2 className="flex items-center text-lg font-semibold text-gray-900 mb-3">
                       <i className="bi bi-info-circle text-teal-500 mr-2"></i>
                       What You See
-                    </h4>
+                    </h2>
                     <p className="text-gray-600">
                       As you speak naturally during patient sessions, AI Scribe captures every word, cleans up the grammar, recognizes medical terminology, and structures it into professional documentation—all in real-time.
                     </p>
                   </div>
 
                   <div>
-                    <h4 className="text-lg font-semibold text-gray-900 mb-3">Key Benefits</h4>
+                    <h2 className="text-lg font-semibold text-gray-900 mb-3">Key Benefits</h2>
                     <ul className="space-y-2">
                       {[
                         'Reduce provider charting time by up to 70%',
@@ -267,10 +267,10 @@ function AIScribe() {
                   </div>
 
                   <div>
-                    <h4 className="flex items-center text-lg font-semibold text-gray-900 mb-3">
+                    <h2 className="flex items-center text-lg font-semibold text-gray-900 mb-3">
                       <i className="bi bi-graph-up text-teal-500 mr-2"></i>
                       Impact Metrics
-                    </h4>
+                    </h2>
                     <div className="grid grid-cols-3 gap-4 mt-4">
                       {[
                         { value: '2+ hours', label: 'Saved per provider/day', icon: 'bi-clock-history' },

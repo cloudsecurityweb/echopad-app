@@ -122,7 +122,7 @@ function AIDocMan() {
             <div className="max-w-6xl mx-auto">
               <div className="bg-white rounded-3xl shadow-2xl p-6 md:p-8 border-2 border-indigo-100">
                 <div className="text-center mb-6">
-                  <h3 className="text-2xl font-bold text-gray-900 mb-2">See the Transformation</h3>
+                  <h2 className="text-2xl font-bold text-gray-900 mb-2">See the Transformation</h2>
                   <p className="text-gray-600">Raw transcript → Perfectly formatted SOAP note</p>
                 </div>
 
