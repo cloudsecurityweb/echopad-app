@@ -83,42 +83,33 @@ function Settings() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto">
-      {/* Page Header */}
-      <div className="mb-8">
-        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-          Settings
-        </h1>
-        <p className="text-xl text-gray-600">
-          {isSuperAdmin && 'Platform-wide settings and configurations'}
-          {isClientAdmin && 'Organization settings and preferences'}
-          {isUserAdmin && 'Manage your account settings and preferences'}
+    <div className="max-w-4xl mx-auto flex-1">
+      <div className="mb-6">
+        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-1">Settings</h1>
+        <p className="text-sm text-gray-600">
+          {isSuperAdmin && 'Platform-wide settings'}
+          {isClientAdmin && 'Organization settings'}
+          {isUserAdmin && 'Account settings and preferences'}
         </p>
       </div>
 
-      {/* Settings Sections Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
         {settingsSections.map((section) => (
           <div
             key={section.id}
-            className="bg-white rounded-xl shadow-md p-6 border border-gray-200 hover:shadow-lg transition-shadow"
+            className="bg-white rounded-xl shadow-md p-4 border border-gray-200 hover:shadow-lg transition-shadow"
           >
-            <div className="flex items-start justify-between mb-4">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
-                  {section.icon}
-                </div>
-                <div>
-                  <h3 className="text-xl font-semibold text-gray-900">{section.title}</h3>
-                </div>
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-10 h-10 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                {section.icon}
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900">{section.title}</h3>
+                <p className="text-xs text-gray-600">{section.description}</p>
               </div>
             </div>
 
-            <p className="text-gray-600 mb-4">
-              {section.description}
-            </p>
-
-            <div className="space-y-4 pt-4 border-t border-gray-200">
+            <div className="space-y-3 pt-3 border-t border-gray-200">
               {section.settings && section.settings.map((setting, index) => (
                 <div key={index} className="flex items-center justify-between py-2">
                   <div className="flex-1">
@@ -167,12 +158,8 @@ function Settings() {
         ))}
       </div>
 
-      {/* Additional Info */}
-      <div className="bg-gradient-to-r from-cyan-50 to-blue-50 rounded-xl p-6 border border-cyan-200">
-        <h2 className="text-2xl font-semibold text-gray-900 mb-2">Need Help?</h2>
-        <p className="text-gray-700 mb-4">
-          Contact our support team if you have questions about your settings or need assistance with your account preferences.
-        </p>
+      <div className="bg-gradient-to-r from-cyan-50 to-blue-50 rounded-xl p-4 border border-cyan-200 flex items-center justify-between gap-4 flex-wrap">
+        <p className="text-sm text-gray-700">Need help with settings?</p>
         <button
           onClick={() => showIntercom()}
           className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-lg hover:from-cyan-400 hover:to-blue-500 transition-all font-medium text-sm"
