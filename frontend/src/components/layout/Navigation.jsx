@@ -150,8 +150,8 @@ function Navigation() {
     'User';
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-colors ${isMobileMenuOpen ? 'bg-white' : 'bg-gradient-to-b from-white to-transparent'}`}>
-      <div className="container mx-auto px-4">
+    <nav className="fixed top-0 left-0 right-0 z-50 p-4">
+      <div className={`container mx-auto px-4 rounded-2xl backdrop-blur-md transition-colors ${isMobileMenuOpen ? 'bg-white' : 'bg-white/95'}`}>
         <div className="flex items-center justify-between h-16">
 
           {/* Logo */}
@@ -225,11 +225,14 @@ function Navigation() {
                       </div>
                     )}
                     <span className="hidden lg:inline text-sm font-semibold">{displayName}</span>
+                    <svg className={`w-4 h-4 text-gray-500 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
                   </button>
 
                   {isDropdownOpen && (
                     <div
-                      className="absolute right-0 mt-2 w-64 glass-card rounded-xl py-2 z-50 animate-fade-in-scale"
+                      className="absolute right-0 mt-2 w-64 bg-white rounded-xl py-2 z-50 animate-fade-in-scale shadow-lg border border-gray-200"
                       role="menu"
                       aria-orientation="vertical"
                     >
