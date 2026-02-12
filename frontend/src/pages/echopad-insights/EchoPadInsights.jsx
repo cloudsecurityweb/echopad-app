@@ -49,10 +49,10 @@ function EchoPadInsights() {
   }, []);
 
   return (
-    <>
+    <div className="min-h-screen flex flex-col">
       {PageTitle}
       <Navigation />
-      <main>
+      <main className="flex-1">
         {/* Hero Section */}
         <section className="px-4 md:px-14 pt-32 pb-20 bg-white">
           <div className="container mx-auto px-4">
@@ -662,48 +662,43 @@ function EchoPadInsights() {
           </div>
         </section>
 
-        {/* Final CTA Section */}
-        <section className="py-20 bg-gradient-to-br from-gray-900 to-gray-800">
-          <div className="container mx-auto px-4">
-            <div className="max-w-4xl mx-auto text-center">
-              <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">
-                Stop Leaving Money on the Table
-              </h2>
-              <p className="text-xl text-gray-300 mb-8">
-                Discover how much revenue you're missing. Get your free underpayment analysis today.
-              </p>
-
-              <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
-                <a
-                  href="#"
-                  onClick={(e) => handleIntercomClick(e, 'request-demo')}
-                  className="inline-flex items-center justify-center gap-3 bg-purple-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-purple-700 transition-all shadow-lg hover:shadow-xl hover:scale-105"
-                >
-                  <i className="bi bi-calendar-check text-2xl"></i>
-                  Schedule Your Demo
-                </a>
-                <a
-                  href="#"
-                  onClick={(e) => handleIntercomClick(e, 'sign-up')}
-                  className="inline-flex items-center justify-center gap-3 bg-white text-gray-900 px-8 py-4 rounded-xl font-bold text-lg hover:bg-gray-100 transition-all shadow-lg hover:shadow-xl hover:scale-105"
-                >
-                  <i className="bi bi-play-circle text-2xl"></i>
-                  See It In Action
-                </a>
-              </div>
-
-              <div className="flex items-center justify-center gap-8 text-gray-400 text-sm">
-                <div className="flex items-center gap-2">
-                  <i className="bi bi-check-circle-fill text-green-500"></i>
-                  <span>No credit card required</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <i className="bi bi-check-circle-fill text-green-500"></i>
-                  <span>Free underpayment analysis</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <i className="bi bi-check-circle-fill text-green-500"></i>
-                  <span>Setup in &lt;1 week</span>
+        {/* Final CTA - Contact-style */}
+        <section className="py-12 md:py-20 bg-white">
+          <div className="container mx-auto px-4 w-full">
+            <div className="max-w-4xl mx-auto">
+              <div className="rounded-2xl md:rounded-3xl border border-gray-200 bg-white p-6 md:p-10 lg:p-12 shadow-lg shadow-gray-200/60">
+                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8 lg:gap-10">
+                  <div className="flex-1 min-w-0">
+                    <div className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-3">
+                      Get Started
+                    </div>
+                    <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
+                      Stop Leaving Money on the Table
+                    </h2>
+                    <p className="text-base md:text-lg text-gray-600 mb-2 leading-relaxed">
+                      Discover how much revenue you're missing. Get your free underpayment analysis today.
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      No credit card required · Free underpayment analysis · Setup in &lt;1 week
+                    </p>
+                  </div>
+                  <div className="flex flex-col sm:flex-row lg:flex-col xl:flex-row items-stretch sm:items-center gap-3 flex-shrink-0">
+                    <a
+                      href="#"
+                      className="inline-flex items-center justify-center gap-2 bg-gray-900 text-white px-6 py-3.5 rounded-xl hover:bg-gray-800 transition-colors font-semibold text-sm shadow-md min-w-[140px]"
+                      onClick={(e) => handleIntercomClick(e, 'request-demo')}
+                    >
+                      <i className="bi bi-chat-dots-fill text-white text-lg" aria-hidden="true" />
+                      Book a Demo
+                    </a>
+                    <a
+                      href="/sign-up"
+                      className="inline-flex items-center justify-center gap-2 bg-white text-gray-700 px-6 py-3.5 rounded-xl border-2 border-gray-300 hover:bg-gray-50 hover:border-gray-400 transition-colors font-medium text-sm min-w-[140px]"
+                    >
+                      <i className="bi bi-rocket-takeoff text-cyan-500 text-lg" aria-hidden="true" />
+                      Get Started
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>
@@ -712,7 +707,7 @@ function EchoPadInsights() {
 
       </main>
       <Footer />
-    </>
+    </div>
   );
 }
 

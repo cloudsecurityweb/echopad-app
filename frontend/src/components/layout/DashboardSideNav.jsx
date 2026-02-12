@@ -211,12 +211,13 @@ function DashboardSideNav({ isOpen, onClose, isCollapsed, onToggleCollapse }) {
 
   return (
     <>
-      {/* Side Navigation */}
+      {/* Side Navigation - separate container with margin (matches navbar padding) */}
       <aside
-        className={`fixed top-16 left-0 h-[calc(100vh-4rem)] bg-white shadow-xl z-40 transform transition-all duration-300 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full'
-          } ${effectiveWidth}`}
+        className={`fixed top-[6rem] left-4 bottom-4 z-40 transform transition-all duration-300 ease-in-out
+          rounded-2xl border border-gray-200/50 bg-white/95 backdrop-blur-md shadow-lg shadow-blue-200/50
+          ${isOpen ? 'translate-x-0' : '-translate-x-full'} ${effectiveWidth}`}
       >
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col h-full rounded-2xl overflow-hidden">
           {/* Navigation Items */}
           <nav className={`flex-1 p-4 space-y-2 ${isCollapsed && !isMobile ? 'items-center' : ''}`}>
             {menuItems.map((item) => {

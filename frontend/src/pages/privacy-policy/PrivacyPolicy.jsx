@@ -22,10 +22,10 @@ function PrivacyPolicy() {
   };
 
   return (
-    <>
+    <div className="min-h-screen flex flex-col">
       {PageTitle}
       <Navigation />
-      <main>
+      <main className="flex-1">
         {/* Privacy Policy Content */}
         <section className="pt-32 pb-20 bg-white">
           <div className="container mx-auto px-4">
@@ -383,7 +383,7 @@ function PrivacyPolicy() {
         </section>
       </main>
       <Footer />
-    </>
+    </div>
   );
 }
 

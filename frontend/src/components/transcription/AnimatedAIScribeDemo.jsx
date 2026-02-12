@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { handleIntercomAction } from '../../utils/intercom';
 
 const AnimatedAIScribeDemo = () => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -276,9 +277,7 @@ const AnimatedAIScribeDemo = () => {
               href="#"
               onClick={(e) => {
                 e.preventDefault();
-                if (window.Intercom) {
-                  window.Intercom('showNewMessage', 'I would like to schedule a demo for AI Scribe');
-                }
+                handleIntercomAction('request-demo');
               }}
               className="inline-flex items-center gap-2 bg-green-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-green-700 transition-all shadow-md hover:shadow-lg hover:scale-105"
             >
@@ -289,9 +288,7 @@ const AnimatedAIScribeDemo = () => {
               href="#"
               onClick={(e) => {
                 e.preventDefault();
-                if (window.Intercom) {
-                  window.Intercom('showNewMessage', 'I would like to start a free trial of AI Scribe');
-                }
+                handleIntercomAction('request-demo');
               }}
               className="inline-flex items-center gap-2 bg-white text-green-600 px-6 py-3 rounded-xl font-bold hover:bg-gray-50 transition-all border-2 border-green-600 hover:border-green-700 shadow-md hover:shadow-lg"
             >

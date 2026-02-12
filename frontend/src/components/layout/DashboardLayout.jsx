@@ -65,7 +65,7 @@ function DashboardLayout() {
       return 'ml-0';
     }
     // Sidebar is open: margin based on collapsed state
-    return isCollapsed ? 'md:ml-20' : 'md:ml-72';
+    return isCollapsed ? 'md:ml-60' : 'md:ml-[19rem]';
   };
 
   // Wait for role to be reliably determined before rendering layout

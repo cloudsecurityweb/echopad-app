@@ -51,10 +51,10 @@ function AIAdminAssistant() {
   }, []);
 
   return (
-    <>
+    <div className="min-h-screen flex flex-col">
       {PageTitle}
       <Navigation />
-      <main>
+      <main className="flex-1">
         {/* Hero Section */}
         <section className="px-4 md:px-14 pt-32 pb-20 bg-white">
           <div className="container mx-auto px-4">
@@ -367,7 +367,7 @@ function AIAdminAssistant() {
                   { icon: 'bi-lightning-charge', value: '12 sec', label: 'Processing Time' },
                   { icon: 'bi-graph-up-arrow', value: '24/7', label: 'Availability' },
                 ].map((stat, idx) => (
-                  <div key={idx} className="bg-white rounded-xl p-4 shadow-lg border-2 border-blue-100">
+                  <div key={idx} className="glass-card rounded-xl p-4 hover-lift shadow-sm">
                     <i className={`bi ${stat.icon} text-3xl text-blue-600 mb-2 block`}></i>
                     <div className="text-2xl font-bold text-gray-900">{stat.value}</div>
                     <div className="text-xs text-gray-600">{stat.label}</div>
@@ -405,10 +405,10 @@ function AIAdminAssistant() {
               ].map((feature, idx) => (
                 <div
                   key={idx}
-                  className="bg-white rounded-2xl border-2 border-blue-200 p-6 h-full shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] group"
+                  className="glass-card rounded-2xl p-6 h-full hover-lift shadow-sm"
                 >
                   <div className="flex items-center gap-4 mb-6">
-                    <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
+                    <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center flex-shrink-0">
                       <i className={`bi ${feature.icon} text-white text-2xl`}></i>
                     </div>
                     <div>
@@ -445,7 +445,7 @@ function AIAdminAssistant() {
 
       </main>
       <Footer />
-    </>
+    </div>
   );
 }
 

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useRole } from '../../contexts/RoleContext';
 import SubscriptionsPage from './client-admin/SubscriptionsPage';
+import DashboardSectionLayout from '../../components/layout/DashboardSectionLayout';
 import {
   PieChart,
   Pie,
@@ -81,17 +82,11 @@ function Subscriptions() {
   });
 
   return (
-    <div className="max-w-7xl mx-auto">
-      {/* Page Header */}
-      <div className="mb-8">
-        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-          Subscriptions
-        </h1>
-        <p className="text-xl text-gray-600">
-          {isSuperAdmin ? 'Manage all platform subscriptions' : 'View your organization subscriptions'}
-        </p>
-      </div>
-
+    <DashboardSectionLayout
+      title="Subscriptions"
+      description={isSuperAdmin ? 'Manage all platform subscriptions' : 'View your organization subscriptions'}
+    >
+    <div className="max-w-7xl mx-auto space-y-8">
       {/* Summary Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         {summaryStats.map((stat, index) => (
@@ -146,7 +141,7 @@ function Subscriptions() {
       </div>
 
       {/* Subscriptions Table */}
-      <div className="bg-white rounded-xl shadow-md p-6 border border-gray-200 mb-8">
+      <div className="bg-white rounded-xl shadow-md p-6 border border-gray-200">
         <h2 className="text-2xl font-semibold text-gray-900 mb-6">All Subscriptions</h2>
         <div className="overflow-x-auto">
           <table className="w-full">
@@ -267,6 +262,7 @@ function Subscriptions() {
         </div>
       </div>
     </div>
+    </DashboardSectionLayout>
   );
 }
 
