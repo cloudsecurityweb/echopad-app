@@ -106,6 +106,7 @@ export async function assignLicenseToUser({
     licenseId,
     productId: license.productId,
     assignedBy,
+    expiresAt: license.expiresAt,
   };
 
   const validation = validateUserLicense(userLicenseData);
@@ -240,6 +241,10 @@ export async function hasActiveProductAccess(tenantId, userId, productSku) {
 
   for (const mapping of mappings) {
     try {
+      if (mapping.expiresAt && new Date(mapping.expiresAt) <= new Date()) {
+        continue;
+      }
+
       const { resource: license } = await licenseContainer.item(mapping.licenseId, tenantId).read();
       if (!license) {
         continue;
