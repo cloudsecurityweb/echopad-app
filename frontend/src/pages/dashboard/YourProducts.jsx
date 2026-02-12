@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import ProductFeedbackModal from '../../components/ui/ProductFeedbackModal';
+import DashboardSectionLayout from '../../components/layout/DashboardSectionLayout';
 import { getUserOwnedProducts } from '../../utils/productOwnership';
 import { products } from '../../data/products';
 import { useAuth } from '../../contexts/AuthContext';
@@ -145,17 +146,11 @@ function YourProducts() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto">
-      {/* Page Header */}
-      <div className="mb-8">
-        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-          Your AI Agents
-        </h1>
-        <p className="text-xl text-gray-600">
-          Manage and view your subscribed AI agents
-        </p>
-      </div>
-
+    <DashboardSectionLayout
+      title="Your AI Agents"
+      description="Manage and view your subscribed AI agents"
+    >
+    <div className="max-w-6xl mx-auto space-y-8">
       {/* Error State */}
       {error && (
         <div className="mb-6">
@@ -272,6 +267,7 @@ function YourProducts() {
         productName={selectedProductName}
       />
     </div>
+    </DashboardSectionLayout>
   );
 }
 

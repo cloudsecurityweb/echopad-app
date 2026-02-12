@@ -1,4 +1,5 @@
 import { useRole } from '../../contexts/RoleContext';
+import { showIntercom } from '../../utils/intercom';
 
 function ClientFeedback() {
   const { isClientAdmin, isUserAdmin } = useRole();
@@ -14,7 +15,7 @@ function ClientFeedback() {
             Have a question or feedback? Contact our support team.
           </p>
           <button
-            onClick={() => window.Intercom && window.Intercom('show')}
+            onClick={() => showIntercom()}
             className="px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-lg hover:from-cyan-400 hover:to-blue-500 transition-all font-medium hover:cursor-pointer"
           >
             Contact Support

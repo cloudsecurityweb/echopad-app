@@ -2,6 +2,13 @@
  * Google Analytics initialization and utilities
  */
 
+import { shutdownIntercom } from './intercom';
+
+/** Dev-only logger */
+const log = (...args) => {
+  if (import.meta.env.DEV) console.log('[Analytics]', ...args);
+};
+
 // Initialize Google Analytics
 export function initGoogleAnalytics() {
   // Load gtag script
@@ -50,11 +57,11 @@ export function trackEvent(action, category, label, value) {
 }
 
 /**
- * Enable tracking (Google Analytics, Intercom)
- * Called when user accepts cookies
+ * Enable tracking (Google Analytics only).
+ * Intercom boot is now handled by IntercomBootstrap in App.jsx.
+ * Called when user accepts cookies.
  */
 export function enableTracking() {
-  // Initialize Google Analytics if not already loaded
   if (typeof window.gtag !== 'undefined') {
     window.gtag('consent', 'update', {
       'analytics_storage': 'granted',
@@ -62,29 +69,19 @@ export function enableTracking() {
     });
   }
 
-  // Initialize Intercom if available
-  if (typeof window.Intercom !== 'undefined') {
-    const INTERCOM_APP_ID = window.INTERCOM_APP_ID || 'w7x3pqgr';
-    window.intercomSettings = {
-      api_base: "https://api-iam.intercom.io",
-      app_id: INTERCOM_APP_ID
-    };
-    window.Intercom('boot', window.intercomSettings);
-  }
-
-  console.log('Tracking enabled');
+  log('Tracking enabled');
 }
 
 /**
- * Disable tracking and clear cookies
- * Called when user declines cookies
+ * Disable tracking and clear cookies.
+ * Called when user declines cookies.
  */
 export function disableTracking() {
   // Disable Google Analytics
   if (typeof window.gtag !== 'undefined') {
     window.gtag('consent', 'update', {
       'analytics_storage': 'denied',
-      'ad_storage': 'denied'
+      'ad_storage': 'denied',
     });
   }
 
@@ -93,11 +90,10 @@ export function disableTracking() {
   window[`ga-disable-${GA_MEASUREMENT_ID}`] = true;
 
   // Clear any existing tracking cookies
-  const cookies = document.cookie.split(";");
-  cookies.forEach(function(c) {
+  const cookies = document.cookie.split(';');
+  cookies.forEach(function (c) {
     const cookieName = c.trim().split('=')[0];
     if (cookieName.startsWith('_ga') || cookieName.startsWith('_gid') || cookieName.startsWith('_gac')) {
-      // Delete cookie for all paths and domains
       const domain = window.location.hostname;
       document.cookie = cookieName + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
       document.cookie = cookieName + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=' + domain + ';';
@@ -105,16 +101,8 @@ export function disableTracking() {
     }
   });
 
-  // Shutdown Intercom if it's running
-  if (typeof window.Intercom !== 'undefined') {
-    window.Intercom('shutdown');
-  }
+  // Shutdown Intercom session
+  shutdownIntercom();
 
-  console.log('Tracking disabled and cookies cleared');
+  log('Tracking disabled and cookies cleared');
 }
-
-
-
-
-
-

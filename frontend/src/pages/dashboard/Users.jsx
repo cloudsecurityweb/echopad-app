@@ -9,6 +9,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { showNotification } from '../../utils/notifications';
 import { useUsers } from '../../hooks/useUsers';
 import { getPendingInvitations } from '../../utils/invitation-service';
+import DashboardSectionLayout from '../../components/layout/DashboardSectionLayout';
 import {
   PieChart,
   Pie,
@@ -201,6 +202,21 @@ function Users() {
   }
 
   return (
+    <DashboardSectionLayout
+      title="Users"
+      description="Manage users within your organization"
+    >
+    <div className="max-w-7xl mx-auto space-y-8">
+      {/* Summary Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        {summaryStats.map((stat, index) => (
+          <div
+            key={index}
+            className="bg-white rounded-xl shadow-md p-6 border border-gray-200 hover:shadow-lg transition-shadow"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <div className="text-3xl">{stat.icon}</div>
+              {stat.change ? <span className="text-sm font-semibold text-green-600">{stat.change}</span> : null}
     <div className="max-w-7xl mx-auto">
       {/* Page Header */}
       <div className="mb-8">
@@ -535,6 +551,7 @@ function Users() {
         onSuccess={handleUserDeleted}
       />
     </div>
+    </DashboardSectionLayout>
   );
 }
 

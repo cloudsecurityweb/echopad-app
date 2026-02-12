@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../contexts/AuthContext';
 import { listOrganizationsDetails } from '../../../api/organizations.api';
+import DashboardSectionLayout from '../../../components/layout/DashboardSectionLayout';
 // Removed: ManageOrgModal
 
 const ITEMS_PER_PAGE = 10; // Number of items per page for pagination
@@ -51,6 +52,21 @@ function SuperAdminClients() {
   );
 
   return (
+    <DashboardSectionLayout
+      title="Clients"
+      description="Manage and monitor all platform clients"
+    >
+    <div className="max-w-7xl mx-auto space-y-8">
+      <div className="bg-white rounded-xl shadow-md p-6 border border-gray-200">
+        <div className="flex flex-col md:flex-row gap-4">
+          <div className="flex-1">
+            <input
+              type="text"
+              placeholder="Search clients..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
+            />
     <div className="max-w-7xl mx-auto">
       <div className="mb-8">
         <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
@@ -205,6 +221,7 @@ function SuperAdminClients() {
       </>
       )}
     </div>
+    </DashboardSectionLayout>
   );
 }
 

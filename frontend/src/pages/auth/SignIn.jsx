@@ -126,11 +126,7 @@ function SignIn() {
   // Let Dashboard component handle role-based routing to avoid conflicts
   useEffect(() => {
     if (isAuthenticated && !isLoading && !redirectUri && !isLoadingRole) {
-      if (currentRole === ROLES.CLIENT_ADMIN || currentRole === ROLES.USER_ADMIN) {
-        navigate('/');
-      } else {
-        navigate('/dashboard');
-      }
+      navigate('/dashboard');
     }
   }, [isAuthenticated, isLoading, navigate, redirectUri, isLoadingRole, currentRole]);
 

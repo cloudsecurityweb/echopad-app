@@ -13,6 +13,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts';
+import DashboardSectionLayout from '../../components/layout/DashboardSectionLayout';
 
 function Licenses() {
   const { isSuperAdmin, isClientAdmin } = useRole();
@@ -99,19 +100,13 @@ function Licenses() {
   });
 
   return (
-    <div className="max-w-7xl mx-auto">
-      {/* Page Header */}
-      <div className="mb-8">
-        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-          Licenses
-        </h1>
-        <p className="text-xl text-gray-600">
-          {isSuperAdmin ? 'Manage license allocation across all clients' : 'View and manage your organization licenses'}
-        </p>
-      </div>
-
+    <DashboardSectionLayout
+      title="Licenses"
+      description={isSuperAdmin ? 'Manage license allocation across all clients' : 'View and manage your organization licenses'}
+    >
+    <div className="max-w-7xl mx-auto space-y-8">
       {/* Summary Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {summaryStats.map((stat, index) => (
           <div
             key={index}
@@ -338,6 +333,7 @@ function Licenses() {
         </>
       )}
     </div>
+    </DashboardSectionLayout>
   );
 }
 

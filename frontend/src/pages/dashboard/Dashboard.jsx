@@ -71,13 +71,13 @@ function Dashboard() {
       });
 
       try {
-        // Default landing for client admins is subscriptions page
-        let targetRoute = '/dashboard/subscriptions';
+        // Default landing for all roles is profile page
+        let targetRoute = '/dashboard/profile';
 
         if (roleToUse === ROLES.SUPER_ADMIN) {
           targetRoute = '/dashboard/profile';
         } else if (roleToUse === ROLES.CLIENT_ADMIN) {
-          targetRoute = '/dashboard/subscriptions';
+          targetRoute = '/dashboard/profile';
         } else if (roleToUse === ROLES.USER_ADMIN) {
           targetRoute = '/dashboard/profile';
         }
@@ -90,7 +90,7 @@ function Dashboard() {
         navigate(targetRoute, { replace: true });
       } catch (error) {
         console.error('Error navigating to role-specific dashboard:', error);
-        navigate('/dashboard/subscriptions', { replace: true });
+        navigate('/dashboard/profile', { replace: true });
       }
     }
   }, [isLoading, isAuthReady, isAuthenticated, currentRole, navigate, tokenRoles, userProfile, userOID, isLoadingRole, accessToken, authProvider, account]);
