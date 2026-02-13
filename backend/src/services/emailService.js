@@ -495,3 +495,76 @@ export async function sendPasswordResetEmail(email, token, name = "User") {
     throw new Error(errorMessage);
   }
 }
+
+/**
+ * Send license request email to admin
+ * 
+ * @param {string} adminEmail - Admin email address
+ * @param {string} adminName - Admin name
+ * @param {Object} requester - Requester details { name, email, id }
+ * @returns {Promise<Object>} Email send result
+ */
+export async function sendLicenseRequestEmail(adminEmail, adminName, requester) {
+  // Validate email service configuration
+  if (!isEmailConfigured()) {
+    throw new Error("Email service not configured. AZURE_COMMUNICATION_CONNECTION_STRING environment variable is required.");
+  }
+
+  // Create client using endpoint and credential explicitly
+  let client;
+  if (EMAIL_ENDPOINT && EMAIL_ACCESS_KEY) {
+    const credential = new AzureKeyCredential(EMAIL_ACCESS_KEY);
+    client = new EmailClient(EMAIL_ENDPOINT, credential);
+  } else {
+    client = new EmailClient(CONNECTION_STRING);
+  }
+
+  const dashboardUrl = `${FRONTEND_URL}`;
+
+  console.log(`📧 [LICENSE-REQUEST] Preparing email for admin: ${adminEmail}`);
+
+  // Render HTML using Nunjucks
+  const html = nunjucks.render('license-request.njk', {
+    adminName,
+    requesterName: requester.name,
+    requesterEmail: requester.email,
+    requesterId: requester.id,
+    dashboardUrl,
+    logoUrl: LOGO_SRC_URL,
+    year: new Date().getFullYear()
+  });
+
+  const subject = `License Request: ${requester.name} needs access to Echopad AI Scribe`;
+
+  // Generate plain text automatically
+  const plainText = convert(html, {
+    wordwrap: 130
+  });
+
+  const emailMessage = {
+    senderAddress: SENDER_EMAIL,
+    content: {
+      subject,
+      plainText,
+      html,
+    },
+    recipients: {
+      to: [{ address: adminEmail }],
+    },
+  };
+
+  try {
+    console.log(`📧 [LICENSE-REQUEST] Sending email to ${adminEmail}...`);
+    const poller = await client.beginSend(emailMessage);
+    const result = await poller.pollUntilDone();
+
+    console.log(`✅ [LICENSE-REQUEST] Email sent successfully. Message ID: ${result.id}`);
+    return {
+      success: true,
+      messageId: result.id,
+    };
+  } catch (error) {
+    console.error("❌ [LICENSE-REQUEST] Failed to send email:", error.message);
+    throw new Error(`Failed to send license request email: ${error.message}`);
+  }
+}
