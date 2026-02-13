@@ -8,7 +8,7 @@ const http = axios.create({
   },
 });
 
-// later: attach auth token here
+// Attach auth token to requests
 http.interceptors.request.use(async (config) => {
   try {
     const token = await authRef.getAccessToken();
@@ -16,6 +16,9 @@ http.interceptors.request.use(async (config) => {
       config.headers.Authorization = `Bearer ${token}`;
     }
   } catch (error) {
+    // If getAccessToken fails, don't send request without token for protected endpoints
+    // Let the request proceed - backend will return 401 if auth is required
+    // This allows public endpoints to work even when auth isn't ready
     console.error("Failed to get access token:", error);
   }
   return config;
