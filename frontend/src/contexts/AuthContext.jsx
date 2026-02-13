@@ -71,6 +71,8 @@ export function AuthProvider({ children }) {
 
   // Key for persisting non-token-based auth (email/password) across refreshes
   const EMAIL_SESSION_KEY = 'echopad_email_auth_session';
+  // Token in localStorage so new tabs (e.g. Electron callback) can reuse it; cleared on logout
+  const EMAIL_TOKEN_LOCAL_KEY = 'echopad_email_token';
 
   // Initialize - check if user is already authenticated
   useEffect(() => {
@@ -155,8 +157,19 @@ export function AuthProvider({ children }) {
           }
         }
         
-        // Check for Email/password authentication token in sessionStorage
-        const storedEmailPasswordToken = sessionStorage.getItem('email_password_token');
+        // Check for Email/password authentication token: sessionStorage (current tab) then localStorage (new tab e.g. Electron)
+        let storedEmailPasswordToken = sessionStorage.getItem('email_password_token');
+        if (!storedEmailPasswordToken) {
+          const fromLocal = localStorage.getItem(EMAIL_TOKEN_LOCAL_KEY);
+          if (fromLocal) {
+            storedEmailPasswordToken = fromLocal;
+            try {
+              sessionStorage.setItem('email_password_token', fromLocal);
+            } catch {
+              // ignore
+            }
+          }
+        }
         if (storedEmailPasswordToken) {
           try {
             setEmailPasswordToken(storedEmailPasswordToken);
@@ -176,6 +189,11 @@ export function AuthProvider({ children }) {
           } catch (error) {
             console.warn('Failed to restore Email/password token:', error);
             sessionStorage.removeItem('email_password_token');
+            try {
+              localStorage.removeItem(EMAIL_TOKEN_LOCAL_KEY);
+            } catch {
+              // ignore
+            }
           }
         }
       } catch (error) {
@@ -385,7 +403,9 @@ export function AuthProvider({ children }) {
     scope: googleScopes.join(' '),
   });
 
-  const logout = useCallback(async (logoutType = 'local') => {
+  const logout = useCallback(async (logoutType = 'local', options = {}) => {
+    const redirectTo = options?.redirectTo ?? '/';
+
     try {
       setIsLoading(true);
       
@@ -404,7 +424,7 @@ export function AuthProvider({ children }) {
         // Option 1: Local logout only (fast, no Microsoft page) - default
         if (logoutType === 'local') {
           // Just redirect - user stays logged into Microsoft but logged out of our app
-          window.location.href = '/';
+          window.location.href = redirectTo;
           return;
         }
         
@@ -413,7 +433,7 @@ export function AuthProvider({ children }) {
           const currentAccount = account || accounts[0];
           await instance.logoutRedirect({
             account: currentAccount,
-            postLogoutRedirectUri: window.location.origin + '/',
+            postLogoutRedirectUri: window.location.origin + (redirectTo.startsWith('/') ? redirectTo : '/'),
           });
           // For redirect, MSAL handles navigation, so return early
           return;
@@ -437,7 +457,12 @@ export function AuthProvider({ children }) {
       // Logout from Email/Password if authenticated
       if (authProvider === 'email') {
         setEmailPasswordToken(null);
-        sessionStorage.removeItem('email_password_token');
+        try {
+          sessionStorage.removeItem('email_password_token');
+          localStorage.removeItem(EMAIL_TOKEN_LOCAL_KEY);
+        } catch {
+          // ignore
+        }
       }
       
       // Logout from Email/Password - just clear local state and persisted session
@@ -447,6 +472,7 @@ export function AuthProvider({ children }) {
         setEmailPasswordToken(null);
         try {
           localStorage.removeItem(EMAIL_SESSION_KEY);
+          localStorage.removeItem(EMAIL_TOKEN_LOCAL_KEY);
           sessionStorage.removeItem('email_password_token');
         } catch {
           // ignore storage errors
@@ -456,8 +482,8 @@ export function AuthProvider({ children }) {
       // Reset provider
       setAuthProvider(null);
       
-      // Redirect to landing page after successful logout
-      window.location.href = '/';
+      // Redirect to landing page (or custom path) after successful logout
+      window.location.href = redirectTo;
     } catch (error) {
       console.error('Logout error:', error);
       // Even if logout fails, clear local state and redirect
@@ -465,7 +491,7 @@ export function AuthProvider({ children }) {
       setTokenRoles([]);
       setUserOID(null);
       setAuthProvider(null);
-      window.location.href = '/';
+      window.location.href = redirectTo;
     } finally {
       setIsLoading(false);
     }
@@ -1021,10 +1047,11 @@ export function AuthProvider({ children }) {
         const sessionToken = data.data.sessionToken;
         if (sessionToken) {
           setEmailPasswordToken(sessionToken);
-          // Store in sessionStorage for persistence (cleared on tab close)
+          // Store in sessionStorage (current tab) and localStorage (so new tabs e.g. Electron can reuse)
           try {
             sessionStorage.setItem('email_password_token', sessionToken);
-            console.log('💾 [AUTH] Stored email/password session token in sessionStorage');
+            localStorage.setItem(EMAIL_TOKEN_LOCAL_KEY, sessionToken);
+            console.log('💾 [AUTH] Stored email/password session token');
           } catch (storageError) {
             console.warn('Failed to store email/password token:', storageError);
           }
@@ -1087,8 +1114,16 @@ export function AuthProvider({ children }) {
     setUserNotRegisteredRedirect(false);
   }, []);
 
+  // True only when we can actually obtain a token for Electron redirect (avoids redirect with error when session restored from localStorage but token was in sessionStorage and is missing, e.g. new tab from Electron)
+  const hasTokenForElectronRedirect =
+    (authProvider === 'microsoft' && (account || accounts?.length > 0)) ||
+    (authProvider === 'google' && !!googleToken) ||
+    (authProvider === 'email' && !!emailPasswordToken) ||
+    (authProvider === 'magic' && !!magicToken);
+
   const value = {
     isAuthenticated,
+    hasTokenForElectronRedirect,
     isLoading: isLoading || !isMsalIdle,
     isAuthReady: isMsalIdle,
     account: account || accounts[0] || null,
