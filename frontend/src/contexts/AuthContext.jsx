@@ -71,6 +71,8 @@ export function AuthProvider({ children }) {
 
   // Key for persisting non-token-based auth (email/password) across refreshes
   const EMAIL_SESSION_KEY = 'echopad_email_auth_session';
+  // Token in localStorage so new tabs (e.g. Electron callback) can reuse it; cleared on logout
+  const EMAIL_TOKEN_LOCAL_KEY = 'echopad_email_token';
 
   // Initialize - check if user is already authenticated
   useEffect(() => {
@@ -155,8 +157,19 @@ export function AuthProvider({ children }) {
           }
         }
         
-        // Check for Email/password authentication token in sessionStorage
-        const storedEmailPasswordToken = sessionStorage.getItem('email_password_token');
+        // Check for Email/password authentication token: sessionStorage (current tab) then localStorage (new tab e.g. Electron)
+        let storedEmailPasswordToken = sessionStorage.getItem('email_password_token');
+        if (!storedEmailPasswordToken) {
+          const fromLocal = localStorage.getItem(EMAIL_TOKEN_LOCAL_KEY);
+          if (fromLocal) {
+            storedEmailPasswordToken = fromLocal;
+            try {
+              sessionStorage.setItem('email_password_token', fromLocal);
+            } catch {
+              // ignore
+            }
+          }
+        }
         if (storedEmailPasswordToken) {
           try {
             setEmailPasswordToken(storedEmailPasswordToken);
@@ -176,6 +189,11 @@ export function AuthProvider({ children }) {
           } catch (error) {
             console.warn('Failed to restore Email/password token:', error);
             sessionStorage.removeItem('email_password_token');
+            try {
+              localStorage.removeItem(EMAIL_TOKEN_LOCAL_KEY);
+            } catch {
+              // ignore
+            }
           }
         }
       } catch (error) {
@@ -439,7 +457,12 @@ export function AuthProvider({ children }) {
       // Logout from Email/Password if authenticated
       if (authProvider === 'email') {
         setEmailPasswordToken(null);
-        sessionStorage.removeItem('email_password_token');
+        try {
+          sessionStorage.removeItem('email_password_token');
+          localStorage.removeItem(EMAIL_TOKEN_LOCAL_KEY);
+        } catch {
+          // ignore
+        }
       }
       
       // Logout from Email/Password - just clear local state and persisted session
@@ -449,6 +472,7 @@ export function AuthProvider({ children }) {
         setEmailPasswordToken(null);
         try {
           localStorage.removeItem(EMAIL_SESSION_KEY);
+          localStorage.removeItem(EMAIL_TOKEN_LOCAL_KEY);
           sessionStorage.removeItem('email_password_token');
         } catch {
           // ignore storage errors
@@ -1023,10 +1047,11 @@ export function AuthProvider({ children }) {
         const sessionToken = data.data.sessionToken;
         if (sessionToken) {
           setEmailPasswordToken(sessionToken);
-          // Store in sessionStorage for persistence (cleared on tab close)
+          // Store in sessionStorage (current tab) and localStorage (so new tabs e.g. Electron can reuse)
           try {
             sessionStorage.setItem('email_password_token', sessionToken);
-            console.log('💾 [AUTH] Stored email/password session token in sessionStorage');
+            localStorage.setItem(EMAIL_TOKEN_LOCAL_KEY, sessionToken);
+            console.log('💾 [AUTH] Stored email/password session token');
           } catch (storageError) {
             console.warn('Failed to store email/password token:', storageError);
           }

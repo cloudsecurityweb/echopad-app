@@ -6,6 +6,7 @@ import ElectronSignInModal from '../../components/auth/ElectronSignInModal';
 import Navigation from '../../components/layout/Navigation';
 import Footer from '../../components/layout/Footer';
 import usePageTitle from '../../hooks/usePageTitle';
+import { DESKTOP_REDIRECT_KEY } from '../../utils/auth';
 
 // Security validation function
 function isValidRedirectUri(uri) {
@@ -36,6 +37,8 @@ function SignIn() {
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [showElectronPrompt, setShowElectronPrompt] = useState(false);
   const [redirectUri, setRedirectUri] = useState(null);
+  // When redirect_uri is set and user is not signed in: show "Sign in to EchoPad" / "Continue to sign in" first; after Continue, show form
+  const [desktopFlowShowForm, setDesktopFlowShowForm] = useState(false);
 
   // Handle Electron redirect
   const handleElectronRedirect = useCallback(async () => {
@@ -45,21 +48,25 @@ function SignIn() {
       // Get access token
       const token = await getAccessToken();
 
-      // Get user info
+      // Get user info (name and display name for desktop app)
       let userName = 'User';
+      let displayName = null;
       let userEmail = '';
 
       if (account) {
         // Microsoft account
         userName = account.name || account.username || 'User';
+        displayName = account.idTokenClaims?.name ?? account.name ?? account.username ?? null;
         userEmail = account.username || '';
       } else if (googleUser) {
         // Google user
         userName = googleUser.name || googleUser.given_name || 'User';
+        displayName = googleUser.name ?? googleUser.given_name ?? null;
         userEmail = googleUser.email || '';
       } else if (authProvider === 'email' || authProvider === 'magic') {
         // Email/password or magic link – use backend profile
         userName = userProfile?.user?.name || 'User';
+        displayName = userProfile?.user?.name ?? null;
         userEmail = userProfile?.user?.email || '';
       } else {
         // Fallback: try sessionStorage for Google user info
@@ -68,6 +75,7 @@ function SignIn() {
           try {
             const storedGoogleUser = JSON.parse(googleUserStr);
             userName = storedGoogleUser.name || storedGoogleUser.given_name || 'User';
+            displayName = storedGoogleUser.name ?? storedGoogleUser.given_name ?? null;
             userEmail = storedGoogleUser.email || '';
           } catch (error) {
             console.warn('Failed to parse stored Google user:', error);
@@ -75,26 +83,30 @@ function SignIn() {
         }
       }
 
-      // Build redirect URL with auth data
-      const callbackUrl = new URL(redirectUri);
-      callbackUrl.searchParams.set('token', token);
-      callbackUrl.searchParams.set('name', userName);
-      callbackUrl.searchParams.set('email', userEmail);
+      console.log('[Electron Auth] Sending to success page, then redirect to app');
 
-      console.log('[Electron Auth] Redirecting to:', callbackUrl.toString());
-
-      // Redirect to Electron app
-      window.location.href = callbackUrl.toString();
+      // Send user to success page; it will redirect to Electron with token and display_name
+      sessionStorage.setItem(
+        DESKTOP_REDIRECT_KEY,
+        JSON.stringify({
+          redirectUri,
+          token,
+          name: userName,
+          email: userEmail,
+          display_name: displayName || userName,
+        })
+      );
+      navigate('/login-complete', { replace: true });
     } catch (error) {
       console.error('[Electron Auth] Failed to redirect:', error);
 
-      // Redirect with error
+      // Redirect with error so desktop app can read it
       const callbackUrl = new URL(redirectUri);
       callbackUrl.searchParams.set('error', 'token_retrieval_failed');
       callbackUrl.searchParams.set('error_description', error.message || 'Failed to retrieve access token');
       window.location.href = callbackUrl.toString();
     }
-  }, [redirectUri, getAccessToken, account, googleUser, userProfile, authProvider]);
+  }, [redirectUri, getAccessToken, account, googleUser, userProfile, authProvider, navigate]);
 
   // Check for redirect_uri parameter (Electron app initiated)
   useEffect(() => {
@@ -109,20 +121,24 @@ function SignIn() {
 
       setRedirectUri(uri);
 
-      // Only show confirmation prompt when we can actually get a token (avoids "No email/password token available" when session is from localStorage but token was in sessionStorage and is missing, e.g. new tab from Electron)
+      // Show "Log in to EchoPad desktop?" modal only when we have a token (avoids "No email/password token available").
+      // If authenticated but no token (e.g. session restored, token not in this tab), show form so they can sign in again.
       if (isAuthenticated && hasTokenForElectronRedirect && !isLoading) {
         setShowElectronPrompt(true);
+      } else if (isAuthenticated && !hasTokenForElectronRedirect && !isLoading) {
+        // Have session but no token – show form with email pre-filled so they only enter password
+        setDesktopFlowShowForm(true);
       }
-      // If not authenticated (or no token available), show normal sign-in; after sign-in we'll redirect with token
+      // If not authenticated, show intro or form; after sign-in we'll redirect with token
     }
   }, [searchParams, isAuthenticated, hasTokenForElectronRedirect, isLoading]);
 
-  // Handle successful authentication - redirect to Electron only when we have a token (avoid redirect with error when token is missing)
+  // Pre-fill email when we have session but no token (desktop flow) so user only enters password
   useEffect(() => {
-    if (redirectUri && isAuthenticated && hasTokenForElectronRedirect && !showElectronPrompt && !isLoading) {
-      handleElectronRedirect();
+    if (redirectUri && isAuthenticated && !hasTokenForElectronRedirect && userProfile?.user?.email) {
+      setFormData((prev) => (prev.email ? prev : { ...prev, email: userProfile.user.email }));
     }
-  }, [redirectUri, isAuthenticated, hasTokenForElectronRedirect, showElectronPrompt, isLoading, handleElectronRedirect]);
+  }, [redirectUri, isAuthenticated, hasTokenForElectronRedirect, userProfile?.user?.email]);
 
   // Redirect if already authenticated (only if no redirect_uri)
   // Let Dashboard component handle role-based routing to avoid conflicts
@@ -259,6 +275,18 @@ function SignIn() {
   const handleUseDifferentAccount = () => {
     if (!redirectUri) return;
     logout('local', { redirectTo: `/sign-in?redirect_uri=${encodeURIComponent(redirectUri)}` });
+  };
+
+  // Cancel from the "Sign in to EchoPad" intro (not yet signed in) — clear redirect_uri and show normal sign-in
+  const handleDesktopIntroCancel = () => {
+    setDesktopFlowShowForm(false);
+    setRedirectUri(null);
+    const newSearchParams = new URLSearchParams(searchParams);
+    newSearchParams.delete('redirect_uri');
+    const newUrl = newSearchParams.toString()
+      ? `${window.location.pathname}?${newSearchParams.toString()}`
+      : window.location.pathname;
+    window.history.replaceState({}, '', newUrl);
   };
 
   // Derived user for Electron modal (all auth providers: Microsoft, Google, email/password, magic)
@@ -440,8 +468,42 @@ function SignIn() {
               </div>
             </div>
 
-            {/* Right Side - Login Form */}
+            {/* Right Side - Login Form or Desktop intro */}
             <div className="bg-white rounded-2xl shadow-2xl border-2 border-blue-100 p-4 md:p-5 lg:p-6">
+              {redirectUri && !isAuthenticated && !isLoading && !desktopFlowShowForm ? (
+                <>
+                  <div className="text-center mb-4">
+                    <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-1">Sign in to EchoPad</h2>
+                    <p className="text-gray-600 text-sm md:text-base mt-2">
+                      Click continue to sign in and complete your login to EchoPad desktop.
+                    </p>
+                  </div>
+                  <div className="flex flex-col gap-3 mt-6">
+                    <button
+                      type="button"
+                      onClick={handleDesktopIntroCancel}
+                      className="flex-1 px-4 py-2.5 border-2 border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 transition-colors font-medium"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setDesktopFlowShowForm(true)}
+                      className="flex-1 px-4 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-lg hover:from-cyan-400 hover:to-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 transition-colors font-medium"
+                    >
+                      Continue to sign in
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <>
+              {redirectUri && isAuthenticated && !hasTokenForElectronRedirect && (
+                <div className="mb-3 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                  <p className="text-sm text-amber-800">
+                    Sign in again below to open in EchoPad desktop. Your email is pre-filled.
+                  </p>
+                </div>
+              )}
               <div className="text-center mb-3">
                 <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-1">Sign In</h2>
                 <p className="text-gray-600 text-sm md:text-base">Access your dashboard</p>
@@ -638,6 +700,8 @@ function SignIn() {
                   <Link to="/privacy-policy" className="text-cyan-600 hover:text-cyan-700">Privacy Policy</Link>
                 </p>
               </div>
+                </>
+              )}
             </div>
           </div>
         </div>
