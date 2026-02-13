@@ -18,10 +18,8 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Serve static files (email assets)
-app.use('/public', express.static(path.join(__dirname, 'public')));
-
-// CORS Configuration - only these origins can call the API from a browser.
+// CORS Configuration - MUST be applied early so OPTIONS preflight is handled before other middleware
+// Only these origins can call the API from a browser.
 // Production: https://echopad.ai and https://www.echopad.ai are allowed.
 // For Azure Static Web App staging: set FRONTEND_URL to your SWA URL.
 // Other domains are blocked in production.
@@ -110,6 +108,13 @@ const corsOptions = {
   optionsSuccessStatus: 204, // Some legacy browsers (IE11, various SmartTVs) choke on 204
 };
 
+// Apply CORS FIRST so OPTIONS preflight requests get proper headers before Helmet/other middleware
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); // Explicitly handle all OPTIONS requests
+
+// Serve static files (email assets)
+app.use('/public', express.static(path.join(__dirname, 'public')));
+
 import helmet from "helmet";
 
 // ... imports
@@ -185,7 +190,6 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(cors(corsOptions));
 app.use(express.json());
 
 // Routes
