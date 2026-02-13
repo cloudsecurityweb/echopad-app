@@ -4,6 +4,7 @@ import {
   revokeLicenseFromUser,
   getUserLicensesByUser,
   getUserLicensesByOrganization,
+  requestLicense
 } from "../services/userLicenseService.js";
 import { verifyAnyAuth } from "../middleware/auth.js";
 import { requireRole } from "../middleware/entraAuth.js";
@@ -102,6 +103,34 @@ router.post(
       return res.status(200).json({ success: true, data: record });
     } catch (error) {
       return res.status(400).json({ success: false, error: error.message });
+    }
+  }
+);
+
+/**
+ * POST /api/user-licenses/request
+ * Request a license (available to any authenticated user)
+ */
+router.post(
+  "/request",
+  verifyAnyAuth,
+  async (req, res) => {
+    try {
+      const tenantId = req.currentUser.tenantId;
+      const userId = req.currentUser.id;
+      const userEmail = req.currentUser.email;
+      const userName = req.currentUser.displayName || req.currentUser.name;
+
+      const result = await requestLicense(tenantId, userId, userEmail, userName); // Pass user name
+
+      if (!result.success) {
+        return res.status(400).json({ success: false, error: result.message });
+      }
+
+      return res.status(200).json({ success: true, message: result.message });
+    } catch (error) {
+      console.error("License request failed:", error);
+      return res.status(500).json({ success: false, error: "Failed to process license request." });
     }
   }
 );

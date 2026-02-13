@@ -8,6 +8,9 @@ import { randomUUID } from "crypto";
 import { getContainer } from "../config/cosmosClient.js";
 import { createUserLicense, validateUserLicense } from "../models/userLicense.js";
 import { LICENSE_STATUS, LICENSE_TYPES, hasAvailableSeats, isLicenseExpired } from "../models/license.js";
+import { getUsersByTenant } from "./userService.js";
+import { USER_ROLES } from "../models/user.js";
+import { sendLicenseRequestEmail } from "./emailService.js";
 
 const USER_LICENSE_CONTAINER = "userLicenses";
 const LICENSE_CONTAINER = "licenses";
@@ -271,4 +274,43 @@ export async function hasActiveProductAccess(tenantId, userId, productSku) {
   }
 
   return false;
+}
+
+export async function requestLicense(tenantId, userId, userEmail, userName) {
+  // 1. Get organization admins for this tenant
+  // We filter by CLIENT_ADMIN role
+  const admins = await getUsersByTenant(tenantId, USER_ROLES.CLIENT_ADMIN);
+
+  if (!admins || admins.length === 0) {
+    console.warn(`[LICENSE-REQUEST] No Client Admins found for tenant ${tenantId}`);
+    return { success: false, message: "No administrators found to receive the request." };
+  }
+
+  // 2. Filter admins by organization if the user belongs to a specific org
+  // (Assuming admins can see all, but let's send to all client admins for now as they manage licenses)
+
+  console.log(`[LICENSE-REQUEST] Found ${admins.length} admins for tenant ${tenantId}`);
+
+  // 3. Send email to each admin
+  const emailPromises = admins.map(admin => {
+    if (!admin.email) return Promise.resolve();
+
+    return sendLicenseRequestEmail(
+      admin.email,
+      admin.displayName || "Admin",
+      {
+        name: userName || "User",
+        email: userEmail,
+        id: userId
+      }
+    ).catch(err => {
+      console.error(`[LICENSE-REQUEST] Failed to send email to ${admin.email}:`, err.message);
+      // Return null to allow Promise.all to continue
+      return null;
+    });
+  });
+
+  await Promise.all(emailPromises);
+
+  return { success: true, message: "License request sent successfully to administrators." };
 }
