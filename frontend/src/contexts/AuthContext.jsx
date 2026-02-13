@@ -605,7 +605,7 @@ export function AuthProvider({ children }) {
         throw new Error('No access token available. Please sign in again.');
       }
       
-      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://echopad-app-service-bwd0bqd7g7ehb5c7.westus2-01.azurewebsites.net';
+      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
       const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
         method: 'GET',
         headers: {
@@ -777,7 +777,7 @@ export function AuthProvider({ children }) {
         throw new Error('No ID token available. Please sign in again.');
       }
 
-      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://echopad-app-service-bwd0bqd7g7ehb5c7.westus2-01.azurewebsites.net';
+      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
       const endpoint = isSignUp ? `${API_BASE_URL}/api/auth/sign-up` : `${API_BASE_URL}/api/auth/sign-in`;
 
       const body = {
@@ -906,7 +906,7 @@ export function AuthProvider({ children }) {
     }
 
     try {
-      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://echopad-app-service-bwd0bqd7g7ehb5c7.westus2-01.azurewebsites.net';
+      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
       const endpoint = isSignUp ? `${API_BASE_URL}/api/auth/sign-up` : `${API_BASE_URL}/api/auth/sign-in`;
 
       const body = {
@@ -986,7 +986,7 @@ export function AuthProvider({ children }) {
    */
   const signUpEmailPassword = useCallback(async (signUpData) => {
     try {
-      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://echopad-app-service-bwd0bqd7g7ehb5c7.westus2-01.azurewebsites.net';
+      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
       const response = await fetch(`${API_BASE_URL}/api/auth/sign-up-email`, {
         method: 'POST',
         headers: {
@@ -1016,7 +1016,7 @@ export function AuthProvider({ children }) {
    */
   const signInEmailPassword = useCallback(async (credentials) => {
     try {
-      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://echopad-app-service-bwd0bqd7g7ehb5c7.westus2-01.azurewebsites.net';
+      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
       const response = await fetch(`${API_BASE_URL}/api/auth/sign-in-email`, {
         method: 'POST',
         headers: {

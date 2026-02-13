@@ -27,7 +27,7 @@ export async function sendInvitation(email, role, productId, licenseId, getAcces
     throw new Error('Role is required');
   }
 
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://echopad-app-service-bwd0bqd7g7ehb5c7.westus2-01.azurewebsites.net';
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const invitationEndpoint = `${API_BASE_URL}/api/invites/user`;
 
   try {
@@ -90,7 +90,7 @@ export async function resendInvitation(invitationId, getAccessTokenFn) {
     throw new Error('Invitation ID is required');
   }
 
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://echopad-app-service-bwd0bqd7g7ehb5c7.westus2-01.azurewebsites.net';
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const resendEndpoint = `${API_BASE_URL}/api/invites/${invitationId}/resend`;
 
   try {
@@ -135,7 +135,7 @@ export async function resendInvitation(invitationId, getAccessTokenFn) {
  * @returns {Promise<Array>} Array of pending invitations
  */
 export async function getPendingInvitations(getAccessTokenFn) {
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://echopad-app-service-bwd0bqd7g7ehb5c7.westus2-01.azurewebsites.net';
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const pendingEndpoint = `${API_BASE_URL}/api/invites/pending`;
 
   try {
