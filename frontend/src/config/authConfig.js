@@ -95,9 +95,9 @@ export const msalConfig = {
  */
 export const loginRequest = {
   authority: "https://login.microsoftonline.com/common", // Allow both work/school and personal Microsoft accounts
-  // Request standard Microsoft Graph scopes - roles are included automatically from app registration
-  // No custom API scope needed - app roles come from the app registration itself
-  scopes: ["User.Read", "openid", "profile", "email"],
+  // Request token for backend API - this ensures audience (aud) matches backend AZURE_CLIENT_ID
+  // Using api://{clientId}/.default requests all permissions the app has been granted
+  scopes: [`api://d4ea5537-8b2a-4b88-9dbd-80bf02596c1a/.default`],
 };
 
 /**
@@ -109,7 +109,7 @@ export const loginRequest = {
  */
 export const signUpRequest = {
   authority: "https://login.microsoftonline.com/common", // Allow both work/school and personal Microsoft accounts
-  scopes: ["User.Read", "openid", "profile", "email"],
+  scopes: [`api://d4ea5537-8b2a-4b88-9dbd-80bf02596c1a/.default`],
   prompt: "select_account" // Force account selection
 };
 
@@ -122,6 +122,6 @@ export const signUpRequest = {
  */
 export const loginSelectAccountRequest = {
   authority: "https://login.microsoftonline.com/common", // Allow both work/school and personal Microsoft accounts
-  scopes: ["User.Read", "openid", "profile", "email"],
+  scopes: [`api://d4ea5537-8b2a-4b88-9dbd-80bf02596c1a/.default`],
   prompt: "select_account" // Force account selection
 };
