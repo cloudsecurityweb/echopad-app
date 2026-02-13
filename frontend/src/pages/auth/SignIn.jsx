@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useRole, ROLES } from '../../contexts/RoleContext';
@@ -20,7 +20,7 @@ function isValidRedirectUri(uri) {
 
 function SignIn() {
   const PageTitle = usePageTitle('Sign In');
-  const { login, loginWithGoogle, isAuthenticated, isLoading, account, getAccessToken, googleUser, syncUserProfile, syncGoogleUserProfile, clearGoogleAuth, signInEmailPassword } = useAuth();
+  const { login, loginWithGoogle, isAuthenticated, isLoading, hasTokenForElectronRedirect, account, getAccessToken, googleUser, userProfile, authProvider, logout, syncUserProfile, syncGoogleUserProfile, clearGoogleAuth, signInEmailPassword } = useAuth();
   const { currentRole, isLoadingRole } = useRole();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -57,8 +57,12 @@ function SignIn() {
         // Google user
         userName = googleUser.name || googleUser.given_name || 'User';
         userEmail = googleUser.email || '';
+      } else if (authProvider === 'email' || authProvider === 'magic') {
+        // Email/password or magic link – use backend profile
+        userName = userProfile?.user?.name || 'User';
+        userEmail = userProfile?.user?.email || '';
       } else {
-        // Try to get from sessionStorage for Google user info
+        // Fallback: try sessionStorage for Google user info
         const googleUserStr = sessionStorage.getItem('google_user');
         if (googleUserStr) {
           try {
@@ -90,7 +94,7 @@ function SignIn() {
       callbackUrl.searchParams.set('error_description', error.message || 'Failed to retrieve access token');
       window.location.href = callbackUrl.toString();
     }
-  }, [redirectUri, getAccessToken, account, googleUser]);
+  }, [redirectUri, getAccessToken, account, googleUser, userProfile, authProvider]);
 
   // Check for redirect_uri parameter (Electron app initiated)
   useEffect(() => {
@@ -105,22 +109,20 @@ function SignIn() {
 
       setRedirectUri(uri);
 
-      // If user is already authenticated, show confirmation prompt
-      if (isAuthenticated && !isLoading) {
+      // Only show confirmation prompt when we can actually get a token (avoids "No email/password token available" when session is from localStorage but token was in sessionStorage and is missing, e.g. new tab from Electron)
+      if (isAuthenticated && hasTokenForElectronRedirect && !isLoading) {
         setShowElectronPrompt(true);
       }
-      // If not authenticated, proceed with normal OAuth flow
-      // After OAuth success, we'll redirect (handled in auth success callback)
+      // If not authenticated (or no token available), show normal sign-in; after sign-in we'll redirect with token
     }
-  }, [searchParams, isAuthenticated, isLoading]);
+  }, [searchParams, isAuthenticated, hasTokenForElectronRedirect, isLoading]);
 
-  // Handle successful authentication - check if we need to redirect to Electron
+  // Handle successful authentication - redirect to Electron only when we have a token (avoid redirect with error when token is missing)
   useEffect(() => {
-    if (redirectUri && isAuthenticated && !showElectronPrompt && !isLoading) {
-      // User just authenticated, redirect to Electron
+    if (redirectUri && isAuthenticated && hasTokenForElectronRedirect && !showElectronPrompt && !isLoading) {
       handleElectronRedirect();
     }
-  }, [redirectUri, isAuthenticated, showElectronPrompt, isLoading, handleElectronRedirect]);
+  }, [redirectUri, isAuthenticated, hasTokenForElectronRedirect, showElectronPrompt, isLoading, handleElectronRedirect]);
 
   // Redirect if already authenticated (only if no redirect_uri)
   // Let Dashboard component handle role-based routing to avoid conflicts
@@ -252,6 +254,34 @@ function SignIn() {
       : window.location.pathname;
     window.history.replaceState({}, '', newUrl);
   };
+
+  // Use different account: log out and stay on sign-in with redirect_uri preserved
+  const handleUseDifferentAccount = () => {
+    if (!redirectUri) return;
+    logout('local', { redirectTo: `/sign-in?redirect_uri=${encodeURIComponent(redirectUri)}` });
+  };
+
+  // Derived user for Electron modal (all auth providers: Microsoft, Google, email/password, magic)
+  const electronPromptUser = useMemo(() => {
+    if (account) return account;
+    if (googleUser) return googleUser;
+    const googleUserStr = sessionStorage.getItem('google_user');
+    if (googleUserStr) {
+      try {
+        return JSON.parse(googleUserStr);
+      } catch {
+        return null;
+      }
+    }
+    if (userProfile?.user) {
+      return {
+        name: userProfile.user.name,
+        email: userProfile.user.email,
+        picture: userProfile.user.picture,
+      };
+    }
+    return null;
+  }, [account, googleUser, userProfile]);
 
   const handleSocialLogin = async (provider) => {
     if (provider === 'Microsoft') {
@@ -621,12 +651,10 @@ function SignIn() {
       {/* Electron Sign-In Confirmation Modal */}
       {showElectronPrompt && (
         <ElectronSignInModal
-          user={account || (() => {
-            const googleUserStr = sessionStorage.getItem('google_user');
-            return googleUserStr ? JSON.parse(googleUserStr) : googleUser;
-          })()}
+          user={electronPromptUser}
           onConfirm={handleElectronConfirm}
           onCancel={handleElectronCancel}
+          onUseDifferentAccount={handleUseDifferentAccount}
         />
       )}
     </>

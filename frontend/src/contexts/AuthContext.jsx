@@ -385,7 +385,9 @@ export function AuthProvider({ children }) {
     scope: googleScopes.join(' '),
   });
 
-  const logout = useCallback(async (logoutType = 'local') => {
+  const logout = useCallback(async (logoutType = 'local', options = {}) => {
+    const redirectTo = options?.redirectTo ?? '/';
+
     try {
       setIsLoading(true);
       
@@ -404,7 +406,7 @@ export function AuthProvider({ children }) {
         // Option 1: Local logout only (fast, no Microsoft page) - default
         if (logoutType === 'local') {
           // Just redirect - user stays logged into Microsoft but logged out of our app
-          window.location.href = '/';
+          window.location.href = redirectTo;
           return;
         }
         
@@ -413,7 +415,7 @@ export function AuthProvider({ children }) {
           const currentAccount = account || accounts[0];
           await instance.logoutRedirect({
             account: currentAccount,
-            postLogoutRedirectUri: window.location.origin + '/',
+            postLogoutRedirectUri: window.location.origin + (redirectTo.startsWith('/') ? redirectTo : '/'),
           });
           // For redirect, MSAL handles navigation, so return early
           return;
@@ -456,8 +458,8 @@ export function AuthProvider({ children }) {
       // Reset provider
       setAuthProvider(null);
       
-      // Redirect to landing page after successful logout
-      window.location.href = '/';
+      // Redirect to landing page (or custom path) after successful logout
+      window.location.href = redirectTo;
     } catch (error) {
       console.error('Logout error:', error);
       // Even if logout fails, clear local state and redirect
@@ -465,7 +467,7 @@ export function AuthProvider({ children }) {
       setTokenRoles([]);
       setUserOID(null);
       setAuthProvider(null);
-      window.location.href = '/';
+      window.location.href = redirectTo;
     } finally {
       setIsLoading(false);
     }
@@ -1087,8 +1089,16 @@ export function AuthProvider({ children }) {
     setUserNotRegisteredRedirect(false);
   }, []);
 
+  // True only when we can actually obtain a token for Electron redirect (avoids redirect with error when session restored from localStorage but token was in sessionStorage and is missing, e.g. new tab from Electron)
+  const hasTokenForElectronRedirect =
+    (authProvider === 'microsoft' && (account || accounts?.length > 0)) ||
+    (authProvider === 'google' && !!googleToken) ||
+    (authProvider === 'email' && !!emailPasswordToken) ||
+    (authProvider === 'magic' && !!magicToken);
+
   const value = {
     isAuthenticated,
+    hasTokenForElectronRedirect,
     isLoading: isLoading || !isMsalIdle,
     isAuthReady: isMsalIdle,
     account: account || accounts[0] || null,
