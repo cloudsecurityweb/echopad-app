@@ -102,18 +102,11 @@ export async function verifyGoogleTokenStandalone(token) {
   const tokenInfoResponse = await fetch(tokeninfoUrl);
 
   if (!tokenInfoResponse.ok) {
-    const errorText = await tokenInfoResponse.text().catch(() => 'Unknown error');
-    console.error('❌ [GOOGLE-AUTH] Tokeninfo API failed:', {
-      status: tokenInfoResponse.status,
-      statusText: tokenInfoResponse.statusText,
-      error: errorText,
-      googleClientIdConfigured: !!GOOGLE_CLIENT_ID,
-    });
     if (process.env.NODE_ENV === 'development') {
       const claims = tryDevBypassGoogleTokenReturnsClaims(token);
       if (claims) return claims;
     }
-    throw new Error(`Failed to verify Google token: ${tokenInfoResponse.status} ${tokenInfoResponse.statusText}. ${errorText}`);
+    throw new Error('Failed to verify Google token');
   }
 
   const tokenInfo = await tokenInfoResponse.json();
@@ -122,12 +115,7 @@ export async function verifyGoogleTokenStandalone(token) {
     ? tokenInfo.aud.includes(GOOGLE_CLIENT_ID)
     : tokenInfo.aud === GOOGLE_CLIENT_ID;
   if (!audMatches) {
-    console.error('❌ [GOOGLE-AUTH] Audience mismatch:', {
-      tokenAudience: Array.isArray(tokenInfo.aud) ? tokenInfo.aud : [tokenInfo.aud],
-      configuredClientId: GOOGLE_CLIENT_ID,
-      tokenEmail: tokenInfo.email,
-    });
-    throw new Error(`Token audience (${Array.isArray(tokenInfo.aud) ? tokenInfo.aud.join(', ') : tokenInfo.aud}) does not match configured GOOGLE_CLIENT_ID. Ensure backend GOOGLE_CLIENT_ID matches the frontend's Google Client ID.`);
+    throw new Error('Token audience does not match configured client ID');
   }
 
   if (tokenInfo.exp && tokenInfo.exp < Date.now() / 1000) {

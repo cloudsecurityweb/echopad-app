@@ -36,7 +36,7 @@ export const googleAuthConfig = {
    */
   clientId: (typeof window !== 'undefined' && window.ENV?.GOOGLE_CLIENT_ID) || 
             import.meta.env.VITE_GOOGLE_CLIENT_ID || 
-            '488125049568-9uv1vj5qr4spkohvfo8792nonrfc1puu.apps.googleusercontent.com',
+            '606135389544-41ed3f4jm0njuh64k7a97nmrjiur4hsp.apps.googleusercontent.com',
 };
 
 /**

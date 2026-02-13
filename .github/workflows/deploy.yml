@@ -235,13 +235,6 @@ jobs:
           package: backend.zip
           startup-command: "npm start"
 
-      - name: Set Backend App Settings (Google OAuth)
-        run: |
-          az webapp config appsettings set \
-            --name ${{ steps.env.outputs.ENV_PREFIX == 'PROD' && secrets.PROD_AZURE_WEBAPP_NAME || secrets.DEV_AZURE_WEBAPP_NAME }} \
-            --resource-group ${{ steps.env.outputs.ENV_PREFIX == 'PROD' && secrets.PROD_AZURE_RESOURCE_GROUP || secrets.DEV_AZURE_RESOURCE_GROUP }} \
-            --settings GOOGLE_CLIENT_ID="${{ steps.env.outputs.ENV_PREFIX == 'PROD' && secrets.PROD_VITE_GOOGLE_CLIENT_ID || secrets.DEV_VITE_GOOGLE_CLIENT_ID }}"
-
       - name: Restart Backend
         run: |
           az webapp restart \

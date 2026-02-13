@@ -102,15 +102,13 @@ GitHub Actions workflows:
 - `AZURE_WEBAPP_NAME` - App Service name
 - `AZURE_RESOURCE_GROUP` - Resource group name
 
-**For Frontend (build env) and Backend (injected at deploy):**
-- `PROD_VITE_GOOGLE_CLIENT_ID` / `DEV_VITE_GOOGLE_CLIENT_ID` - Google OAuth Client ID (frontend build + backend app setting `GOOGLE_CLIENT_ID`)
-
 **For Frontend:**
-- `AZURE_STATIC_WEB_APP_NAME` - Static Web App name (or use `PROD_*` / `DEV_*` per workflow)
-- `AZURE_STATIC_WEB_APP_DEPLOYMENT_TOKEN` - Deployment token (or `PROD_AZURE_STATIC_WEB_APP_DEPLOYMENT_TOKEN` / `DEV_*`)
-- `VITE_MSAL_CLIENT_ID` - MSAL Client ID (or `PROD_VITE_MSAL_CLIENT_ID` / `DEV_*`)
-- `VITE_MSAL_TENANT_ID` - Tenant ID (or `PROD_VITE_MSAL_TENANT_ID` / `DEV_*`)
-- `VITE_API_BASE_URL` - Backend API URL (or `PROD_VITE_API_BASE_URL` / `DEV_*`)
+- `AZURE_STATIC_WEB_APP_NAME` - Static Web App name
+- `AZURE_STATIC_WEB_APP_DEPLOYMENT_TOKEN` - Deployment token
+- `VITE_MSAL_CLIENT_ID` - MSAL Client ID
+- `VITE_MSAL_TENANT_ID` - Tenant ID
+- `VITE_GOOGLE_CLIENT_ID` - Google OAuth Client ID
+- `VITE_API_BASE_URL` - Backend API URL
 - `VITE_API_ENDPOINT` - Whisper API endpoint (optional)
 - `VITE_API_ROUTE` - Whisper API route (optional)
 

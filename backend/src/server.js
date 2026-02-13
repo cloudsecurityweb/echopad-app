@@ -18,11 +18,11 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// CORS Configuration - MUST be applied early so OPTIONS preflight is handled before other middleware
-// Only these origins can call the API from a browser.
-// Production: https://echopad.ai and https://www.echopad.ai are allowed.
-// For Azure Static Web App staging: set FRONTEND_URL to your SWA URL.
-// Other domains are blocked in production.
+// Serve static files (email assets)
+app.use('/public', express.static(path.join(__dirname, 'public')));
+
+// CORS Configuration
+// Allow requests from localhost (development) and production frontend URL
 const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
 const allowedOrigins = [
   "http://localhost:5173",
@@ -71,16 +71,8 @@ const corsOptions = {
         console.warn(`⚠️  [CORS] Allowing origin ${origin} (non-production mode)`);
         callback(null, true);
       } else {
+        // In production, check if it's close match (same domain, different protocol/port)
         const originHost = new URL(origin).hostname;
-
-        // Only allow Azure Static Web App if it matches FRONTEND_URL (no blanket *.azurestaticapps.net)
-        // Set FRONTEND_URL to your exact SWA URL, e.g. https://your-app.2.azurestaticapps.net
-        if (originHost.endsWith(".azurestaticapps.net") && FRONTEND_URL && normalizedOrigin === FRONTEND_URL.replace(/\/$/, '')) {
-          console.log(`✅ [CORS] Allowing origin ${origin} (your Azure Static Web App)`);
-          return callback(null, true);
-        }
-
-        // Check if it's close match (same domain, different protocol/port)
         const allowedHosts = uniqueOrigins.map(url => {
           try {
             return new URL(url).hostname;
@@ -107,13 +99,6 @@ const corsOptions = {
   preflightContinue: false,
   optionsSuccessStatus: 204, // Some legacy browsers (IE11, various SmartTVs) choke on 204
 };
-
-// Apply CORS FIRST so OPTIONS preflight requests get proper headers before Helmet/other middleware
-app.use(cors(corsOptions));
-app.options('*', cors(corsOptions)); // Explicitly handle all OPTIONS requests
-
-// Serve static files (email assets)
-app.use('/public', express.static(path.join(__dirname, 'public')));
 
 import helmet from "helmet";
 
@@ -190,6 +175,7 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // Routes
