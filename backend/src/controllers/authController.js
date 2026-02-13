@@ -365,7 +365,23 @@ export async function signUp(req, res) {
     if (provider === 'microsoft') {
       decoded = await verifyMicrosoftToken(token);
     } else if (provider === 'google') {
-      decoded = await verifyGoogleTokenStandalone(token);
+      try {
+        decoded = await verifyGoogleTokenStandalone(token);
+      } catch (error) {
+        console.error('❌ [SIGN-UP] Google token verification failed:', {
+          error: error.message,
+          hasToken: !!token,
+          tokenPreview: token ? token.substring(0, 30) + '...' : 'no token',
+          googleClientIdConfigured: !!process.env.GOOGLE_CLIENT_ID,
+          googleClientIdPreview: process.env.GOOGLE_CLIENT_ID ? process.env.GOOGLE_CLIENT_ID.substring(0, 30) + '...' : 'not set',
+          nodeEnv: process.env.NODE_ENV,
+        });
+        return res.status(401).json({
+          success: false,
+          error: 'Google authentication failed',
+          message: error.message || 'Failed to verify Google token. Please ensure GOOGLE_CLIENT_ID environment variable is set correctly in the backend.',
+        });
+      }
     } else {
       return res.status(400).json({
         success: false,
