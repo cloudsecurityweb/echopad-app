@@ -88,6 +88,7 @@ jobs:
           VITE_GOOGLE_CLIENT_ID: ${{ steps.env.outputs.ENV_PREFIX == 'PROD' && secrets.PROD_VITE_GOOGLE_CLIENT_ID || secrets.DEV_VITE_GOOGLE_CLIENT_ID }}
           VITE_API_ENDPOINT: ${{ steps.env.outputs.ENV_PREFIX == 'PROD' && secrets.PROD_VITE_API_ENDPOINT || secrets.DEV_VITE_API_ENDPOINT }}
           VITE_API_ROUTE: ${{ steps.env.outputs.ENV_PREFIX == 'PROD' && secrets.PROD_VITE_API_ROUTE || secrets.DEV_VITE_API_ROUTE }}
+          VITE_INTERCOM_APP_ID: ${{ steps.env.outputs.ENV_PREFIX == 'PROD' && secrets.PROD_VITE_INTERCOM_APP_ID || secrets.DEV_VITE_INTERCOM_APP_ID }}
         run: |
           npm run build
           cd dist && zip -r ../../frontend-${{ steps.version.outputs.version }}.zip . && cd ..
