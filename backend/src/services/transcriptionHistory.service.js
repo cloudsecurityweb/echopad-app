@@ -110,3 +110,41 @@ export async function deleteTranscriptionById({
   }
   await item.delete();
 }
+
+/**
+ * Update a transcription by id (user can only update their own within tenant)
+ * @param {Object} params
+ * @param {string} params.tenantId - Tenant ID (partition key)
+ * @param {string} params.userId - User ID (must own the item)
+ * @param {string} params.transcriptionId - Transcription document id
+ * @param {string} params.text - New transcription text
+ * @returns {Promise<Object|null>} Updated transcription document, or null if not found / not authorized
+ */
+export async function updateTranscriptionByIdAndUser({
+  tenantId,
+  userId,
+  transcriptionId,
+  text,
+} = {}) {
+  const container = getContainer(CONTAINER_NAME);
+  if (!container) {
+    throw new Error("Cosmos DB container not available");
+  }
+
+  const item = container.item(transcriptionId, tenantId);
+  const { resource } = await item.read();
+  if (!resource) {
+    return null;
+  }
+  if (resource.userId !== userId) {
+    return null;
+  }
+
+  const updatedDoc = {
+    ...resource,
+    text: typeof text === "string" ? text.trim() : String(text ?? ""),
+    updatedAt: new Date().toISOString(),
+  };
+  const { resource: updated } = await item.replace(updatedDoc);
+  return updated;
+}
