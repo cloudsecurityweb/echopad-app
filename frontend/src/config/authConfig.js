@@ -34,11 +34,20 @@ import { LogLevel } from "@azure/msal-browser";
  * 
  * Priority: window.ENV > import.meta.env > default values
  */
+const clientId = (typeof window !== 'undefined' && window.ENV?.MSAL_CLIENT_ID) ||
+  import.meta.env.VITE_MSAL_CLIENT_ID ||
+  'd4ea5537-8b2a-4b88-9dbd-80bf02596c1a';
+
+/**
+ * MSAL Configuration Object
+ * 
+ * This configuration is used by MSAL to authenticate users with Microsoft Entra ID.
+ * 
+ * Priority: window.ENV > import.meta.env > default values
+ */
 export const msalConfig = {
   auth: {
-    clientId: (typeof window !== 'undefined' && window.ENV?.MSAL_CLIENT_ID) || 
-              import.meta.env.VITE_MSAL_CLIENT_ID || 
-              'd4ea5537-8b2a-4b88-9dbd-80bf02596c1a', // Frontend SPA Client ID
+    clientId: clientId, // Frontend SPA Client ID
     authority: "https://login.microsoftonline.com/common",
     redirectUri: typeof window !== 'undefined' ? window.location.origin : 'http://localhost:5173',
   },
@@ -95,9 +104,10 @@ export const msalConfig = {
  */
 export const loginRequest = {
   authority: "https://login.microsoftonline.com/common", // Allow both work/school and personal Microsoft accounts
-  // Request token for backend API - this ensures audience (aud) matches backend AZURE_CLIENT_ID
-  // Using api://{clientId}/.default requests all permissions the app has been granted
-  scopes: [`api://d4ea5537-8b2a-4b88-9dbd-80bf02596c1a/.default`],
+  // Request token for the application itself to get App Roles
+  // Using clientId/.default ensures we get a token for this app's API
+  // Using the GUID (clientId) avoids AADSTS90009 error which happens with api:// URI
+  scopes: [`${clientId}/.default`, "openid", "profile", "email"],
 };
 
 /**
@@ -109,7 +119,7 @@ export const loginRequest = {
  */
 export const signUpRequest = {
   authority: "https://login.microsoftonline.com/common", // Allow both work/school and personal Microsoft accounts
-  scopes: [`api://d4ea5537-8b2a-4b88-9dbd-80bf02596c1a/.default`],
+  scopes: [`${clientId}/.default`, "openid", "profile", "email"],
   prompt: "select_account" // Force account selection
 };
 
@@ -122,6 +132,6 @@ export const signUpRequest = {
  */
 export const loginSelectAccountRequest = {
   authority: "https://login.microsoftonline.com/common", // Allow both work/school and personal Microsoft accounts
-  scopes: [`api://d4ea5537-8b2a-4b88-9dbd-80bf02596c1a/.default`],
+  scopes: [`${clientId}/.default`, "openid", "profile", "email"],
   prompt: "select_account" // Force account selection
 };
