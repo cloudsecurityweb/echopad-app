@@ -5,6 +5,7 @@ import { useScrollAnimations } from '../../../hooks/useAnimation';
 const EchopadAIScribeDownload = () => {
     useScrollAnimations();
     const [activeTab, setActiveTab] = useState('mac');
+
     const navigate = useNavigate();
 
     return (
@@ -39,22 +40,74 @@ const EchopadAIScribeDownload = () => {
                     Echopad AI Scribe converts live clinical conversations into structured medical documentation — <span className="text-gray-900 font-medium">securely, accurately, and instantly</span>. Zero manual typing.
                 </p>
 
-                <div className="flex flex-col sm:flex-row gap-4 justify-center pt-8 pb-8">
-                    <button className="px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-xl hover:from-cyan-400 hover:to-blue-500 transition-all duration-300 font-semibold flex items-center justify-center gap-3 shadow-lg shadow-cyan-100/50 hover:shadow-cyan-200 hover:-translate-y-1 cursor-pointer group">
-                        <i className="bi bi-apple text-xl group-hover:scale-110 transition-transform"></i>
-                        <div className="text-left">
-                            <div className="text-xs font-normal opacity-90">Download for</div>
-                            <div className="text-sm font-bold">macOS</div>
-                        </div>
-                    </button>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto pt-8 pb-8">
+                    {/* macOS Card */}
+                    <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group text-left">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-gray-100 to-gray-50 rounded-bl-full -mr-10 -mt-10 opacity-50 group-hover:scale-110 transition-transform"></div>
+                        <div className="relative z-10 flex flex-col h-full">
+                            <div className="flex items-center gap-3 mb-4">
+                                <div className="p-3 bg-gray-900 rounded-xl text-white shadow-lg shadow-gray-200">
+                                    <i className="bi bi-apple text-2xl"></i>
+                                </div>
+                                <div>
+                                    <h3 className="font-bold text-gray-900 text-lg">macOS</h3>
+                                    <p className="text-sm text-gray-500">For macOS 12 (Monterey) or later</p>
+                                </div>
+                            </div>
 
-                    <button className="px-8 py-4 bg-white text-gray-800 border border-gray-200 rounded-xl hover:bg-gray-50 hover:border-gray-300 transition-all duration-300 font-semibold flex items-center justify-center gap-3 shadow-sm hover:shadow-md hover:-translate-y-1 cursor-pointer group">
-                        <i className="bi bi-windows text-xl text-blue-600 group-hover:scale-110 transition-transform"></i>
-                        <div className="text-left">
-                            <div className="text-xs font-normal text-gray-500">Download for</div>
-                            <div className="text-sm font-bold">Windows</div>
+                            <div className="space-y-3 mt-auto">
+                                <button className="w-full py-3.5 px-4 bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-colors font-semibold flex items-center justify-between group/btn shadow-lg shadow-gray-200 cursor-pointer">
+                                    <span className="flex flex-col items-start">
+                                        <span>Download for Apple Silicon</span>
+                                        <span className="text-[10px] font-normal text-gray-400">M1 / M2 / M3 / M4 / M5 Chips</span>
+                                    </span>
+                                    <i className="bi bi-cpu text-lg text-gray-400 group-hover/btn:text-white transition-colors"></i>
+                                </button>
+
+                                <button className="w-full py-3 px-4 bg-gray-100 text-gray-900 rounded-xl hover:bg-gray-200 transition-colors font-medium text-sm flex items-center justify-between group/intel cursor-pointer">
+                                    <span className="flex flex-col items-start">
+                                        <span>Download for Intel Chip</span>
+                                        <span className="text-[10px] font-normal text-gray-500">x86_64 Architecture</span>
+                                    </span>
+                                    <i className="bi bi-hdd-network text-lg text-gray-400 group-hover/intel:text-gray-600 transition-colors"></i>
+                                </button>
+                            </div>
                         </div>
-                    </button>
+                    </div>
+
+                    {/* Windows Card */}
+                    <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group text-left">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-50 to-blue-100 rounded-bl-full -mr-10 -mt-10 opacity-50 group-hover:scale-110 transition-transform"></div>
+                        <div className="relative z-10 flex flex-col h-full">
+                            <div className="flex items-center gap-3 mb-4">
+                                <div className="p-3 bg-blue-600 rounded-xl text-white shadow-lg shadow-blue-100">
+                                    <i className="bi bi-windows text-2xl"></i>
+                                </div>
+                                <div>
+                                    <h3 className="font-bold text-gray-900 text-lg">Windows</h3>
+                                    <p className="text-sm text-gray-500">For Windows 10 & 11</p>
+                                </div>
+                            </div>
+
+                            <div className="space-y-3 mt-auto">
+                                <button className="w-full py-3.5 px-4 bg-gradient-to-r from-blue-600 to-blue-500 text-white rounded-xl hover:from-blue-500 hover:to-blue-400 transition-all font-semibold flex items-center justify-between group/btn shadow-lg shadow-blue-100 cursor-pointer">
+                                    <span className="flex flex-col items-start">
+                                        <span>Download for 64-bit</span>
+                                        <span className="text-[10px] font-normal text-blue-100">Recommended</span>
+                                    </span>
+                                    <i className="bi bi-download text-lg text-blue-100 group-hover/btn:text-white transition-colors"></i>
+                                </button>
+
+                                <button className="w-full py-3 px-4 bg-blue-50 text-blue-900 rounded-xl hover:bg-blue-100 transition-colors font-medium text-sm flex items-center justify-between group/32bit cursor-pointer">
+                                    <span className="flex flex-col items-start">
+                                        <span>Download for 32-bit</span>
+                                        <span className="text-[10px] font-normal text-blue-600/70">x86 Architecture</span>
+                                    </span>
+                                    <i className="bi bi-display text-lg text-blue-300 group-hover/32bit:text-blue-500 transition-colors"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <p className="text-sm text-gray-500">
@@ -120,7 +173,7 @@ const EchopadAIScribeDownload = () => {
                                         </li>
                                         <li className="flex gap-3">
                                             <span className="font-medium text-gray-900 w-24">Processor:</span>
-                                            Apple Silicon M1 Pro or better
+                                            Apple Silicon M1 or better
                                         </li>
                                         <li className="flex gap-3">
                                             <span className="font-medium text-gray-900 w-24">Internet:</span>
@@ -142,7 +195,7 @@ const EchopadAIScribeDownload = () => {
                                         </li>
                                         <li className="flex gap-3">
                                             <span className="font-medium text-gray-900 w-24">Processor:</span>
-                                            Intel Core i5 or AMD Ryzen 5
+                                            Intel Core i3 or AMD Ryzen 5
                                         </li>
                                         <li className="flex gap-3">
                                             <span className="font-medium text-gray-900 w-24">RAM:</span>
@@ -161,7 +214,7 @@ const EchopadAIScribeDownload = () => {
                                         </li>
                                         <li className="flex gap-3">
                                             <span className="font-medium text-gray-900 w-24">Processor:</span>
-                                            Intel Core i7 or AMD Ryzen 7
+                                            Intel Core i5 or AMD Ryzen 7
                                         </li>
                                         <li className="flex gap-3">
                                             <span className="font-medium text-gray-900 w-24">Internet:</span>
@@ -210,12 +263,13 @@ const EchopadAIScribeDownload = () => {
                     <p className="text-gray-300 text-lg">
                         Join thousands of clinicians saving 2+ hours daily with Echopad AI Scribe.
                     </p>
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                        <button className="px-8 py-3 bg-white text-gray-900 rounded-xl hover:bg-gray-100 transition-colors font-semibold shadow-lg cursor-pointer">
-                            Download for macOS
-                        </button>
-                        <button className="px-8 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-500 transition-colors font-semibold shadow-lg border border-transparent cursor-pointer">
-                            Download for Windows
+                    <div className="flex justify-center">
+                        <button
+                            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                            className="px-10 py-4 bg-white text-gray-900 rounded-xl hover:bg-gray-100 transition-colors font-bold shadow-lg hover:shadow-xl hover:-translate-y-1 transform duration-300 cursor-pointer flex items-center gap-3"
+                        >
+                            <span>Start Your Free Download</span>
+                            <i className="bi bi-arrow-up-circle text-blue-600"></i>
                         </button>
                     </div>
                     <p className="text-xs text-gray-400">
