@@ -5,8 +5,8 @@ import http from '../../../api/http';
 
 const DOWNLOAD_MAC_URL = '/api/download/ai-scribe/mac';
 const DOWNLOAD_DESKTOP_URL = '/api/download/ai-scribe/desktop';
-const DEFAULT_MAC_FILENAME = 'echopad-mac-1.0.9.zip';
-const DEFAULT_DESKTOP_FILENAME = 'echopad-desktop-1.0.8.zip';
+const DEFAULT_MAC_FILENAME = 'Echopad-1.0.9.dmg';
+const DEFAULT_DESKTOP_FILENAME = 'Echopad-Setup-1.0.8.exe';
 
 function getFilenameFromDisposition(contentDisposition) {
     if (!contentDisposition) return null;

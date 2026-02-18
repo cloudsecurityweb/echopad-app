@@ -13,19 +13,28 @@ const router = express.Router();
 router.options("/ai-scribe/desktop", (req, res) => res.sendStatus(204));
 router.options("/ai-scribe/mac", (req, res) => res.sendStatus(204));
 
-const ORG = "cloudsecurityweb";
-const ORG_URL = "https://dev.azure.com/cloudsecurityweb";
-const PROJECT = "echopad";
 const API_VERSION = "7.0";
 
-// Feed name in Azure Artifacts (e.g. echopad-app or echopad-artifacts). Override with AZURE_ARTIFACTS_FEED in env.
+// Azure DevOps: org URL, project (name or GUID), feed. Override via env if your setup differs.
+function getOrgUrl() {
+  return process.env.AZURE_DEVOPS_ORG_URL || "https://dev.azure.com/cloudsecurityweb";
+}
+
+function getProject() {
+  return process.env.AZURE_DEVOPS_PROJECT || "echopad";
+}
+
 function getFeedName() {
   return process.env.AZURE_ARTIFACTS_FEED || "echopad-app";
 }
 
 function getArtifactContentUrl(packageName, version, pathStyle = "universal") {
+  const orgUrl = getOrgUrl();
+  const pathSegments = new URL(orgUrl).pathname.split("/").filter(Boolean);
+  const orgName = pathSegments[0] || "cloudsecurityweb";
+  const project = getProject();
   const feed = getFeedName();
-  return `https://pkgs.dev.azure.com/${ORG}/${PROJECT}/_apis/packaging/feeds/${feed}/${pathStyle}/packages/${packageName}/versions/${version}/content?api-version=${API_VERSION}`;
+  return `https://pkgs.dev.azure.com/${orgName}/${encodeURIComponent(project)}/_apis/packaging/feeds/${feed}/${pathStyle}/packages/${packageName}/versions/${version}/content?api-version=${API_VERSION}`;
 }
 
 /**
@@ -47,10 +56,15 @@ function listFilesRecursive(dir) {
 }
 
 /**
- * Download universal package via Azure CLI and stream to response.
+ * Preferred installer extension per platform (we stream this file, not the whole package zip).
+ */
+const PREFERRED_EXT = { desktop: ".exe", mac: ".dmg" };
+
+/**
+ * Download universal package via Azure CLI, then stream the .exe (Windows) or .dmg (macOS) file.
  * Requires: Azure CLI + "az extension add --name azure-devops"
  */
-async function downloadViaCli(req, res, packageName, version, filename) {
+async function downloadViaCli(req, res, packageName, version, filename, platform = "desktop") {
   const pat = process.env.AZURE_DEVOPS_PAT;
   if (!pat || pat.trim() === "" || pat === "your-secret-pat-here") {
     return res.status(503).json({
@@ -76,7 +90,7 @@ async function downloadViaCli(req, res, packageName, version, filename) {
 
     const runLogin = () =>
       new Promise((res, rej) => {
-        const child = spawn("az", ["devops", "login", "--organization", ORG_URL], {
+        const child = spawn("az", ["devops", "login", "--organization", getOrgUrl()], {
           stdio: ["pipe", "pipe", "pipe"],
           shell: true,
         });
@@ -94,8 +108,8 @@ async function downloadViaCli(req, res, packageName, version, filename) {
           "artifacts",
           "universal",
           "download",
-          "--organization", ORG_URL,
-          "--project", PROJECT,
+          "--organization", getOrgUrl(),
+          "--project", getProject(),
           "--scope", "project",
           "--feed", feed,
           "--name", packageName,
@@ -125,38 +139,53 @@ async function downloadViaCli(req, res, packageName, version, filename) {
             );
           }
 
-          res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+          const wantExt = PREFERRED_EXT[platform] || "";
+          const matching = wantExt
+            ? files.filter((f) => path.extname(f.filePath).toLowerCase() === wantExt.toLowerCase())
+            : [];
+          const toStream = matching.length > 0
+            ? matching.reduce((a, b) => (a.stat.size >= b.stat.size ? a : b))
+            : files.length === 1
+              ? files[0]
+              : null;
 
-          if (files.length === 1) {
-            const { filePath } = files[0];
+          if (toStream) {
+            const { filePath } = toStream;
             if (!fs.existsSync(filePath)) {
               cleanup();
               return resolve(res.status(502).json({ success: false, error: "Download failed", message: "Downloaded file not found." }));
             }
-            const stream = fs.createReadStream(filePath);
             const ext = path.extname(filePath);
-            if (ext) res.setHeader("Content-Type", ext === ".zip" ? "application/zip" : "application/octet-stream");
+            const downloadName = matching.length > 0 ? path.basename(filePath) : filename;
+            res.setHeader("Content-Disposition", `attachment; filename="${downloadName}"`);
+            if (ext === ".exe") res.setHeader("Content-Type", "application/vnd.microsoft.portable-executable");
+            else if (ext === ".dmg") res.setHeader("Content-Type", "application/octet-stream");
+            else if (ext === ".zip") res.setHeader("Content-Type", "application/zip");
+            else res.setHeader("Content-Type", "application/octet-stream");
+            const stream = fs.createReadStream(filePath);
             stream.pipe(res);
             stream.on("end", cleanup);
             stream.on("error", (e) => {
               console.error("[DOWNLOAD] Stream read error:", e.message);
               cleanup();
             });
-          } else {
-            res.setHeader("Content-Type", "application/zip");
-            const archive = archiver("zip", { zlib: { level: 0 } });
-            archive.on("error", (err) => {
-              console.error("[DOWNLOAD] Archive error:", err);
-              cleanup();
-            });
-            archive.pipe(res);
-            for (const { filePath } of files) {
-              const name = path.relative(tempDir, filePath);
-              archive.file(filePath, { name });
-            }
-            archive.finalize();
-            res.on("finish", cleanup);
+            return resolve();
           }
+
+          res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+          res.setHeader("Content-Type", "application/zip");
+          const archive = archiver("zip", { zlib: { level: 0 } });
+          archive.on("error", (err) => {
+            console.error("[DOWNLOAD] Archive error:", err);
+            cleanup();
+          });
+          archive.pipe(res);
+          for (const { filePath } of files) {
+            const name = path.relative(tempDir, filePath);
+            archive.file(filePath, { name });
+          }
+          archive.finalize();
+          res.on("finish", cleanup);
           resolve();
         } catch (streamErr) {
           cleanup();
@@ -184,7 +213,7 @@ async function downloadViaCli(req, res, packageName, version, filename) {
   });
 }
 
-async function streamFromArtifacts(req, res, artifactUrl, filename, packageName, version) {
+async function streamFromArtifacts(req, res, artifactUrl, filename, packageName, version, platform) {
   const pat = process.env.AZURE_DEVOPS_PAT;
   if (!pat || pat.trim() === "" || pat === "your-secret-pat-here") {
     return res.status(503).json({
@@ -233,13 +262,13 @@ async function streamFromArtifacts(req, res, artifactUrl, filename, packageName,
       }
       // REST has no public content endpoint for Universal packages; fall back to Azure CLI
       console.error("[DOWNLOAD] Falling back to Azure CLI download.");
-      return downloadViaCli(req, res, packageName, version, filename);
+      return downloadViaCli(req, res, packageName, version, filename, platform);
     }
 
     // REST content endpoint often doesn't exist for Universal packages; body may be missing or invalid
     if (!response.body) {
       console.error("[DOWNLOAD] REST returned 200 but no response body, falling back to CLI.");
-      return downloadViaCli(req, res, packageName, version, filename);
+      return downloadViaCli(req, res, packageName, version, filename, platform);
     }
 
     const contentType = response.headers.get("content-type");
@@ -251,14 +280,14 @@ async function streamFromArtifacts(req, res, artifactUrl, filename, packageName,
       nodeStream.pipe(res);
     } catch (streamErr) {
       console.error("[DOWNLOAD] REST stream error:", streamErr.message);
-      return downloadViaCli(req, res, packageName, version, filename);
+      return downloadViaCli(req, res, packageName, version, filename, platform);
     }
   } catch (err) {
     console.error("[DOWNLOAD] Stream error:", err.message, err.stack);
     // If we haven't sent headers yet, try CLI as last resort
     if (!res.headersSent) {
       console.error("[DOWNLOAD] Falling back to Azure CLI after error.");
-      return downloadViaCli(req, res, packageName, version, filename);
+      return downloadViaCli(req, res, packageName, version, filename, platform);
     }
     return res.status(502).json({
       success: false,
@@ -270,27 +299,27 @@ async function streamFromArtifacts(req, res, artifactUrl, filename, packageName,
 
 /**
  * GET /api/download/ai-scribe/desktop
- * Streams Windows desktop installer from Azure Artifacts (echopad-desktop 1.0.8).
+ * Streams Windows .exe installer from Azure Artifacts (echopad-desktop 1.0.8).
  */
 router.get(
   "/ai-scribe/desktop",
   verifyAnyAuth,
   async (req, res) => {
     const url = getArtifactContentUrl("echopad-desktop", "1.0.8");
-    await streamFromArtifacts(req, res, url, "echopad-desktop-1.0.8.zip", "echopad-desktop", "1.0.8");
+    await streamFromArtifacts(req, res, url, "Echopad-Setup-1.0.8.exe", "echopad-desktop", "1.0.8", "desktop");
   }
 );
 
 /**
  * GET /api/download/ai-scribe/mac
- * Streams macOS installer from Azure Artifacts (echopad-mac 1.0.9).
+ * Streams macOS .dmg installer from Azure Artifacts (echopad-mac 1.0.9).
  */
 router.get(
   "/ai-scribe/mac",
   verifyAnyAuth,
   async (req, res) => {
     const url = getArtifactContentUrl("echopad-mac", "1.0.9");
-    await streamFromArtifacts(req, res, url, "echopad-mac-1.0.9.zip", "echopad-mac", "1.0.9");
+    await streamFromArtifacts(req, res, url, "Echopad-1.0.9.dmg", "echopad-mac", "1.0.9", "mac");
   }
 );
 
