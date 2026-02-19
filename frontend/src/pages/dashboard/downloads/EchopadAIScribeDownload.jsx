@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useScrollAnimations } from '../../../hooks/useAnimation';
 import http from '../../../api/http';
+import { getAiScribeVersion } from '../../../api/downloads.api';
 
 const DOWNLOAD_MAC_URL = '/api/download/ai-scribe/mac';
 const DOWNLOAD_DESKTOP_URL = '/api/download/ai-scribe/desktop';
@@ -19,7 +20,14 @@ const EchopadAIScribeDownload = () => {
     const [activeTab, setActiveTab] = useState('mac');
     const [downloadState, setDownloadState] = useState('idle'); // 'idle' | 'mac' | 'desktop'
     const [downloadError, setDownloadError] = useState(null);
+    const [versionManifest, setVersionManifest] = useState(null); // { desktop: { version, filename }, mac: { version, filename } }
     const navigate = useNavigate();
+
+    useEffect(() => {
+        getAiScribeVersion()
+            .then((res) => res.data && setVersionManifest(res.data))
+            .catch(() => { /* use defaults if version API fails */ });
+    }, []);
 
     const triggerBlobDownload = (blob, filename) => {
         const url = window.URL.createObjectURL(blob);
@@ -35,7 +43,9 @@ const EchopadAIScribeDownload = () => {
         setDownloadState(platform);
         const isMac = platform === 'mac';
         const url = isMac ? DOWNLOAD_MAC_URL : DOWNLOAD_DESKTOP_URL;
-        const defaultFilename = isMac ? DEFAULT_MAC_FILENAME : DEFAULT_DESKTOP_FILENAME;
+        const defaultFilename = isMac
+            ? (versionManifest?.mac?.filename || DEFAULT_MAC_FILENAME)
+            : (versionManifest?.desktop?.filename || DEFAULT_DESKTOP_FILENAME);
         try {
             const response = await http.get(url, { responseType: 'blob' });
             const disposition = response.headers['content-disposition'];
@@ -79,7 +89,9 @@ const EchopadAIScribeDownload = () => {
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
                         <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
                     </span>
-                    v1.0.0 Now Available
+                    {versionManifest
+                        ? `v${versionManifest.mac?.version || versionManifest.desktop?.version || '1.0.0'} Now Available`
+                        : 'v1.0.0 Now Available'}
                 </div>
 
                 <h1 className="text-5xl md:text-7xl font-bold text-gray-900 tracking-tight mb-6">

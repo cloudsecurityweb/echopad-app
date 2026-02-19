@@ -12,8 +12,22 @@ const router = express.Router();
 // Explicit OPTIONS for CORS preflight so the browser gets a clear 204 (avoids "No content for preflight" in DevTools)
 router.options("/ai-scribe/desktop", (req, res) => res.sendStatus(204));
 router.options("/ai-scribe/mac", (req, res) => res.sendStatus(204));
+router.options("/ai-scribe/version", (req, res) => res.sendStatus(204));
 
 const API_VERSION = "7.0";
+const FEEDS_API_VERSION = "7.1";
+
+// Fallback versions when Azure Artifacts API is unavailable (e.g. no PAT or network error).
+const FALLBACK_VERSIONS = {
+  desktop: { version: "1.0.8", packageName: "echopad-desktop", filename: "Echopad-Setup-1.0.8.exe" },
+  mac: { version: "1.0.9", packageName: "echopad-mac", filename: "Echopad-1.0.9.dmg" },
+};
+
+const VERSION_CACHE_TTL_MS = 2 * 60 * 1000; // 2 minutes — fresh artifact after new deploy
+const versionCache = {
+  desktop: { version: null, expires: 0 },
+  mac: { version: null, expires: 0 },
+};
 
 // Azure DevOps: org URL, project (name or GUID), feed. Override via env if your setup differs.
 function getOrgUrl() {
@@ -26,6 +40,92 @@ function getProject() {
 
 function getFeedName() {
   return process.env.AZURE_ARTIFACTS_FEED || "echopad-app";
+}
+
+function getFeedsBaseUrl() {
+  const orgUrl = getOrgUrl();
+  const pathSegments = new URL(orgUrl).pathname.split("/").filter(Boolean);
+  const orgName = pathSegments[0] || "cloudsecurityweb";
+  const project = getProject();
+  const feed = getFeedName();
+  return `https://feeds.dev.azure.com/${orgName}/${encodeURIComponent(project)}/_apis/packaging/Feeds/${encodeURIComponent(feed)}`;
+}
+
+/**
+ * Compare two version strings (e.g. "1.0.9" vs "1.0.8"). Returns positive if a > b.
+ */
+function compareVersions(a, b) {
+  const pa = a.split(".").map(Number);
+  const pb = b.split(".").map(Number);
+  for (let i = 0; i < Math.max(pa.length, pb.length); i++) {
+    const va = pa[i] || 0;
+    const vb = pb[i] || 0;
+    if (va !== vb) return va - vb;
+  }
+  return 0;
+}
+
+/**
+ * Fetch latest version of a package from Azure Artifacts feed via REST API.
+ * Uses in-memory cache with TTL. Falls back to FALLBACK_VERSIONS if API fails.
+ * @param {"desktop" | "mac"} platform
+ * @returns {Promise<{ version: string, packageName: string, filename: string }>}
+ */
+/**
+ * @param {"desktop" | "mac"} platform
+ * @param {{ bypassCache?: boolean }} [options] - set bypassCache: true to force fetch from Azure (e.g. ?refresh=1 on download)
+ */
+async function getLatestPackageInfo(platform, options = {}) {
+  const now = Date.now();
+  const useCache = !options.bypassCache && versionCache[platform].version && versionCache[platform].expires > now;
+  if (useCache) {
+    const fallback = FALLBACK_VERSIONS[platform];
+    return {
+      version: versionCache[platform].version,
+      packageName: fallback.packageName,
+      filename: platform === "desktop"
+        ? `Echopad-Setup-${versionCache[platform].version}.exe`
+        : `Echopad-${versionCache[platform].version}.dmg`,
+    };
+  }
+
+  const pat = process.env.AZURE_DEVOPS_PAT;
+  const packageName = FALLBACK_VERSIONS[platform].packageName;
+  if (!pat || pat.trim() === "" || pat === "your-secret-pat-here") {
+    return { ...FALLBACK_VERSIONS[platform] };
+  }
+
+  const auth = Buffer.from(":" + pat).toString("base64");
+  const url = `${getFeedsBaseUrl()}/packages?packageNameQuery=${encodeURIComponent(packageName)}&includeAllVersions=true&api-version=${FEEDS_API_VERSION}`;
+
+  try {
+    const response = await fetch(url, {
+      method: "GET",
+      headers: { Authorization: `Basic ${auth}` },
+    });
+    if (!response.ok) {
+      const text = await response.text().catch(() => "");
+      console.error("[DOWNLOAD] Feeds API error:", response.status, text.slice(0, 200));
+      return { ...FALLBACK_VERSIONS[platform] };
+    }
+    const data = await response.json();
+    const packages = data?.value ?? [];
+    const pkg = packages.find((p) => (p.name || p.normalizedName || "").toLowerCase() === packageName.toLowerCase()) || packages[0];
+    if (!pkg) {
+      return { ...FALLBACK_VERSIONS[platform] };
+    }
+    const versions = pkg.versions || [];
+    const latest = versions
+      .filter((v) => !v.isDeleted)
+      .sort((a, b) => compareVersions((b.version || ""), (a.version || "")))[0];
+    const version = latest?.version || FALLBACK_VERSIONS[platform].version;
+    versionCache[platform] = { version, expires: now + VERSION_CACHE_TTL_MS };
+    const filename = platform === "desktop" ? `Echopad-Setup-${version}.exe` : `Echopad-${version}.dmg`;
+    return { version, packageName, filename };
+  } catch (err) {
+    console.error("[DOWNLOAD] getLatestPackageInfo error:", err.message);
+    return { ...FALLBACK_VERSIONS[platform] };
+  }
 }
 
 function getArtifactContentUrl(packageName, version, pathStyle = "universal") {
@@ -298,28 +398,57 @@ async function streamFromArtifacts(req, res, artifactUrl, filename, packageName,
 }
 
 /**
+ * GET /api/download/ai-scribe/version
+ * Returns latest app version and download paths per platform (fetched from Azure Artifacts).
+ * No auth required so the desktop/mac app can check for updates without a user token.
+ */
+router.get("/ai-scribe/version", async (req, res) => {
+  const basePath = "/api/download/ai-scribe";
+  const [desktopInfo, macInfo] = await Promise.all([
+    getLatestPackageInfo("desktop"),
+    getLatestPackageInfo("mac"),
+  ]);
+  res.json({
+    desktop: {
+      version: desktopInfo.version,
+      downloadPath: `${basePath}/desktop`,
+      filename: desktopInfo.filename,
+    },
+    mac: {
+      version: macInfo.version,
+      downloadPath: `${basePath}/mac`,
+      filename: macInfo.filename,
+    },
+  });
+});
+
+/**
  * GET /api/download/ai-scribe/desktop
- * Streams Windows .exe installer from Azure Artifacts (echopad-desktop 1.0.8).
+ * Streams Windows .exe installer from Azure Artifacts (echopad-desktop, latest version).
+ * Bypasses version cache so each click gets the current latest from the feed.
  */
 router.get(
   "/ai-scribe/desktop",
   verifyAnyAuth,
   async (req, res) => {
-    const url = getArtifactContentUrl("echopad-desktop", "1.0.8");
-    await streamFromArtifacts(req, res, url, "Echopad-Setup-1.0.8.exe", "echopad-desktop", "1.0.8", "desktop");
+    const { version, packageName, filename } = await getLatestPackageInfo("desktop", { bypassCache: true });
+    const url = getArtifactContentUrl(packageName, version);
+    await streamFromArtifacts(req, res, url, filename, packageName, version, "desktop");
   }
 );
 
 /**
  * GET /api/download/ai-scribe/mac
- * Streams macOS .dmg installer from Azure Artifacts (echopad-mac 1.0.9).
+ * Streams macOS .dmg installer from Azure Artifacts (echopad-mac, latest version).
+ * Bypasses version cache so each click gets the current latest from the feed.
  */
 router.get(
   "/ai-scribe/mac",
   verifyAnyAuth,
   async (req, res) => {
-    const url = getArtifactContentUrl("echopad-mac", "1.0.9");
-    await streamFromArtifacts(req, res, url, "Echopad-1.0.9.dmg", "echopad-mac", "1.0.9", "mac");
+    const { version, packageName, filename } = await getLatestPackageInfo("mac", { bypassCache: true });
+    const url = getArtifactContentUrl(packageName, version);
+    await streamFromArtifacts(req, res, url, filename, packageName, version, "mac");
   }
 );
 
