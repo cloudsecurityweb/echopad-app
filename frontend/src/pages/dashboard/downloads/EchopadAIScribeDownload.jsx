@@ -104,7 +104,7 @@ const EchopadAIScribeDownload = () => {
                             <div className="text-xs font-normal opacity-90">Download for</div>
                             <div className="text-sm font-bold">{downloadState === 'mac' ? 'Downloading…' : 'macOS'}</div>
                         </div>
-                    </button>
+                    </div>
 
                     <button
                         onClick={() => handleDownload('desktop')}
@@ -116,7 +116,7 @@ const EchopadAIScribeDownload = () => {
                             <div className="text-xs font-normal text-gray-500">Download for</div>
                             <div className="text-sm font-bold">{downloadState === 'desktop' ? 'Downloading…' : 'Windows'}</div>
                         </div>
-                    </button>
+                    </div>
                 </div>
 
                 {downloadError && (
@@ -188,7 +188,7 @@ const EchopadAIScribeDownload = () => {
                                         </li>
                                         <li className="flex gap-3">
                                             <span className="font-medium text-gray-900 w-24">Processor:</span>
-                                            Apple Silicon M1 Pro or better
+                                            Apple Silicon M1 or better
                                         </li>
                                         <li className="flex gap-3">
                                             <span className="font-medium text-gray-900 w-24">Internet:</span>
@@ -210,7 +210,7 @@ const EchopadAIScribeDownload = () => {
                                         </li>
                                         <li className="flex gap-3">
                                             <span className="font-medium text-gray-900 w-24">Processor:</span>
-                                            Intel Core i5 or AMD Ryzen 5
+                                            Intel Core i3 or AMD Ryzen 5
                                         </li>
                                         <li className="flex gap-3">
                                             <span className="font-medium text-gray-900 w-24">RAM:</span>
@@ -229,7 +229,7 @@ const EchopadAIScribeDownload = () => {
                                         </li>
                                         <li className="flex gap-3">
                                             <span className="font-medium text-gray-900 w-24">Processor:</span>
-                                            Intel Core i7 or AMD Ryzen 7
+                                            Intel Core i5 or AMD Ryzen 7
                                         </li>
                                         <li className="flex gap-3">
                                             <span className="font-medium text-gray-900 w-24">Internet:</span>
