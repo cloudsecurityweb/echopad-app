@@ -6,8 +6,8 @@ import { getAiScribeVersion } from '../../../api/downloads.api';
 
 const DOWNLOAD_MAC_URL = '/api/download/ai-scribe/mac';
 const DOWNLOAD_DESKTOP_URL = '/api/download/ai-scribe/desktop';
-const DEFAULT_MAC_FILENAME = 'Echopad-1.0.9.dmg';
-const DEFAULT_DESKTOP_FILENAME = 'Echopad-Setup-1.0.8.exe';
+const DEFAULT_MAC_FILENAME = 'Echopad.dmg';
+const DEFAULT_DESKTOP_FILENAME = 'Echopad-Setup.exe';
 
 function getFilenameFromDisposition(contentDisposition) {
     if (!contentDisposition) return null;
@@ -21,12 +21,20 @@ const EchopadAIScribeDownload = () => {
     const [downloadState, setDownloadState] = useState('idle'); // 'idle' | 'mac' | 'desktop'
     const [downloadError, setDownloadError] = useState(null);
     const [versionManifest, setVersionManifest] = useState(null); // { desktop: { version, filename }, mac: { version, filename } }
+    const [versionLoading, setVersionLoading] = useState(true);
     const navigate = useNavigate();
 
-    useEffect(() => {
-        getAiScribeVersion()
+    const fetchVersions = (bypassCache = false) => {
+        setVersionLoading(true);
+        const url = bypassCache ? '/api/download/ai-scribe/version?refresh=1' : '/api/download/ai-scribe/version';
+        http.get(url)
             .then((res) => res.data && setVersionManifest(res.data))
-            .catch(() => { /* use defaults if version API fails */ });
+            .catch(() => setVersionManifest(null))
+            .finally(() => setVersionLoading(false));
+    };
+
+    useEffect(() => {
+        fetchVersions();
     }, []);
 
     const triggerBlobDownload = (blob, filename) => {
@@ -84,14 +92,29 @@ const EchopadAIScribeDownload = () => {
 
             {/* 1. Hero Section */}
             <section className="text-center space-y-8 animate-fadeIn pt-8">
-                <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-cyan-50 to-blue-50 border border-cyan-100 rounded-full text-cyan-700 text-sm font-medium mb-4">
-                    <span className="relative flex h-2 w-2">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
+                <div className="flex flex-wrap items-center justify-center gap-2 mb-4">
+                    <span className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-cyan-50 to-blue-50 border border-cyan-100 rounded-full text-cyan-700 text-sm font-medium">
+                        <span className="relative flex h-2 w-2">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
+                        </span>
+                        {versionLoading ? 'Checking for updates…' : versionManifest?.mac?.version ? `macOS v${versionManifest.mac.version} Now Available` : 'macOS —'}
                     </span>
-                    {versionManifest
-                        ? `v${versionManifest.mac?.version || versionManifest.desktop?.version || '1.0.0'} Now Available`
-                        : 'v1.0.0 Now Available'}
+                    <span className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 border border-gray-200 rounded-full text-gray-700 text-sm font-medium">
+                        <i className="bi bi-windows text-blue-600"></i>
+                        {versionLoading ? 'Checking for updates…' : versionManifest?.desktop?.version ? `Windows v${versionManifest.desktop.version} Now Available` : 'Windows —'}
+                    </span>
+                    {!versionLoading && (
+                        <button
+                            type="button"
+                            onClick={() => fetchVersions(true)}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs text-gray-500 hover:text-cyan-600 hover:bg-cyan-50 rounded-lg transition-colors cursor-pointer"
+                            title="Fetch newest versions from server"
+                        >
+                            <i className="bi bi-arrow-clockwise"></i>
+                            Refresh versions
+                        </button>
+                    )}
                 </div>
 
                 <h1 className="text-5xl md:text-7xl font-bold text-gray-900 tracking-tight mb-6">
@@ -114,7 +137,7 @@ const EchopadAIScribeDownload = () => {
                         <i className="bi bi-apple text-xl group-hover:scale-110 transition-transform"></i>
                         <div className="text-left">
                             <div className="text-xs font-normal opacity-90">Download for</div>
-                            <div className="text-sm font-bold">{downloadState === 'mac' ? 'Downloading…' : 'macOS'}</div>
+                            <div className="text-sm font-bold">{downloadState === 'mac' ? 'Downloading…' : versionManifest?.mac?.version ? `macOS v${versionManifest.mac.version}` : 'macOS'}</div>
                         </div>
                     </button>
 
@@ -126,7 +149,7 @@ const EchopadAIScribeDownload = () => {
                         <i className="bi bi-windows text-xl text-blue-600 group-hover:scale-110 transition-transform"></i>
                         <div className="text-left">
                             <div className="text-xs font-normal text-gray-500">Download for</div>
-                            <div className="text-sm font-bold">{downloadState === 'desktop' ? 'Downloading…' : 'Windows'}</div>
+                            <div className="text-sm font-bold">{downloadState === 'desktop' ? 'Downloading…' : versionManifest?.desktop?.version ? `Windows v${versionManifest.desktop.version}` : 'Windows'}</div>
                         </div>
                     </button>
                 </div>
@@ -296,14 +319,14 @@ const EchopadAIScribeDownload = () => {
                             disabled={downloadState !== 'idle'}
                             className="px-8 py-3 bg-white text-gray-900 rounded-xl hover:bg-gray-100 transition-colors font-semibold shadow-lg cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed"
                         >
-                            {downloadState === 'mac' ? 'Downloading…' : 'Download for macOS'}
+                            {downloadState === 'mac' ? 'Downloading…' : versionManifest?.mac?.version ? `Download for macOS (v${versionManifest.mac.version})` : 'Download for macOS'}
                         </button>
                         <button
                             onClick={() => handleDownload('desktop')}
                             disabled={downloadState !== 'idle'}
                             className="px-8 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-500 transition-colors font-semibold shadow-lg border border-transparent cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed"
                         >
-                            {downloadState === 'desktop' ? 'Downloading…' : 'Download for Windows'}
+                            {downloadState === 'desktop' ? 'Downloading…' : versionManifest?.desktop?.version ? `Download for Windows (v${versionManifest.desktop.version})` : 'Download for Windows'}
                         </button>
                     </div>
                     <p className="text-xs text-gray-400">
