@@ -51,6 +51,8 @@ function LoginComplete() {
     if (data.email) url.searchParams.set('email', data.email);
     const displayName = data.display_name ?? data.displayName;
     if (displayName) url.searchParams.set('display_name', displayName);
+    const refreshToken = data.refresh_token ?? data.refreshToken;
+    if (refreshToken) url.searchParams.set('refresh_token', refreshToken);
     return url;
   };
 

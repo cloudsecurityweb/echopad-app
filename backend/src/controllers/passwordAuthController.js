@@ -455,17 +455,24 @@ export async function signInEmail(req, res) {
       }
     }
 
-    // Generate session token for email/password authentication
+    // Generate session token and refresh token for email/password authentication
     let sessionToken = null;
+    let refreshToken = null;
     try {
-      const { generateEmailPasswordToken } = await import('../middleware/emailPasswordAuth.js');
+      const { generateEmailPasswordToken, generateEmailPasswordRefreshToken } = await import('../middleware/emailPasswordAuth.js');
       sessionToken = await generateEmailPasswordToken({
         userId: user.id,
         tenantId: user.tenantId,
         email: user.email,
         role: user.role,
       });
-      console.log(`✅ [SIGN-IN] Generated session token for email/password user: ${normalizedEmail}`);
+      refreshToken = await generateEmailPasswordRefreshToken({
+        userId: user.id,
+        tenantId: user.tenantId,
+        email: user.email,
+        role: user.role,
+      });
+      console.log(`✅ [SIGN-IN] Generated session token and refresh token for email/password user: ${normalizedEmail}`);
     } catch (tokenError) {
       console.error('❌ [SIGN-IN] Failed to generate session token:', tokenError.message);
       // Continue without token - user can still sign in but won't be able to access protected endpoints
@@ -503,6 +510,7 @@ export async function signInEmail(req, res) {
         } : null,
         backendRole: user.role,
         sessionToken: sessionToken, // Include session token in response
+        refreshToken: refreshToken || undefined,
       },
     });
   } catch (error) {
@@ -510,6 +518,78 @@ export async function signInEmail(req, res) {
     res.status(500).json({
       success: false,
       error: 'Sign in failed',
+      message: error.message,
+    });
+  }
+}
+
+/**
+ * POST /api/auth/refresh
+ * Exchange a valid refresh token for a new access (session) token.
+ * Body: { refreshToken: string }
+ */
+export async function refreshToken(req, res) {
+  if (!isConfigured()) {
+    return res.status(503).json({
+      success: false,
+      error: 'CosmosDB not configured',
+      message: 'COSMOS_ENDPOINT and COSMOS_KEY environment variables are required',
+    });
+  }
+
+  try {
+    const { refreshToken: refreshTokenFromBody } = req.body || {};
+
+    if (!refreshTokenFromBody || typeof refreshTokenFromBody !== 'string') {
+      return res.status(400).json({
+        success: false,
+        error: 'Validation failed',
+        message: 'refreshToken is required',
+      });
+    }
+
+    const { verifyEmailPasswordRefreshToken, generateEmailPasswordToken } = await import('../middleware/emailPasswordAuth.js');
+
+    let payload;
+    try {
+      payload = await verifyEmailPasswordRefreshToken(refreshTokenFromBody);
+    } catch (verifyError) {
+      console.warn('Refresh token verification failed:', verifyError.message);
+      return res.status(401).json({
+        success: false,
+        error: 'Invalid or expired refresh token',
+        message: 'Please sign in again.',
+      });
+    }
+
+    const user = await getUserById(payload.userId, payload.tenantId);
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        error: 'User not found',
+        message: 'User account not found. Please sign in again.',
+      });
+    }
+
+    const sessionToken = await generateEmailPasswordToken({
+      userId: user.id,
+      tenantId: user.tenantId,
+      email: user.email,
+      role: user.role,
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: 'Token refreshed',
+      data: {
+        sessionToken,
+      },
+    });
+  } catch (error) {
+    console.error('Refresh token error:', error);
+    return res.status(500).json({
+      success: false,
+      error: 'Refresh failed',
       message: error.message,
     });
   }

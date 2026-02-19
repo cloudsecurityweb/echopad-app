@@ -11,6 +11,8 @@ import { getContainerNameByRole } from '../models/user.js';
 
 const EMAIL_PASSWORD_SECRET = process.env.EMAIL_PASSWORD_JWT_SECRET;
 const EMAIL_PASSWORD_TTL_MINUTES = parseInt(process.env.EMAIL_PASSWORD_TOKEN_TTL_MINUTES || '1440', 10); // Default 24 hours
+const EMAIL_PASSWORD_REFRESH_TTL_DAYS = parseInt(process.env.EMAIL_PASSWORD_REFRESH_TTL_DAYS || '7', 10); // Default 7 days
+const REFRESH_ISSUER = 'echopad-email-password-refresh';
 
 if (!EMAIL_PASSWORD_SECRET) {
   console.warn('⚠️  EMAIL_PASSWORD_JWT_SECRET not set. Email/password auth will fail.');
@@ -44,6 +46,61 @@ export async function generateEmailPasswordToken(payload) {
     .sign(secret);
 
   return token;
+}
+
+/**
+ * Generate an email/password refresh token (long-lived, for use with POST /api/auth/refresh)
+ * @param {Object} payload - Token payload { userId, tenantId, email, role }
+ * @returns {Promise<string>} Signed JWT refresh token
+ */
+export async function generateEmailPasswordRefreshToken(payload) {
+  if (!EMAIL_PASSWORD_SECRET) {
+    throw new Error('EMAIL_PASSWORD_JWT_SECRET not configured');
+  }
+
+  const secret = new TextEncoder().encode(EMAIL_PASSWORD_SECRET);
+  const expiresIn = `${EMAIL_PASSWORD_REFRESH_TTL_DAYS}d`;
+
+  const token = await new SignJWT({
+    userId: payload.userId,
+    tenantId: payload.tenantId,
+    email: payload.email,
+    role: payload.role,
+  })
+    .setProtectedHeader({ alg: 'HS256' })
+    .setIssuedAt()
+    .setIssuer(REFRESH_ISSUER)
+    .setSubject(payload.userId)
+    .setAudience('echopad-api')
+    .setExpirationTime(expiresIn)
+    .sign(secret);
+
+  return token;
+}
+
+/**
+ * Verify an email/password refresh token and return the payload.
+ * @param {string} token - JWT refresh token string
+ * @returns {Promise<{ userId: string, tenantId: string, email: string, role: string }>} Decoded payload
+ * @throws {Error} When token is invalid or expired
+ */
+export async function verifyEmailPasswordRefreshToken(token) {
+  if (!EMAIL_PASSWORD_SECRET) {
+    throw new Error('EMAIL_PASSWORD_JWT_SECRET not configured');
+  }
+
+  const secret = new TextEncoder().encode(EMAIL_PASSWORD_SECRET);
+  const { payload } = await jwtVerify(token, secret, {
+    issuer: REFRESH_ISSUER,
+    audience: 'echopad-api',
+  });
+
+  return {
+    userId: payload.userId,
+    tenantId: payload.tenantId,
+    email: payload.email,
+    role: payload.role,
+  };
 }
 
 /**

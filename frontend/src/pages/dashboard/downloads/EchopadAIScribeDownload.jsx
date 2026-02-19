@@ -1,12 +1,65 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useScrollAnimations } from '../../../hooks/useAnimation';
+import http from '../../../api/http';
+
+const DOWNLOAD_MAC_URL = '/api/download/ai-scribe/mac';
+const DOWNLOAD_DESKTOP_URL = '/api/download/ai-scribe/desktop';
+const DEFAULT_MAC_FILENAME = 'Echopad-1.0.9.dmg';
+const DEFAULT_DESKTOP_FILENAME = 'Echopad-Setup-1.0.8.exe';
+
+function getFilenameFromDisposition(contentDisposition) {
+    if (!contentDisposition) return null;
+    const match = /filename="?([^";\n]+)"?/i.exec(contentDisposition);
+    return match ? match[1].trim() : null;
+}
 
 const EchopadAIScribeDownload = () => {
     useScrollAnimations();
     const [activeTab, setActiveTab] = useState('mac');
-
+    const [downloadState, setDownloadState] = useState('idle'); // 'idle' | 'mac' | 'desktop'
+    const [downloadError, setDownloadError] = useState(null);
     const navigate = useNavigate();
+
+    const triggerBlobDownload = (blob, filename) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.click();
+        window.URL.revokeObjectURL(url);
+    };
+
+    const handleDownload = async (platform) => {
+        setDownloadError(null);
+        setDownloadState(platform);
+        const isMac = platform === 'mac';
+        const url = isMac ? DOWNLOAD_MAC_URL : DOWNLOAD_DESKTOP_URL;
+        const defaultFilename = isMac ? DEFAULT_MAC_FILENAME : DEFAULT_DESKTOP_FILENAME;
+        try {
+            const response = await http.get(url, { responseType: 'blob' });
+            const disposition = response.headers['content-disposition'];
+            const filename = getFilenameFromDisposition(disposition) || defaultFilename;
+            triggerBlobDownload(response.data, filename);
+        } catch (err) {
+            if (err.response?.status === 401 || err.response?.status === 403) {
+                setDownloadError('Please sign in to download.');
+            } else if (err.response?.status >= 500) {
+                setDownloadError('Download unavailable. Please try again later.');
+            } else {
+                setDownloadError('Download failed. Please try again.');
+            }
+            if (err.response?.data instanceof Blob) {
+                try {
+                    const text = await err.response.data.text();
+                    const json = JSON.parse(text);
+                    if (json?.message) setDownloadError(json.message);
+                } catch (_) { /* keep existing message */ }
+            }
+        } finally {
+            setDownloadState('idle');
+        }
+    };
 
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-0 space-y-20">
@@ -40,75 +93,37 @@ const EchopadAIScribeDownload = () => {
                     Echopad AI Scribe converts live clinical conversations into structured medical documentation — <span className="text-gray-900 font-medium">securely, accurately, and instantly</span>. Zero manual typing.
                 </p>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto pt-8 pb-8">
-                    {/* macOS Card */}
-                    <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group text-left">
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-gray-100 to-gray-50 rounded-bl-full -mr-10 -mt-10 opacity-50 group-hover:scale-110 transition-transform"></div>
-                        <div className="relative z-10 flex flex-col h-full">
-                            <div className="flex items-center gap-3 mb-4">
-                                <div className="p-3 bg-gray-900 rounded-xl text-white shadow-lg shadow-gray-200">
-                                    <i className="bi bi-apple text-2xl"></i>
-                                </div>
-                                <div>
-                                    <h3 className="font-bold text-gray-900 text-lg">macOS</h3>
-                                    <p className="text-sm text-gray-500">For macOS 12 (Monterey) or later</p>
-                                </div>
-                            </div>
-
-                            <div className="space-y-3 mt-auto">
-                                <button className="w-full py-3.5 px-4 bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-colors font-semibold flex items-center justify-between group/btn shadow-lg shadow-gray-200 cursor-pointer">
-                                    <span className="flex flex-col items-start">
-                                        <span>Download for Apple Silicon</span>
-                                        <span className="text-[10px] font-normal text-gray-400">M1 / M2 / M3 / M4 / M5 Chips</span>
-                                    </span>
-                                    <i className="bi bi-cpu text-lg text-gray-400 group-hover/btn:text-white transition-colors"></i>
-                                </button>
-
-                                <button className="w-full py-3 px-4 bg-gray-100 text-gray-900 rounded-xl hover:bg-gray-200 transition-colors font-medium text-sm flex items-center justify-between group/intel cursor-pointer">
-                                    <span className="flex flex-col items-start">
-                                        <span>Download for Intel Chip</span>
-                                        <span className="text-[10px] font-normal text-gray-500">x86_64 Architecture</span>
-                                    </span>
-                                    <i className="bi bi-hdd-network text-lg text-gray-400 group-hover/intel:text-gray-600 transition-colors"></i>
-                                </button>
-                            </div>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center pt-8 pb-8">
+                    <button
+                        onClick={() => handleDownload('mac')}
+                        disabled={downloadState !== 'idle'}
+                        className="px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-xl hover:from-cyan-400 hover:to-blue-500 transition-all duration-300 font-semibold flex items-center justify-center gap-3 shadow-lg shadow-cyan-100/50 hover:shadow-cyan-200 hover:-translate-y-1 cursor-pointer group disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+                    >
+                        <i className="bi bi-apple text-xl group-hover:scale-110 transition-transform"></i>
+                        <div className="text-left">
+                            <div className="text-xs font-normal opacity-90">Download for</div>
+                            <div className="text-sm font-bold">{downloadState === 'mac' ? 'Downloading…' : 'macOS'}</div>
                         </div>
                     </div>
 
-                    {/* Windows Card */}
-                    <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group text-left">
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-50 to-blue-100 rounded-bl-full -mr-10 -mt-10 opacity-50 group-hover:scale-110 transition-transform"></div>
-                        <div className="relative z-10 flex flex-col h-full">
-                            <div className="flex items-center gap-3 mb-4">
-                                <div className="p-3 bg-blue-600 rounded-xl text-white shadow-lg shadow-blue-100">
-                                    <i className="bi bi-windows text-2xl"></i>
-                                </div>
-                                <div>
-                                    <h3 className="font-bold text-gray-900 text-lg">Windows</h3>
-                                    <p className="text-sm text-gray-500">For Windows 10 & 11</p>
-                                </div>
-                            </div>
-
-                            <div className="space-y-3 mt-auto">
-                                <button className="w-full py-3.5 px-4 bg-gradient-to-r from-blue-600 to-blue-500 text-white rounded-xl hover:from-blue-500 hover:to-blue-400 transition-all font-semibold flex items-center justify-between group/btn shadow-lg shadow-blue-100 cursor-pointer">
-                                    <span className="flex flex-col items-start">
-                                        <span>Download for 64-bit</span>
-                                        <span className="text-[10px] font-normal text-blue-100">Recommended</span>
-                                    </span>
-                                    <i className="bi bi-download text-lg text-blue-100 group-hover/btn:text-white transition-colors"></i>
-                                </button>
-
-                                <button className="w-full py-3 px-4 bg-blue-50 text-blue-900 rounded-xl hover:bg-blue-100 transition-colors font-medium text-sm flex items-center justify-between group/32bit cursor-pointer">
-                                    <span className="flex flex-col items-start">
-                                        <span>Download for 32-bit</span>
-                                        <span className="text-[10px] font-normal text-blue-600/70">x86 Architecture</span>
-                                    </span>
-                                    <i className="bi bi-display text-lg text-blue-300 group-hover/32bit:text-blue-500 transition-colors"></i>
-                                </button>
-                            </div>
+                    <button
+                        onClick={() => handleDownload('desktop')}
+                        disabled={downloadState !== 'idle'}
+                        className="px-8 py-4 bg-white text-gray-800 border border-gray-200 rounded-xl hover:bg-gray-50 hover:border-gray-300 transition-all duration-300 font-semibold flex items-center justify-center gap-3 shadow-sm hover:shadow-md hover:-translate-y-1 cursor-pointer group disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+                    >
+                        <i className="bi bi-windows text-xl text-blue-600 group-hover:scale-110 transition-transform"></i>
+                        <div className="text-left">
+                            <div className="text-xs font-normal text-gray-500">Download for</div>
+                            <div className="text-sm font-bold">{downloadState === 'desktop' ? 'Downloading…' : 'Windows'}</div>
                         </div>
                     </div>
                 </div>
+
+                {downloadError && (
+                    <p className="text-sm text-red-600" role="alert">
+                        {downloadError}
+                    </p>
+                )}
 
                 <p className="text-sm text-gray-500">
                     Secure & HIPAA Ready • Cancel anytime
@@ -263,13 +278,20 @@ const EchopadAIScribeDownload = () => {
                     <p className="text-gray-300 text-lg">
                         Join thousands of clinicians saving 2+ hours daily with Echopad AI Scribe.
                     </p>
-                    <div className="flex justify-center">
+                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
                         <button
-                            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                            className="px-10 py-4 bg-white text-gray-900 rounded-xl hover:bg-gray-100 transition-colors font-bold shadow-lg hover:shadow-xl hover:-translate-y-1 transform duration-300 cursor-pointer flex items-center gap-3"
+                            onClick={() => handleDownload('mac')}
+                            disabled={downloadState !== 'idle'}
+                            className="px-8 py-3 bg-white text-gray-900 rounded-xl hover:bg-gray-100 transition-colors font-semibold shadow-lg cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed"
                         >
-                            <span>Start Your Free Download</span>
-                            <i className="bi bi-arrow-up-circle text-blue-600"></i>
+                            {downloadState === 'mac' ? 'Downloading…' : 'Download for macOS'}
+                        </button>
+                        <button
+                            onClick={() => handleDownload('desktop')}
+                            disabled={downloadState !== 'idle'}
+                            className="px-8 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-500 transition-colors font-semibold shadow-lg border border-transparent cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed"
+                        >
+                            {downloadState === 'desktop' ? 'Downloading…' : 'Download for Windows'}
                         </button>
                     </div>
                     <p className="text-xs text-gray-400">
