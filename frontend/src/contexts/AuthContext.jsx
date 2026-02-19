@@ -53,6 +53,8 @@ export function AuthProvider({ children }) {
   
   // Email/password authentication state
   const [emailPasswordToken, setEmailPasswordToken] = useState(null);
+  // Email/password refresh token (for Electron redirect; not persisted long-term)
+  const [emailPasswordRefreshToken, setEmailPasswordRefreshToken] = useState(null);
 
   // When true, app should redirect to sign-up (e.g. Google user not in DB)
   const [userNotRegisteredRedirect, setUserNotRegisteredRedirect] = useState(false);
@@ -73,6 +75,8 @@ export function AuthProvider({ children }) {
   const EMAIL_SESSION_KEY = 'echopad_email_auth_session';
   // Token in localStorage so new tabs (e.g. Electron callback) can reuse it; cleared on logout
   const EMAIL_TOKEN_LOCAL_KEY = 'echopad_email_token';
+  // Refresh token in sessionStorage only (for Electron redirect in same session); cleared on logout
+  const EMAIL_REFRESH_TOKEN_SESSION_KEY = 'echopad_email_refresh_token';
 
   // Initialize - check if user is already authenticated
   useEffect(() => {
@@ -470,10 +474,12 @@ export function AuthProvider({ children }) {
         setUserProfile(null);
         setUserOID(null);
         setEmailPasswordToken(null);
+        setEmailPasswordRefreshToken(null);
         try {
           localStorage.removeItem(EMAIL_SESSION_KEY);
           localStorage.removeItem(EMAIL_TOKEN_LOCAL_KEY);
           sessionStorage.removeItem('email_password_token');
+          sessionStorage.removeItem(EMAIL_REFRESH_TOKEN_SESSION_KEY);
         } catch {
           // ignore storage errors
         }
@@ -1058,6 +1064,17 @@ export function AuthProvider({ children }) {
         } else {
           console.warn('⚠️ [AUTH] No session token received from email/password sign-in');
         }
+
+        // Store refresh token for Electron redirect (sessionStorage only; not long-term)
+        const refreshTokenFromBackend = data.data.refreshToken;
+        if (refreshTokenFromBackend) {
+          setEmailPasswordRefreshToken(refreshTokenFromBackend);
+          try {
+            sessionStorage.setItem(EMAIL_REFRESH_TOKEN_SESSION_KEY, refreshTokenFromBackend);
+          } catch (storageError) {
+            console.warn('Failed to store email/password refresh token:', storageError);
+          }
+        }
         
         // For email/password auth, user.id may not be OID, but we can still extract it if available
         // For Microsoft auth, user.id is always the OID
@@ -1145,6 +1162,7 @@ export function AuthProvider({ children }) {
     // Email/password authentication
     signUpEmailPassword,
     signInEmailPassword,
+    emailPasswordRefreshToken,
     // Google authentication
     loginWithGoogle,
     googleToken,

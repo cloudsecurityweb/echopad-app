@@ -94,10 +94,10 @@ const corsOptions = {
   },
   credentials: true, // Allow cookies and authorization headers
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
-  exposedHeaders: ["Content-Range", "X-Content-Range"],
+  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With", "Accept"],
+  exposedHeaders: ["Content-Range", "X-Content-Range", "Content-Disposition", "Content-Type", "Content-Length"],
   preflightContinue: false,
-  optionsSuccessStatus: 204, // Some legacy browsers (IE11, various SmartTVs) choke on 204
+  optionsSuccessStatus: 204,
 };
 
 import helmet from "helmet";
