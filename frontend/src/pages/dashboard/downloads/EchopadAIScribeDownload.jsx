@@ -50,7 +50,9 @@ const EchopadAIScribeDownload = () => {
         setDownloadError(null);
         setDownloadState(platform);
         const isMac = platform === 'mac';
-        const url = isMac ? DOWNLOAD_MAC_URL : DOWNLOAD_DESKTOP_URL;
+        const manifest = isMac ? versionManifest?.mac : versionManifest?.desktop;
+        const versionParam = manifest?.version ? `?version=${encodeURIComponent(manifest.version)}` : '';
+        const url = (isMac ? DOWNLOAD_MAC_URL : DOWNLOAD_DESKTOP_URL) + versionParam;
         const defaultFilename = isMac
             ? (versionManifest?.mac?.filename || DEFAULT_MAC_FILENAME)
             : (versionManifest?.desktop?.filename || DEFAULT_DESKTOP_FILENAME);
