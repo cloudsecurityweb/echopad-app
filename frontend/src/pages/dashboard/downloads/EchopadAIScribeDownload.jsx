@@ -141,7 +141,7 @@ const EchopadAIScribeDownload = () => {
                             <div className="text-xs font-normal opacity-90">Download for</div>
                             <div className="text-sm font-bold">{downloadState === 'mac' ? 'Downloading…' : versionManifest?.mac?.version ? `macOS v${versionManifest.mac.version}` : 'macOS'}</div>
                         </div>
-                    </div>
+                    </button>
 
                     <button
                         onClick={() => handleDownload('desktop')}
@@ -153,7 +153,7 @@ const EchopadAIScribeDownload = () => {
                             <div className="text-xs font-normal text-gray-500">Download for</div>
                             <div className="text-sm font-bold">{downloadState === 'desktop' ? 'Downloading…' : versionManifest?.desktop?.version ? `Windows v${versionManifest.desktop.version}` : 'Windows'}</div>
                         </div>
-                    </div>
+                    </button>
                 </div>
 
                 {downloadError && (
