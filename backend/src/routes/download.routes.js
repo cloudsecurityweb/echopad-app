@@ -399,14 +399,16 @@ async function streamFromArtifacts(req, res, artifactUrl, filename, packageName,
 
 /**
  * GET /api/download/ai-scribe/version
- * Returns latest app version and download paths per platform (fetched from Azure Artifacts).
+ * Returns newest app version and download paths per platform (fetched from Azure Artifacts).
  * No auth required so the desktop/mac app can check for updates without a user token.
+ * Query: ?refresh=1 to bypass cache and fetch the latest from Azure.
  */
 router.get("/ai-scribe/version", async (req, res) => {
   const basePath = "/api/download/ai-scribe";
+  const bypassCache = req.query.refresh === "1" || req.query.refresh === "true";
   const [desktopInfo, macInfo] = await Promise.all([
-    getLatestPackageInfo("desktop"),
-    getLatestPackageInfo("mac"),
+    getLatestPackageInfo("desktop", { bypassCache }),
+    getLatestPackageInfo("mac", { bypassCache }),
   ]);
   res.json({
     desktop: {
