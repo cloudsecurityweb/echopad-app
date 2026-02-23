@@ -23,6 +23,7 @@ import userProductRouter from "./userProduct.routes.js";
 import userLicensesRouter from "./userLicenses.routes.js";
 import transcriptionHistoryRouter from "./transcriptionHistory.routes.js";
 import intercomRouter from "./intercom.routes.js";
+import downloadRouter from "./download.routes.js";
 import { seedSaasDemoData } from "../services/seed-saas-data.js";
 
 const router = express.Router();
@@ -173,5 +174,6 @@ router.use("/api/help-center", helpCenterRouter); // GET, POST, PATCH
 router.use("/api/client-feedback", clientFeedbackRouter); // GET, POST, PATCH
 router.use("/api/transcription-history", transcriptionHistoryRouter); // GET, POST
 router.use("/api/intercom", intercomRouter); // GET (identity verification)
+router.use("/api/download", downloadRouter); // GET /ai-scribe/desktop, /ai-scribe/mac (Azure Artifacts proxy)
 
 export default router;

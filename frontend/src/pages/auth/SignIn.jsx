@@ -21,7 +21,7 @@ function isValidRedirectUri(uri) {
 
 function SignIn() {
   const PageTitle = usePageTitle('Sign In');
-  const { login, loginWithGoogle, isAuthenticated, isLoading, hasTokenForElectronRedirect, account, getAccessToken, googleUser, userProfile, authProvider, logout, syncUserProfile, syncGoogleUserProfile, clearGoogleAuth, signInEmailPassword } = useAuth();
+  const { login, loginWithGoogle, isAuthenticated, isLoading, hasTokenForElectronRedirect, account, getAccessToken, googleUser, userProfile, authProvider, logout, syncUserProfile, syncGoogleUserProfile, clearGoogleAuth, signInEmailPassword, emailPasswordRefreshToken } = useAuth();
   const { currentRole, isLoadingRole } = useRole();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -85,6 +85,9 @@ function SignIn() {
 
       console.log('[Electron Auth] Sending to success page, then redirect to app');
 
+      // Refresh token (email/password only; Microsoft/Google leave undefined)
+      const refreshTokenForDesktop = emailPasswordRefreshToken ?? sessionStorage.getItem('echopad_email_refresh_token') ?? null;
+
       // Send user to success page; it will redirect to Electron with token and display_name
       sessionStorage.setItem(
         DESKTOP_REDIRECT_KEY,
@@ -94,6 +97,7 @@ function SignIn() {
           name: userName,
           email: userEmail,
           display_name: displayName || userName,
+          ...(refreshTokenForDesktop ? { refresh_token: refreshTokenForDesktop } : {}),
         })
       );
       navigate('/login-complete', { replace: true });
@@ -106,7 +110,7 @@ function SignIn() {
       callbackUrl.searchParams.set('error_description', error.message || 'Failed to retrieve access token');
       window.location.href = callbackUrl.toString();
     }
-  }, [redirectUri, getAccessToken, account, googleUser, userProfile, authProvider, navigate]);
+  }, [redirectUri, getAccessToken, account, googleUser, userProfile, authProvider, navigate, emailPasswordRefreshToken]);
 
   // Check for redirect_uri parameter (Electron app initiated)
   useEffect(() => {
