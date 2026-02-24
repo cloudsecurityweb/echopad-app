@@ -216,10 +216,17 @@ async function downloadViaCli(req, res, packageName, version, filename, platform
           "--version", version,
           "--path", tempDir,
         ];
+        console.log(`[DOWNLOAD] CLI command: az ${args.join(" ")}`);
         const child = spawn("az", args, { stdio: ["ignore", "pipe", "pipe"], shell: true });
         let stderr = "";
+        let stdout = "";
+        child.stdout?.on("data", (d) => (stdout += d.toString()));
         child.stderr?.on("data", (d) => (stderr += d.toString()));
-        child.on("close", (code) => (code === 0 ? res() : rej(new Error(stderr || "az artifacts universal download failed"))));
+        child.on("close", (code) => {
+          if (stdout.trim()) console.log("[DOWNLOAD] CLI stdout:", stdout.trim().slice(0, 500));
+          if (stderr.trim()) console.log("[DOWNLOAD] CLI stderr:", stderr.trim().slice(0, 500));
+          code === 0 ? res() : rej(new Error(stderr || "az artifacts universal download failed"));
+        });
         child.on("error", rej);
       });
 
@@ -228,6 +235,8 @@ async function downloadViaCli(req, res, packageName, version, filename, platform
       .then(() => {
         try {
           const files = listFilesRecursive(tempDir);
+          console.log(`[DOWNLOAD] CLI downloaded ${files.length} file(s) for package ${packageName}@${version}:`);
+          files.forEach((f) => console.log(`  - ${path.basename(f.filePath)} (${(f.stat.size / 1024 / 1024).toFixed(2)} MB)`));
           if (files.length === 0) {
             cleanup();
             return resolve(
@@ -243,11 +252,27 @@ async function downloadViaCli(req, res, packageName, version, filename, platform
           const matching = wantExt
             ? files.filter((f) => path.extname(f.filePath).toLowerCase() === wantExt.toLowerCase())
             : [];
-          const toStream = matching.length > 0
-            ? matching.reduce((a, b) => (a.stat.size >= b.stat.size ? a : b))
-            : files.length === 1
-              ? files[0]
-              : null;
+          // Prefer a file that matches the requested version (exact or version in name, case-insensitive).
+          // If the package has exactly one .exe, use it (we already requested this package version from Azure).
+          const base = (f) => path.basename(f.filePath);
+          const exactMatch = filename && matching.find((f) => base(f).toLowerCase() === filename.toLowerCase());
+          const versionInName = version && matching.find((f) => base(f).toLowerCase().includes(version.toLowerCase()));
+          const singleExe = matching.length === 1 ? matching[0] : null;
+          const toStream = exactMatch || versionInName || singleExe;
+          const matchReason = exactMatch ? "exact filename match" : versionInName ? "version string in filename" : singleExe ? "only one file with matching extension" : "no match";
+          console.log(`[DOWNLOAD] File selection: ${matchReason}`, toStream ? path.basename(toStream.filePath) : "(none)",
+            `| expected: ${filename} | version: ${version}`);
+          if (matching.length > 0 && !toStream) {
+            cleanup();
+            console.error("[DOWNLOAD] No file in package matches requested version", version, "expected filename", filename, "found:", matching.map((f) => base(f)));
+            return resolve(
+              res.status(502).json({
+                success: false,
+                error: "Version mismatch",
+                message: `Package does not contain a file for version ${version}. Expected a file like ${filename}.`,
+              })
+            );
+          }
 
           if (toStream) {
             const { filePath } = toStream;
@@ -256,7 +281,9 @@ async function downloadViaCli(req, res, packageName, version, filename, platform
               return resolve(res.status(502).json({ success: false, error: "Download failed", message: "Downloaded file not found." }));
             }
             const ext = path.extname(filePath);
-            const downloadName = matching.length > 0 ? path.basename(filePath) : filename;
+            // Use expected versioned filename so the saved file is always e.g. Echopad-Setup-1.0.19.exe
+            const downloadName = filename || path.basename(filePath);
+            console.log("[DOWNLOAD] CLI fallback: streaming file", path.basename(filePath), "for requested version", version);
             res.setHeader("Content-Disposition", `attachment; filename="${downloadName}"`);
             if (ext === ".exe") res.setHeader("Content-Type", "application/vnd.microsoft.portable-executable");
             else if (ext === ".dmg") res.setHeader("Content-Type", "application/octet-stream");
@@ -424,16 +451,41 @@ router.get("/ai-scribe/version", async (req, res) => {
   });
 });
 
+// Optional query param version must look like 1.0.19 or 1.0.0 (semver-like)
+const REQUESTED_VERSION_REGEX = /^\d+\.\d+(\.\d+)?([-.].*)?$/;
+
+function resolveDesktopDownloadInfo(req) {
+  const requested = (req.query.version || "").trim();
+  if (requested && REQUESTED_VERSION_REGEX.test(requested)) {
+    const packageName = FALLBACK_VERSIONS.desktop.packageName;
+    const filename = `Echopad-Setup-${requested}.exe`;
+    return { version: requested, packageName, filename };
+  }
+  return null;
+}
+
+function resolveMacDownloadInfo(req) {
+  const requested = (req.query.version || "").trim();
+  if (requested && REQUESTED_VERSION_REGEX.test(requested)) {
+    const packageName = FALLBACK_VERSIONS.mac.packageName;
+    const filename = `Echopad-${requested}.dmg`;
+    return { version: requested, packageName, filename };
+  }
+  return null;
+}
+
 /**
  * GET /api/download/ai-scribe/desktop
- * Streams Windows .exe installer from Azure Artifacts (echopad-desktop, latest version).
- * Bypasses version cache so each click gets the current latest from the feed.
+ * Streams Windows .exe installer from Azure Artifacts (echopad-desktop).
+ * Query: ?version=1.0.19 to download that exact version (recommended; use the version shown on the page).
  */
 router.get(
   "/ai-scribe/desktop",
   verifyAnyAuth,
   async (req, res) => {
-    const { version, packageName, filename } = await getLatestPackageInfo("desktop", { bypassCache: true });
+    const resolved = resolveDesktopDownloadInfo(req) || await getLatestPackageInfo("desktop", { bypassCache: false });
+    const { version, packageName, filename } = resolved;
+    console.log("[DOWNLOAD] Windows desktop: serving version", version, "filename", filename);
     const url = getArtifactContentUrl(packageName, version);
     await streamFromArtifacts(req, res, url, filename, packageName, version, "desktop");
   }
@@ -441,14 +493,16 @@ router.get(
 
 /**
  * GET /api/download/ai-scribe/mac
- * Streams macOS .dmg installer from Azure Artifacts (echopad-mac, latest version).
- * Bypasses version cache so each click gets the current latest from the feed.
+ * Streams macOS .dmg installer from Azure Artifacts (echopad-mac).
+ * Query: ?version=1.0.9 to download that exact version (recommended; use the version shown on the page).
  */
 router.get(
   "/ai-scribe/mac",
   verifyAnyAuth,
   async (req, res) => {
-    const { version, packageName, filename } = await getLatestPackageInfo("mac", { bypassCache: true });
+    const resolved = resolveMacDownloadInfo(req) || await getLatestPackageInfo("mac", { bypassCache: false });
+    const { version, packageName, filename } = resolved;
+    console.log("[DOWNLOAD] Mac: serving version", version, "filename", filename);
     const url = getArtifactContentUrl(packageName, version);
     await streamFromArtifacts(req, res, url, filename, packageName, version, "mac");
   }
