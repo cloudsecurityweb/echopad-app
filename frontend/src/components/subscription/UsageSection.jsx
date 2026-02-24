@@ -7,10 +7,16 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
+import ClientMetricsCard from './ClientMetricsCard';
 
-function UsageSection({ usage, loading, error }) {
+function UsageSection({ users, product, usage, loading, error }) {
 
-  console.log('Rendering UsageSection with usage:', usage, 'loading:', loading, 'error:', error);
+  const isAiScribe = product?.name?.toLowerCase().includes('ai scribe');
+
+  if (isAiScribe) {
+    return <ClientMetricsCard activeProduct={product} users={users} />;
+  }
+
   if (loading) {
     return (
       <div className="bg-white rounded-xl border border-gray-200 p-6 text-gray-600">

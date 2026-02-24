@@ -1,6 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { useUserMetrics } from '../../hooks/useUserMetrics';
-
+import { useClientMetrics } from '../../hooks/useClientMetrics';
 /* ------------------------------------------------------------------ */
 /*  SVG Icons                                                         */
 /* ------------------------------------------------------------------ */
@@ -283,16 +282,68 @@ function getDateRange(days) {
 }
 
 /* ------------------------------------------------------------------ */
+/*  User Usage Table                                                  */
+/* ------------------------------------------------------------------ */
+function UserUsageTable({ breakdownData, users = [] }) {
+  if (!breakdownData || breakdownData.length === 0) return null;
+
+  return (
+    <div className="mt-8">
+      <h4 className="text-sm font-semibold text-gray-700 mb-4">User Breakdown</h4>
+      <div className="overflow-x-auto rounded-xl border border-gray-100 shadow-sm">
+        <table className="w-full text-left bg-white">
+          <thead className="bg-gray-50/80 text-gray-500 text-xs uppercase tracking-wider">
+            <tr>
+              <th className="px-5 py-3 font-medium">User</th>
+              <th className="px-5 py-3 font-medium text-right">Transcriptions</th>
+              <th className="px-5 py-3 font-medium text-right">Minutes</th>
+              <th className="px-5 py-3 font-medium text-right">Words</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-100 text-sm">
+            {breakdownData
+              .sort((a, b) => b.totalTranscriptions - a.totalTranscriptions)
+              .map((row, i) => {
+                const user = users.find(u => u.id === row.userId || u.uid === row.userId || u.objectId === row.userId) || {};
+                const name = user.displayName || user.name || 'Unknown User';
+                const email = user.email || row.userId;
+
+                return (
+                  <tr key={i} className="hover:bg-gray-50/50 transition-colors">
+                    <td className="px-5 py-3">
+                      <div className="font-medium text-gray-900">{name}</div>
+                      <div className="text-xs text-gray-500">{email !== name ? email : ''}</div>
+                    </td>
+                    <td className="px-5 py-3 text-right text-gray-700 font-medium">
+                      {formatNumber(row.totalTranscriptions)}
+                    </td>
+                    <td className="px-5 py-3 text-right text-gray-700">
+                      {formatMinutes(row.totalMinutes)}
+                    </td>
+                    <td className="px-5 py-3 text-right text-gray-700">
+                      {formatNumber(row.totalWords)}
+                    </td>
+                  </tr>
+                );
+              })}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
 /*  Main Component                                                    */
 /* ------------------------------------------------------------------ */
-const UserMetricsCard = ({ activeProduct }) => {
+const ClientMetricsCard = ({ activeProduct, users = [] }) => {
   const [activePeriod, setActivePeriod] = useState('all');
   const dateRange = useMemo(() => {
     const period = TIME_PERIODS.find(p => p.key === activePeriod);
     return getDateRange(period?.days);
   }, [activePeriod]);
 
-  const { data, loading, error, refresh } = useUserMetrics({ dateRange });
+  const { data, loading, error, refresh } = useClientMetrics({ dateRange });
 
   const summary = data?.summary || {};
   const trends = data?.trends || {};
@@ -441,6 +492,9 @@ const UserMetricsCard = ({ activeProduct }) => {
               <DailyActivityChart data={trends.last30Days} />
             )}
 
+            {/* User Breakdown Table */}
+            <UserUsageTable breakdownData={data?.breakdown?.byUser} users={users} />
+
             {/* Empty State */}
             {!loading && summary.totalTranscriptions === 0 && (
               <div className="mt-8 text-center py-10">
@@ -458,4 +512,4 @@ const UserMetricsCard = ({ activeProduct }) => {
   );
 };
 
-export default UserMetricsCard;
+export default ClientMetricsCard;
