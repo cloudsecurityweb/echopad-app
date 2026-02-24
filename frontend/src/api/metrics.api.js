@@ -6,3 +6,10 @@ import http from "./http";
  */
 export const fetchUserMetrics = (params = {}) =>
     http.get("/api/metrics/user", { params });
+
+/**
+ * Fetch aggregated metrics for the client organization (Client Admin + Super Admin only)
+ * @param {{ from?: string, to?: string }} params - Optional date range (ISO strings)
+ */
+export const fetchClientMetrics = (params = {}) =>
+    http.get("/api/metrics/client", { params });

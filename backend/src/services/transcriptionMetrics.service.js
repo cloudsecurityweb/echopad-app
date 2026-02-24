@@ -172,7 +172,8 @@ export async function getClientMetrics(tenantId, clientId, filters = {}) {
       COUNT(1) AS totalTranscriptions,
       SUM(c.audioDurationMinutes) AS totalMinutesTranscribed,
       SUM(c.wordCount) AS totalWordsTranscribed,
-      AVG(c.processingTimeSeconds) AS averageProcessingTime
+      AVG(c.processingTimeSeconds) AS averageProcessingTime,
+      AVG(c.wordCount) AS averageWordsPerTranscription
     FROM c
     WHERE c.tenantId = @tenantId AND c.clientId = @clientId AND c.status = 'SUCCESS'${clause}
   `;
@@ -215,19 +216,20 @@ export async function getClientMetrics(tenantId, clientId, filters = {}) {
   `;
     const breakdownByModel = await queryAll(perModelQuery, params);
 
-    return {
-        summary: {
-            totalTranscriptions: summary?.totalTranscriptions || 0,
-            totalMinutesTranscribed: Math.round((summary?.totalMinutesTranscribed || 0) * 100) / 100,
-            totalWordsTranscribed: summary?.totalWordsTranscribed || 0,
-            averageProcessingTime: Math.round((summary?.averageProcessingTime || 0) * 100) / 100,
-        },
-        breakdown: {
-            byUser: breakdownByUser,
-            byDay: breakdownByDay,
-            byModel: breakdownByModel,
-        },
-    };
+  return {
+    summary: {
+      totalTranscriptions: summary?.totalTranscriptions || 0,
+      totalMinutesTranscribed: Math.round((summary?.totalMinutesTranscribed || 0) * 100) / 100,
+      totalWordsTranscribed: summary?.totalWordsTranscribed || 0,
+      averageProcessingTime: Math.round((summary?.averageProcessingTime || 0) * 100) / 100,
+      averageWordsPerTranscription: Math.round(summary?.averageWordsPerTranscription || 0),
+    },
+    breakdown: {
+      byUser: breakdownByUser,
+      byDay: breakdownByDay,
+      byModel: breakdownByModel,
+    },
+  };
 }
 
 // ===== PLATFORM METRICS ========================================================
@@ -247,7 +249,8 @@ export async function getPlatformMetrics(tenantId, filters = {}) {
       COUNT(1) AS totalTranscriptions,
       SUM(c.audioDurationMinutes) AS totalMinutesTranscribed,
       SUM(c.wordCount) AS totalWordsTranscribed,
-      AVG(c.processingTimeSeconds) AS averageProcessingTime
+      AVG(c.processingTimeSeconds) AS averageProcessingTime,
+      AVG(c.wordCount) AS averageWordsPerTranscription
     FROM c
     WHERE c.tenantId = @tenantId AND c.status = 'SUCCESS'${clause}
   `;
@@ -307,22 +310,23 @@ export async function getPlatformMetrics(tenantId, filters = {}) {
   `;
     const usageByModel = await queryAll(perModelQuery, params);
 
-    return {
-        summary: {
-            totalTranscriptions: summary?.totalTranscriptions || 0,
-            totalMinutesTranscribed: Math.round((summary?.totalMinutesTranscribed || 0) * 100) / 100,
-            totalWordsTranscribed: summary?.totalWordsTranscribed || 0,
-            averageProcessingTime: Math.round((summary?.averageProcessingTime || 0) * 100) / 100,
-            activeUsers: activeUserIds.length,
-        },
-        breakdown: {
-            topClients: topClients.slice(0, 20),
-            byModel: usageByModel,
-        },
-        trends: {
-            daily: growthTrend,
-        },
-    };
+  return {
+    summary: {
+      totalTranscriptions: summary?.totalTranscriptions || 0,
+      totalMinutesTranscribed: Math.round((summary?.totalMinutesTranscribed || 0) * 100) / 100,
+      totalWordsTranscribed: summary?.totalWordsTranscribed || 0,
+      averageProcessingTime: Math.round((summary?.averageProcessingTime || 0) * 100) / 100,
+      averageWordsPerTranscription: Math.round(summary?.averageWordsPerTranscription || 0),
+      activeUsers: activeUserIds.length,
+    },
+    breakdown: {
+      topClients: topClients.slice(0, 20),
+      byModel: usageByModel,
+    },
+    trends: {
+      daily: growthTrend,
+    },
+  };
 }
 
 // ===== ADMIN USER LOOKUP =======================================================
