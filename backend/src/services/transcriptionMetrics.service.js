@@ -240,8 +240,8 @@ export async function getClientMetrics(tenantId, clientId, filters = {}) {
  * @param {Object} filters - { from, to }
  */
 export async function getPlatformMetrics(tenantId, filters = {}) {
-    const baseParams = [{ name: "@tenantId", value: tenantId }];
-    const { clause, params } = buildDateFilter(baseParams, filters);
+  const baseParams = [];
+  const { clause, params } = buildDateFilter(baseParams, filters);
 
     // Overall totals
     const summaryQuery = `
@@ -252,7 +252,7 @@ export async function getPlatformMetrics(tenantId, filters = {}) {
       AVG(c.processingTimeSeconds) AS averageProcessingTime,
       AVG(c.wordCount) AS averageWordsPerTranscription
     FROM c
-    WHERE c.tenantId = @tenantId AND c.status = 'SUCCESS'${clause}
+    WHERE c.status = 'SUCCESS'${clause}
   `;
     const [summary] = await queryAll(summaryQuery, params);
 
@@ -260,7 +260,7 @@ export async function getPlatformMetrics(tenantId, filters = {}) {
     const activeUsersQuery = `
     SELECT DISTINCT VALUE c.userId
     FROM c
-    WHERE c.tenantId = @tenantId AND c.status = 'SUCCESS'${clause}
+    WHERE c.status = 'SUCCESS'${clause}
   `;
     const activeUserIds = await queryAll(activeUsersQuery, params);
 
@@ -271,7 +271,7 @@ export async function getPlatformMetrics(tenantId, filters = {}) {
       COUNT(1) AS totalTranscriptions,
       SUM(c.audioDurationMinutes) AS totalMinutes
     FROM c
-    WHERE c.tenantId = @tenantId AND c.status = 'SUCCESS'${clause}
+    WHERE c.status = 'SUCCESS'${clause}
     GROUP BY c.clientId
   `;
     const topClients = await queryAll(topClientsQuery, params);
@@ -292,7 +292,7 @@ export async function getPlatformMetrics(tenantId, filters = {}) {
       COUNT(1) AS count,
       SUM(c.audioDurationMinutes) AS minutes
     FROM c
-    WHERE c.tenantId = @tenantId AND c.status = 'SUCCESS'
+    WHERE c.status = 'SUCCESS'
       AND c.createdAt >= @trendFrom
     GROUP BY SUBSTRING(c.createdAt, 0, 10)
   `;
@@ -305,7 +305,7 @@ export async function getPlatformMetrics(tenantId, filters = {}) {
       COUNT(1) AS count,
       SUM(c.audioDurationMinutes) AS minutes
     FROM c
-    WHERE c.tenantId = @tenantId AND c.status = 'SUCCESS'${clause}
+    WHERE c.status = 'SUCCESS'${clause}
     GROUP BY c.modelUsed
   `;
     const usageByModel = await queryAll(perModelQuery, params);
