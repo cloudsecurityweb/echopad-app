@@ -143,4 +143,4 @@ See: https://github.com/your-org/echopad-infra
 # Test deployment with AZURE_CREDS secret
 # Test deployment with all secrets configured
 # Deployment test - staticwebapp.config.json already has cache control headers
-# Deployment trigger - ensure UI changes are deployed -
+# Deployment trigger - ensure UI changes are deployed .
