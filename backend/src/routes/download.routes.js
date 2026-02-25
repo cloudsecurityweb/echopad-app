@@ -328,12 +328,49 @@ async function downloadViaCli(req, res, packageName, version, filename, platform
       })
       .catch((err) => {
         cleanup();
-        console.error("[DOWNLOAD] CLI error:", err.message);
+        const msg = (err.message || "").toLowerCase();
+        console.error("[DOWNLOAD] CLI error:", err.message, err.stack);
+
+        let status = 502;
+        let error = "Download failed";
+        let message = err.message || "Unknown error during CLI download.";
+
+        if (msg.includes("enoent") || msg.includes("not found") || msg.includes("is not recognized")) {
+          status = 503;
+          error = "Azure CLI not installed";
+          message = "Azure CLI ('az') is not installed or not in PATH on this server. Install it from https://aka.ms/installazurecli.";
+        } else if (msg.includes("azure-devops") || msg.includes("no module named") || msg.includes("extension")) {
+          status = 503;
+          error = "Azure DevOps extension missing";
+          message = "Azure DevOps CLI extension is not installed. Run: az extension add --name azure-devops";
+        } else if (msg.includes("401") || msg.includes("unauthorized") || msg.includes("authentication") || msg.includes("login failed")) {
+          status = 401;
+          error = "Authentication failed";
+          message = "Azure DevOps PAT is invalid or expired. Verify AZURE_DEVOPS_PAT has Packaging → Read scope and is not expired.";
+        } else if (msg.includes("403") || msg.includes("forbidden") || msg.includes("permission")) {
+          status = 403;
+          error = "Permission denied";
+          message = "PAT does not have sufficient permissions. Ensure it has Packaging → Read scope for the feed.";
+        } else if (msg.includes("404") || msg.includes("not found") || msg.includes("does not exist")) {
+          status = 404;
+          error = "Package not found";
+          message = `Package or version not found in the Azure Artifacts feed. Verify the package name and version exist.`;
+        } else if (msg.includes("timeout") || msg.includes("etimedout") || msg.includes("econnrefused") || msg.includes("econnreset")) {
+          status = 504;
+          error = "Network error";
+          message = "Could not connect to Azure DevOps. Check network connectivity and firewall rules on this server.";
+        } else if (msg.includes("disk") || msg.includes("enospc") || msg.includes("no space")) {
+          status = 507;
+          error = "Insufficient storage";
+          message = "Server ran out of disk space while downloading the package. Free up space in the temp directory.";
+        }
+
         resolve(
-          res.status(502).json({
+          res.status(status).json({
             success: false,
-            error: "Download failed",
-            message: "Could not download via Azure CLI. Ensure Azure CLI and 'az extension add --name azure-devops' are installed, and PAT has Packaging → Read.",
+            error,
+            message,
+            detail: err.message,
           })
         );
       });
@@ -371,7 +408,7 @@ async function streamFromArtifacts(req, res, artifactUrl, filename, packageName,
       try {
         const text = await response.text();
         bodyPreview = text.slice(0, 300);
-      } catch (_) {}
+      } catch (_) { }
       console.error(
         `[DOWNLOAD] Azure Artifacts REST error: ${response.status} ${response.statusText}`,
         "\nURL:",
@@ -418,8 +455,9 @@ async function streamFromArtifacts(req, res, artifactUrl, filename, packageName,
     }
     return res.status(502).json({
       success: false,
-      error: "Download failed",
-      message: "Could not stream file. " + (err.message || ""),
+      error: "Download stream failed",
+      message: "File download started but the stream was interrupted.",
+      detail: err.message || "",
     });
   }
 }
