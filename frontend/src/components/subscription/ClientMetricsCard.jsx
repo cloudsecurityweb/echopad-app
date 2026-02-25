@@ -18,11 +18,7 @@ const WordIcon = () => (
     <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16m-7 6h7" />
   </svg>
 );
-const SpeedIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-    <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
-  </svg>
-);
+
 const RefreshIcon = ({ spinning }) => (
   <svg xmlns="http://www.w3.org/2000/svg" className={`h-4 w-4 ${spinning ? 'animate-spin' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
     <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -442,7 +438,7 @@ const ClientMetricsCard = ({ activeProduct, users = [] }) => {
         {/* Stats Grid */}
         {(!loading || data) && (
           <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-3 gap-4">
               <StatCard
                 icon={<ClockIcon />}
                 label="Minutes"
@@ -475,16 +471,7 @@ const ClientMetricsCard = ({ activeProduct, users = [] }) => {
                 gradientTo="to-purple-500"
                 iconBg="bg-gradient-to-br from-violet-100 to-purple-50 text-violet-600"
               />
-              <StatCard
-                icon={<SpeedIcon />}
-                label="Avg Speed"
-                value={formatSeconds(summary.averageProcessingTime)}
-                subtitle="Average processing time"
-                accentColor="#f59e0b"
-                gradientFrom="from-amber-400"
-                gradientTo="to-orange-500"
-                iconBg="bg-gradient-to-br from-amber-100 to-orange-50 text-amber-600"
-              />
+
             </div>
 
             {/* Daily Activity Chart */}

@@ -44,20 +44,6 @@ const ProductDownloadCard = ({ activeProduct }) => {
               Select your operating system on the next page.
             </p>
           </div>
-
-          {/* Version Info */}
-          <div className="flex-shrink-0 md:pl-6 md:border-l md:border-gray-200">
-            <h4 className="text-sm font-semibold text-gray-700 mb-2">Version Information</h4>
-            <p className="text-sm text-gray-600">
-              <span className="font-medium">Version:</span> {version}
-            </p>
-            <p className="text-sm text-gray-600">
-              <span className="font-medium">Last updated:</span> {new Date().toLocaleDateString()}
-            </p>
-            {/* <a href="#" className="text-sm text-cyan-600 hover:text-cyan-700 font-medium mt-2 inline-block">
-              View release notes
-            </a> */}
-          </div>
         </div>
       </div>
     </div>

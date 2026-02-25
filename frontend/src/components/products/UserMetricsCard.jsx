@@ -19,11 +19,7 @@ const WordIcon = () => (
     <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16m-7 6h7" />
   </svg>
 );
-const SpeedIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-    <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
-  </svg>
-);
+
 const RefreshIcon = ({ spinning }) => (
   <svg xmlns="http://www.w3.org/2000/svg" className={`h-4 w-4 ${spinning ? 'animate-spin' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
     <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -43,38 +39,38 @@ const ChartIcon = () => (
 /* ------------------------------------------------------------------ */
 /*  Sparkline SVG (smooth line chart)                                 */
 /* ------------------------------------------------------------------ */
-function Sparkline({ data, color = '#06b6d4', height = 40, width = 120 }) {
-  if (!data || data.length < 2) return null;
+// function Sparkline({ data, color = '#06b6d4', height = 40, width = 120 }) {
+//   if (!data || data.length < 2) return null;
 
-  const values = data.map(d => d.value);
-  const max = Math.max(...values, 1);
-  const min = Math.min(...values, 0);
-  const range = max - min || 1;
+//   const values = data.map(d => d.value);
+//   const max = Math.max(...values, 1);
+//   const min = Math.min(...values, 0);
+//   const range = max - min || 1;
 
-  const points = values.map((v, i) => {
-    const x = (i / (values.length - 1)) * width;
-    const y = height - ((v - min) / range) * (height - 4) - 2;
-    return `${x},${y}`;
-  });
+//   const points = values.map((v, i) => {
+//     const x = (i / (values.length - 1)) * width;
+//     const y = height - ((v - min) / range) * (height - 4) - 2;
+//     return `${x},${y}`;
+//   });
 
-  const linePath = `M${points.join(' L')}`;
-  const areaPath = `${linePath} L${width},${height} L0,${height} Z`;
+//   const linePath = `M${points.join(' L')}`;
+//   const areaPath = `${linePath} L${width},${height} L0,${height} Z`;
 
-  return (
-    <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} className="overflow-visible">
-      <defs>
-        <linearGradient id={`grad-${color.replace('#', '')}`} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={color} stopOpacity="0.25" />
-          <stop offset="100%" stopColor={color} stopOpacity="0.02" />
-        </linearGradient>
-      </defs>
-      <path d={areaPath} fill={`url(#grad-${color.replace('#', '')})`} />
-      <path d={linePath} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-      {/* End dot */}
-      <circle cx={width} cy={parseFloat(points[points.length - 1].split(',')[1])} r="3" fill={color} />
-    </svg>
-  );
-}
+//   return (
+//     <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} className="overflow-visible">
+//       <defs>
+//         <linearGradient id={`grad-${color.replace('#', '')}`} x1="0" y1="0" x2="0" y2="1">
+//           <stop offset="0%" stopColor={color} stopOpacity="0.25" />
+//           <stop offset="100%" stopColor={color} stopOpacity="0.02" />
+//         </linearGradient>
+//       </defs>
+//       <path d={areaPath} fill={`url(#grad-${color.replace('#', '')})`} />
+//       <path d={linePath} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+//       {/* End dot */}
+//       <circle cx={width} cy={parseFloat(points[points.length - 1].split(',')[1])} r="3" fill={color} />
+//     </svg>
+//   );
+// }
 
 /* ------------------------------------------------------------------ */
 /*  Stat Card                                                         */
@@ -89,11 +85,6 @@ function StatCard({ icon, label, value, subtitle, chartData, accentColor, gradie
         <div className={`p-2.5 rounded-xl ${iconBg} shadow-sm`}>
           {icon}
         </div>
-        {chartData && chartData.length >= 2 && (
-          <div className="opacity-60 group-hover:opacity-100 transition-opacity">
-            <Sparkline data={chartData} color={accentColor} height={32} width={80} />
-          </div>
-        )}
       </div>
       <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">{label}</p>
       <p className="text-2xl font-extrabold text-gray-900 tracking-tight">{value}</p>
@@ -391,7 +382,7 @@ const UserMetricsCard = ({ activeProduct }) => {
         {/* Stats Grid */}
         {(!loading || data) && (
           <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-3 gap-4">
               <StatCard
                 icon={<ClockIcon />}
                 label="Minutes"
@@ -424,16 +415,7 @@ const UserMetricsCard = ({ activeProduct }) => {
                 gradientTo="to-purple-500"
                 iconBg="bg-gradient-to-br from-violet-100 to-purple-50 text-violet-600"
               />
-              <StatCard
-                icon={<SpeedIcon />}
-                label="Avg Speed"
-                value={formatSeconds(summary.averageProcessingTime)}
-                subtitle="Average processing time"
-                accentColor="#f59e0b"
-                gradientFrom="from-amber-400"
-                gradientTo="to-orange-500"
-                iconBg="bg-gradient-to-br from-amber-100 to-orange-50 text-amber-600"
-              />
+
             </div>
 
             {/* Daily Activity Chart */}
