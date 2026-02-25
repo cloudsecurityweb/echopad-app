@@ -143,6 +143,8 @@ Backend API service for Echopad that connects to Azure CosmosDB and provides RES
 
 ### Step 2: Deploy Your Code
 
+The backend is deployed with a **startup script** (`scripts/startup.sh`) that installs Azure CLI and the Azure DevOps extension on the App Service. This is required for the **AI Scribe installer downloads** (`.exe` / `.dmg` from Azure Artifacts). The script runs once per instance (or after restart), then starts the Node app. Ensure `AZURE_DEVOPS_PAT` is set in App Service Configuration (Packaging → Read scope) for downloads to work.
+
 **Option A: Deploy via Azure CLI**
 ```bash
 # Install Azure CLI if not already installed
@@ -267,6 +269,13 @@ Common HTTP status codes:
 - Check App Service logs for detailed error messages
 - Verify CosmosDB container exists and partition key matches
 - Ensure user data structure matches expected format
+
+### AI Scribe downloads (exe/dmg)
+
+**Error: "Azure CLI ('az') is not installed or not in PATH"**
+- Production uses `scripts/startup.sh` to install Azure CLI and the `azure-devops` extension before starting the app. Ensure the deploy workflow uses `startup-command: "bash scripts/startup.sh"` (see `.github/workflows/deploy.yml`).
+- If the startup script cannot install (e.g. no `sudo` on the App Service plan), use a custom Docker image with Azure CLI pre-installed, or switch to serving installers from Azure Blob Storage (see download route docs).
+- Set `AZURE_DEVOPS_PAT` in App Service Application settings with **Packaging → Read** scope for the Artifacts feed.
 
 ## Authentication
 
