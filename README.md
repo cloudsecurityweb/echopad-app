@@ -112,6 +112,19 @@ GitHub Actions workflows:
 - `VITE_API_ENDPOINT` - Whisper API endpoint (optional)
 - `VITE_API_ROUTE` - Whisper API route (optional)
 
+### Azure App Service – CORS and Microsoft auth (different subscriptions)
+
+Prod and non‑prod backends are in **different Azure subscriptions**. Use the correct subscription when running `az` commands or in the Portal.
+
+| Environment | Subscription        | App Service           | Resource group                |
+|-------------|---------------------|------------------------|-------------------------------|
+| **Prod** (main)   | `csw-echopad-prd`    | `echopad-prod-api`     | `echopad-prod-rg`             |
+| **Non‑prod** (develop) | `csw-echopad-nonprod` | `echopad-app-service`  | `cosmosdb-serverless-nonprod` |
+
+**Config approach:** Use **non‑prod** as the reference (it works). **Update prod** to match: same CORS origins, `supportCredentials: true`, and app settings AZURE_TENANT_ID, AZURE_CLIENT_ID, FRONTEND_URL, GOOGLE_CLIENT_ID set (prod FRONTEND_URL = `https://calm-smoke-0ef35d31e.4.azurestaticapps.net`).
+
+**Prod CORS (after aligning to non‑prod):** allowed origins include localhost, calm-smoke SWA, echopad.ai, www.echopad.ai; `supportCredentials: true`.
+
 ## 🏗 Infrastructure
 
 Infrastructure is managed separately in the `echopad-infra` repository using Terraform.

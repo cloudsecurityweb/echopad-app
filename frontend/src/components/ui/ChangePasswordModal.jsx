@@ -64,7 +64,7 @@ function ChangePasswordModal({ isOpen, onClose }) {
         setIsLoading(true);
 
         try {
-            const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://echopad-app-service-bwd0bqd7g7ehb5c7.westus2-01.azurewebsites.net';
+            const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
             const token = await getAccessToken();
 
             const response = await fetch(`${API_BASE_URL}/api/auth/change-password`, {
