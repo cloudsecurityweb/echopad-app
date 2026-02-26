@@ -71,19 +71,19 @@ function Hero() {
             </a>
           </div>
 
-          {/* Metrics - compact */}
-          <div className="flex flex-wrap justify-center gap-6 sm:gap-8 animate-fade-in-scale animation-delay-500">
+          {/* Trust / differentiators - no duplicate product stats */}
+          <div className="flex flex-wrap justify-center gap-6 sm:gap-8 animate-fade-in-scale animation-delay-500 text-sm">
             <div className="text-center">
-              <div className="text-base font-bold bg-gradient-to-r from-cyan-500 to-blue-600 bg-clip-text text-transparent">2+ hrs</div>
-              <div className="text-xs text-gray-500">Saved/day</div>
+              <div className="font-semibold text-gray-800">Modular</div>
+              <div className="text-xs text-gray-500">Deploy one agent or the full suite</div>
             </div>
             <div className="text-center">
-              <div className="text-base font-bold bg-gradient-to-r from-purple-500 to-pink-600 bg-clip-text text-transparent">70%</div>
-              <div className="text-xs text-gray-500">Less charting</div>
+              <div className="font-semibold text-gray-800">HIPAA-ready</div>
+              <div className="text-xs text-gray-500">BAA included, SOC 2 Type II</div>
             </div>
             <div className="text-center">
-              <div className="text-base font-bold bg-gradient-to-r from-cyan-500 to-purple-600 bg-clip-text text-transparent">95%</div>
-              <div className="text-xs text-gray-500">Satisfaction</div>
+              <div className="font-semibold text-gray-800">Live in days</div>
+              <div className="text-xs text-gray-500">No lengthy implementation</div>
             </div>
           </div>
         </div>

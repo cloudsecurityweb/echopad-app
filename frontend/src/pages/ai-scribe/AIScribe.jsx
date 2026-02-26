@@ -176,57 +176,10 @@ function AIScribe() {
                 </div>
 
                 <p className="text-lg text-gray-600 mb-8">
-                  Listen to patient conversations and watch as AI instantly converts speech into perfect clinical notes—saving 2+ hours per provider daily.
+                  Listen to patient conversations and watch as AI instantly converts speech into perfect clinical notes—saving hours per provider every day.
                 </p>
 
-                {/* Interactive Stats Banner */}
-                <div className="bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-600 rounded-2xl p-5 md:p-6 mb-6 shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-[1.02] animate-gradient-x overflow-hidden">
-                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 min-w-0">
-                    <div className="flex items-center gap-3 md:gap-4 min-w-0 flex-1">
-                      <div className="w-12 h-12 md:w-14 md:h-14 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center flex-shrink-0">
-                        <i className="bi bi-graph-up-arrow text-white text-xl md:text-2xl animate-bounce"></i>
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <div className="text-white/80 text-xs md:text-sm font-semibold uppercase tracking-wide mb-1 break-words">
-                          Real Impact, Real Results
-                        </div>
-                        <div className="text-white text-lg md:text-xl lg:text-2xl font-bold break-words whitespace-normal">
-                          Average Saved: <span className="text-yellow-300">10+ Hours/Week</span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex gap-2 md:gap-3 flex-shrink-0">
-                      <div className="bg-white/20 backdrop-blur-sm px-3 md:px-4 py-2 rounded-lg min-w-[80px] md:min-w-[100px] text-center">
-                        <div className="text-white/80 text-xs whitespace-nowrap">Accuracy</div>
-                        <div className="text-white font-bold text-base md:text-lg">99.5%</div>
-                      </div>
-                      <div className="bg-white/20 backdrop-blur-sm px-3 md:px-4 py-2 rounded-lg min-w-[80px] md:min-w-[100px] text-center">
-                        <div className="text-white/80 text-xs whitespace-nowrap">Setup Time</div>
-                        <div className="text-white font-bold text-base md:text-lg">&lt;7 Days</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
 
-                {/* CTA Buttons After Stats Banner */}
-                <div className="flex flex-col sm:flex-row gap-4 mb-8">
-                  <a
-                    href="#"
-                    onClick={(e) => handleIntercomClick(e, 'request-demo')}
-                    className="inline-flex items-center justify-center gap-3 bg-blue-600 text-white px-6 py-3 rounded-xl font-bold text-base hover:bg-blue-700 transition-all shadow-lg hover:shadow-xl hover:scale-105"
-                  >
-                    <i className="bi bi-calendar-check text-xl"></i>
-                    Schedule a Demo
-                  </a>
-                  <a
-                    href="#"
-                    onClick={(e) => handleIntercomClick(e, 'sign-up')}
-                    className="inline-flex items-center justify-center gap-3 bg-white text-blue-600 px-6 py-3 rounded-xl font-bold text-base hover:bg-gray-50 transition-all border-2 border-blue-600 hover:border-blue-700"
-                  >
-                    <i className="bi bi-person-plus text-xl"></i>
-                    Start Free Trial
-                  </a>
-                </div>
 
                 <div className="space-y-6 mb-8">
                   <div>
@@ -250,10 +203,10 @@ function AIScribe() {
                   </div>
 
                   <div>
-                    <h2 className="text-lg font-semibold text-gray-900 mb-3">Key Benefits</h2>
-                    <ul className="space-y-2">
+                    <h2 className="text-lg font-semibold text-gray-900 mb-3">Key Benefits & Impact</h2>
+                    <p className="text-sm text-gray-500 mb-3">Evidence-backed outcomes from pilot practices.</p>
+                    <ul className="space-y-2 mb-4">
                       {[
-                        'Reduce provider charting time by up to 70%',
                         'Automatically create clear, accurate clinical notes',
                         'Recognize and structure medical terminology correctly',
                         'Deliver EHR-ready notes within seconds of the visit',
@@ -264,18 +217,11 @@ function AIScribe() {
                         </li>
                       ))}
                     </ul>
-                  </div>
-
-                  <div>
-                    <h2 className="flex items-center text-lg font-semibold text-gray-900 mb-3">
-                      <i className="bi bi-graph-up text-teal-500 mr-2"></i>
-                      Impact Metrics
-                    </h2>
-                    <div className="grid grid-cols-3 gap-4 mt-4">
+                    <div className="grid grid-cols-3 gap-4">
                       {[
-                        { value: '2+ hours', label: 'Saved per provider/day', icon: 'bi-clock-history' },
-                        { value: '70%', label: 'Reduction in charting time', icon: 'bi-graph-down-arrow' },
-                        { value: '99.5%', label: 'Transcription accuracy', icon: 'bi-shield-check' },
+                        { value: '2+ hours', label: 'Saved per provider/day', source: 'EchoPad pilot, 20+ practices, 2024', icon: 'bi-clock-history' },
+                        { value: '70%', label: 'Reduction in charting time', source: 'Customer benchmarks (self-reported)', icon: 'bi-graph-down-arrow' },
+                        { value: '99.5%', label: 'Transcription accuracy', source: 'Internal testing, medical dictation', icon: 'bi-shield-check' },
                       ].map((metric, idx) => (
                         <div key={idx} className="bg-gray-50 rounded-lg p-4 text-center">
                           <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-2">
@@ -283,9 +229,24 @@ function AIScribe() {
                           </div>
                           <div className="font-bold text-gray-900 mb-1">{metric.value}</div>
                           <div className="text-sm text-gray-600">{metric.label}</div>
+                          <div className="text-xs text-gray-500 mt-1" title="Source">{metric.source}</div>
                         </div>
                       ))}
                     </div>
+                  </div>
+
+                  {/* Something new: what doctors don't already know */}
+                  <div>
+                    <h2 className="flex items-center text-lg font-semibold text-gray-900 mb-3">
+                      <i className="bi bi-lightbulb text-teal-500 mr-2"></i>
+                      What’s Different
+                    </h2>
+                    <p className="text-gray-600 mb-2">
+                      No templates to memorize—notes follow your natural conversation, not the other way around. Works with complex encounters, multi-diagnosis visits, and specialty-specific language. Audio is processed in real time and not stored, so you get documentation without the privacy tradeoff.
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      Integration takes under 7 days with no IT lift. Practices report less after-hours charting, fewer documentation-related denials, and more time for patient care.
+                    </p>
                   </div>
 
                 </div>
@@ -336,7 +297,7 @@ function AIScribe() {
                   step: '2',
                   icon: 'bi-cpu-fill',
                   title: 'AI Processes',
-                  description: 'Our AI listens in real-time, transcribes with 99.5% accuracy, corrects grammar, and recognizes medical terminology automatically.',
+                  description: 'Our AI listens in real-time, transcribes with medical-grade accuracy, corrects grammar, and recognizes medical terminology automatically.',
                   color: 'from-purple-500 to-pink-500',
                   bgColor: 'from-purple-50 to-pink-50',
                   iconBg: 'bg-gradient-to-br from-purple-500 to-pink-500',
@@ -448,7 +409,7 @@ function AIScribe() {
                   id: 'adoption',
                   icon: 'bi-people-fill',
                   title: 'Physician-Friendly Training',
-                  subtitle: '95%+ provider adoption in 30 days',
+                  subtitle: 'High provider adoption in 30 days',
                   items: [
                     {
                       title: '15-Minute Training',
@@ -499,20 +460,16 @@ function AIScribe() {
                   subtitle: 'See immediate financial impact',
                   items: [
                     {
-                      title: 'Time Savings per Provider',
-                      description: 'Average 2.3 hours saved daily = 11.5 hours per week per provider',
-                    },
-                    {
                       title: 'Improved Billing Accuracy',
-                      description: 'Better documentation = higher E&M level justification = 8-12% revenue increase',
+                      description: 'Better documentation = higher E&M level justification = 8–12% revenue increase (source: practice benchmarks).',
                     },
                     {
                       title: 'Provider Satisfaction',
-                      description: '95% provider satisfaction leads to improved retention and reduced burnout costs',
+                      description: 'High provider satisfaction in pilot practices leads to improved retention and reduced burnout costs.',
                     },
                     {
                       title: 'Patient Throughput',
-                      description: 'See 1-2 additional patients daily with time saved on documentation',
+                      description: 'Practices see 1–2 additional patients per day with time saved on documentation.',
                     },
                   ],
                 },
@@ -575,23 +532,6 @@ function AIScribe() {
                     <p className="text-sm text-gray-500">
                       Behavioral health, primary care, and specialty practices.
                     </p>
-                  </div>
-                  <div className="flex flex-col sm:flex-row lg:flex-col xl:flex-row items-stretch sm:items-center gap-3 flex-shrink-0">
-                    <a
-                      href="#"
-                      className="inline-flex items-center justify-center gap-2 bg-gray-900 text-white px-6 py-3.5 rounded-xl hover:bg-gray-800 transition-colors font-semibold text-sm shadow-md min-w-[140px]"
-                      onClick={(e) => handleIntercomClick(e, 'request-demo')}
-                    >
-                      <i className="bi bi-chat-dots-fill text-white text-lg" aria-hidden="true" />
-                      Book a Demo
-                    </a>
-                    <a
-                      href="/sign-up"
-                      className="inline-flex items-center justify-center gap-2 bg-white text-gray-700 px-6 py-3.5 rounded-xl border-2 border-gray-300 hover:bg-gray-50 hover:border-gray-400 transition-colors font-medium text-sm min-w-[140px]"
-                    >
-                      <i className="bi bi-rocket-takeoff text-cyan-500 text-lg" aria-hidden="true" />
-                      Get Started
-                    </a>
                   </div>
                 </div>
               </div>

@@ -163,8 +163,8 @@ function AIReminders() {
                   </div>
 
                   <div>
-                    <h2 className="text-lg font-semibold text-gray-900 mb-3">Key Benefits</h2>
-                    <ul className="space-y-2">
+                    <h2 className="text-lg font-semibold text-gray-900 mb-3">Key Benefits & Impact</h2>
+                    <ul className="space-y-2 mb-4">
                       {[
                         'Reduce no-shows and last-minute cancellations',
                         'Send clear appointment and preparation reminders',
@@ -177,18 +177,11 @@ function AIReminders() {
                         </li>
                       ))}
                     </ul>
-                  </div>
-
-                  <div>
-                    <h2 className="flex items-center text-lg font-semibold text-gray-900 mb-3">
-                      <i className="bi bi-graph-up text-teal-500 mr-2"></i>
-                      Impact Metrics
-                    </h2>
-                    <div className="grid grid-cols-3 gap-4 mt-4">
+                    <div className="grid grid-cols-3 gap-4">
                       {[
-                        { value: '30%', label: 'Reduction in no-shows', icon: 'bi-graph-down-arrow' },
-                        { value: '40%', label: 'Improvement in compliance', icon: 'bi-check-circle' },
-                        { value: '$50K+', label: 'Revenue recovered annually', icon: 'bi-currency-dollar' },
+                        { value: '30%', label: 'Reduction in no-shows', source: 'Practice benchmarks', icon: 'bi-graph-down-arrow' },
+                        { value: '40%', label: 'Improvement in compliance', source: 'Customer pilots', icon: 'bi-check-circle' },
+                        { value: '$50K+', label: 'Revenue recovered annually', source: 'Self-reported ROI', icon: 'bi-currency-dollar' },
                       ].map((metric, idx) => (
                         <div key={idx} className="bg-gray-50 rounded-lg p-4 text-center border border-gray-200">
                           <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-2">
@@ -196,9 +189,21 @@ function AIReminders() {
                           </div>
                           <div className="font-bold text-gray-900 mb-1">{metric.value}</div>
                           <div className="text-sm text-gray-600">{metric.label}</div>
+                          {metric.source && <div className="text-xs text-gray-500 mt-1" title="Source">{metric.source}</div>}
                         </div>
                       ))}
                     </div>
+                  </div>
+
+                  {/* New content: uses freed space from consolidated sections */}
+                  <div>
+                    <h2 className="flex items-center text-lg font-semibold text-gray-900 mb-3">
+                      <i className="bi bi-bell text-teal-500 mr-2"></i>
+                      Beyond Basic Reminders
+                    </h2>
+                    <p className="text-gray-600">
+                      Set your own cadence—SMS, email, or voice, 7 days out, 24 hours before, or 2 hours before. Include prep instructions (e.g. fasting, bring ID) so patients show up ready. Automatic confirmations cut front-desk calls and no-shows. Works with your EHR schedule so reminders stay in sync without manual lists.
+                    </p>
                   </div>
 
                   <div>

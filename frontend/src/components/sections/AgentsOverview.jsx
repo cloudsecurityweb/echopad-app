@@ -6,7 +6,7 @@ function AgentsOverview() {
     {
       icon: 'bi-mic-fill',
       title: 'AI Scribe',
-      description: 'Real-time clinical documentation that cuts charting time by 70%',
+      description: 'Real-time clinical documentation—less charting, more face-time with patients',
       link: '/ai-scribe',
       featured: true,
     },
@@ -115,6 +115,14 @@ function AgentsOverview() {
                 </span>
               </div>
             </div>
+          </div>
+
+          {/* New content: uses freed space (hero no longer repeats product stats) */}
+          <div className="max-w-2xl mx-auto mt-8 text-center">
+            <h3 className="text-base font-semibold text-gray-800 mb-2">How to get started</h3>
+            <p className="text-sm text-gray-600">
+              Pick one agent to solve your biggest pain point—documentation, calls, or no-shows—or deploy the full suite. Each agent integrates with your EHR and goes live in days. Start with a free trial or schedule a 15-minute demo to see it in your workflow.
+            </p>
           </div>
         </div>
       </FullScreenSection>

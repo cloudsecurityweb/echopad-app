@@ -171,9 +171,9 @@ function EchoPadInsights() {
                     </h4>
                     <div className="grid grid-cols-3 gap-4 mt-4">
                       {[
-                        { value: '$500K+', label: 'Underpayments identified', icon: 'bi-cash-stack' },
-                        { value: 'All 50', label: 'States covered', icon: 'bi-geo-alt' },
-                        { value: '100%', label: 'Data transparency', icon: 'bi-shield-check' },
+                        { value: '$500K+', label: 'Underpayments identified', source: 'Customer recovery data', icon: 'bi-cash-stack' },
+                        { value: 'All 50', label: 'States covered', source: 'CMS / payer MRFs', icon: 'bi-geo-alt' },
+                        { value: '100%', label: 'Data transparency', source: 'Platform capability', icon: 'bi-shield-check' },
                       ].map((metric, idx) => (
                         <div key={idx} className="bg-gray-50 rounded-lg p-4 text-center">
                           <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-2">
@@ -181,6 +181,7 @@ function EchoPadInsights() {
                           </div>
                           <div className="font-bold text-gray-900 mb-1">{metric.value}</div>
                           <div className="text-sm text-gray-600">{metric.label}</div>
+                          {metric.source && <div className="text-xs text-gray-500 mt-1" title="Source">{metric.source}</div>}
                         </div>
                       ))}
                     </div>

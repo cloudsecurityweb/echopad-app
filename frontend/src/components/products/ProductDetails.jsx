@@ -6,7 +6,7 @@ function ProductDetails() {
     id: 'ai-scribe',
     label: 'AI SCRIBE',
     title: 'Real-Time Clinical Documentation',
-    intro: 'Listen to patient conversations and watch as AI instantly converts speech into perfect clinical notes—saving 2+ hours per provider daily.',
+    intro: 'Listen to patient conversations and watch as AI instantly converts speech into clinical notes—saving hours per provider every day.',
     sections: [
       {
         title: 'What You See',
@@ -15,7 +15,6 @@ function ProductDetails() {
       {
         title: 'Key Benefits',
         items: [
-          'Reduce provider charting time by up to 70%',
           'Automatically create clear, accurate clinical notes',
           'Recognize and structure medical terminology correctly',
           'Deliver EHR-ready notes within seconds of the visit',

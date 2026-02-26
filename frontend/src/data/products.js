@@ -10,18 +10,18 @@ export const products = [
   {
     id: 'ai-scribe',
     name: 'AI Scribe',
-    shortDescription: 'Real-time clinical documentation that cuts charting time by 70%',
-    longDescription: 'Listen to patient conversations and watch as AI instantly converts speech into perfect clinical notes—saving 2+ hours per provider daily.',
+    shortDescription: 'Real-time clinical documentation—less charting, more face-time with patients',
+    longDescription: 'Listen to patient conversations and watch as AI instantly converts speech into clinical notes—saving hours per provider every day.',
     price: '$299',
     pricePeriod: 'per provider/month',
     route: '/ai-scribe',
     icon: 'bi-mic-fill',
     badge: 'Most Popular',
-    usp: 'Save 10 hours a week on charting',
+    usp: 'Spend less time on charts, more with patients',
     stripePaymentLink: 'https://buy.stripe.com/placeholder-ai-scribe', // Replace with actual Stripe Payment Link
     features: [
       'Speak naturally—AI handles the rest',
-      'Cut charting time by 70%',
+      'Dramatically cut charting time',
       'Medical terms auto-recognized',
       'Perfect grammar every time',
       'Ready for EHR in seconds',
@@ -32,9 +32,9 @@ export const products = [
       'Specialty practices',
     ],
     metrics: [
-      { value: '2+ hours', label: 'Saved per provider/day' },
-      { value: '70%', label: 'Reduction in charting time' },
-      { value: '99.5%', label: 'Transcription accuracy' },
+      { value: 'Real-time', label: 'Note generation' },
+      { value: 'EHR-ready', label: 'Copy-paste or integrate' },
+      { value: 'HIPAA', label: 'Compliant' },
     ],
   },
   {

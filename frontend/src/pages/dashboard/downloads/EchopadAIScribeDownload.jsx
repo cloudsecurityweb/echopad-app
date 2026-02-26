@@ -313,7 +313,7 @@ const EchopadAIScribeDownload = () => {
                 <div className="relative z-10 max-w-2xl mx-auto space-y-8">
                     <h2 className="text-3xl md:text-4xl font-bold">Ready to transform your documentation?</h2>
                     <p className="text-gray-300 text-lg">
-                        Join thousands of clinicians saving 2+ hours daily with Echopad AI Scribe.
+                        Join thousands of clinicians who document faster with Echopad AI Scribe.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
                         <button

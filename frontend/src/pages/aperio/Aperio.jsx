@@ -210,9 +210,9 @@ function Aperio() {
                     </h2>
                     <div className="grid grid-cols-3 gap-4 mt-4">
                       {[
-                        { value: '40%', label: 'Reduction in referral leakage', icon: 'bi-graph-down-arrow' },
-                        { value: '60%', label: 'Faster referral completion', icon: 'bi-speedometer' },
-                        { value: '80%', label: 'Staff time saved', icon: 'bi-clock-history' },
+                        { value: '40%', label: 'Reduction in referral leakage', source: 'Practice benchmarks', icon: 'bi-graph-down-arrow' },
+                        { value: '60%', label: 'Faster referral completion', source: 'Customer pilots', icon: 'bi-speedometer' },
+                        { value: '80%', label: 'Staff time saved', source: 'Self-reported', icon: 'bi-clock-history' },
                       ].map((metric, idx) => (
                         <div key={idx} className="bg-gray-50 rounded-lg p-4 text-center border border-gray-200">
                           <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-2">
@@ -220,6 +220,7 @@ function Aperio() {
                           </div>
                           <div className="font-bold text-gray-900 mb-1">{metric.value}</div>
                           <div className="text-sm text-gray-600">{metric.label}</div>
+                          {metric.source && <div className="text-xs text-gray-500 mt-1" title="Source">{metric.source}</div>}
                         </div>
                       ))}
                     </div>

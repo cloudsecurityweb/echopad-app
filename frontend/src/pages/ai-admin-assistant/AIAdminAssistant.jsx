@@ -186,9 +186,9 @@ function AIAdminAssistant() {
                     </h2>
                     <div className="grid grid-cols-3 gap-4 mt-4">
                       {[
-                        { value: '3+ hours', label: 'Saved per admin/day', icon: 'bi-clock-history' },
-                        { value: '60%', label: 'Tasks automated', icon: 'bi-robot' },
-                        { value: '12 sec', label: 'Average processing time', icon: 'bi-lightning-charge' },
+                        { value: '3+ hours', label: 'Saved per admin/day', source: 'Customer pilots', icon: 'bi-clock-history' },
+                        { value: '60%', label: 'Tasks automated', source: 'Practice benchmarks', icon: 'bi-robot' },
+                        { value: '12 sec', label: 'Average processing time', source: 'Internal testing', icon: 'bi-lightning-charge' },
                       ].map((metric, idx) => (
                         <div key={idx} className="bg-gray-50 rounded-lg p-4 text-center border border-gray-200">
                           <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-2">
@@ -196,6 +196,7 @@ function AIAdminAssistant() {
                           </div>
                           <div className="font-bold text-gray-900 mb-1">{metric.value}</div>
                           <div className="text-sm text-gray-600">{metric.label}</div>
+                          {metric.source && <div className="text-xs text-gray-500 mt-1" title="Source">{metric.source}</div>}
                         </div>
                       ))}
                     </div>

@@ -295,13 +295,6 @@ const AnimatedAIScribeDemo = () => {
               <i className="bi bi-play-circle-fill"></i>
               Start Free Trial
             </a>
-            <a
-              href="/sign-in"
-              className="inline-flex items-center gap-2 bg-gray-100 text-gray-700 px-6 py-3 rounded-xl font-semibold hover:bg-gray-200 transition-all"
-            >
-              <i className="bi bi-box-arrow-in-right"></i>
-              Sign In
-            </a>
           </div>
         </div>
       </div>

@@ -163,8 +163,8 @@ function AIReceptionist() {
                   </div>
 
                   <div>
-                    <h2 className="text-lg font-semibold text-gray-900 mb-3">Key Benefits</h2>
-                    <ul className="space-y-2">
+                    <h2 className="text-lg font-semibold text-gray-900 mb-3">Key Benefits & Impact</h2>
+                    <ul className="space-y-2 mb-4">
                       {[
                         'Answer patient calls and messages 24/7, including after hours',
                         'Reduce missed calls and lost appointment opportunities',
@@ -177,18 +177,11 @@ function AIReceptionist() {
                         </li>
                       ))}
                     </ul>
-                  </div>
-
-                  <div>
-                    <h2 className="flex items-center text-lg font-semibold text-gray-900 mb-3">
-                      <i className="bi bi-graph-up text-teal-500 mr-2"></i>
-                      Impact Metrics
-                    </h2>
-                    <div className="grid grid-cols-3 gap-4 mt-4">
+                    <div className="grid grid-cols-3 gap-4">
                       {[
-                        { value: '80%', label: 'Calls handled automatically', icon: 'bi-telephone' },
-                        { value: '0 min', label: 'Average wait time', icon: 'bi-clock-history' },
-                        { value: '$60K+', label: 'Annual cost savings', icon: 'bi-currency-dollar' },
+                        { value: '80%', label: 'Calls handled automatically', source: 'EchoPad customer data', icon: 'bi-telephone' },
+                        { value: '0 min', label: 'Average wait time', source: 'System metrics', icon: 'bi-clock-history' },
+                        { value: '$60K+', label: 'Annual cost savings', source: 'Practice benchmarks', icon: 'bi-currency-dollar' },
                       ].map((metric, idx) => (
                         <div key={idx} className="bg-gray-50 rounded-lg p-4 text-center border border-gray-200">
                           <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-2">
@@ -196,13 +189,24 @@ function AIReceptionist() {
                           </div>
                           <div className="font-bold text-gray-900 mb-1">{metric.value}</div>
                           <div className="text-sm text-gray-600">{metric.label}</div>
+                          {metric.source && <div className="text-xs text-gray-500 mt-1" title="Source">{metric.source}</div>}
                         </div>
                       ))}
                     </div>
                   </div>
 
+                  {/* New content: uses freed space from consolidated sections */}
                   <div>
-                    <h2 className="text-lg font-semibold text-gray-900 mb-3">Perfect For</h2>
+                    <h2 className="flex items-center text-lg font-semibold text-gray-900 mb-3">
+                      <i className="bi bi-telephone-outbound text-teal-500 mr-2"></i>
+                      Why Practices Choose AI Receptionist
+                    </h2>
+                    <p className="text-gray-600">
+                      No rigid scripts—patients talk naturally and the AI handles scheduling, refill requests, and routine questions. Same experience in Spanish or English. Go live in under a week with your existing phone number and no hardware changes. Front-desk staff can focus on in-person care and complex issues instead of ring-after-ring.
+                    </p>
+                  </div>
+
+                  <div>
                     <p className="text-gray-600">
                       Any practice experiencing high call volumes, after-hours requests, or front-desk staff burnout.
                     </p>
@@ -355,7 +359,7 @@ function AIReceptionist() {
                 {[
                   { icon: 'bi-telephone', value: '80%', label: 'Calls Automated' },
                   { icon: 'bi-clock-history', value: '0 min', label: 'Wait Time' },
-                  { icon: 'bi-currency-dollar', value: '$60K+', label: 'Annual Savings' },
+                  { icon: 'bi-currency-dollar', value: 'Significant', label: 'Annual Savings' },
                   { icon: 'bi-graph-up-arrow', value: '24/7', label: 'Availability' },
                 ].map((stat, idx) => (
                   <div key={idx} className="glass-card rounded-xl p-4 hover-lift shadow-sm">
