@@ -234,7 +234,7 @@ jobs:
         with:
           app-name: ${{ steps.env.outputs.ENV_PREFIX == 'PROD' && secrets.PROD_AZURE_WEBAPP_NAME || secrets.DEV_AZURE_WEBAPP_NAME }}
           package: backend.zip
-          startup-command: "npm start"
+          startup-command: "bash scripts/startup.sh"
 
       - name: Restart Backend
         run: |

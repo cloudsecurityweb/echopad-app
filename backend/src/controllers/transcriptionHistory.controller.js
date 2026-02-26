@@ -48,6 +48,34 @@ export const getTranscriptions = asyncHandler(async (req, res) => {
   );
 });
 
+export const updateTranscription = asyncHandler(async (req, res) => {
+  const { tenantId, userId } = getTenantAndUser(req);
+  const id = req.params?.id;
+  const text = req.body?.text;
+
+  if (text === undefined || typeof text !== "string") {
+    throw new ApiError(400, "Missing or invalid body: { text }");
+  }
+  if (!id) {
+    throw new ApiError(400, "Transcription id is required");
+  }
+
+  const updated = await transcriptionHistoryService.updateTranscriptionByIdAndUser({
+    tenantId,
+    userId,
+    transcriptionId: id,
+    text: text.trim(),
+  });
+
+  if (!updated) {
+    throw new ApiError(404, "Transcription not found");
+  }
+
+  res.status(200).json(
+    new ApiResponse(200, { transcription: updated }, "Transcription updated successfully")
+  );
+});
+
 export const deleteTranscription = asyncHandler(async (req, res) => {
   const { tenantId, userId } = getTenantAndUser(req);
   const transcriptionId = req.params?.id;

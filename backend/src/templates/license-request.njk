@@ -1,0 +1,30 @@
+{% extends "layout.njk" %}
+
+{% block content %}
+  <h2>License Request</h2>
+  
+  <p>Hello {{ adminName }},</p>
+  
+  <p>
+    <strong>{{ requesterName }}</strong> ({{ requesterEmail }}) from your organization has requested a license for <strong>Echopad AI Scribe</strong>.
+  </p>
+
+  <div class="highlight-box">
+    <span class="label">STATUS</span>
+    <p style="margin: 0;">
+      Current license expired or not assigned.
+    </p>
+  </div>
+
+  <p style="text-align: center;">
+    You can assign a license to them through the Echopad Admin Dashboard.
+  </p>
+
+  <div style="text-align: center;">
+    <a href="{{ dashboardUrl }}" class="button">Manage User Licenses</a>
+  </div>
+
+  <p style="font-size: 13px; color: #94a3b8; text-align: center; margin-top: 24px;">
+    If you are not the right person to handle this request, please forward this email to your organization's administrator.
+  </p>
+{% endblock %}

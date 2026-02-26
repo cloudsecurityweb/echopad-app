@@ -1,11 +1,85 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useScrollAnimations } from '../../../hooks/useAnimation';
+import http from '../../../api/http';
+import { getAiScribeVersion } from '../../../api/downloads.api';
+
+const DOWNLOAD_MAC_URL = '/api/download/ai-scribe/mac';
+const DOWNLOAD_DESKTOP_URL = '/api/download/ai-scribe/desktop';
+const DEFAULT_MAC_FILENAME = 'Echopad.dmg';
+const DEFAULT_DESKTOP_FILENAME = 'Echopad-Setup.exe';
+
+function getFilenameFromDisposition(contentDisposition) {
+    if (!contentDisposition) return null;
+    const match = /filename="?([^";\n]+)"?/i.exec(contentDisposition);
+    return match ? match[1].trim() : null;
+}
 
 const EchopadAIScribeDownload = () => {
     useScrollAnimations();
     const [activeTab, setActiveTab] = useState('mac');
+    const [downloadState, setDownloadState] = useState('idle'); // 'idle' | 'mac' | 'desktop'
+    const [downloadError, setDownloadError] = useState(null);
+    const [versionManifest, setVersionManifest] = useState(null); // { desktop: { version, filename }, mac: { version, filename } }
+    const [versionLoading, setVersionLoading] = useState(true);
     const navigate = useNavigate();
+
+    const fetchVersions = (bypassCache = false) => {
+        setVersionLoading(true);
+        const url = bypassCache ? '/api/download/ai-scribe/version?refresh=1' : '/api/download/ai-scribe/version';
+        http.get(url)
+            .then((res) => res.data && setVersionManifest(res.data))
+            .catch(() => setVersionManifest(null))
+            .finally(() => setVersionLoading(false));
+    };
+
+    useEffect(() => {
+        fetchVersions();
+    }, []);
+
+    const triggerBlobDownload = (blob, filename) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.click();
+        window.URL.revokeObjectURL(url);
+    };
+
+    const handleDownload = async (platform) => {
+        setDownloadError(null);
+        setDownloadState(platform);
+        const isMac = platform === 'mac';
+        const manifest = isMac ? versionManifest?.mac : versionManifest?.desktop;
+        const versionParam = manifest?.version ? `?version=${encodeURIComponent(manifest.version)}` : '';
+        const url = (isMac ? DOWNLOAD_MAC_URL : DOWNLOAD_DESKTOP_URL) + versionParam;
+        const defaultFilename = isMac
+            ? (versionManifest?.mac?.filename || DEFAULT_MAC_FILENAME)
+            : (versionManifest?.desktop?.filename || DEFAULT_DESKTOP_FILENAME);
+        try {
+            const response = await http.get(url, { responseType: 'blob' });
+            const disposition = response.headers['content-disposition'];
+            const filename = getFilenameFromDisposition(disposition) || defaultFilename;
+            triggerBlobDownload(response.data, filename);
+        } catch (err) {
+            if (err.response?.status === 401 || err.response?.status === 403) {
+                setDownloadError('Please sign in to download.');
+            } else if (err.response?.status >= 500) {
+                setDownloadError('Download unavailable. Please try again later.');
+            } else {
+                setDownloadError('Download failed. Please try again.');
+            }
+            if (err.response?.data instanceof Blob) {
+                try {
+                    const text = await err.response.data.text();
+                    const json = JSON.parse(text);
+                    if (json?.message) setDownloadError(json.message);
+                } catch (_) { /* keep existing message */ }
+            }
+        } finally {
+            setDownloadState('idle');
+        }
+    };
 
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-0 space-y-20">
@@ -20,12 +94,29 @@ const EchopadAIScribeDownload = () => {
 
             {/* 1. Hero Section */}
             <section className="text-center space-y-8 animate-fadeIn pt-8">
-                <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-cyan-50 to-blue-50 border border-cyan-100 rounded-full text-cyan-700 text-sm font-medium mb-4">
-                    <span className="relative flex h-2 w-2">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
+                <div className="flex flex-wrap items-center justify-center gap-2 mb-4">
+                    <span className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-cyan-50 to-blue-50 border border-cyan-100 rounded-full text-cyan-700 text-sm font-medium">
+                        <span className="relative flex h-2 w-2">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
+                        </span>
+                        {versionLoading ? 'Checking for updates…' : versionManifest?.mac?.version ? `macOS v${versionManifest.mac.version} Now Available` : 'macOS —'}
                     </span>
-                    v1.0.0 Now Available
+                    <span className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 border border-gray-200 rounded-full text-gray-700 text-sm font-medium">
+                        <i className="bi bi-windows text-blue-600"></i>
+                        {versionLoading ? 'Checking for updates…' : versionManifest?.desktop?.version ? `Windows v${versionManifest.desktop.version} Now Available` : 'Windows —'}
+                    </span>
+                    {!versionLoading && (
+                        <button
+                            type="button"
+                            onClick={() => fetchVersions(true)}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs text-gray-500 hover:text-cyan-600 hover:bg-cyan-50 rounded-lg transition-colors cursor-pointer"
+                            title="Fetch newest versions from server"
+                        >
+                            <i className="bi bi-arrow-clockwise"></i>
+                            Refresh versions
+                        </button>
+                    )}
                 </div>
 
                 <h1 className="text-5xl md:text-7xl font-bold text-gray-900 tracking-tight mb-6">
@@ -40,22 +131,36 @@ const EchopadAIScribeDownload = () => {
                 </p>
 
                 <div className="flex flex-col sm:flex-row gap-4 justify-center pt-8 pb-8">
-                    <button className="px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-xl hover:from-cyan-400 hover:to-blue-500 transition-all duration-300 font-semibold flex items-center justify-center gap-3 shadow-lg shadow-cyan-100/50 hover:shadow-cyan-200 hover:-translate-y-1 cursor-pointer group">
+                    <button
+                        onClick={() => handleDownload('mac')}
+                        disabled={downloadState !== 'idle'}
+                        className="px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-xl hover:from-cyan-400 hover:to-blue-500 transition-all duration-300 font-semibold flex items-center justify-center gap-3 shadow-lg shadow-cyan-100/50 hover:shadow-cyan-200 hover:-translate-y-1 cursor-pointer group disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+                    >
                         <i className="bi bi-apple text-xl group-hover:scale-110 transition-transform"></i>
                         <div className="text-left">
                             <div className="text-xs font-normal opacity-90">Download for</div>
-                            <div className="text-sm font-bold">macOS</div>
+                            <div className="text-sm font-bold">{downloadState === 'mac' ? 'Downloading…' : versionManifest?.mac?.version ? `macOS v${versionManifest.mac.version}` : 'macOS'}</div>
                         </div>
                     </button>
 
-                    <button className="px-8 py-4 bg-white text-gray-800 border border-gray-200 rounded-xl hover:bg-gray-50 hover:border-gray-300 transition-all duration-300 font-semibold flex items-center justify-center gap-3 shadow-sm hover:shadow-md hover:-translate-y-1 cursor-pointer group">
+                    <button
+                        onClick={() => handleDownload('desktop')}
+                        disabled={downloadState !== 'idle'}
+                        className="px-8 py-4 bg-white text-gray-800 border border-gray-200 rounded-xl hover:bg-gray-50 hover:border-gray-300 transition-all duration-300 font-semibold flex items-center justify-center gap-3 shadow-sm hover:shadow-md hover:-translate-y-1 cursor-pointer group disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+                    >
                         <i className="bi bi-windows text-xl text-blue-600 group-hover:scale-110 transition-transform"></i>
                         <div className="text-left">
                             <div className="text-xs font-normal text-gray-500">Download for</div>
-                            <div className="text-sm font-bold">Windows</div>
+                            <div className="text-sm font-bold">{downloadState === 'desktop' ? 'Downloading…' : versionManifest?.desktop?.version ? `Windows v${versionManifest.desktop.version}` : 'Windows'}</div>
                         </div>
                     </button>
                 </div>
+
+                {downloadError && (
+                    <p className="text-sm text-red-600" role="alert">
+                        {downloadError}
+                    </p>
+                )}
 
                 <p className="text-sm text-gray-500">
                     Secure & HIPAA Ready • Cancel anytime
@@ -120,7 +225,7 @@ const EchopadAIScribeDownload = () => {
                                         </li>
                                         <li className="flex gap-3">
                                             <span className="font-medium text-gray-900 w-24">Processor:</span>
-                                            Apple Silicon M1 Pro or better
+                                            Apple Silicon M1 or better
                                         </li>
                                         <li className="flex gap-3">
                                             <span className="font-medium text-gray-900 w-24">Internet:</span>
@@ -142,7 +247,7 @@ const EchopadAIScribeDownload = () => {
                                         </li>
                                         <li className="flex gap-3">
                                             <span className="font-medium text-gray-900 w-24">Processor:</span>
-                                            Intel Core i5 or AMD Ryzen 5
+                                            Intel Core i3 or AMD Ryzen 5
                                         </li>
                                         <li className="flex gap-3">
                                             <span className="font-medium text-gray-900 w-24">RAM:</span>
@@ -161,7 +266,7 @@ const EchopadAIScribeDownload = () => {
                                         </li>
                                         <li className="flex gap-3">
                                             <span className="font-medium text-gray-900 w-24">Processor:</span>
-                                            Intel Core i7 or AMD Ryzen 7
+                                            Intel Core i5 or AMD Ryzen 7
                                         </li>
                                         <li className="flex gap-3">
                                             <span className="font-medium text-gray-900 w-24">Internet:</span>
@@ -211,11 +316,19 @@ const EchopadAIScribeDownload = () => {
                         Join thousands of clinicians saving 2+ hours daily with Echopad AI Scribe.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                        <button className="px-8 py-3 bg-white text-gray-900 rounded-xl hover:bg-gray-100 transition-colors font-semibold shadow-lg cursor-pointer">
-                            Download for macOS
+                        <button
+                            onClick={() => handleDownload('mac')}
+                            disabled={downloadState !== 'idle'}
+                            className="px-8 py-3 bg-white text-gray-900 rounded-xl hover:bg-gray-100 transition-colors font-semibold shadow-lg cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed"
+                        >
+                            {downloadState === 'mac' ? 'Downloading…' : versionManifest?.mac?.version ? `Download for macOS (v${versionManifest.mac.version})` : 'Download for macOS'}
                         </button>
-                        <button className="px-8 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-500 transition-colors font-semibold shadow-lg border border-transparent cursor-pointer">
-                            Download for Windows
+                        <button
+                            onClick={() => handleDownload('desktop')}
+                            disabled={downloadState !== 'idle'}
+                            className="px-8 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-500 transition-colors font-semibold shadow-lg border border-transparent cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed"
+                        >
+                            {downloadState === 'desktop' ? 'Downloading…' : versionManifest?.desktop?.version ? `Download for Windows (v${versionManifest.desktop.version})` : 'Download for Windows'}
                         </button>
                     </div>
                     <p className="text-xs text-gray-400">

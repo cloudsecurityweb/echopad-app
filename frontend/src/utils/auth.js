@@ -4,6 +4,9 @@
  * Helper functions for token management and authenticated API calls.
  */
 
+/** sessionStorage key for desktop redirect payload (redirectUri, token, name, email) after sign-in */
+export const DESKTOP_REDIRECT_KEY = 'echopad_desktop_redirect';
+
 /**
  * Get access token for API calls
  * This function uses the auth context to get a valid access token.

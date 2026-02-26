@@ -10,7 +10,7 @@ import { verifyGoogleToken } from '../middleware/googleAuth.js';
 import { verifyMagicToken, attachMagicUserFromDb } from '../middleware/magicAuth.js';
 import { verifyEmailPasswordToken, attachEmailPasswordUserFromDb } from '../middleware/emailPasswordAuth.js';
 import { signIn, signUp, getCurrentUser } from '../controllers/authController.js';
-import { signUpEmail, signInEmail, changePassword, forgotPassword, resetPassword } from '../controllers/passwordAuthController.js';
+import { signUpEmail, signInEmail, refreshToken, changePassword, forgotPassword, resetPassword } from '../controllers/passwordAuthController.js';
 import { verifyEmail, resendVerificationEmail } from '../controllers/emailVerificationController.js';
 
 const router = express.Router();
@@ -168,6 +168,13 @@ router.post('/sign-up-email', signUpEmail);
  * Body: { email, password }
  */
 router.post('/sign-in-email', signInEmail);
+
+/**
+ * POST /api/auth/refresh
+ * Exchange refresh token for new access (session) token
+ * Body: { refreshToken: string }
+ */
+router.post('/refresh', refreshToken);
 
 /**
  * POST /api/auth/change-password

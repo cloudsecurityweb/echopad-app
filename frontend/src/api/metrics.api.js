@@ -1,0 +1,22 @@
+import http from "./http";
+
+/**
+ * Fetch aggregated metrics for the currently logged-in user
+ * @param {{ from?: string, to?: string }} params - Optional date range (ISO strings)
+ */
+export const fetchUserMetrics = (params = {}) =>
+    http.get("/api/metrics/user", { params });
+
+/**
+ * Fetch aggregated metrics for the client organization (Client Admin + Super Admin only)
+ * @param {{ from?: string, to?: string }} params - Optional date range (ISO strings)
+ */
+export const fetchClientMetrics = (params = {}) =>
+    http.get("/api/metrics/client", { params });
+
+/**
+ * Fetch global platform metrics (Super Admin only)
+ * @param {{ from?: string, to?: string }} params - Optional date range (ISO strings)
+ */
+export const fetchPlatformMetrics = (params = {}) =>
+    http.get("/api/metrics/platform", { params });

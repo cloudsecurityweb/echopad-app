@@ -54,18 +54,18 @@ function DashboardLayout() {
   }, []);
 
   // Calculate content margin based on sidebar state
-  const getContentMargin = () => {
+  const getContentPadding = () => {
     if (isMobile) {
       // Mobile: no margin, sidebar pushes content
-      return 'ml-0';
+      return 'px-[1.5%]';
     }
     // Desktop: margin based on sidebar open state and collapsed state
     if (!isSideNavOpen) {
       // Sidebar is closed: no margin
-      return 'ml-0';
+      return 'px-[1.5%]';
     }
     // Sidebar is open: margin based on collapsed state
-    return isCollapsed ? 'md:ml-60' : 'md:ml-[19rem]';
+    return isCollapsed ? 'pr-[1.5%] pl-[calc(1.5%+6rem)]' : 'pr-[1.5%] pl-[calc(1.5%+17rem)]';
   };
 
   // Wait for role to be reliably determined before rendering layout
@@ -86,7 +86,7 @@ function DashboardLayout() {
 
   return (
     <>
-      <DashboardNavbar onToggleSidebar={toggleSideNav} />
+      <DashboardNavbar onToggleSidebar={toggleSideNav} isOpen={isSideNavOpen} />
 
       {/* Side Navigation */}
       <DashboardSideNav
@@ -98,9 +98,9 @@ function DashboardLayout() {
 
       {/* Main Content */}
       <main
-        className={`min-h-screen bg-white pt-16 transition-all duration-300 ${getContentMargin()}`}
+        className={`min-h-screen bg-white pt-16 transition-all duration-300 ${getContentPadding()}`}
       >
-        <div className="px-4 py-12">
+        <div className="py-12">
           <Outlet />
         </div>
       </main>

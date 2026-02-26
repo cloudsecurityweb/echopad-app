@@ -36,6 +36,7 @@ import Aperio from './pages/aperio/Aperio';
 import PrivacyPolicy from './pages/privacy-policy/PrivacyPolicy';
 import TermsOfService from './pages/terms-of-service/TermsOfService';
 import SignIn from './pages/auth/SignIn';
+import LoginComplete from './pages/auth/LoginComplete';
 import SignUp from './pages/auth/SignUp';
 import VerifyEmail from './pages/auth/VerifyEmail';
 import AcceptInvitation from './pages/auth/AcceptInvitation';
@@ -225,6 +226,7 @@ function App({ msalInstance }) {
                   <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                   <Route path="/terms-of-service" element={<TermsOfService />} />
                   <Route path="/sign-in" element={<SignIn />} />
+                  <Route path="/login-complete" element={<LoginComplete />} />
                   <Route path="/sign-up" element={<SignUp />} />
                   <Route path="/verify-email" element={<VerifyEmail />} />
                   <Route path="/verify-email-sent" element={<VerifyEmailSent />} />
