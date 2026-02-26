@@ -34,6 +34,7 @@ import AIReceptionist from './pages/ai-receptionist/AIReceptionist';
 import AIAdminAssistant from './pages/ai-admin-assistant/AIAdminAssistant';
 import AIReminders from './pages/ai-reminders/AIReminders';
 import EchoPadInsights from './pages/echopad-insights/EchoPadInsights';
+import EchoPadInsightsEnterprise from './pages/echopad-insights/EchoPadInsightsEnterprise';
 import Aperio from './pages/aperio/Aperio';
 import PrivacyPolicy from './pages/privacy-policy/PrivacyPolicy';
 import TermsOfService from './pages/terms-of-service/TermsOfService';
@@ -242,6 +243,7 @@ function App({ msalInstance }) {
                   <Route path="/ai-receptionist" element={<AIReceptionist />} />
                   <Route path="/ai-admin-assistant" element={<AIAdminAssistant />} />
                   <Route path="/ai-reminders" element={<AIReminders />} />
+                  <Route path="/echopad-insights/enterprise" element={<EchoPadInsightsEnterprise />} />
                   <Route path="/echopad-insights" element={<EchoPadInsights />} />
                   <Route path="/aperio" element={<Aperio />} />
                   <Route path="/privacy-policy" element={<PrivacyPolicy />} />

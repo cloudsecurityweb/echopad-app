@@ -448,87 +448,71 @@ function EchoPadInsights() {
           </div>
         </section>
 
-        {/* Use Cases Section */}
+        {/* Use Cases Section - Focused on primary buyer: practices & medical groups */}
         <section className="py-20 bg-white">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                Who Benefits from Insights?
+                Built for Practices & Medical Groups
               </h2>
               <p className="text-lg text-gray-700 max-w-3xl mx-auto">
-                Healthcare organizations of all sizes use Insights to see where they're underpaid and optimize revenue
+                Insights is designed for practice owners and medical group leaders who want to stop leaving money on the table—without hiring expensive consultants.
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {[
-                {
-                  title: 'Hospital Systems & Health Networks',
-                  icon: 'bi-hospital',
-                  challenges: [
-                    'Managing contracts with multiple payers across regions',
-                    'Identifying underpayments across thousands of CPT codes',
-                    'Preparing for payer contract renegotiations'
-                  ],
-                  solution: 'Insights provides system-wide visibility into payer performance, helping CFOs identify $500K+ in annual underpayments and negotiate better rates.'
-                },
-                {
-                  title: 'Medical Groups & Practices',
-                  icon: 'bi-people-fill',
-                  challenges: [
-                    'Limited resources to analyze complex payer contracts',
-                    'Difficulty benchmarking against peer practices',
-                    'Time-consuming manual rate comparisons'
-                  ],
-                  solution: 'Automated benchmarking and prioritized action items help practice administrators focus on high-impact negotiations without hiring expensive consultants.'
-                },
-                {
-                  title: 'Revenue Cycle Management Teams',
-                  icon: 'bi-cash-coin',
-                  challenges: [
-                    'Tracking underpayments across multiple clients',
-                    'Proving value to leadership with data',
-                    'Staying current with market rate changes'
-                  ],
-                  solution: 'Real-time MRF data and custom reporting make it easy to demonstrate ROI and recover revenue for your organization or clients.'
-                },
-                {
-                  title: 'Healthcare Consultants & Advisors',
-                  icon: 'bi-briefcase',
-                  challenges: [
-                    'Accessing reliable market benchmark data',
-                    'Supporting multiple clients with contract negotiations',
-                    'Providing evidence-based recommendations'
-                  ],
-                  solution: 'White-label reports and nationwide benchmarking data enable consultants to deliver premium advisory services backed by real market intelligence.'
-                }
-              ].map((useCase, idx) => (
-                <div key={idx} className="bg-gradient-to-br from-gray-50 to-white border border-gray-200 rounded-xl p-8 shadow-lg">
-                  <div className="flex items-center gap-4 mb-6">
-                    <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <i className={`bi ${useCase.icon} text-purple-600 text-2xl`}></i>
-                    </div>
-                    <h3 className="text-xl font-bold text-gray-900">{useCase.title}</h3>
+            {/* Primary persona: dominant single block */}
+            <div className="max-w-4xl mx-auto mb-10">
+              <div className="bg-gradient-to-br from-purple-50 to-blue-50 border-2 border-purple-200 rounded-2xl p-8 md:p-10 shadow-xl">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-14 h-14 bg-purple-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <i className="bi bi-people-fill text-white text-2xl"></i>
                   </div>
-
-                  <div className="mb-6">
-                    <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-3">Common Challenges:</h4>
-                    <ul className="space-y-2">
-                      {useCase.challenges.map((challenge, i) => (
-                        <li key={i} className="flex items-start gap-2 text-sm text-gray-600">
-                          <i className="bi bi-x-circle text-red-500 mt-0.5 flex-shrink-0"></i>
-                          <span>{challenge}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
-                    <h4 className="text-sm font-semibold text-purple-900 mb-2">How EchoPad Helps:</h4>
-                    <p className="text-sm text-gray-700">{useCase.solution}</p>
+                  <div>
+                    <span className="text-sm font-semibold text-purple-600 uppercase tracking-wide">Primary audience</span>
+                    <h3 className="text-2xl md:text-3xl font-bold text-gray-900">Medical Groups & Practices</h3>
                   </div>
                 </div>
-              ))}
+
+                <div className="mb-6">
+                  <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-3">Common challenges we solve:</h4>
+                  <ul className="space-y-2">
+                    {[
+                      'Limited resources to analyze complex payer contracts',
+                      'Difficulty benchmarking against peer practices',
+                      'Time-consuming manual rate comparisons',
+                      'Uncertainty about where you\'re underpaid before renegotiations',
+                    ].map((challenge, i) => (
+                      <li key={i} className="flex items-start gap-2 text-gray-700">
+                        <i className="bi bi-x-circle text-red-500 mt-0.5 flex-shrink-0"></i>
+                        <span>{challenge}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div className="bg-white border border-purple-200 rounded-xl p-5">
+                  <h4 className="text-sm font-semibold text-purple-900 mb-2">How EchoPad Helps</h4>
+                  <p className="text-gray-700">
+                    Automated benchmarking and prioritized action items help practice administrators and owners focus on high-impact negotiations. See where you're underpaid across payers, benchmark against peers, and negotiate with data-backed leverage—without hiring expensive consultants.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Secondary: Enterprise CTA - one small section */}
+            <div className="max-w-2xl mx-auto">
+              <div className="bg-gray-50 border border-gray-200 rounded-xl p-6 text-center">
+                <p className="text-gray-700 mb-3">
+                  <strong>Hospital systems, RCM teams, or consultants?</strong> We offer tailored solutions for enterprise and advisory use cases.
+                </p>
+                <Link
+                  to="/echopad-insights/enterprise"
+                  className="inline-flex items-center gap-2 text-purple-600 hover:text-purple-700 font-semibold transition-colors"
+                >
+                  Explore Insights for Enterprise
+                  <i className="bi bi-arrow-right"></i>
+                </Link>
+              </div>
             </div>
           </div>
         </section>
