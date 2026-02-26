@@ -36,14 +36,14 @@ function ROI() {
                     <i className="bi bi-graph-up-arrow text-white text-xs md:text-sm lg:text-base xl:text-lg"></i>
                   </div>
                   <div className="text-lg md:text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl font-bold bg-gradient-to-r from-cyan-500 to-blue-600 bg-clip-text text-transparent mb-0.5 md:mb-1">60%</div>
-                  <p className="text-xs md:text-sm text-gray-600">Reduction in administrative overhead</p>
+                  <p className="text-xs md:text-sm text-gray-600">60% less time on admin</p>
                 </div>
                 <div className="glass-card rounded-2xl p-2 md:p-3 lg:p-4 xl:p-5 text-center hover-lift shadow-sm">
                   <div className="w-7 h-7 md:w-8 md:h-8 lg:w-9 lg:h-9 xl:w-10 xl:h-10 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-1 md:mb-2 lg:mb-2.5 shadow-md">
                     <i className="bi bi-people text-white text-xs md:text-sm lg:text-base xl:text-lg"></i>
                   </div>
                   <div className="text-lg md:text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl font-bold bg-gradient-to-r from-cyan-500 to-blue-600 bg-clip-text text-transparent mb-0.5 md:mb-1">40%</div>
-                  <p className="text-xs md:text-sm text-gray-600">Improvement in patient throughput efficiency</p>
+                  <p className="text-xs md:text-sm text-gray-600">See more patients without burning out</p>
                 </div>
               </div>
 

@@ -120,14 +120,14 @@ const EchopadAIScribeDownload = () => {
                 </div>
 
                 <h1 className="text-5xl md:text-7xl font-bold text-gray-900 tracking-tight mb-6">
-                    Real-time clinical <br />
+                    Your note, done before <br />
                     <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-500 to-blue-600">
-                        documentation
+                        you leave the room
                     </span>
                 </h1>
 
                 <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed px-4">
-                    Echopad AI Scribe converts live clinical conversations into structured medical documentation — <span className="text-gray-900 font-medium">securely, accurately, and instantly</span>. Zero manual typing.
+                    Echopad AI Scribe turns your clinical conversation into a structured note—<span className="text-gray-900 font-medium">secure, accurate, and ready before you leave the room</span>. Zero manual typing.
                 </p>
 
                 <div className="flex flex-col sm:flex-row gap-4 justify-center pt-8 pb-8">

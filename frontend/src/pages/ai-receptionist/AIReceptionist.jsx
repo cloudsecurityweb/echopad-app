@@ -417,7 +417,7 @@ function AIReceptionist() {
                   items: [
                     {
                       title: 'EHR/PM Integration',
-                      description: 'Direct connection to Epic, Cerner, Athena for real-time scheduling',
+                      description: 'Appointments book straight into Epic, Cerner, Athena—no double entry',
                     },
                     {
                       title: 'HIPAA Compliant',
@@ -425,7 +425,7 @@ function AIReceptionist() {
                     },
                     {
                       title: 'Phone System Compatible',
-                      description: 'Works with existing phone infrastructure—no hardware changes needed',
+                      description: 'Use your existing phones—no new hardware or IT changes',
                     },
                     {
                       title: 'Smart Call Routing',

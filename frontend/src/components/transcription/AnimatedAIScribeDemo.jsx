@@ -89,7 +89,7 @@ const AnimatedAIScribeDemo = () => {
         <h3 className="text-xl md:text-2xl font-semibold text-gray-700 mb-2">
           Behavioral Health Session → Clinical Note
         </h3>
-        <p className="text-base text-gray-600 mt-2">Watch AI transform speech into clinical documentation in real-time</p>
+        <p className="text-base text-gray-600 mt-2">See your note build as you talk</p>
       </div>
 
       {/* Step 1: Provider Speaking */}
@@ -168,7 +168,7 @@ const AnimatedAIScribeDemo = () => {
           <span className={`text-sm font-semibold transition-colors ${
             currentStep === 2 ? 'text-gray-900' : 'text-gray-500'
           }`}>
-            ⚡ AI Transcription in Real-Time
+            ⚡ Your Note, as You Speak
           </span>
         </div>
         <div className="bg-white rounded-xl p-5 shadow-md border border-gray-100 min-h-[60px] transition-all duration-500">

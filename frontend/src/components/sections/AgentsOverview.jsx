@@ -31,7 +31,7 @@ const PROBLEM_GROUPS = [
       {
         icon: 'bi-graph-up-arrow',
         title: 'Insights',
-        description: 'Healthcare financial intelligence and benchmarking across all 50 states.',
+        description: 'See where you\'re underpaid—across payers and all 50 states.',
         link: '/echopad-insights',
         featured: true,
       },
@@ -45,7 +45,7 @@ const PROBLEM_GROUPS = [
       {
         icon: 'bi-headset',
         title: 'AI Receptionist',
-        description: '24/7 call handling, appointment scheduling, and patient triage.',
+        description: 'Never miss a call. 24/7 scheduling and patient triage.',
         link: '/ai-receptionist',
       },
     ],
@@ -64,7 +64,7 @@ const PROBLEM_GROUPS = [
       {
         icon: 'bi-arrow-left-right',
         title: 'Aperio',
-        description: 'Streamline referral management and care coordination.',
+        description: 'Fewer patients fall through the cracks. Referrals get completed, not lost.',
         link: '/aperio',
         featured: true,
       },
@@ -109,7 +109,7 @@ function AgentsOverview() {
                   Reduce costs by 60%
                 </strong>
                 <span className="text-gray-600 text-xs md:text-sm">
-                  Cut administrative overhead dramatically
+                  Spend less time on admin, more on patients
                 </span>
               </div>
             </div>

@@ -73,7 +73,7 @@ function Aperio() {
                   APERIO
                 </div>
                 <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
-                  AI-Powered Referral Coordination That <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Closes the Loop</span>
+                  Fewer Patients Fall Through the Cracks <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Referrals Get Completed, Not Lost</span>
                 </h1>
 
                 {/* 3-Second Value Proposition - Smaller Size */}
@@ -111,7 +111,7 @@ function Aperio() {
                 </div>
 
                 <p className="text-lg text-gray-600 mb-8">
-                  Streamline referrals, reduce leakage, and ensure patients get the care they need with AI-powered referral coordination.
+                  Fewer patients fall through the cracks. Track every referral to completion with automated follow-up—so patients get the care they need and you close the loop.
                 </p>
 
                 {/* Interactive Stats Banner - Light bg */}
@@ -127,7 +127,7 @@ function Aperio() {
                           Real Impact, Real Results
                         </div>
                         <div className="text-gray-900 text-base md:text-lg lg:text-xl font-bold leading-tight">
-                          Average Reduction: <span className="text-blue-600">40% Referral Leakage</span>
+                          Fewer Lost Referrals: <span className="text-blue-600">40% Reduction on Average</span>
                         </div>
                       </div>
                     </div>
@@ -310,13 +310,13 @@ function Aperio() {
             <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8">
               <div className="space-y-6">
                 <p className="text-lg text-gray-600 leading-relaxed">
-                  For healthcare leaders facing referral leakage and care coordination challenges, Aperio delivers immediate ROI through improved patient retention, reduced administrative burden, and enhanced care continuity.
+                  Fewer patients fall through the cracks. For healthcare leaders facing lost referrals and care coordination gaps, Aperio delivers immediate ROI through improved patient retention, reduced administrative burden, and enhanced care continuity.
                 </p>
                 <p className="text-gray-600 leading-relaxed">
-                  When a referral is created, AI automatically tracks status, sends reminders, and ensures patients complete their referred appointments—all without manual staff intervention.
+                  When a referral is created, we automatically track status, send reminders, and ensure patients complete their referred appointments—all without manual staff intervention.
                 </p>
                 <ul className="space-y-2">
-                  {['Reduce referral leakage and improve care continuity', 'Automate referral tracking and follow-up', 'Ensure patients complete specialist appointments', 'Track referral outcomes and measure success'].map((benefit, idx) => (
+                  {['Fewer patients fall through the cracks—better care continuity', 'Automate referral tracking and follow-up', 'Ensure patients complete specialist appointments', 'Track referral outcomes and measure success'].map((benefit, idx) => (
                     <li key={idx} className="flex items-start gap-2 text-gray-600">
                       <i className="bi bi-check-circle-fill text-green-500 mt-0.5 flex-shrink-0"></i>
                       <span>{benefit}</span>
@@ -331,7 +331,7 @@ function Aperio() {
                 <h3 className="text-lg font-bold text-gray-900 mb-6">Real impact</h3>
                 <div className="grid grid-cols-1 gap-6">
                   {[
-                    { value: '40%', label: 'Reduction in referral leakage', icon: 'bi-graph-down-arrow' },
+                    { value: '40%', label: 'Fewer lost referrals', icon: 'bi-graph-down-arrow' },
                     { value: '60%', label: 'Faster referral completion', icon: 'bi-speedometer' },
                     { value: '80%', label: 'Staff time saved', icon: 'bi-clock-history' },
                   ].map((metric, idx) => (
@@ -492,7 +492,7 @@ function Aperio() {
                       Perfect For You If...
                     </h2>
                     <p className="text-base md:text-lg text-gray-600 mb-2 leading-relaxed">
-                      You lose patients to referral leakage, your staff spends hours tracking referral status, or referral completion rates are below industry standards. If you checked 2 or more, Aperio is built for you.
+                      You lose patients when referrals drop, your staff spends hours tracking status, or completion rates are below what you want. If you checked 2 or more, Aperio is built for you.
                     </p>
                     <p className="text-sm text-gray-500">
                       Multi-specialty practices, primary care networks, and health systems.
@@ -530,7 +530,7 @@ function Aperio() {
                   items: [
                     {
                       title: 'Zero IT Burden',
-                      description: 'Cloud-based deployment requires no infrastructure changes or IT resources',
+                      description: 'Go live without IT—no infrastructure changes or extra resources required.',
                     },
                     {
                       title: 'EHR Agnostic',
@@ -601,8 +601,8 @@ function Aperio() {
                   subtitle: 'See immediate financial impact',
                   items: [
                     {
-                      title: 'Reduced Referral Leakage',
-                      description: 'Average 40% reduction in referral leakage = $350K+ annual revenue retained',
+                      title: 'Fewer Lost Referrals',
+                      description: 'Average 40% fewer lost referrals = $350K+ annual revenue retained.',
                     },
                     {
                       title: 'Faster Completion',

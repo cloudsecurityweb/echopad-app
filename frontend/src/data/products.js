@@ -32,7 +32,7 @@ export const products = [
       'Specialty practices',
     ],
     metrics: [
-      { value: 'Real-time', label: 'Note generation' },
+      { value: 'Done before you leave', label: 'Note ready' },
       { value: 'EHR-ready', label: 'Copy-paste or integrate' },
       { value: 'HIPAA', label: 'Compliant' },
     ],
@@ -107,7 +107,7 @@ export const products = [
     route: '/ai-receptionist',
     icon: 'bi-headset',
     badge: 'Best Value',
-    usp: 'Handle 100+ calls simultaneously, 24/7',
+    usp: 'Never miss a call—24/7 scheduling and triage',
     stripePaymentLink: 'https://buy.stripe.com/placeholder-ai-receptionist', // Replace with actual Stripe Payment Link
     features: [
       '24/7 availability, zero wait times',
@@ -189,7 +189,7 @@ export const products = [
     id: 'echopad-insights',
     name: 'Insights',
     shortDescription: 'Healthcare financial intelligence & benchmarking across all 50 states',
-    longDescription: 'Aggregate multi-payer data nationwide to identify underpayments, benchmark performance against peers, and optimize clinical and financial outcomes—all in one powerful platform.',
+    longDescription: 'See where you\'re underpaid—across payers and regions. Benchmark against peers and optimize outcomes. We aggregate multi-payer data nationwide so you have one place to act.',
     price: '$499',
     pricePeriod: 'per organization/month',
     route: '/echopad-insights',
@@ -198,12 +198,12 @@ export const products = [
     usp: 'Identify $500K+ in underpayments annually',
     stripePaymentLink: 'https://buy.stripe.com/placeholder-echopad-insights', // Replace with actual Stripe Payment Link
     features: [
-      'Multi-payer data aggregation',
+      'See where you\'re underpaid across payers',
       'National benchmarking (all 50 states)',
       'Reimbursement transparency',
       'CPT/DRG lookup & analysis',
       'Underpayment detection',
-      'Revenue leakage analysis',
+      'Spot revenue you\'re leaving on the table',
       'Contract optimization intelligence',
     ],
     useCases: [
@@ -228,7 +228,7 @@ export const products = [
     route: '/aperio',
     icon: 'bi-arrow-left-right',
     badge: null,
-    usp: 'Reduce referral leakage by 45%',
+    usp: 'Fewer patients fall through the cracks',
     stripePaymentLink: 'https://buy.stripe.com/placeholder-aperio', // Replace with actual Stripe Payment Link
     features: [
       'Automated referral tracking',
@@ -243,7 +243,7 @@ export const products = [
       'Healthcare systems',
     ],
     metrics: [
-      { value: '45%', label: 'Reduction in referral leakage' },
+      { value: '45%', label: 'Fewer lost referrals' },
       { value: '85%', label: 'Referral completion rate' },
       { value: '72hr', label: 'Average referral turnaround' },
     ],

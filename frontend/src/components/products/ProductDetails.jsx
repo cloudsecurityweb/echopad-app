@@ -10,7 +10,7 @@ function ProductDetails() {
     sections: [
       {
         title: 'What You See',
-        content: 'As you speak naturally during patient sessions, AI Scribe captures every word, cleans up the grammar, recognizes medical terminology, and structures it into professional documentation—all in real-time.',
+        content: 'Your note is ready before you leave the room. As you speak naturally, we capture every word, clean up grammar, recognize medical terminology, and structure it into professional documentation.',
       },
       {
         title: 'Key Benefits',
@@ -648,12 +648,12 @@ function ProductDetails() {
     sections: [
       {
         title: 'What You See',
-        content: 'Real-time dashboards comparing your performance to national benchmarks, with drill-downs and automated reporting.',
+        content: 'See how you compare to national benchmarks at a glance—drill down and export reports when you need them.',
       },
       {
         title: 'Key Benefits',
         items: [
-          'Real-time performance dashboards',
+          'See your performance vs. benchmarks when you need it',
           'Industry benchmark comparisons',
           'Custom KPI tracking',
           'Automated reporting and alerts',

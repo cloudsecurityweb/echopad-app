@@ -74,7 +74,7 @@ function EchoPadInsights() {
                 </p>
 
                 <p className="text-base text-gray-600 mb-8">
-                  Aggregate multi-payer data nationwide to identify underpayments, benchmark performance against peers, and optimize clinical and financial outcomes—all in one powerful platform.
+                  See where you're underpaid—across payers and regions. Benchmark against peers and optimize outcomes. We aggregate multi-payer data nationwide so you have one place to act.
                 </p>
 
                 {/* Interactive Stats Banner - Light bg */}
@@ -133,7 +133,7 @@ function EchoPadInsights() {
                       For Healthcare Leaders & CFOs
                     </h4>
                     <p className="text-gray-600">
-                      Stop negotiating blind. Insights aggregates nationwide payer data, identifies where you're underpaid, and gives you the leverage to negotiate better contracts—backed by real market benchmarks.
+                      Stop negotiating blind. See where you're underpaid, get the leverage to negotiate better contracts—backed by real market benchmarks from nationwide payer data.
                     </p>
                   </div>
 
@@ -143,7 +143,7 @@ function EchoPadInsights() {
                       What You Get
                     </h4>
                     <p className="text-gray-600">
-                      Real-time access to multi-payer reimbursement data across all 50 states. Benchmark your rates against regional peers, identify underpayments by CPT code, and discover hidden revenue opportunities—all in an intuitive dashboard.
+                      See where you're underpaid across payers and regions. Benchmark your rates against peers, identify underpayments by CPT code, and discover hidden revenue opportunities—all in one dashboard. How: we keep data current from payer files.
                     </p>
                   </div>
 
@@ -172,7 +172,7 @@ function EchoPadInsights() {
                     <div className="grid grid-cols-3 gap-4 mt-4">
                       {[
                         { value: '$500K+', label: 'Underpayments identified', source: 'Customer recovery data', icon: 'bi-cash-stack' },
-                        { value: 'All 50', label: 'States covered', source: 'CMS / payer MRFs', icon: 'bi-geo-alt' },
+                          { value: 'All 50', label: 'States covered', source: 'Nationwide payer data', icon: 'bi-geo-alt' },
                         { value: '100%', label: 'Data transparency', source: 'Platform capability', icon: 'bi-shield-check' },
                       ].map((metric, idx) => (
                         <div key={idx} className="bg-gray-50 rounded-lg p-4 text-center">
@@ -215,9 +215,9 @@ function EchoPadInsights() {
                           1
                         </div>
                         <div className="flex-1">
-                          <h4 className="text-lg font-bold text-gray-900 mb-2">Aggregate Machine-Readable Files (MRFs)</h4>
+                          <h4 className="text-lg font-bold text-gray-900 mb-2">See Real Rates Across Payers</h4>
                           <p className="text-sm text-gray-600 mb-3">
-                            We aggregate negotiated rate data from major payers' machine-readable files across all 50 states—compliant with federal price transparency mandates.
+                            We use publicly available payer files (MRFs) so you see actual negotiated rates across all 50 states—not estimates. Compliant with federal price transparency mandates.
                           </p>
                           <div className="bg-blue-50 border border-blue-100 rounded-lg p-4">
                             <div className="space-y-2">
@@ -238,7 +238,7 @@ function EchoPadInsights() {
                                 <span className="font-medium">Cigna & Humana</span>
                               </div>
                               <div className="flex items-center justify-between mt-2 pt-2 border-t border-blue-100">
-                                <span className="text-xs text-gray-600">Live MRF Data</span>
+                                <span className="text-xs text-gray-600">Data stays current</span>
                                 <div className="flex items-center gap-1">
                                   <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></div>
                                   <span className="text-xs font-semibold text-emerald-600">Active</span>
@@ -455,8 +455,8 @@ function EchoPadInsights() {
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
                 Who Benefits from Insights?
               </h2>
-              <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-                Healthcare organizations of all sizes use our platform to optimize revenue
+              <p className="text-lg text-gray-700 max-w-3xl mx-auto">
+                Healthcare organizations of all sizes use Insights to see where they're underpaid and optimize revenue
               </p>
             </div>
 
@@ -538,10 +538,10 @@ function EchoPadInsights() {
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                Comprehensive Revenue Intelligence Platform
+                Know Exactly Where You're Underpaid
               </h2>
               <p className="text-lg text-gray-700 max-w-3xl mx-auto">
-                Access the most extensive healthcare pricing database with real-time insights
+                The most extensive healthcare pricing view—your underpayment intelligence stays current
               </p>
             </div>
 
@@ -550,7 +550,7 @@ function EchoPadInsights() {
                 { value: 'Billions', label: 'Data Points Analyzed', icon: 'bi-database' },
                 { value: 'All Major', label: 'Payers Included', icon: 'bi-building' },
                 { value: '50 States', label: 'Nationwide Coverage', icon: 'bi-geo-alt' },
-                { value: 'Real-Time', label: 'MRF Data Updates', icon: 'bi-arrow-repeat' }
+                { value: 'Your view stays current', label: 'Data updates', icon: 'bi-arrow-repeat' }
               ].map((stat, idx) => (
                 <div key={idx} className="text-center">
                   <div className="w-16 h-16 bg-white border border-purple-200 rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm">
@@ -584,7 +584,7 @@ function EchoPadInsights() {
                 Common Questions About Revenue Intelligence
               </h2>
               <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-                Get answers to help you understand how our platform works
+                Get answers to help you get the most from your underpayment intelligence
               </p>
             </div>
 
@@ -593,7 +593,7 @@ function EchoPadInsights() {
                 {
                   category: 'Data Source',
                   question: 'How do you access payer rate data?',
-                  answer: 'We aggregate publicly available machine-readable files (MRFs) published by payers as required by federal price transparency mandates.',
+                  answer: 'We use publicly available payer files (MRFs) published under federal price transparency rules so you see real negotiated rates.',
                   icon: 'bi-database',
                   color: 'blue'
                 },
@@ -614,14 +614,14 @@ function EchoPadInsights() {
                 {
                   category: 'Accuracy',
                   question: 'What makes your data reliable?',
-                  answer: 'Our data comes directly from payer MRFs—actual negotiated rates, not surveys or estimates.',
+                  answer: 'Our data comes directly from payer files—actual negotiated rates, not surveys or estimates.',
                   icon: 'bi-patch-check',
                   color: 'teal'
                 },
                 {
                   category: 'Usage',
                   question: 'Can I use this in negotiations?',
-                  answer: 'Yes. The platform includes templates, talking points, and exportable reports for payer discussions.',
+                  answer: 'Yes. You get templates, talking points, and exportable reports for payer discussions.',
                   icon: 'bi-chat-square-text',
                   color: 'orange'
                 },

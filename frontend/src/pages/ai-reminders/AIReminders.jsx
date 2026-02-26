@@ -305,7 +305,7 @@ function AIReminders() {
                   For healthcare leaders facing no-show revenue loss and patient engagement challenges, AI Patient Reminders delivers immediate ROI through reduced missed appointments, improved medication adherence, and enhanced patient satisfaction. Recover $50K–$200K annually per provider in lost revenue while improving quality metrics.
                 </p>
                 <p className="text-gray-600 leading-relaxed">
-                  When appointments are scheduled, AI creates personalized reminder sequences via SMS, email, and voice. Patients confirm attendance, and you track compliance in real time. Set your own cadence—7 days out, 24 hours before, or 2 hours before. Include prep instructions so patients show up ready. Works with your EHR schedule so reminders stay in sync without manual lists.
+                  When appointments are scheduled, we create personalized reminder sequences via SMS, email, and voice. Patients confirm attendance, and you see who's coming at a glance. Set your own cadence—7 days out, 24 hours before, or 2 hours before. Include prep instructions so patients show up ready. Stays in sync with your EHR schedule so you don't maintain manual lists.
                 </p>
                 <ul className="space-y-2">
                   {['Reduce no-shows and last-minute cancellations', 'Clear appointment and preparation reminders', 'Improve patient compliance with care instructions', 'Automatic confirmations without staff involvement'].map((benefit, idx) => (

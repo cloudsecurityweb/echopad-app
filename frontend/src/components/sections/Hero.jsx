@@ -32,19 +32,19 @@ function Hero() {
             <span className="text-gray-300 hidden sm:inline">|</span>
             <div className="inline-flex items-center gap-2 glass-card px-3 py-1.5 rounded-full text-sm font-semibold">
               <i className="bi bi-lightning-charge-fill text-cyan-500 animate-pulse"></i>
-              <span className="text-gray-800">AI-Powered Healthcare Automation</span>
+              <span className="text-gray-800">Notes done before the patient leaves. Fewer no-shows. Less admin.</span>
             </div>
           </div>
 
           {/* Main Heading */}
           <h1 className="text-3xl sm:text-4xl md:text-4xl lg:text-5xl font-bold mb-3 leading-tight animate-fade-in-scale animation-delay-100">
-            <span className="text-gray-900">AI Agents That Automate Your </span>
-            <span className="animate-gradient-text">Entire Clinical Workflow</span>
+            <span className="text-gray-900">Spend Less Time on Charts and Admin, </span>
+            <span className="animate-gradient-text">More Time with Patients</span>
           </h1>
 
           {/* Subtitle */}
           <p className="text-sm sm:text-base text-gray-600 mb-6 max-w-2xl mx-auto animate-fade-in-scale animation-delay-200">
-            Transform documentation, scheduling, and admin tasks into automated workflows. Modular AI agents—deploy individually or as a suite.
+            Your note is done before you leave the room. Phones get answered 24/7. Fewer no-shows. Deploy one tool or the full suite—each plugs into your EHR.
           </p>
 
           {/* Feature pills */}

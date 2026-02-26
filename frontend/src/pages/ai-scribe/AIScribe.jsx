@@ -198,7 +198,7 @@ function AIScribe() {
                       What You See
                     </h2>
                     <p className="text-gray-600">
-                      As you speak naturally during patient sessions, AI Scribe captures every word, cleans up the grammar, recognizes medical terminology, and structures it into professional documentation—all in real-time.
+                      Your note is ready before you leave the room—no waiting, no follow-up. As you speak naturally, we capture every word, clean up grammar, recognize medical terminology, and structure it into professional documentation.
                     </p>
                   </div>
 
@@ -254,7 +254,7 @@ function AIScribe() {
                 What’s Different
               </h2>
               <p className="text-lg text-gray-600 leading-relaxed">
-                No templates to memorize—notes follow your natural conversation, not the other way around. Works with complex encounters, multi-diagnosis visits, and specialty-specific language. Audio is processed in real time and not stored, so you get documentation without the privacy tradeoff.
+                No templates to memorize—notes follow your natural conversation, not the other way around. Works with complex encounters, multi-diagnosis visits, and specialty-specific language. You get documentation without the privacy tradeoff. How: audio is processed in real time and not stored.
               </p>
             </div>
           </div>
@@ -298,8 +298,8 @@ function AIScribe() {
                 {
                   step: '2',
                   icon: 'bi-cpu-fill',
-                  title: 'AI Processes',
-                  description: 'Our AI listens in real-time, transcribes with medical-grade accuracy, corrects grammar, and recognizes medical terminology automatically.',
+                  title: 'Your Note Builds as You Speak',
+                  description: 'Medical-grade transcription, grammar correction, and automatic medical terminology recognition. Your note is ready the moment you finish.',
                   color: 'from-purple-500 to-pink-500',
                   bgColor: 'from-purple-50 to-pink-50',
                   iconBg: 'bg-gradient-to-br from-purple-500 to-pink-500',
@@ -392,7 +392,7 @@ function AIScribe() {
                   items: [
                     {
                       title: 'Zero IT Burden',
-                      description: 'Cloud-based deployment requires no infrastructure changes or IT resources',
+                      description: 'Go live without IT—no infrastructure changes or extra resources required.',
                     },
                     {
                       title: 'EHR Agnostic',
@@ -444,7 +444,7 @@ function AIScribe() {
                     },
                     {
                       title: 'Zero Data Retention',
-                      description: 'Audio is processed in real-time and immediately deleted—nothing stored on our servers',
+                      description: 'Your patients\' audio is never stored. How: processed and immediately deleted from our servers.',
                     },
                     {
                       title: 'End-to-End Encryption',

@@ -371,7 +371,7 @@ function SignUp() {
                     </p>
                   </div>
                   <p className="text-blue-100 text-xs md:text-sm">
-                    HIPAA-compliant platform with enterprise-grade security. Your data is encrypted and protected.
+                    Your data is secure and HIPAA-compliant. Encrypted and protected.
                   </p>
                 </div>
 

@@ -194,7 +194,7 @@ function PayerRates() {
                                                 <div className="bg-blue-100 rounded p-2 mt-3">
                                                     <p className="text-xs text-blue-900 font-medium">
                                                         <i className="bi bi-info-circle mr-1"></i>
-                                                        Data covers 87% of Arizona market based on MRF analysis
+                                                        Data covers 87% of Arizona market based on public payer data
                                                     </p>
                                                 </div>
                                             </div>
@@ -237,7 +237,7 @@ function PayerRates() {
                                             <div className="bg-white rounded p-3 border border-green-300">
                                                 <p className="text-xs text-gray-700 leading-relaxed">
                                                     <i className="bi bi-lightbulb-fill text-yellow-500 mr-1"></i>
-                                                    <strong>Negotiation talking point:</strong> "Our current rate for CPT 99213 is $340, which is 18% below the Arizona market median of $415. Based on publicly available MRF data covering 87% of the market, we're requesting alignment to the regional median to ensure sustainable quality care delivery."
+                                                    <strong>Negotiation talking point:</strong> "Our current rate for CPT 99213 is $340, which is 18% below the Arizona market median of $415. Based on publicly available payer data covering 87% of the market, we're requesting alignment to the regional median to ensure sustainable quality care delivery."
                                                 </p>
                                             </div>
                                         </div>
@@ -477,7 +477,7 @@ function PayerRates() {
                                         },
                                         {
                                             title: 'Monthly Updates',
-                                            description: 'Automated refreshes as new payer MRF data arrives, keeping your intelligence current',
+                                            description: 'Your rates stay current as new payer data is published—no manual refreshes',
                                         },
                                         {
                                             title: 'Confidence Scoring',
@@ -525,7 +525,7 @@ function PayerRates() {
                                         },
                                         {
                                             title: 'Live Scenario Modeling',
-                                            description: 'Model different rate scenarios in real-time: "If we hold at 2.5%, what does that mean to margin?"',
+                                            description: 'Model different rate scenarios on the spot: "If we hold at 2.5%, what does that mean to margin?"',
                                         },
                                         {
                                             title: 'Post-Negotiation Tracking',
@@ -817,7 +817,7 @@ function PayerRates() {
                                         <h4 className="text-sm font-semibold text-gray-900 mb-3">Example: Mid-Size System</h4>
                                         <div className="space-y-2 text-sm">
                                             <div className="flex justify-between pb-2 border-b border-gray-200">
-                                                <span className="text-gray-600">Annual platform fee:</span>
+                                                <span className="text-gray-600">Annual subscription</span>
                                                 <span className="font-semibold text-gray-900">$100,000</span>
                                             </div>
                                             <div className="flex justify-between pb-2 border-b border-gray-200">
