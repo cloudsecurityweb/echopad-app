@@ -516,27 +516,57 @@ function AIScribe() {
           </div>
         </section>
 
-        {/* Perfect For You - Contact-style */}
+        {/* Perfect For You - Specialty callouts */}
         <section className="py-12 md:py-20 bg-white">
           <div className="container mx-auto px-4 w-full">
             <div className="max-w-4xl mx-auto">
               <div className="rounded-2xl md:rounded-3xl border border-gray-200 bg-white p-6 md:p-10 lg:p-12 shadow-lg shadow-gray-200/60">
-                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8 lg:gap-10">
-                  <div className="flex-1 min-w-0">
-                    <div className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-3">
-                      Perfect For You
-                    </div>
-                    <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
-                      Perfect For You If...
-                    </h2>
-                    <p className="text-base md:text-lg text-gray-600 mb-2 leading-relaxed">
-                      You spend more than 30 minutes charting per day, want more face-time with patients, or your documentation backlog keeps growing. If you checked 2 or more, AI Scribe is built for you.
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      Behavioral health, primary care, and specialty practices.
-                    </p>
-                  </div>
+                <div className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-3">
+                  Perfect For You
                 </div>
+                <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+                  Built for Your Specialty
+                </h2>
+                <p className="text-base text-gray-600 mb-6 leading-relaxed">
+                  See your practice in AI Scribe. Pre-configured templates so you can start documenting the way you already work.
+                </p>
+                <ul className="space-y-4" role="list">
+                  {[
+                    {
+                      specialty: 'Behavioral health',
+                      icon: 'bi-heart-pulse-fill',
+                      sentence: 'Pre-configured templates for therapy notes, progress notes, and treatment plans so you document sessions without the paperwork.',
+                    },
+                    {
+                      specialty: 'Primary care',
+                      icon: 'bi-person-hearts',
+                      sentence: 'Ready-to-use templates for annual wellness, sick visits, and chronic care management that match how you actually practice.',
+                    },
+                    {
+                      specialty: 'Orthopedics',
+                      icon: 'bi-activity',
+                      sentence: 'Specialty templates for joint exams, procedures, and post-op follow-ups so your notes are structured and billing-ready.',
+                    },
+                    {
+                      specialty: 'Cardiology',
+                      icon: 'bi-heart-pulse',
+                      sentence: 'Pre-built templates for stress tests, echo documentation, and cardiac follow-ups that capture the detail you need.',
+                    },
+                  ].map((item, idx) => (
+                    <li key={idx} className="flex items-start gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <i className={`bi ${item.icon} text-blue-600 text-lg`} aria-hidden="true"></i>
+                      </div>
+                      <div>
+                        <span className="font-semibold text-gray-900">{item.specialty}.</span>{' '}
+                        <span className="text-gray-600">{item.sentence}</span>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+                <p className="text-sm text-gray-500 mt-6">
+                  Plus 20+ other specialties with pre-configured templates—or create your own.
+                </p>
               </div>
             </div>
           </div>
