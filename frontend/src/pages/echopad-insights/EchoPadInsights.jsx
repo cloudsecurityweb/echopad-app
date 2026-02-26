@@ -77,30 +77,30 @@ function EchoPadInsights() {
                   Aggregate multi-payer data nationwide to identify underpayments, benchmark performance against peers, and optimize clinical and financial outcomes—all in one powerful platform.
                 </p>
 
-                {/* Interactive Stats Banner */}
-                <div className="bg-gradient-to-r from-purple-500 via-blue-500 to-teal-600 rounded-2xl p-5 md:p-6 mb-6 shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-[1.02] animate-gradient-x overflow-hidden">
+                {/* Interactive Stats Banner - Light bg */}
+                <div className="bg-gradient-to-br from-purple-50 via-blue-50 to-teal-50 border-2 border-purple-200 rounded-2xl p-5 md:p-6 mb-6 shadow-lg overflow-hidden">
                   <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 min-w-0">
                     <div className="flex items-center gap-3 md:gap-4 min-w-0 flex-1">
-                      <div className="w-12 h-12 md:w-14 md:h-14 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center flex-shrink-0">
-                        <i className="bi bi-cash-stack text-white text-xl md:text-2xl animate-bounce"></i>
+                      <div className="w-12 h-12 md:w-14 md:h-14 bg-purple-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <i className="bi bi-cash-stack text-purple-600 text-xl md:text-2xl animate-bounce"></i>
                       </div>
                       <div className="min-w-0 flex-1">
-                        <div className="text-white/80 text-xs md:text-sm font-semibold uppercase tracking-wide mb-1 break-words">
+                        <div className="text-gray-600 text-xs md:text-sm font-semibold uppercase tracking-wide mb-1 break-words">
                           Revenue Intelligence
                         </div>
-                        <div className="text-white text-lg md:text-xl lg:text-2xl font-bold break-words whitespace-normal">
-                          Identify: <span className="text-yellow-300">$500K+</span> Annually
+                        <div className="text-gray-900 text-lg md:text-xl lg:text-2xl font-bold break-words whitespace-normal">
+                          Identify: <span className="text-purple-600">$500K+</span> Annually
                         </div>
                       </div>
                     </div>
                     <div className="flex gap-2 md:gap-3 flex-shrink-0">
-                      <div className="bg-white/20 backdrop-blur-sm px-3 md:px-4 py-2 rounded-lg min-w-[80px] md:min-w-[100px] text-center">
-                        <div className="text-white/80 text-xs whitespace-nowrap">Coverage</div>
-                        <div className="text-white font-bold text-base md:text-lg">All 50 States</div>
+                      <div className="bg-white border border-purple-200 px-3 md:px-4 py-2 rounded-lg min-w-[80px] md:min-w-[100px] text-center shadow-sm">
+                        <div className="text-gray-600 text-xs whitespace-nowrap">Coverage</div>
+                        <div className="text-gray-900 font-bold text-base md:text-lg">All 50 States</div>
                       </div>
-                      <div className="bg-white/20 backdrop-blur-sm px-3 md:px-4 py-2 rounded-lg min-w-[80px] md:min-w-[100px] text-center">
-                        <div className="text-white/80 text-xs whitespace-nowrap">Setup</div>
-                        <div className="text-white font-bold text-base md:text-lg">&lt;1 Week</div>
+                      <div className="bg-white border border-purple-200 px-3 md:px-4 py-2 rounded-lg min-w-[80px] md:min-w-[100px] text-center shadow-sm">
+                        <div className="text-gray-600 text-xs whitespace-nowrap">Setup</div>
+                        <div className="text-gray-900 font-bold text-base md:text-lg">&lt;1 Week</div>
                       </div>
                     </div>
                   </div>
@@ -337,15 +337,15 @@ function EchoPadInsights() {
                     </div>
                   </div>
 
-                  {/* Total Impact Summary */}
-                  <div className="mt-6 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl p-5 text-white">
+                  {/* Total Impact Summary - Light bg */}
+                  <div className="mt-6 bg-gradient-to-br from-blue-50 to-purple-50 border-2 border-blue-200 rounded-xl p-5">
                     <div className="flex items-center justify-between">
                       <div>
-                        <div className="text-sm opacity-90 mb-1">Total Revenue Opportunity</div>
-                        <div className="text-3xl font-bold">$635K+</div>
+                        <div className="text-sm text-gray-600 font-medium mb-1">Total Revenue Opportunity</div>
+                        <div className="text-3xl font-bold text-gray-900">$635K+</div>
                       </div>
-                      <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
-                        <i className="bi bi-graph-up-arrow text-3xl"></i>
+                      <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
+                        <i className="bi bi-graph-up-arrow text-blue-600 text-3xl"></i>
                       </div>
                     </div>
                   </div>
@@ -353,20 +353,20 @@ function EchoPadInsights() {
               </div>
             </div>
 
-            {/* CTA Below Visualization */}
+            {/* CTA Below Visualization - Light bg */}
             <div className="text-center mt-12">
-              <div className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl p-8 shadow-xl">
-                <h3 className="text-2xl md:text-3xl font-bold text-white mb-4">
+              <div className="bg-gradient-to-br from-purple-50 to-blue-50 border-2 border-purple-200 rounded-2xl p-8 shadow-lg">
+                <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
                   Ready to Discover Your Revenue Opportunities?
                 </h3>
-                <p className="text-white/90 text-lg mb-6 max-w-2xl mx-auto">
+                <p className="text-gray-700 text-lg mb-6 max-w-2xl mx-auto">
                   See exactly how much revenue you're leaving on the table. Get started with a free analysis.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <a
                     href="#"
                     onClick={(e) => handleIntercomClick(e, 'request-demo')}
-                    className="inline-flex items-center justify-center gap-3 bg-white text-purple-600 px-8 py-4 rounded-xl font-bold text-lg hover:bg-gray-100 transition-all shadow-lg hover:shadow-xl hover:scale-105"
+                    className="inline-flex items-center justify-center gap-3 bg-purple-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-purple-700 transition-all shadow-lg hover:shadow-xl hover:scale-105"
                   >
                     <i className="bi bi-calendar-check text-2xl"></i>
                     Get Free Analysis
@@ -374,7 +374,7 @@ function EchoPadInsights() {
                   <a
                     href="#"
                     onClick={(e) => handleIntercomClick(e, 'sign-up')}
-                    className="inline-flex items-center justify-center gap-3 bg-purple-800 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-purple-900 transition-all shadow-lg hover:shadow-xl hover:scale-105 border-2 border-white/20"
+                    className="inline-flex items-center justify-center gap-3 bg-white text-purple-600 px-8 py-4 rounded-xl font-bold text-lg hover:bg-purple-100 transition-all shadow-lg hover:shadow-xl hover:scale-105 border-2 border-purple-300"
                   >
                     <i className="bi bi-chat-dots text-2xl"></i>
                     Talk to an Expert
@@ -533,14 +533,14 @@ function EchoPadInsights() {
           </div>
         </section>
 
-        {/* Platform Capabilities Section */}
-        <section className="py-20 bg-gradient-to-br from-purple-600 to-blue-600">
+        {/* Platform Capabilities Section - Light bg */}
+        <section className="py-20 bg-gradient-to-br from-purple-50 to-blue-50 border-y border-purple-200">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
                 Comprehensive Revenue Intelligence Platform
               </h2>
-              <p className="text-lg text-white/90 max-w-3xl mx-auto">
+              <p className="text-lg text-gray-700 max-w-3xl mx-auto">
                 Access the most extensive healthcare pricing database with real-time insights
               </p>
             </div>
@@ -553,11 +553,11 @@ function EchoPadInsights() {
                 { value: 'Real-Time', label: 'MRF Data Updates', icon: 'bi-arrow-repeat' }
               ].map((stat, idx) => (
                 <div key={idx} className="text-center">
-                  <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i className={`bi ${stat.icon} text-white text-3xl`}></i>
+                  <div className="w-16 h-16 bg-white border border-purple-200 rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm">
+                    <i className={`bi ${stat.icon} text-purple-600 text-3xl`}></i>
                   </div>
-                  <div className="text-4xl font-bold text-white mb-2">{stat.value}</div>
-                  <div className="text-white/90">{stat.label}</div>
+                  <div className="text-4xl font-bold text-gray-900 mb-2">{stat.value}</div>
+                  <div className="text-gray-600">{stat.label}</div>
                 </div>
               ))}
             </div>
@@ -567,7 +567,7 @@ function EchoPadInsights() {
               <a
                 href="#"
                 onClick={(e) => handleIntercomClick(e, 'request-demo')}
-                className="inline-flex items-center justify-center gap-3 bg-white text-purple-600 px-8 py-4 rounded-xl font-bold text-lg hover:bg-gray-100 transition-all shadow-lg hover:shadow-xl hover:scale-105"
+                className="inline-flex items-center justify-center gap-3 bg-purple-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-purple-700 transition-all shadow-lg hover:shadow-xl hover:scale-105"
               >
                 <i className="bi bi-rocket-takeoff text-2xl"></i>
                 Start Optimizing Revenue Today

@@ -114,32 +114,32 @@ function Aperio() {
                   Streamline referrals, reduce leakage, and ensure patients get the care they need with AI-powered referral coordination.
                 </p>
 
-                {/* Interactive Stats Banner */}
-                <div className="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-600 rounded-2xl p-5 md:p-6 mb-6 shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-[1.02] animate-gradient-x overflow-hidden">
+                {/* Interactive Stats Banner - Light bg */}
+                <div className="bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 border-2 border-blue-200 rounded-2xl p-5 md:p-6 mb-6 shadow-lg overflow-hidden">
                   <div className="flex flex-col items-center gap-4">
                     {/* Main Content - Real Impact, Real Results - Centered */}
                     <div className="flex flex-col items-center gap-3 md:gap-4 text-center">
-                      <div className="w-12 h-12 md:w-14 md:h-14 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
-                        <i className="bi bi-graph-up-arrow text-white text-xl md:text-2xl animate-bounce"></i>
+                      <div className="w-12 h-12 md:w-14 md:h-14 bg-blue-100 rounded-xl flex items-center justify-center">
+                        <i className="bi bi-graph-up-arrow text-blue-600 text-xl md:text-2xl animate-bounce"></i>
                       </div>
                       <div>
-                        <div className="text-white/90 text-xs md:text-sm font-semibold uppercase tracking-wide mb-2">
+                        <div className="text-gray-600 text-xs md:text-sm font-semibold uppercase tracking-wide mb-2">
                           Real Impact, Real Results
                         </div>
-                        <div className="text-white text-base md:text-lg lg:text-xl font-bold leading-tight">
-                          Average Reduction: <span className="text-yellow-300">40% Referral Leakage</span>
+                        <div className="text-gray-900 text-base md:text-lg lg:text-xl font-bold leading-tight">
+                          Average Reduction: <span className="text-blue-600">40% Referral Leakage</span>
                         </div>
                       </div>
                     </div>
                     {/* Stats - Below and Centered */}
                     <div className="flex gap-2 md:gap-3 lg:mt-2 justify-center">
-                      <div className="bg-white/20 backdrop-blur-sm px-3 md:px-4 py-2.5 rounded-lg text-center min-w-[90px] md:min-w-[110px] lg:min-w-[130px]">
-                        <div className="text-white/90 text-xs font-medium mb-1">Completion</div>
-                        <div className="text-white font-bold text-sm md:text-base lg:text-lg">60% Faster</div>
+                      <div className="bg-white border border-blue-200 px-3 md:px-4 py-2.5 rounded-lg text-center min-w-[90px] md:min-w-[110px] lg:min-w-[130px] shadow-sm">
+                        <div className="text-gray-600 text-xs font-medium mb-1">Completion</div>
+                        <div className="text-gray-900 font-bold text-sm md:text-base lg:text-lg">60% Faster</div>
                       </div>
-                      <div className="bg-white/20 backdrop-blur-sm px-3 md:px-4 py-2.5 rounded-lg text-center min-w-[90px] md:min-w-[110px] lg:min-w-[130px]">
-                        <div className="text-white/90 text-xs font-medium mb-1">Setup Time</div>
-                        <div className="text-white font-bold text-sm md:text-base lg:text-lg">&lt;2 Weeks</div>
+                      <div className="bg-white border border-blue-200 px-3 md:px-4 py-2.5 rounded-lg text-center min-w-[90px] md:min-w-[110px] lg:min-w-[130px] shadow-sm">
+                        <div className="text-gray-600 text-xs font-medium mb-1">Setup Time</div>
+                        <div className="text-gray-900 font-bold text-sm md:text-base lg:text-lg">&lt;2 Weeks</div>
                       </div>
                     </div>
                   </div>
