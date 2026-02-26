@@ -259,10 +259,10 @@ const AnimatedAIScribeDemo = () => {
       </div>
 
       {/* CTA Section Below Demo */}
-      <div className="mt-8 bg-gradient-to-r from-green-50 via-emerald-50 to-teal-50 rounded-2xl p-6 border-2 border-green-200 shadow-lg">
+      <div className="mt-8 bg-gradient-to-r from-blue-50 via-emerald-50 to-teal-50 rounded-2xl p-6 border-2 border-blue-200 shadow-lg">
         <div className="text-center">
           <div className="flex items-center justify-center gap-2 mb-3">
-            <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center animate-pulse">
+            <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center animate-pulse">
               <i className="bi bi-rocket-takeoff-fill text-white text-lg"></i>
             </div>
             <h4 className="text-xl md:text-2xl font-bold text-gray-900">

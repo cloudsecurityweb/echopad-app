@@ -142,9 +142,9 @@ function AIScribe() {
                 </h1>
 
                 {/* 3-Second Value Proposition - Smaller Size */}
-                <div className="bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 border-2 border-green-300 rounded-xl p-4 mb-6 shadow-lg">
+                <div className="bg-gradient-to-br from-blue-50 via-emerald-50 to-teal-50 border-2 border-blue-300 rounded-xl p-4 mb-6 shadow-lg">
                   <div className="flex items-center justify-center gap-2 mb-3">
-                    <div className="w-6 h-6 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center">
+                    <div className="w-6 h-6 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center">
                       <i className="bi bi-lightning-charge-fill text-white text-xs"></i>
                     </div>
                     <h2 className="text-sm md:text-base font-bold text-gray-900">How It Works in 3 Seconds</h2>
@@ -235,26 +235,27 @@ function AIScribe() {
                     </div>
                   </div>
 
-                  {/* Something new: what doctors don't already know */}
-                  <div>
-                    <h2 className="flex items-center text-lg font-semibold text-gray-900 mb-3">
-                      <i className="bi bi-lightbulb text-teal-500 mr-2"></i>
-                      What’s Different
-                    </h2>
-                    <p className="text-gray-600 mb-2">
-                      No templates to memorize—notes follow your natural conversation, not the other way around. Works with complex encounters, multi-diagnosis visits, and specialty-specific language. Audio is processed in real time and not stored, so you get documentation without the privacy tradeoff.
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      Integration takes under 7 days with no IT lift. Practices report less after-hours charting, fewer documentation-related denials, and more time for patient care.
-                    </p>
-                  </div>
-
                 </div>
               </div>
 
               <div className="lg:col-span-7">
                 <AnimatedAIScribeDemo />
               </div>
+            </div>
+          </div>
+        </section>
+
+        {/* What's Different - standalone section */}
+        <section className="py-20 bg-gradient-to-b from-gray-50 to-white" aria-labelledby="whats-different-heading">
+          <div className="container mx-auto px-4">
+            <div className="max-w-3xl mx-auto text-center">
+              <h2 id="whats-different-heading" className="text-3xl md:text-4xl font-bold text-gray-900 mb-6 flex items-center justify-center gap-2">
+                <i className="bi bi-lightbulb text-teal-500 text-3xl"></i>
+                What’s Different
+              </h2>
+              <p className="text-lg text-gray-600 leading-relaxed">
+                No templates to memorize—notes follow your natural conversation, not the other way around. Works with complex encounters, multi-diagnosis visits, and specialty-specific language. Audio is processed in real time and not stored, so you get documentation without the privacy tradeoff.
+              </p>
             </div>
           </div>
         </section>
@@ -266,23 +267,24 @@ function AIScribe() {
           </div>
         </section>
 
-        {/* How It Works Section */}
-        <section className="py-20 bg-white" aria-labelledby="how-it-works-heading">
+        {/* How It Works Section - zoomed out */}
+        <section className="py-20 bg-white overflow-visible" aria-labelledby="how-it-works-heading">
           <div className="container mx-auto px-4">
-            <div className="text-center mb-16">
-              <div className="inline-flex items-center gap-2 bg-gradient-to-r from-green-100 to-emerald-100 text-green-700 px-5 py-2 rounded-full text-sm font-semibold mb-4 shadow-md">
-                <i className="bi bi-gear-fill text-green-600"></i>
-                Simple Process
+            <div className="origin-center scale-90 md:scale-95 transition-transform duration-500 ease-out">
+              <div className="text-center mb-16">
+                <div className="inline-flex items-center gap-2 bg-gradient-to-r from-green-100 to-emerald-100 text-green-700 px-5 py-2 rounded-full text-sm font-semibold mb-4 shadow-md">
+                  <i className="bi bi-gear-fill text-green-600"></i>
+                  Simple Process
+                </div>
+                <h2 id="how-it-works-heading" className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                  How AI Scribe Works
+                </h2>
+                <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                  Three simple steps from patient conversation to EHR-ready documentation
+                </p>
               </div>
-              <h2 id="how-it-works-heading" className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-                How AI Scribe Works
-              </h2>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                Three simple steps from patient conversation to EHR-ready documentation
-              </p>
-            </div>
 
-            <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
               {[
                 {
                   step: '1',
@@ -314,51 +316,52 @@ function AIScribe() {
               ].map((step, idx) => (
                 <div
                   key={idx}
-                  className={`relative bg-gradient-to-br ${step.bgColor} rounded-3xl p-8 border-2 border-gray-200 hover:border-gray-300 transition-all duration-300 hover:scale-105 hover:shadow-xl group`}
+                  className={`relative bg-gradient-to-br ${step.bgColor} rounded-2xl p-5 border-2 border-gray-200 hover:border-gray-300 transition-all duration-300 hover:scale-105 hover:shadow-xl group`}
                 >
                   {/* Step Number Badge */}
-                  <div className="absolute -top-4 -left-4 w-12 h-12 bg-white border-4 border-gray-200 rounded-full flex items-center justify-center shadow-lg">
-                    <span className="text-2xl font-bold text-gray-900">{step.step}</span>
+                  <div className="absolute -top-3 -left-3 w-10 h-10 bg-white border-2 border-gray-200 rounded-full flex items-center justify-center shadow-lg">
+                    <span className="text-xl font-bold text-gray-900">{step.step}</span>
                   </div>
 
                   {/* Icon */}
-                  <div className="flex justify-center mb-6">
-                    <div className={`w-20 h-20 ${step.iconBg} rounded-2xl flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform duration-300`}>
-                      <i className={`bi ${step.icon} text-white text-3xl`}></i>
+                  <div className="flex justify-center mb-4">
+                    <div className={`w-14 h-14 ${step.iconBg} rounded-xl flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform duration-300`}>
+                      <i className={`bi ${step.icon} text-white text-2xl`}></i>
                     </div>
                   </div>
 
                   {/* Content */}
-                  <h3 className="text-2xl font-bold text-gray-900 mb-4 text-center">
+                  <h3 className="text-xl font-bold text-gray-900 mb-3 text-center">
                     {step.title}
                   </h3>
-                  <p className="text-gray-700 text-center leading-relaxed">
+                  <p className="text-sm text-gray-700 text-center leading-relaxed">
                     {step.description}
                   </p>
 
                   {/* Arrow for desktop */}
                   {idx < 2 && (
                     <div className="hidden md:block absolute top-1/2 -right-4 transform -translate-y-1/2 z-10">
-                      <i className="bi bi-arrow-right text-4xl text-gray-400"></i>
+                      <i className="bi bi-arrow-right text-3xl text-gray-400"></i>
                     </div>
                   )}
                 </div>
               ))}
             </div>
 
-            {/* Bottom CTA */}
-            <div className="mt-12 text-center">
-              <p className="text-lg text-gray-600 mb-4">
-                <strong>That's it!</strong> No complex setup, no training required.
-              </p>
-              <a
-                href="#"
-                onClick={(e) => handleIntercomClick(e, 'request-demo')}
-                className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-cyan-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:from-blue-700 hover:to-cyan-700 transition-all shadow-lg hover:shadow-xl hover:scale-105"
-              >
-                <i className="bi bi-play-circle-fill text-2xl"></i>
-                See It In Action
-              </a>
+              {/* Bottom CTA */}
+              <div className="mt-12 text-center">
+                <p className="text-lg text-gray-600 mb-4">
+                  <strong>That's it!</strong> No complex setup, no training required.
+                </p>
+                <a
+                  href="#"
+                  onClick={(e) => handleIntercomClick(e, 'request-demo')}
+                  className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-cyan-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:from-blue-700 hover:to-cyan-700 transition-all shadow-lg hover:shadow-xl hover:scale-105"
+                >
+                  <i className="bi bi-play-circle-fill text-2xl"></i>
+                  See It In Action
+                </a>
+              </div>
             </div>
           </div>
         </section>
