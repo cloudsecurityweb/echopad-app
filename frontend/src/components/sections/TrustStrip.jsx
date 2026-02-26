@@ -18,7 +18,7 @@ function TrustStrip() {
         <span className="text-gray-500 hidden sm:inline" aria-hidden>•</span>
         <span className="inline-flex items-center gap-2">
           <i className="bi bi-building text-white/80" aria-hidden></i>
-          Trusted by <strong className="text-white">50+</strong> practices
+          Trusted by <strong className="text-white">50+</strong> practices nationwide
         </span>
       </div>
     </section>

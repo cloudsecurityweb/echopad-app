@@ -5,7 +5,7 @@ const PROBLEM_GROUPS = [
   {
     id: 'charting',
     label: 'Charting & documentation',
-    description: 'Spend less time on notes and more time with patients.',
+    description: 'Less time on notes, more time with patients.',
     products: [
       {
         icon: 'bi-mic-fill',
@@ -40,7 +40,7 @@ const PROBLEM_GROUPS = [
   {
     id: 'phones',
     label: 'Phones & scheduling',
-    description: 'Stop playing phone tag and free staff from call overload.',
+    description: 'Stop playing phone tag; free staff from call overload.',
     products: [
       {
         icon: 'bi-headset',
@@ -53,7 +53,7 @@ const PROBLEM_GROUPS = [
   {
     id: 'admin',
     label: 'Admin & operations',
-    description: 'Automate the busywork so your team can focus on patient care.',
+    description: 'Automate busywork so your team can focus on patients.',
     products: [
       {
         icon: 'bi-briefcase',
@@ -73,7 +73,7 @@ const PROBLEM_GROUPS = [
   {
     id: 'patient-engagement',
     label: 'Patient engagement',
-    description: 'Reduce no-shows and keep patients on track with care.',
+    description: 'Fewer no-shows and better follow-through on care.',
     products: [
       {
         icon: 'bi-bell',
@@ -92,12 +92,10 @@ function AgentsOverview() {
         <div className="container mx-auto px-4 w-full">
           <div className="text-center max-w-3xl mx-auto mb-8">
             <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
-              Solve what slows you down
+              Fix what slows you down
             </h2>
             <p className="text-sm md:text-base text-gray-600 leading-relaxed">
-              Pick the tools that fix your biggest pain points—charting, phones, admin, or
-              no-shows. Each one plugs into your EHR and can go live in about 30 days. No tech
-              team required.
+              Choose what you need—charting, phones, admin, or no-shows. Each solution works with your existing systems and most practices are live in about 30 days. We handle setup; no IT required.
             </p>
           </div>
 
@@ -117,7 +115,7 @@ function AgentsOverview() {
               <i className="bi bi-graph-up-arrow text-green-500 text-2xl flex-shrink-0"></i>
               <div>
                 <strong className="block text-gray-900 mb-0.5 text-sm md:text-base">
-                  Increase revenue by 15-20%
+                  Increase revenue by 15–20%
                 </strong>
                 <span className="text-gray-600 text-xs md:text-sm">
                   Recover billable time and reduce no-shows
@@ -131,18 +129,20 @@ function AgentsOverview() {
                   Improve retention by 40%
                 </strong>
                 <span className="text-gray-600 text-xs md:text-sm">
-                  Reduce provider and staff burnout
+                  Less burnout for providers and staff
                 </span>
               </div>
             </div>
           </div>
 
+          <p className="text-center text-xs text-gray-500 mt-3 max-w-2xl mx-auto">
+            Source: Echopad practice benchmarks. Results vary by practice size and use.
+          </p>
+
           <div className="max-w-2xl mx-auto mt-8 text-center">
             <h3 className="text-base font-semibold text-gray-800 mb-2">How to get started</h3>
             <p className="text-sm text-gray-600">
-              Choose one tool for your biggest pain point—charting, calls, or no-shows—or add
-              more over time. Each integrates with your EHR. Start with a free trial or schedule
-              a 15-minute demo.
+              Start with one solution for your biggest pain point—charting, calls, or no-shows—or add more over time. Book a 15-minute demo or start a free trial.
             </p>
           </div>
         </div>

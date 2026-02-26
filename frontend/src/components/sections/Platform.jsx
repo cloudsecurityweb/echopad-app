@@ -3,32 +3,32 @@ function Platform() {
     {
       icon: 'bi-diagram-3-fill',
       title: 'Works with Your EHR',
-      description: 'Epic, Cerner, Athena, MEDITECH, and all major EHR systems. How: HL7/FHIR compatible with no API development required.',
+      description: 'Epic, Cerner, Athena, MEDITECH, and other major systems. We connect to what you already use—no custom build required.',
     },
     {
       icon: 'bi-shield-lock-fill',
       title: 'Your Data Is Protected',
-      description: 'HIPAA-compliant, SOC 2 Type II certified, BAA available. End-to-end encryption with zero data retention policy.',
+      description: 'HIPAA-compliant, SOC 2 Type II certified, BAA included. End-to-end encryption and a zero data retention policy.',
     },
     {
       icon: 'bi-sliders',
-      title: 'Fully Customizable Workflows',
-      description: 'Configure each agent to match your unique clinical workflows, templates, and documentation standards.',
+      title: 'Fits Your Workflow',
+      description: 'Configure each solution to match your templates, documentation style, and how your practice runs.',
     },
     {
       icon: 'bi-lightning-charge-fill',
-      title: 'Your Note Is Ready When You Are',
-      description: 'No waiting—results are available the moment you need them. How: instant processing with 99.9% uptime.',
+      title: 'Your Note When You Need It',
+      description: 'Results are ready when you are—no waiting. Built for reliability so you can count on it every day.',
     },
     {
       icon: 'bi-arrow-up-right-circle-fill',
       title: 'Grows with You',
-      description: 'From one provider to many. Deploy in 30 days with multi-location support when you scale.',
+      description: 'From one provider to many. Most practices are live in about 30 days; we support multi-location when you scale.',
     },
     {
       icon: 'bi-cpu-fill',
       title: 'Accurate, Medical-Grade Documentation',
-      description: 'Documentation and responses you can trust. How: medical AI that continuously learns and improves accuracy.',
+      description: 'Documentation you can trust. Medical AI that learns and improves so your notes stay accurate and consistent.',
     },
   ];
 
@@ -40,7 +40,7 @@ function Platform() {
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center max-w-2xl mx-auto mb-6">
           <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-1">Works with Your EHR. One Place for Documentation, Scheduling, and Admin.</h2>
-          <p className="text-sm text-gray-600">Your data is secure. Integrate with your EHR, tailor workflows, scale with confidence.</p>
+          <p className="text-sm text-gray-600">Your data is secure. We connect to your systems, fit your workflows, and scale with you.</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">

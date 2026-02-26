@@ -98,7 +98,7 @@ function ScrollToTop() {
 
 function HomePage() {
   const location = useLocation();
-  const PageTitle = usePageTitle('Echopad AI - Healthcare AI Agent Platform | Reduce Costs 60%, Increase Revenue 20%', '');
+  const PageTitle = usePageTitle('Echopad AI – Less Charting, More Patients | Trusted by 50+ Practices', '');
 
   // Initialize scroll animations
   useScrollAnimations();

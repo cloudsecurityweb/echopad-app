@@ -16,10 +16,10 @@ function ROI() {
                   ROI Snapshot
                 </div>
                 <h2 className="text-base md:text-lg lg:text-xl xl:text-2xl 2xl:text-3xl font-bold text-gray-900 mb-1 md:mb-1.5 lg:mb-2">
-                  Deploy in 30 days. See ROI in 60.
+                  Live in about 30 days. See results in 60.
                 </h2>
                 <p className="text-xs md:text-sm lg:text-base text-gray-600">
-                  A clear, measurable lift for a 10-provider practice.
+                  Typical impact for a 10-provider practice. Source: Echopad practice benchmarks.
                 </p>
               </div>
 
@@ -47,24 +47,24 @@ function ROI() {
                 </div>
               </div>
 
-              <div>
-                <h3 className="text-sm md:text-base lg:text-lg xl:text-xl font-semibold text-gray-900 text-center mb-1.5 md:mb-2 lg:mb-3 xl:mb-4">30-Day Implementation Plan</h3>
+                <div>
+                <h3 className="text-sm md:text-base lg:text-lg xl:text-xl font-semibold text-gray-900 text-center mb-1.5 md:mb-2 lg:mb-3 xl:mb-4">Typical path to go live</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-1.5 md:gap-2 lg:gap-3">
                   <div className="glass-card rounded-xl p-2 md:p-3 lg:p-4 xl:p-4 text-center hover-lift shadow-sm">
                     <div className="text-xs md:text-sm lg:text-base xl:text-lg font-semibold text-gray-900 mb-0.5 md:mb-1">Week 1</div>
-                    <p className="text-xs md:text-sm text-gray-600">Onboarding & Configuration</p>
+                    <p className="text-xs md:text-sm text-gray-600">Onboarding & setup</p>
                   </div>
                   <div className="glass-card rounded-xl p-2 md:p-3 lg:p-4 xl:p-4 text-center hover-lift shadow-sm">
                     <div className="text-xs md:text-sm lg:text-base xl:text-lg font-semibold text-gray-900 mb-0.5 md:mb-1">Week 2</div>
-                    <p className="text-xs md:text-sm text-gray-600">Staff Training (2 hours)</p>
+                    <p className="text-xs md:text-sm text-gray-600">Staff training (about 2 hours)</p>
                   </div>
                   <div className="glass-card rounded-xl p-2 md:p-3 lg:p-4 xl:p-4 text-center hover-lift shadow-sm">
                     <div className="text-xs md:text-sm lg:text-base xl:text-lg font-semibold text-gray-900 mb-0.5 md:mb-1">Week 3</div>
-                    <p className="text-xs md:text-sm text-gray-600">Pilot with 3 Providers</p>
+                    <p className="text-xs md:text-sm text-gray-600">Pilot with a few providers</p>
                   </div>
                   <div className="glass-card rounded-xl p-2 md:p-3 lg:p-4 xl:p-4 text-center hover-lift shadow-sm">
                     <div className="text-xs md:text-sm lg:text-base xl:text-lg font-semibold text-gray-900 mb-0.5 md:mb-1">Week 4</div>
-                    <p className="text-xs md:text-sm text-gray-600">Full Deployment</p>
+                    <p className="text-xs md:text-sm text-gray-600">Everyone using it</p>
                   </div>
                 </div>
               </div>
