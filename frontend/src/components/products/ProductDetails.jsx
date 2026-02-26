@@ -5,8 +5,8 @@ function ProductDetails() {
   const aiScribeData = {
     id: 'ai-scribe',
     label: 'AI SCRIBE',
-    title: 'Real-Time Clinical Documentation',
-    intro: 'Listen to patient conversations and watch as AI instantly converts speech into clinical notes—saving hours per provider every day.',
+    title: 'Your Note, Done Before You Leave the Room.',
+    intro: 'No typing, no dictation commands—just talk to your patient. Your note is ready before you leave the room.',
     sections: [
       {
         title: 'What You See',

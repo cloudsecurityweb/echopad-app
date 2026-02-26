@@ -10,8 +10,8 @@ export const products = [
   {
     id: 'ai-scribe',
     name: 'AI Scribe',
-    shortDescription: 'Real-time clinical documentation—less charting, more face-time with patients',
-    longDescription: 'Listen to patient conversations and watch as AI instantly converts speech into clinical notes—saving hours per provider every day.',
+    shortDescription: 'Your note, done before you leave the room—no typing, no dictation, just talk to your patient.',
+    longDescription: 'No typing, no dictation commands—just talk to your patient. Your note is ready before you leave the room.',
     price: '$299',
     pricePeriod: 'per provider/month',
     route: '/ai-scribe',

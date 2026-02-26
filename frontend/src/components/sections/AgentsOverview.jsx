@@ -6,7 +6,7 @@ function AgentsOverview() {
     {
       icon: 'bi-mic-fill',
       title: 'AI Scribe',
-      description: 'Real-time clinical documentation—less charting, more face-time with patients',
+      description: 'Your note, done before you leave the room—no typing, no dictation, just talk to your patient',
       link: '/ai-scribe',
       featured: true,
     },
@@ -76,7 +76,7 @@ function AgentsOverview() {
             <p className="text-sm md:text-base text-gray-600 leading-relaxed">
               Choose the agents you need—deploy them individually or as a complete suite. Each agent
               solves a specific problem: documentation overload, scheduling bottlenecks, patient
-              no-shows, or administrative chaos. Plug into your EHR in days, not months. No tech
+              no-shows, or administrative chaos. Plug into your EHR in 30 days. No tech
               team required.
             </p>
           </div>
@@ -121,7 +121,7 @@ function AgentsOverview() {
           <div className="max-w-2xl mx-auto mt-8 text-center">
             <h3 className="text-base font-semibold text-gray-800 mb-2">How to get started</h3>
             <p className="text-sm text-gray-600">
-              Pick one agent to solve your biggest pain point—documentation, calls, or no-shows—or deploy the full suite. Each agent integrates with your EHR and goes live in days. Start with a free trial or schedule a 15-minute demo to see it in your workflow.
+              Pick one agent to solve your biggest pain point—documentation, calls, or no-shows—or deploy the full suite. Each agent integrates with your EHR and goes live in 30 days. Start with a free trial or schedule a 15-minute demo to see it in your workflow.
             </p>
           </div>
         </div>

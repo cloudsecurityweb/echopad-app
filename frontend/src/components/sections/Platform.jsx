@@ -23,7 +23,7 @@ function Platform() {
     {
       icon: 'bi-arrow-up-right-circle-fill',
       title: 'Scalable Architecture',
-      description: 'Deploy in 7 days. Scales from solo practitioners to large healthcare organizations with multi-location support.',
+      description: 'Deploy in 30 days. Scales from solo practitioners to large healthcare organizations with multi-location support.',
     },
     {
       icon: 'bi-cpu-fill',

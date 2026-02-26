@@ -138,7 +138,7 @@ function AIScribe() {
                   AI SCRIBE
                 </div>
                 <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
-                  Real-Time Clinical Documentation
+                  Your Note, Done Before You Leave the Room.
                 </h1>
 
                 {/* 3-Second Value Proposition - Smaller Size */}
@@ -176,7 +176,7 @@ function AIScribe() {
                 </div>
 
                 <p className="text-lg text-gray-600 mb-8">
-                  Listen to patient conversations and watch as AI instantly converts speech into perfect clinical notes—saving hours per provider every day.
+                  No typing, no dictation commands—just talk to your patient. Your note is ready before you leave the room.
                 </p>
 
 

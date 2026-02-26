@@ -82,8 +82,8 @@ function Hero() {
               <div className="text-xs text-gray-500">BAA included, SOC 2 Type II</div>
             </div>
             <div className="text-center">
-              <div className="font-semibold text-gray-800">Live in days</div>
-              <div className="text-xs text-gray-500">No lengthy implementation</div>
+              <div className="font-semibold text-gray-800">Deploy in 30 days</div>
+              <div className="text-xs text-gray-500">Consistent 30-day rollout</div>
             </div>
           </div>
         </div>
