@@ -185,10 +185,10 @@ function AIScribe() {
                   <div>
                     <h2 className="flex items-center text-lg font-semibold text-gray-900 mb-3">
                       <i className="bi bi-briefcase-fill text-teal-500 mr-2"></i>
-                      Business Value for Decision Makers
+                      Why Your Practice Needs This
                     </h2>
                     <p className="text-gray-600">
-                      For healthcare leaders facing provider burnout and documentation backlogs, AI Scribe delivers immediate ROI through reduced overtime costs, improved billing accuracy, and enhanced provider satisfaction. Deploy in days, not months with zero disruption to clinical workflows.
+                      Documentation is one of the biggest drains on your day. AI Scribe helps you get notes done during the visit instead of after hours, so you can leave on time, see patients without a charting backlog, and keep documentation accurate for billing—without changing how you talk to patients.
                     </p>
                   </div>
 
@@ -372,13 +372,13 @@ function AIScribe() {
             <div className="text-center mb-16">
               <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-100 to-purple-100 text-blue-700 px-5 py-2 rounded-full text-sm font-semibold mb-4 shadow-md">
                 <i className="bi bi-heart-pulse-fill text-blue-600"></i>
-                For Physicians & Healthcare Leaders
+                For Busy Practices
               </div>
               <h2 id="implementation-guide-heading" className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-                Simple Setup, Powerful Results
+                Easy to Start, Built for the Way You Work
               </h2>
               <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                From first demo to live deployment—designed specifically for busy clinical practices
+                Get going quickly without big IT projects—built for real clinical workflows
               </p>
             </div>
 
@@ -387,48 +387,48 @@ function AIScribe() {
                 {
                   id: 'deployment',
                   icon: 'bi-rocket-takeoff',
-                  title: 'Quick Deployment',
-                  subtitle: 'Live in less than 7 days',
+                  title: 'Get Started Quickly',
+                  subtitle: 'Up and running in under a week',
                   items: [
                     {
-                      title: 'Zero IT Burden',
-                      description: 'Go live without IT—no infrastructure changes or extra resources required.',
+                      title: 'No IT Required',
+                      description: 'No new servers or infrastructure—just sign up and use it.',
                     },
                     {
-                      title: 'EHR Agnostic',
+                      title: 'Works With Your EHR',
                       description: 'Works with Epic, Cerner, Athena, or any EHR via copy-paste or HL7/FHIR integration',
                     },
                     {
-                      title: 'Pilot-First Approach',
-                      description: 'Start with 3-5 providers to prove ROI before full rollout',
+                      title: 'Try With a Few Providers First',
+                      description: 'Start with a small group to see how it fits your practice before expanding',
                     },
                     {
-                      title: 'Customizable Templates',
-                      description: 'Pre-built templates for 20+ specialties or create custom templates for your workflows',
+                      title: 'Templates for Your Specialty',
+                      description: 'Pre-built templates for 20+ specialties or create custom ones for your workflows',
                     },
                   ],
                 },
                 {
                   id: 'adoption',
                   icon: 'bi-people-fill',
-                  title: 'Physician-Friendly Training',
-                  subtitle: 'High provider adoption in 30 days',
+                  title: 'Easy for Your Team',
+                  subtitle: 'Providers get going in about a month',
                   items: [
                     {
-                      title: '15-Minute Training',
-                      description: 'Simple onboarding gets providers documenting on day one—no complex learning curve',
+                      title: 'Short Training',
+                      description: 'About 15 minutes to get started—providers can use it from day one.',
                     },
                     {
                       title: 'Champion Program',
-                      description: 'Early adopters become advocates, driving peer adoption through demonstrated success',
+                      description: 'Early adopters can help others in your practice get comfortable with it',
                     },
                     {
-                      title: 'Ongoing Support',
-                      description: 'Dedicated success manager and 24/7 technical support ensure smooth adoption',
+                      title: 'Support When You Need It',
+                      description: 'Dedicated support and help available so adoption goes smoothly',
                     },
                     {
-                      title: 'Usage Analytics',
-                      description: 'Track adoption metrics and time savings per provider to demonstrate value',
+                      title: 'See How It’s Used',
+                      description: 'Track usage and time saved per provider so you can see the benefit',
                     },
                   ],
                 },
@@ -448,31 +448,31 @@ function AIScribe() {
                     },
                     {
                       title: 'End-to-End Encryption',
-                      description: 'AES-256 encryption in transit and at rest with enterprise key management',
+                      description: 'AES-256 encryption in transit and at rest so patient data stays protected',
                     },
                     {
                       title: 'Audit Logging',
-                      description: 'Complete audit trail of all access and modifications for compliance reporting',
+                      description: 'Full audit trail of access and changes for compliance and reporting',
                     },
                   ],
                 },
                 {
                   id: 'roi',
                   icon: 'bi-graph-up-arrow',
-                  title: 'Real Cost Savings',
-                  subtitle: 'See immediate financial impact',
+                  title: 'How Practices Benefit',
+                  subtitle: 'Documentation and billing improve',
                   items: [
                     {
-                      title: 'Improved Billing Accuracy',
-                      description: 'Better documentation = higher E&M level justification = 8–12% revenue increase (source: practice benchmarks).',
+                      title: 'Better Billing Documentation',
+                      description: 'Clearer notes support appropriate E&M levels—practices often see 8–12% revenue improvement (from practice benchmarks).',
                     },
                     {
-                      title: 'Provider Satisfaction',
-                      description: 'High provider satisfaction in pilot practices leads to improved retention and reduced burnout costs.',
+                      title: 'Less Burnout',
+                      description: 'When charting happens during the visit, providers report less after-hours work and better satisfaction.',
                     },
                     {
-                      title: 'Patient Throughput',
-                      description: 'Practices see 1–2 additional patients per day with time saved on documentation.',
+                      title: 'More Time for Patients',
+                      description: 'With documentation done sooner, many practices see capacity for 1–2 more patients per day.',
                     },
                   ],
                 },
