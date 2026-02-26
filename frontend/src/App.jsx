@@ -15,10 +15,12 @@ import Footer from './components/layout/Footer';
 
 // Section Components
 import Hero from './components/sections/Hero';
+import TrustStrip from './components/sections/TrustStrip';
 import TrustBar from './components/sections/TrustBar';
 import AgentsOverview from './components/sections/AgentsOverview';
 import Platform from './components/sections/Platform';
 import ROI from './components/sections/ROI';
+import Testimonial from './components/sections/Testimonial';
 import Contact from './components/sections/Contact';
 
 // Product Components
@@ -142,11 +144,13 @@ function HomePage() {
       <Navigation />
       <main className="flex-1">
         <Hero />
+        <TrustStrip />
         <TrustBar />
         <AgentsOverview />
         <ProductDetails />
         <Platform />
         <ROI />
+        <Testimonial />
         <Contact />
       </main>
       <Footer />

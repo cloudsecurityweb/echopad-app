@@ -16,19 +16,30 @@ function Hero() {
   };
 
   return (
-    <FullScreenSection id="hero" fullHeight className="bg-gradient-to-b from-blue-50 via-white to-purple-50">
+    <FullScreenSection id="hero" className="bg-gradient-to-b from-blue-50 via-white to-purple-50 min-h-[72vh] flex flex-col justify-center">
       <div className="container mx-auto px-4 flex-1 flex flex-col justify-center">
         <div className="text-center max-w-3xl mx-auto relative z-10">
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 glass-card px-3 py-1.5 rounded-full text-sm font-semibold mb-4 animate-fade-in-scale">
-            <i className="bi bi-lightning-charge-fill text-cyan-500 animate-pulse"></i>
-            <span className="text-gray-800">AI-Powered Healthcare Automation</span>
+          {/* Top badges: HIPAA + product badge — visible above the fold */}
+          <div className="flex flex-wrap justify-center items-center gap-2 mb-4 animate-fade-in-scale mt-8">
+            <a
+              href="#platform"
+              className="inline-flex items-center gap-2 bg-emerald-50 border border-emerald-200 text-emerald-800 px-3 py-1.5 rounded-full text-sm font-semibold hover:bg-emerald-100 transition-colors shadow-sm"
+              aria-label="HIPAA Compliant"
+            >
+              <i className="bi bi-shield-fill-check text-emerald-600"></i>
+              <span>HIPAA Compliant</span>
+            </a>
+            <span className="text-gray-300 hidden sm:inline">|</span>
+            <div className="inline-flex items-center gap-2 glass-card px-3 py-1.5 rounded-full text-sm font-semibold">
+              <i className="bi bi-lightning-charge-fill text-cyan-500 animate-pulse"></i>
+              <span className="text-gray-800">AI-Powered Healthcare Automation</span>
+            </div>
           </div>
 
           {/* Main Heading */}
           <h1 className="text-3xl sm:text-4xl md:text-4xl lg:text-5xl font-bold mb-3 leading-tight animate-fade-in-scale animation-delay-100">
-            <span className="text-gray-900">AI Agents That Automate </span>
-            <span className="animate-gradient-text">Your Entire Clinical Workflow</span>
+            <span className="text-gray-900">AI Agents That Automate Your </span>
+            <span className="animate-gradient-text">Entire Clinical Workflow</span>
           </h1>
 
           {/* Subtitle */}
@@ -70,6 +81,11 @@ function Hero() {
               Explore Products
             </a>
           </div>
+
+          {/* Trusted by — above the fold */}
+          <p className="text-xs sm:text-sm text-gray-500 mb-6 animate-fade-in-scale animation-delay-400">
+            Trusted by <span className="font-semibold text-gray-700">50+ practices</span> across family medicine, multi-specialty, and health systems
+          </p>
 
           {/* Trust / differentiators - no duplicate product stats */}
           <div className="flex flex-wrap justify-center gap-6 sm:gap-8 animate-fade-in-scale animation-delay-500 text-sm">
