@@ -177,6 +177,52 @@ function AIDocMan() {
           </div>
         </section>
 
+        {/* Why It Matters - single narrative section */}
+        <section className="py-20 bg-white" aria-labelledby="why-docman-heading">
+          <div className="container mx-auto px-4">
+            <h2 id="why-docman-heading" className="text-3xl md:text-4xl font-bold text-gray-900 mb-12 text-center">
+              Why It Matters for Your Team
+            </h2>
+            <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <div className="space-y-6">
+                <p className="text-lg text-gray-600 leading-relaxed">
+                  For healthcare teams drowning in dictation and manual formatting, AI Document Manager delivers immediate ROI: 3-second processing vs 15–30 minutes per note, 60 minutes saved per assistant per day, and EHR-ready output without changing how you work.
+                </p>
+                <p className="text-gray-600 leading-relaxed">
+                  Paste any raw transcript or dictation, choose from 50+ templates (SOAP, H&P, discharge, and more), and get a perfectly formatted document instantly. HIPAA compliant, zero data retention, works with any EHR.
+                </p>
+                <ul className="space-y-2">
+                  {['Lightning-fast formatting', '50+ specialty templates', 'Save 60 min per assistant per day', 'EHR-ready copy-paste or integration'].map((benefit, idx) => (
+                    <li key={idx} className="flex items-start gap-2 text-gray-600">
+                      <i className="bi bi-check-circle-fill text-green-500 mt-0.5 flex-shrink-0"></i>
+                      <span>{benefit}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 rounded-2xl p-8 border-2 border-indigo-100">
+                <h3 className="text-lg font-bold text-gray-900 mb-6">Real impact</h3>
+                <div className="grid grid-cols-1 gap-6">
+                  {[
+                    { value: '3 sec', label: 'Processing time', icon: 'bi-lightning-charge-fill' },
+                    { value: '60 min', label: 'Saved per assistant/day', icon: 'bi-clock-history' },
+                    { value: '95%', label: 'Formatting accuracy', icon: 'bi-shield-check' },
+                  ].map((metric, idx) => (
+                    <div key={idx} className="flex items-center gap-4">
+                      <div className="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center">
+                        <i className={`bi ${metric.icon} text-indigo-600 text-xl`}></i>
+                      </div>
+                      <div>
+                        <div className="font-bold text-gray-900">{metric.value}</div>
+                        <div className="text-sm text-gray-600">{metric.label}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
 
         {/* Template Gallery Section */}
         <section className="py-20 bg-white">

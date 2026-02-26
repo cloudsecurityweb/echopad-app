@@ -165,75 +165,6 @@ function Aperio() {
                   </a>
                 </div>
 
-                <div className="space-y-6 mb-8">
-                  <div>
-                    <h2 className="flex items-center text-lg font-semibold text-gray-900 mb-3">
-                      <i className="bi bi-briefcase-fill text-teal-500 mr-2"></i>
-                      Business Value for Decision Makers
-                    </h2>
-                    <p className="text-gray-600">
-                      For healthcare leaders facing referral leakage and care coordination challenges, Aperio delivers immediate ROI through improved patient retention, reduced administrative burden, and enhanced care continuity.
-                    </p>
-                  </div>
-
-                  <div>
-                    <h2 className="flex items-center text-lg font-semibold text-gray-900 mb-3">
-                      <i className="bi bi-info-circle text-teal-500 mr-2"></i>
-                      What You See
-                    </h2>
-                    <p className="text-gray-600">
-                      When a referral is created, AI automatically tracks status, sends reminders, and ensures patients complete their referred appointments—all without manual staff intervention.
-                    </p>
-                  </div>
-
-                  <div>
-                    <h2 className="text-lg font-semibold text-gray-900 mb-3">Key Benefits</h2>
-                    <ul className="space-y-2">
-                      {[
-                        'Reduce referral leakage and improve care continuity',
-                        'Automate referral tracking and follow-up',
-                        'Ensure patients complete specialist appointments',
-                        'Track referral outcomes and measure success',
-                      ].map((benefit, idx) => (
-                        <li key={idx} className="flex items-start gap-2 text-gray-600">
-                          <i className="bi bi-check-circle-fill text-green-500 mt-0.5"></i>
-                          <span>{benefit}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <div>
-                    <h2 className="flex items-center text-lg font-semibold text-gray-900 mb-3">
-                      <i className="bi bi-graph-up text-teal-500 mr-2"></i>
-                      Impact Metrics
-                    </h2>
-                    <div className="grid grid-cols-3 gap-4 mt-4">
-                      {[
-                        { value: '40%', label: 'Reduction in referral leakage', source: 'Practice benchmarks', icon: 'bi-graph-down-arrow' },
-                        { value: '60%', label: 'Faster referral completion', source: 'Customer pilots', icon: 'bi-speedometer' },
-                        { value: '80%', label: 'Staff time saved', source: 'Self-reported', icon: 'bi-clock-history' },
-                      ].map((metric, idx) => (
-                        <div key={idx} className="bg-gray-50 rounded-lg p-4 text-center border border-gray-200">
-                          <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-2">
-                            <i className={`bi ${metric.icon} text-blue-600 text-xl`}></i>
-                          </div>
-                          <div className="font-bold text-gray-900 mb-1">{metric.value}</div>
-                          <div className="text-sm text-gray-600">{metric.label}</div>
-                          {metric.source && <div className="text-xs text-gray-500 mt-1" title="Source">{metric.source}</div>}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div>
-                    <h2 className="text-lg font-semibold text-gray-900 mb-3">Perfect For</h2>
-                    <p className="text-gray-600">
-                      Primary care practices, specialty clinics, and health systems looking to improve referral completion rates and care coordination.
-                    </p>
-                  </div>
-                </div>
-
               </div>
 
               <div className="lg:col-span-7">
@@ -370,6 +301,56 @@ function Aperio() {
           </div>
         </section>
 
+        {/* Why It Matters - referral loop story (replaces cookie-cutter value blocks) */}
+        <section className="py-20 bg-gradient-to-b from-white to-gray-50" aria-labelledby="why-aperio-heading">
+          <div className="container mx-auto px-4">
+            <h2 id="why-aperio-heading" className="text-3xl md:text-4xl font-bold text-gray-900 mb-12 text-center">
+              Why Closing the Referral Loop Matters
+            </h2>
+            <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <div className="space-y-6">
+                <p className="text-lg text-gray-600 leading-relaxed">
+                  For healthcare leaders facing referral leakage and care coordination challenges, Aperio delivers immediate ROI through improved patient retention, reduced administrative burden, and enhanced care continuity.
+                </p>
+                <p className="text-gray-600 leading-relaxed">
+                  When a referral is created, AI automatically tracks status, sends reminders, and ensures patients complete their referred appointments—all without manual staff intervention.
+                </p>
+                <ul className="space-y-2">
+                  {['Reduce referral leakage and improve care continuity', 'Automate referral tracking and follow-up', 'Ensure patients complete specialist appointments', 'Track referral outcomes and measure success'].map((benefit, idx) => (
+                    <li key={idx} className="flex items-start gap-2 text-gray-600">
+                      <i className="bi bi-check-circle-fill text-green-500 mt-0.5 flex-shrink-0"></i>
+                      <span>{benefit}</span>
+                    </li>
+                  ))}
+                </ul>
+                <p className="text-sm text-gray-500">
+                  Primary care practices, specialty clinics, and health systems looking to improve referral completion rates and care coordination.
+                </p>
+              </div>
+              <div className="bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 rounded-2xl p-8 border-2 border-blue-100">
+                <h3 className="text-lg font-bold text-gray-900 mb-6">Real impact</h3>
+                <div className="grid grid-cols-1 gap-6">
+                  {[
+                    { value: '40%', label: 'Reduction in referral leakage', icon: 'bi-graph-down-arrow' },
+                    { value: '60%', label: 'Faster referral completion', icon: 'bi-speedometer' },
+                    { value: '80%', label: 'Staff time saved', icon: 'bi-clock-history' },
+                  ].map((metric, idx) => (
+                    <div key={idx} className="flex items-center gap-4">
+                      <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                        <i className={`bi ${metric.icon} text-blue-600 text-xl`}></i>
+                      </div>
+                      <div>
+                        <div className="font-bold text-gray-900">{metric.value}</div>
+                        <div className="text-sm text-gray-600">{metric.label}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Before/After Slider Section */}
         <section className="py-20 bg-gradient-to-b from-gray-50 to-white">
           <div className="container mx-auto px-4">
@@ -398,23 +379,24 @@ function Aperio() {
           </div>
         </section>
 
-        {/* How It Works Section */}
-        <section className="py-20 bg-white" aria-labelledby="how-it-works-heading">
+        {/* How It Works Section - same style as AIScribe */}
+        <section className="py-20 bg-white overflow-visible" aria-labelledby="how-it-works-heading">
           <div className="container mx-auto px-4">
-            <div className="text-center mb-16">
-              <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-100 to-purple-100 text-blue-700 px-5 py-2 rounded-full text-sm font-semibold mb-4 shadow-md">
-                <i className="bi bi-gear-fill text-blue-600"></i>
-                Simple Process
+            <div className="origin-center scale-90 md:scale-95 transition-transform duration-500 ease-out">
+              <div className="text-center mb-16">
+                <div className="inline-flex items-center gap-2 bg-gradient-to-r from-green-100 to-emerald-100 text-green-700 px-5 py-2 rounded-full text-sm font-semibold mb-4 shadow-md">
+                  <i className="bi bi-gear-fill text-green-600"></i>
+                  Simple Process
+                </div>
+                <h2 id="how-it-works-heading" className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                  How Aperio Works
+                </h2>
+                <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                  Three simple steps from referral creation to patient follow-through
+                </p>
               </div>
-              <h2 id="how-it-works-heading" className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-                How Aperio Works
-              </h2>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                Three simple steps from referral creation to patient follow-through
-              </p>
-            </div>
 
-            <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
               {[
                 {
                   step: '1',
@@ -446,32 +428,32 @@ function Aperio() {
               ].map((step, idx) => (
                 <div
                   key={idx}
-                  className={`relative bg-gradient-to-br ${step.bgColor} rounded-3xl p-8 border-2 border-gray-200 hover:border-gray-300 transition-all duration-300 hover:scale-105 hover:shadow-xl group`}
+                  className={`relative bg-gradient-to-br ${step.bgColor} rounded-2xl p-5 border-2 border-gray-200 hover:border-gray-300 transition-all duration-300 hover:scale-105 hover:shadow-xl group`}
                 >
                   {/* Step Number Badge */}
-                  <div className="absolute -top-4 -left-4 w-12 h-12 bg-white border-4 border-gray-200 rounded-full flex items-center justify-center shadow-lg">
-                    <span className="text-2xl font-bold text-gray-900">{step.step}</span>
+                  <div className="absolute -top-3 -left-3 w-10 h-10 bg-white border-2 border-gray-200 rounded-full flex items-center justify-center shadow-lg">
+                    <span className="text-xl font-bold text-gray-900">{step.step}</span>
                   </div>
 
                   {/* Icon */}
-                  <div className="flex justify-center mb-6">
-                    <div className={`w-20 h-20 ${step.iconBg} rounded-2xl flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform duration-300`}>
-                      <i className={`bi ${step.icon} text-white text-3xl`}></i>
+                  <div className="flex justify-center mb-4">
+                    <div className={`w-14 h-14 ${step.iconBg} rounded-xl flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform duration-300`}>
+                      <i className={`bi ${step.icon} text-white text-2xl`}></i>
                     </div>
                   </div>
 
                   {/* Content */}
-                  <h3 className="text-2xl font-bold text-gray-900 mb-4 text-center">
+                  <h3 className="text-xl font-bold text-gray-900 mb-3 text-center">
                     {step.title}
                   </h3>
-                  <p className="text-gray-700 text-center leading-relaxed">
+                  <p className="text-sm text-gray-700 text-center leading-relaxed">
                     {step.description}
                   </p>
 
                   {/* Arrow for desktop */}
                   {idx < 2 && (
                     <div className="hidden md:block absolute top-1/2 -right-4 transform -translate-y-1/2 z-10">
-                      <i className="bi bi-arrow-right text-4xl text-gray-400"></i>
+                      <i className="bi bi-arrow-right text-3xl text-gray-400"></i>
                     </div>
                   )}
                 </div>
@@ -479,18 +461,19 @@ function Aperio() {
             </div>
 
             {/* Bottom CTA */}
-            <div className="mt-12 text-center">
-              <p className="text-lg text-gray-600 mb-4">
-                <strong>That's it!</strong> No complex setup, no training required.
-              </p>
-              <a
-                href="#"
-                onClick={(e) => handleIntercomClick(e, 'request-demo')}
-                className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:from-blue-700 hover:to-purple-700 transition-all shadow-lg hover:shadow-xl hover:scale-105"
-              >
-                <i className="bi bi-play-circle-fill text-2xl"></i>
-                See It In Action
-              </a>
+              <div className="mt-12 text-center">
+                <p className="text-lg text-gray-600 mb-4">
+                  <strong>That's it!</strong> No complex setup, no training required.
+                </p>
+                <a
+                  href="#"
+                  onClick={(e) => handleIntercomClick(e, 'request-demo')}
+                  className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:from-blue-700 hover:to-purple-700 transition-all shadow-lg hover:shadow-xl hover:scale-105"
+                >
+                  <i className="bi bi-play-circle-fill text-2xl"></i>
+                  See It In Action
+                </a>
+              </div>
             </div>
           </div>
         </section>
@@ -514,23 +497,6 @@ function Aperio() {
                     <p className="text-sm text-gray-500">
                       Multi-specialty practices, primary care networks, and health systems.
                     </p>
-                  </div>
-                  <div className="flex flex-col sm:flex-row lg:flex-col xl:flex-row items-stretch sm:items-center gap-3 flex-shrink-0">
-                    <a
-                      href="#"
-                      className="inline-flex items-center justify-center gap-2 bg-gray-900 text-white px-6 py-3.5 rounded-xl hover:bg-gray-800 transition-colors font-semibold text-sm shadow-md min-w-[140px]"
-                      onClick={(e) => handleIntercomClick(e, 'request-demo')}
-                    >
-                      <i className="bi bi-chat-dots-fill text-white text-lg" aria-hidden="true" />
-                      Book a Demo
-                    </a>
-                    <a
-                      href="/sign-up"
-                      className="inline-flex items-center justify-center gap-2 bg-white text-gray-700 px-6 py-3.5 rounded-xl border-2 border-gray-300 hover:bg-gray-50 hover:border-gray-400 transition-colors font-medium text-sm min-w-[140px]"
-                    >
-                      <i className="bi bi-rocket-takeoff text-cyan-500 text-lg" aria-hidden="true" />
-                      Get Started
-                    </a>
                   </div>
                 </div>
               </div>
