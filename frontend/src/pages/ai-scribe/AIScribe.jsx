@@ -307,8 +307,8 @@ function AIScribe() {
                 {
                   step: '3',
                   icon: 'bi-file-earmark-check-fill',
-                  title: 'Copy to EHR',
-                  description: 'Get a perfectly formatted clinical note in seconds. Copy and paste directly into your EHR. Done.',
+                  title: 'Export to EHR',
+                  description: 'Export to your EHR via direct integration—or use one-click copy as a fallback. Get a perfectly formatted clinical note in seconds.',
                   color: 'from-green-500 to-emerald-500',
                   bgColor: 'from-green-50 to-emerald-50',
                   iconBg: 'bg-gradient-to-br from-green-500 to-emerald-500',
@@ -396,7 +396,7 @@ function AIScribe() {
                     },
                     {
                       title: 'Works With Your EHR',
-                      description: 'Works with Epic, Cerner, Athena, or any EHR via copy-paste or HL7/FHIR integration',
+                      description: 'Works with Epic, Cerner, Athena, or any EHR via direct integration (HL7/FHIR) or one-click copy',
                     },
                     {
                       title: 'Try With a Few Providers First',

@@ -255,6 +255,15 @@ const AnimatedAIScribeDemo = () => {
               ))}
             </div>
           </div>
+          {/* Export to EHR — direct integration first, copy as fallback */}
+          <div className={`border-t border-gray-200 pt-4 mt-4 transition-all duration-500 ${currentStep === 3 ? 'opacity-100' : 'opacity-60'}`}>
+            <div className="flex items-center gap-2">
+              <i className={`bi bi-upload text-lg ${currentStep === 3 ? 'text-blue-600' : 'text-gray-400'}`}></i>
+              <span className={`text-sm font-semibold ${currentStep === 3 ? 'text-gray-900' : 'text-gray-600'}`}>
+                Export to your EHR via direct integration or one-click copy
+              </span>
+            </div>
+          </div>
         </div>
       </div>
 
