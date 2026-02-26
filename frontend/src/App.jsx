@@ -209,6 +209,23 @@ function App({ msalInstance }) {
     };
   }, []);
 
+  // Hide scrollbar when page is idle; show only while user is scrolling
+  useEffect(() => {
+    let hideTimeout;
+    const show = () => {
+      document.documentElement.classList.add('scrollbar-visible');
+      clearTimeout(hideTimeout);
+      hideTimeout = setTimeout(() => {
+        document.documentElement.classList.remove('scrollbar-visible');
+      }, 600);
+    };
+    window.addEventListener('scroll', show, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', show);
+      clearTimeout(hideTimeout);
+    };
+  }, []);
+
   return (
     <ErrorBoundary>
       <GoogleOAuthProvider clientId={googleAuthConfig.clientId}>
