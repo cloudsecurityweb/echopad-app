@@ -89,7 +89,7 @@ const AnimatedAIScribeDemo = () => {
         <h3 className="text-xl md:text-2xl font-semibold text-gray-700 mb-2">
           Behavioral Health Session → Clinical Note
         </h3>
-        <p className="text-base text-gray-600 mt-2">Watch AI transform speech into clinical documentation in real-time</p>
+        <p className="text-base text-gray-600 mt-2">See your note build as you talk</p>
       </div>
 
       {/* Step 1: Provider Speaking */}
@@ -168,7 +168,7 @@ const AnimatedAIScribeDemo = () => {
           <span className={`text-sm font-semibold transition-colors ${
             currentStep === 2 ? 'text-gray-900' : 'text-gray-500'
           }`}>
-            ⚡ AI Transcription in Real-Time
+            ⚡ Your Note, as You Speak
           </span>
         </div>
         <div className="bg-white rounded-xl p-5 shadow-md border border-gray-100 min-h-[60px] transition-all duration-500">
@@ -255,14 +255,23 @@ const AnimatedAIScribeDemo = () => {
               ))}
             </div>
           </div>
+          {/* Export to EHR — direct integration first, copy as fallback */}
+          <div className={`border-t border-gray-200 pt-4 mt-4 transition-all duration-500 ${currentStep === 3 ? 'opacity-100' : 'opacity-60'}`}>
+            <div className="flex items-center gap-2">
+              <i className={`bi bi-upload text-lg ${currentStep === 3 ? 'text-blue-600' : 'text-gray-400'}`}></i>
+              <span className={`text-sm font-semibold ${currentStep === 3 ? 'text-gray-900' : 'text-gray-600'}`}>
+                Export to your EHR via direct integration or one-click copy
+              </span>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* CTA Section Below Demo */}
-      <div className="mt-8 bg-gradient-to-r from-green-50 via-emerald-50 to-teal-50 rounded-2xl p-6 border-2 border-green-200 shadow-lg">
+      <div className="mt-8 bg-gradient-to-r from-blue-50 via-emerald-50 to-teal-50 rounded-2xl p-6 border-2 border-blue-200 shadow-lg">
         <div className="text-center">
           <div className="flex items-center justify-center gap-2 mb-3">
-            <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center animate-pulse">
+            <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center animate-pulse">
               <i className="bi bi-rocket-takeoff-fill text-white text-lg"></i>
             </div>
             <h4 className="text-xl md:text-2xl font-bold text-gray-900">
@@ -294,13 +303,6 @@ const AnimatedAIScribeDemo = () => {
             >
               <i className="bi bi-play-circle-fill"></i>
               Start Free Trial
-            </a>
-            <a
-              href="/sign-in"
-              className="inline-flex items-center gap-2 bg-gray-100 text-gray-700 px-6 py-3 rounded-xl font-semibold hover:bg-gray-200 transition-all"
-            >
-              <i className="bi bi-box-arrow-in-right"></i>
-              Sign In
             </a>
           </div>
         </div>

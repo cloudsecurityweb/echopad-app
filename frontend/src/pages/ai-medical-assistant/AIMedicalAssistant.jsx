@@ -208,6 +208,52 @@ function AIMedicalAssistant() {
           </div>
         </section>
 
+        {/* Why It Matters - single narrative section */}
+        <section className="py-20 bg-white" aria-labelledby="why-medical-assistant-heading">
+          <div className="container mx-auto px-4">
+            <h2 id="why-medical-assistant-heading" className="text-3xl md:text-4xl font-bold text-gray-900 mb-12 text-center">
+              Why It Matters for Your Practice
+            </h2>
+            <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <div className="space-y-6">
+                <p className="text-lg text-gray-600 leading-relaxed">
+                  For primary care, urgent care, and specialty clinics facing documentation burnout, AI Medical Assistant delivers immediate ROI: 80% time reduction per visit, 100% visit capture, and EHR-ready charts with HPI, assessment, plan, and ICD-10 codes—automatically.
+                </p>
+                <p className="text-gray-600 leading-relaxed">
+                  Record the full patient session; AI extracts chief complaint, HPI, vitals, medications, and treatment plan, then generates structured documentation ready for your EHR. No scribe needed, no templates to fill.
+                </p>
+                <ul className="space-y-2">
+                  {['80% documentation time reduction', '100% visit capture', 'EHR integration with structured data', 'ICD-10 and billing-ready output'].map((benefit, idx) => (
+                    <li key={idx} className="flex items-start gap-2 text-gray-600">
+                      <i className="bi bi-check-circle-fill text-green-500 mt-0.5 flex-shrink-0"></i>
+                      <span>{benefit}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="bg-gradient-to-br from-teal-50 via-emerald-50 to-cyan-50 rounded-2xl p-8 border-2 border-teal-100">
+                <h3 className="text-lg font-bold text-gray-900 mb-6">Real impact</h3>
+                <div className="grid grid-cols-1 gap-6">
+                  {[
+                    { value: '80%', label: 'Time reduction', icon: 'bi-clock-history' },
+                    { value: '100%', label: 'Visit capture', icon: 'bi-check-circle' },
+                    { value: '95%', label: 'EHR accuracy', icon: 'bi-shield-check' },
+                  ].map((metric, idx) => (
+                    <div key={idx} className="flex items-center gap-4">
+                      <div className="w-12 h-12 bg-teal-100 rounded-xl flex items-center justify-center">
+                        <i className={`bi ${metric.icon} text-teal-600 text-xl`}></i>
+                      </div>
+                      <div>
+                        <div className="font-bold text-gray-900">{metric.value}</div>
+                        <div className="text-sm text-gray-600">{metric.label}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
 
         {/* Clinical Data Extraction Showcase */}
         <section className="py-20 bg-white">

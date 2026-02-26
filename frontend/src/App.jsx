@@ -15,10 +15,12 @@ import Footer from './components/layout/Footer';
 
 // Section Components
 import Hero from './components/sections/Hero';
+import TrustStrip from './components/sections/TrustStrip';
 import TrustBar from './components/sections/TrustBar';
 import AgentsOverview from './components/sections/AgentsOverview';
 import Platform from './components/sections/Platform';
 import ROI from './components/sections/ROI';
+import Testimonial from './components/sections/Testimonial';
 import Contact from './components/sections/Contact';
 
 // Product Components
@@ -32,6 +34,7 @@ import AIReceptionist from './pages/ai-receptionist/AIReceptionist';
 import AIAdminAssistant from './pages/ai-admin-assistant/AIAdminAssistant';
 import AIReminders from './pages/ai-reminders/AIReminders';
 import EchoPadInsights from './pages/echopad-insights/EchoPadInsights';
+import EchoPadInsightsEnterprise from './pages/echopad-insights/EchoPadInsightsEnterprise';
 import Aperio from './pages/aperio/Aperio';
 import PrivacyPolicy from './pages/privacy-policy/PrivacyPolicy';
 import TermsOfService from './pages/terms-of-service/TermsOfService';
@@ -96,7 +99,7 @@ function ScrollToTop() {
 
 function HomePage() {
   const location = useLocation();
-  const PageTitle = usePageTitle('Echopad AI - Healthcare AI Agent Platform | Reduce Costs 60%, Increase Revenue 20%', '');
+  const PageTitle = usePageTitle('Echopad AI – Less Charting, More Patients | Trusted by 50+ Practices', '');
 
   // Initialize scroll animations
   useScrollAnimations();
@@ -142,11 +145,13 @@ function HomePage() {
       <Navigation />
       <main className="flex-1">
         <Hero />
+        <TrustStrip />
         <TrustBar />
         <AgentsOverview />
         <ProductDetails />
         <Platform />
         <ROI />
+        <Testimonial />
         <Contact />
       </main>
       <Footer />
@@ -205,6 +210,23 @@ function App({ msalInstance }) {
     };
   }, []);
 
+  // Hide scrollbar when page is idle; show only while user is scrolling
+  useEffect(() => {
+    let hideTimeout;
+    const show = () => {
+      document.documentElement.classList.add('scrollbar-visible');
+      clearTimeout(hideTimeout);
+      hideTimeout = setTimeout(() => {
+        document.documentElement.classList.remove('scrollbar-visible');
+      }, 600);
+    };
+    window.addEventListener('scroll', show, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', show);
+      clearTimeout(hideTimeout);
+    };
+  }, []);
+
   return (
     <ErrorBoundary>
       <GoogleOAuthProvider clientId={googleAuthConfig.clientId}>
@@ -221,6 +243,7 @@ function App({ msalInstance }) {
                   <Route path="/ai-receptionist" element={<AIReceptionist />} />
                   <Route path="/ai-admin-assistant" element={<AIAdminAssistant />} />
                   <Route path="/ai-reminders" element={<AIReminders />} />
+                  <Route path="/echopad-insights/enterprise" element={<EchoPadInsightsEnterprise />} />
                   <Route path="/echopad-insights" element={<EchoPadInsights />} />
                   <Route path="/aperio" element={<Aperio />} />
                   <Route path="/privacy-policy" element={<PrivacyPolicy />} />

@@ -16,27 +16,38 @@ function Hero() {
   };
 
   return (
-    <FullScreenSection id="hero" fullHeight className="bg-gradient-to-b from-blue-50 via-white to-purple-50">
+    <FullScreenSection id="hero" className="bg-gradient-to-b from-blue-50 via-white to-purple-50 min-h-[72vh] flex flex-col justify-center">
       <div className="container mx-auto px-4 flex-1 flex flex-col justify-center">
         <div className="text-center max-w-3xl mx-auto relative z-10">
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 glass-card px-3 py-1.5 rounded-full text-sm font-semibold mb-4 animate-fade-in-scale">
-            <i className="bi bi-lightning-charge-fill text-cyan-500 animate-pulse"></i>
-            <span className="text-gray-800">AI-Powered Healthcare Automation</span>
+          {/* Top badges: outcomes-first, no jargon */}
+          <div className="flex flex-wrap justify-center items-center gap-2 mb-4 animate-fade-in-scale mt-3">
+            <a
+              href="#platform"
+              className="inline-flex items-center gap-2 bg-emerald-50 border border-emerald-200 text-emerald-800 px-3 py-1.5 rounded-full text-sm font-semibold hover:bg-emerald-100 transition-colors shadow-sm"
+              aria-label="HIPAA Compliant"
+            >
+              <i className="bi bi-shield-fill-check text-emerald-600"></i>
+              <span>HIPAA Compliant</span>
+            </a>
+            <span className="text-gray-300 hidden sm:inline">|</span>
+            <div className="inline-flex items-center gap-2 glass-card px-3 py-1.5 rounded-full text-sm font-semibold">
+              <i className="bi bi-lightning-charge-fill text-cyan-500 animate-pulse"></i>
+              <span className="text-gray-800">Notes done before the patient leaves. Fewer no-shows. Less admin.</span>
+            </div>
           </div>
 
-          {/* Main Heading */}
+          {/* Main Heading — physician pain point: time and paperwork */}
           <h1 className="text-3xl sm:text-4xl md:text-4xl lg:text-5xl font-bold mb-3 leading-tight animate-fade-in-scale animation-delay-100">
-            <span className="text-gray-900">AI Agents That Automate </span>
-            <span className="animate-gradient-text">Your Entire Clinical Workflow</span>
+            <span className="text-gray-900">Less Paperwork. </span>
+            <span className="animate-gradient-text">More Time with Patients.</span>
           </h1>
 
-          {/* Subtitle */}
+          {/* Subtitle — plain language, trust signals: EHR, HIPAA, setup speed */}
           <p className="text-sm sm:text-base text-gray-600 mb-6 max-w-2xl mx-auto animate-fade-in-scale animation-delay-200">
-            Transform documentation, scheduling, and admin tasks into automated workflows. Modular AI agents—deploy individually or as a suite.
+            Your note is done before you leave the room. Phones get answered 24/7. Fewer no-shows. Works with your existing EHR—no rip-and-replace. HIPAA compliant, BAA included. Most practices are live in about 30 days, with our team guiding you.
           </p>
 
-          {/* Feature pills */}
+          {/* Feature pills — what you get, not how it works */}
           <div className="flex flex-wrap justify-center gap-2 mb-6 animate-fade-in-scale animation-delay-300">
             <div className="flex items-center gap-2 glass-card px-3 py-2 rounded-xl hover-scale group shadow-sm">
               <i className="bi bi-mic-fill text-cyan-500 group-hover:scale-110 transition-transform"></i>
@@ -55,11 +66,11 @@ function Hero() {
           {/* CTAs */}
           <div className="flex flex-col sm:flex-row gap-3 justify-center mb-6 animate-fade-in-scale animation-delay-400">
             <a
-              href="/sign-up"
+              href="#demo"
               className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-6 py-3 rounded-xl hover:from-cyan-400 hover:to-blue-500 transition-all font-semibold text-sm shadow-lg hover:scale-105"
             >
-              <i className="bi bi-rocket-takeoff"></i>
-              Get Started
+              <i className="bi bi-play-circle-fill"></i>
+              See a 2-minute demo
             </a>
             <a
               href="/"
@@ -67,23 +78,28 @@ function Hero() {
               className="inline-flex items-center justify-center gap-2 glass-card border-2 border-cyan-500/50 text-gray-800 px-6 py-3 rounded-xl hover:bg-cyan-50/50 hover:border-cyan-500 transition-all font-semibold text-sm hover:scale-105 shadow-sm"
             >
               <i className="bi bi-grid-3x3-gap"></i>
-              Explore Products
+              See Solutions
             </a>
           </div>
 
-          {/* Metrics - compact */}
-          <div className="flex flex-wrap justify-center gap-6 sm:gap-8 animate-fade-in-scale animation-delay-500">
+          {/* Trusted by — social proof above the fold */}
+          <p className="text-xs sm:text-sm text-gray-500 mb-6 animate-fade-in-scale animation-delay-400">
+            Trusted by <span className="font-semibold text-gray-700">50+ practices</span> across family medicine, multi-specialty, and health systems
+          </p>
+
+          {/* Trust / differentiators — EHR, HIPAA, setup speed only */}
+          <div className="flex flex-wrap justify-center gap-6 sm:gap-8 animate-fade-in-scale animation-delay-500 text-sm">
             <div className="text-center">
-              <div className="text-base font-bold bg-gradient-to-r from-cyan-500 to-blue-600 bg-clip-text text-transparent">2+ hrs</div>
-              <div className="text-xs text-gray-500">Saved/day</div>
+              <div className="font-semibold text-gray-800">EHR compatible</div>
+              <div className="text-xs text-gray-500">Works with your existing system</div>
             </div>
             <div className="text-center">
-              <div className="text-base font-bold bg-gradient-to-r from-purple-500 to-pink-600 bg-clip-text text-transparent">70%</div>
-              <div className="text-xs text-gray-500">Less charting</div>
+              <div className="font-semibold text-gray-800">HIPAA compliant</div>
+              <div className="text-xs text-gray-500">BAA included</div>
             </div>
             <div className="text-center">
-              <div className="text-base font-bold bg-gradient-to-r from-cyan-500 to-purple-600 bg-clip-text text-transparent">95%</div>
-              <div className="text-xs text-gray-500">Satisfaction</div>
+              <div className="font-semibold text-gray-800">Live in ~30 days</div>
+              <div className="text-xs text-gray-500">We handle setup—no IT needed</div>
             </div>
           </div>
         </div>

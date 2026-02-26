@@ -141,74 +141,22 @@ function AIAdminAssistant() {
                   Eliminate repetitive administrative tasks with intelligent automation that handles forms, emails, and scheduling—freeing staff for high-value work.
                 </p>
 
-                <div className="space-y-6 mb-8">
-                  <div>
-                    <h2 className="flex items-center text-lg font-semibold text-gray-900 mb-3">
-                      <i className="bi bi-briefcase-fill text-teal-500 mr-2"></i>
-                      Business Value for Decision Makers
-                    </h2>
-                    <p className="text-gray-600">
-                      For healthcare leaders facing administrative overhead and staff burnout, AI Admin Assistant delivers immediate ROI through automated workflows, reduced manual data entry, and improved operational efficiency. Automate 60% of administrative tasks while freeing staff to focus on patient care and strategic initiatives.
-                    </p>
-                  </div>
-
-                  <div>
-                    <h2 className="flex items-center text-lg font-semibold text-gray-900 mb-3">
-                      <i className="bi bi-info-circle text-teal-500 mr-2"></i>
-                      What You See
-                    </h2>
-                    <p className="text-gray-600">
-                      Emails arrive, forms are submitted, referrals come in. AI reads them, extracts key information, updates systems, drafts responses, and notifies the right people—all automatically.
-                    </p>
-                  </div>
-
-                  <div>
-                    <h2 className="text-lg font-semibold text-gray-900 mb-3">Key Benefits</h2>
-                    <ul className="space-y-2">
-                      {[
-                        'Automate referrals, forms, and routine administrative tasks',
-                        'Reduce time spent on manual data entry and follow-ups',
-                        'Speed up internal workflows and task completion',
-                        'Improve coordination between clinical and administrative teams',
-                      ].map((benefit, idx) => (
-                        <li key={idx} className="flex items-start gap-2 text-gray-600">
-                          <i className="bi bi-check-circle-fill text-green-500 mt-0.5"></i>
-                          <span>{benefit}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <div>
-                    <h2 className="flex items-center text-lg font-semibold text-gray-900 mb-3">
-                      <i className="bi bi-graph-up text-teal-500 mr-2"></i>
-                      Impact Metrics
-                    </h2>
-                    <div className="grid grid-cols-3 gap-4 mt-4">
-                      {[
-                        { value: '3+ hours', label: 'Saved per admin/day', icon: 'bi-clock-history' },
-                        { value: '60%', label: 'Tasks automated', icon: 'bi-robot' },
-                        { value: '12 sec', label: 'Average processing time', icon: 'bi-lightning-charge' },
-                      ].map((metric, idx) => (
-                        <div key={idx} className="bg-gray-50 rounded-lg p-4 text-center border border-gray-200">
-                          <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-2">
-                            <i className={`bi ${metric.icon} text-blue-600 text-xl`}></i>
-                          </div>
-                          <div className="font-bold text-gray-900 mb-1">{metric.value}</div>
-                          <div className="text-sm text-gray-600">{metric.label}</div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div>
-                    <h2 className="text-lg font-semibold text-gray-900 mb-3">Perfect For</h2>
-                    <p className="text-gray-600">
-                      Practices with high administrative burden, referral coordination, or staff struggling with repetitive data entry tasks.
-                    </p>
-                  </div>
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <a
+                    href="#"
+                    onClick={(e) => handleIntercomClick(e, 'request-demo')}
+                    className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-cyan-600 to-blue-600 text-white px-6 py-3.5 rounded-xl font-bold hover:from-cyan-700 hover:to-blue-700 transition-all shadow-lg hover:shadow-xl"
+                  >
+                    <i className="bi bi-play-circle-fill text-xl"></i>
+                    See It In Action
+                  </a>
+                  <a
+                    href="/sign-up"
+                    className="inline-flex items-center justify-center gap-2 bg-white text-blue-600 px-6 py-3.5 rounded-xl font-semibold border-2 border-blue-600 hover:bg-blue-50 transition-colors"
+                  >
+                    Get Started
+                  </a>
                 </div>
-
               </div>
 
               <div className="lg:col-span-7">
@@ -338,6 +286,106 @@ function AIAdminAssistant() {
                       </div>
                     </div>
                   </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Why It Matters - single narrative section */}
+        <section className="py-20 bg-gradient-to-b from-white to-slate-50" aria-labelledby="why-admin-heading">
+          <div className="container mx-auto px-4">
+            <h2 id="why-admin-heading" className="text-3xl md:text-4xl font-bold text-gray-900 mb-12 text-center">
+              Why It Matters for Your Practice
+            </h2>
+            <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <div className="space-y-6">
+                <p className="text-lg text-gray-600 leading-relaxed">
+                  For healthcare leaders facing administrative overhead and staff burnout, AI Admin Assistant delivers immediate ROI through automated workflows, reduced manual data entry, and improved operational efficiency. Automate 60% of administrative tasks while freeing staff to focus on patient care and strategic initiatives.
+                </p>
+                <p className="text-gray-600 leading-relaxed">
+                  Emails arrive, forms are submitted, referrals come in. AI reads them, extracts key information, updates systems, drafts responses, and notifies the right people—all automatically.
+                </p>
+                <ul className="space-y-2">
+                  {['Automate referrals, forms, and routine admin tasks', 'Reduce manual data entry and follow-ups', 'Speed up internal workflows and task completion', 'Improve coordination between clinical and admin teams'].map((benefit, idx) => (
+                    <li key={idx} className="flex items-start gap-2 text-gray-600">
+                      <i className="bi bi-check-circle-fill text-green-500 mt-0.5 flex-shrink-0"></i>
+                      <span>{benefit}</span>
+                    </li>
+                  ))}
+                </ul>
+                <p className="text-sm text-gray-500">
+                  Practices with high administrative burden, referral coordination, or staff struggling with repetitive data entry tasks.
+                </p>
+              </div>
+              <div className="bg-gradient-to-br from-cyan-50 via-blue-50 to-purple-50 rounded-2xl p-8 border-2 border-cyan-100">
+                <h3 className="text-lg font-bold text-gray-900 mb-6">Real impact</h3>
+                <div className="grid grid-cols-1 gap-6">
+                  {[
+                    { value: '3+ hours', label: 'Saved per admin/day', icon: 'bi-clock-history' },
+                    { value: '60%', label: 'Tasks automated', icon: 'bi-robot' },
+                    { value: '12 sec', label: 'Average processing time', icon: 'bi-lightning-charge' },
+                  ].map((metric, idx) => (
+                    <div key={idx} className="flex items-center gap-4">
+                      <div className="w-12 h-12 bg-cyan-100 rounded-xl flex items-center justify-center">
+                        <i className={`bi ${metric.icon} text-cyan-600 text-xl`}></i>
+                      </div>
+                      <div>
+                        <div className="font-bold text-gray-900">{metric.value}</div>
+                        <div className="text-sm text-gray-600">{metric.label}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Why It Matters - single narrative section */}
+        <section className="py-20 bg-gradient-to-b from-white to-slate-50" aria-labelledby="why-admin-heading">
+          <div className="container mx-auto px-4">
+            <h2 id="why-admin-heading" className="text-3xl md:text-4xl font-bold text-gray-900 mb-12 text-center">
+              Why It Matters for Your Practice
+            </h2>
+            <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <div className="space-y-6">
+                <p className="text-lg text-gray-600 leading-relaxed">
+                  For healthcare leaders facing administrative overhead and staff burnout, AI Admin Assistant delivers immediate ROI through automated workflows, reduced manual data entry, and improved operational efficiency. Automate 60% of administrative tasks while freeing staff to focus on patient care and strategic initiatives.
+                </p>
+                <p className="text-gray-600 leading-relaxed">
+                  Emails arrive, forms are submitted, referrals come in. AI reads them, extracts key information, updates systems, drafts responses, and notifies the right people—all automatically.
+                </p>
+                <ul className="space-y-2">
+                  {['Automate referrals, forms, and routine tasks', 'Reduce manual data entry and follow-ups', 'Speed up internal workflows', 'Improve clinical and admin coordination'].map((benefit, idx) => (
+                    <li key={idx} className="flex items-start gap-2 text-gray-600">
+                      <i className="bi bi-check-circle-fill text-green-500 mt-0.5 flex-shrink-0"></i>
+                      <span>{benefit}</span>
+                    </li>
+                  ))}
+                </ul>
+                <p className="text-sm text-gray-500">
+                  Practices with high administrative burden, referral coordination, or staff struggling with repetitive data entry tasks.
+                </p>
+              </div>
+              <div className="bg-gradient-to-br from-cyan-50 via-blue-50 to-purple-50 rounded-2xl p-8 border-2 border-cyan-100">
+                <h3 className="text-lg font-bold text-gray-900 mb-6">Real impact</h3>
+                <div className="grid grid-cols-1 gap-6">
+                  {[
+                    { value: '3+ hours', label: 'Saved per admin/day', icon: 'bi-clock-history' },
+                    { value: '60%', label: 'Tasks automated', icon: 'bi-robot' },
+                    { value: '12 sec', label: 'Average processing time', icon: 'bi-lightning-charge' },
+                  ].map((metric, idx) => (
+                    <div key={idx} className="flex items-center gap-4">
+                      <div className="w-12 h-12 bg-cyan-100 rounded-xl flex items-center justify-center">
+                        <i className={`bi ${metric.icon} text-cyan-600 text-xl`}></i>
+                      </div>
+                      <div>
+                        <div className="font-bold text-gray-900">{metric.value}</div>
+                        <div className="text-sm text-gray-600">{metric.label}</div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>

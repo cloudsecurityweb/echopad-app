@@ -70,37 +70,38 @@ function EchoPadInsights() {
                   Insights
                 </h1>
                 <p className="text-xl md:text-2xl text-gray-700 font-semibold mb-6">
-                  Healthcare Financial Intelligence & Benchmarking
+                  Are you being underpaid? We show you where.
                 </p>
 
                 <p className="text-base text-gray-600 mb-8">
-                  Aggregate multi-payer data nationwide to identify underpayments, benchmark performance against peers, and optimize clinical and financial outcomes—all in one powerful platform.
+                  One simple dashboard shows exactly where insurers are short-paying you and how much you could recover—no spreadsheets, no jargon.
                 </p>
 
-                {/* Interactive Stats Banner */}
-                <div className="bg-gradient-to-r from-purple-500 via-blue-500 to-teal-600 rounded-2xl p-5 md:p-6 mb-6 shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-[1.02] animate-gradient-x overflow-hidden">
+                {/* Interactive Stats Banner - Light bg */}
+                <div className="bg-gradient-to-br from-purple-50 via-blue-50 to-teal-50 border-2 border-purple-200 rounded-2xl p-5 md:p-6 mb-6 shadow-lg overflow-hidden">
                   <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 min-w-0">
                     <div className="flex items-center gap-3 md:gap-4 min-w-0 flex-1">
-                      <div className="w-12 h-12 md:w-14 md:h-14 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center flex-shrink-0">
-                        <i className="bi bi-cash-stack text-white text-xl md:text-2xl animate-bounce"></i>
+                      <div className="w-12 h-12 md:w-14 md:h-14 bg-purple-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <i className="bi bi-cash-stack text-purple-600 text-xl md:text-2xl animate-bounce"></i>
                       </div>
                       <div className="min-w-0 flex-1">
-                        <div className="text-white/80 text-xs md:text-sm font-semibold uppercase tracking-wide mb-1 break-words">
-                          Revenue Intelligence
+                        <div className="text-gray-600 text-xs md:text-sm font-semibold uppercase tracking-wide mb-1 break-words">
+                          What practices find
                         </div>
-                        <div className="text-white text-lg md:text-xl lg:text-2xl font-bold break-words whitespace-normal">
-                          Identify: <span className="text-yellow-300">$500K+</span> Annually
+                        <div className="text-gray-900 text-lg md:text-xl lg:text-2xl font-bold break-words whitespace-normal">
+                          Often <span className="text-purple-600">$500K+</span> to recover per year
                         </div>
+                        <div className="text-xs text-gray-500 mt-1">Mid-size multi-specialty groups; from customer recovery data.</div>
                       </div>
                     </div>
                     <div className="flex gap-2 md:gap-3 flex-shrink-0">
-                      <div className="bg-white/20 backdrop-blur-sm px-3 md:px-4 py-2 rounded-lg min-w-[80px] md:min-w-[100px] text-center">
-                        <div className="text-white/80 text-xs whitespace-nowrap">Coverage</div>
-                        <div className="text-white font-bold text-base md:text-lg">All 50 States</div>
+                      <div className="bg-white border border-purple-200 px-3 md:px-4 py-2 rounded-lg min-w-[80px] md:min-w-[100px] text-center shadow-sm">
+                        <div className="text-gray-600 text-xs whitespace-nowrap">Coverage</div>
+                        <div className="text-gray-900 font-bold text-base md:text-lg">All 50 States</div>
                       </div>
-                      <div className="bg-white/20 backdrop-blur-sm px-3 md:px-4 py-2 rounded-lg min-w-[80px] md:min-w-[100px] text-center">
-                        <div className="text-white/80 text-xs whitespace-nowrap">Setup</div>
-                        <div className="text-white font-bold text-base md:text-lg">&lt;1 Week</div>
+                      <div className="bg-white border border-purple-200 px-3 md:px-4 py-2 rounded-lg min-w-[80px] md:min-w-[100px] text-center shadow-sm">
+                        <div className="text-gray-600 text-xs whitespace-nowrap">Setup</div>
+                        <div className="text-gray-900 font-bold text-base md:text-lg">&lt;1 Week</div>
                       </div>
                     </div>
                   </div>
@@ -133,7 +134,7 @@ function EchoPadInsights() {
                       For Healthcare Leaders & CFOs
                     </h4>
                     <p className="text-gray-600">
-                      Stop negotiating blind. Insights aggregates nationwide payer data, identifies where you're underpaid, and gives you the leverage to negotiate better contracts—backed by real market benchmarks.
+                      Stop negotiating blind. See where you're underpaid, get the leverage to negotiate better contracts—backed by real market benchmarks from nationwide payer data.
                     </p>
                   </div>
 
@@ -143,7 +144,7 @@ function EchoPadInsights() {
                       What You Get
                     </h4>
                     <p className="text-gray-600">
-                      Real-time access to multi-payer reimbursement data across all 50 states. Benchmark your rates against regional peers, identify underpayments by CPT code, and discover hidden revenue opportunities—all in an intuitive dashboard.
+                      See where you're underpaid across payers and regions. Benchmark your rates against peers, identify underpayments by procedure code, and discover hidden revenue opportunities—all in one dashboard. We keep the data current so your view is always up to date.
                     </p>
                   </div>
 
@@ -171,9 +172,9 @@ function EchoPadInsights() {
                     </h4>
                     <div className="grid grid-cols-3 gap-4 mt-4">
                       {[
-                        { value: '$500K+', label: 'Underpayments identified', icon: 'bi-cash-stack' },
-                        { value: 'All 50', label: 'States covered', icon: 'bi-geo-alt' },
-                        { value: '100%', label: 'Data transparency', icon: 'bi-shield-check' },
+                        { value: '$500K+', label: 'Underpayments identified', attribution: 'Mid-size practices; customer recovery data', icon: 'bi-cash-stack' },
+                          { value: 'All 50', label: 'States covered', attribution: 'Nationwide payer data', icon: 'bi-geo-alt' },
+                        { value: '100%', label: 'Data transparency', attribution: 'Platform capability', icon: 'bi-shield-check' },
                       ].map((metric, idx) => (
                         <div key={idx} className="bg-gray-50 rounded-lg p-4 text-center">
                           <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-2">
@@ -181,6 +182,7 @@ function EchoPadInsights() {
                           </div>
                           <div className="font-bold text-gray-900 mb-1">{metric.value}</div>
                           <div className="text-sm text-gray-600">{metric.label}</div>
+                          {metric.attribution && <div className="text-xs text-gray-500 mt-1" title="Source">{metric.attribution}</div>}
                         </div>
                       ))}
                     </div>
@@ -202,21 +204,21 @@ function EchoPadInsights() {
                       </span>
                     </h2>
                     <h3 className="text-xl font-bold text-gray-700 mb-2">How It Works</h3>
-                    <p className="text-sm text-gray-600">Simple 3-step process to unlock revenue insights</p>
+                    <p className="text-sm text-gray-600">Three steps to see where you're underpaid and what to do about it</p>
                   </div>
 
                   {/* Step-by-Step Flow */}
                   <div className="space-y-6">
-                    {/* Step 1: Aggregate Price Transparency Data */}
+                    {/* Step 1: Compare your pay vs everyone else */}
                     <div className="relative">
                       <div className="flex items-start gap-4">
                         <div className="flex-shrink-0 w-12 h-12 bg-blue-500 text-white rounded-full flex items-center justify-center text-xl font-bold shadow-md">
                           1
                         </div>
                         <div className="flex-1">
-                          <h4 className="text-lg font-bold text-gray-900 mb-2">Aggregate Machine-Readable Files (MRFs)</h4>
+                          <h4 className="text-lg font-bold text-gray-900 mb-2">Compare What You Get Paid vs Everyone Else</h4>
                           <p className="text-sm text-gray-600 mb-3">
-                            We aggregate negotiated rate data from major payers' machine-readable files across all 50 states—compliant with federal price transparency mandates.
+                            We compare your reimbursement to what other practices get from the same payers—across all 50 states. You see real rates others are paid, not estimates, so you know exactly where you stand.
                           </p>
                           <div className="bg-blue-50 border border-blue-100 rounded-lg p-4">
                             <div className="space-y-2">
@@ -237,7 +239,7 @@ function EchoPadInsights() {
                                 <span className="font-medium">Cigna & Humana</span>
                               </div>
                               <div className="flex items-center justify-between mt-2 pt-2 border-t border-blue-100">
-                                <span className="text-xs text-gray-600">Live MRF Data</span>
+                                <span className="text-xs text-gray-600">Data stays current</span>
                                 <div className="flex items-center gap-1">
                                   <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></div>
                                   <span className="text-xs font-semibold text-emerald-600">Active</span>
@@ -251,16 +253,16 @@ function EchoPadInsights() {
                       <div className="absolute left-6 top-12 bottom-0 w-0.5 bg-gradient-to-b from-blue-300 to-purple-300"></div>
                     </div>
 
-                    {/* Step 2: Analyze & Benchmark */}
+                    {/* Step 2: See where you're underpaid */}
                     <div className="relative">
                       <div className="flex items-start gap-4">
                         <div className="flex-shrink-0 w-12 h-12 bg-purple-500 text-white rounded-full flex items-center justify-center text-xl font-bold shadow-md">
                           2
                         </div>
                         <div className="flex-1">
-                          <h4 className="text-lg font-bold text-gray-900 mb-2">Analyze & Benchmark</h4>
+                          <h4 className="text-lg font-bold text-gray-900 mb-2">See Where You're Underpaid</h4>
                           <p className="text-sm text-gray-600 mb-3">
-                            Our AI compares your rates against nationwide benchmarks, identifying underpayments by payer and CPT code.
+                            We highlight gaps by payer and by procedure—so you see exactly which contracts and codes are leaving money on the table and by how much.
                           </p>
                           <div className="bg-purple-50 border border-purple-100 rounded-lg p-4">
                             <div className="space-y-2">
@@ -290,7 +292,7 @@ function EchoPadInsights() {
                       <div className="absolute left-6 top-12 bottom-0 w-0.5 bg-gradient-to-b from-purple-300 to-emerald-300"></div>
                     </div>
 
-                    {/* Step 3: Take Action */}
+                    {/* Step 3: Take action */}
                     <div className="relative">
                       <div className="flex items-start gap-4">
                         <div className="flex-shrink-0 w-12 h-12 bg-emerald-500 text-white rounded-full flex items-center justify-center text-xl font-bold shadow-md">
@@ -299,7 +301,7 @@ function EchoPadInsights() {
                         <div className="flex-1">
                           <h4 className="text-lg font-bold text-gray-900 mb-2">Take Action</h4>
                           <p className="text-sm text-gray-600 mb-3">
-                            Get actionable recommendations with projected revenue impact. Negotiate contracts backed by real data.
+                            Get a clear list of what to do next, with estimated revenue impact. Negotiate with payers using real numbers—not guesswork.
                           </p>
                           <div className="bg-emerald-50 border border-emerald-100 rounded-lg p-4">
                             <div className="space-y-3">
@@ -314,6 +316,7 @@ function EchoPadInsights() {
                                 <div className="text-right flex-shrink-0">
                                   <div className="text-sm font-bold text-emerald-600">+$240K</div>
                                   <div className="text-xs text-gray-500">Est. Annual</div>
+                                  <div className="text-xs text-gray-400">Example outcome; results vary.</div>
                                 </div>
                               </div>
                               <div className="flex items-center gap-3 bg-white rounded-lg p-3 shadow-sm">
@@ -327,6 +330,7 @@ function EchoPadInsights() {
                                 <div className="text-right flex-shrink-0">
                                   <div className="text-sm font-bold text-blue-500">+$150K</div>
                                   <div className="text-xs text-gray-500">Est. Annual</div>
+                                  <div className="text-xs text-gray-400">e.g. 8–10 provider primary care group.</div>
                                 </div>
                               </div>
                             </div>
@@ -336,15 +340,16 @@ function EchoPadInsights() {
                     </div>
                   </div>
 
-                  {/* Total Impact Summary */}
-                  <div className="mt-6 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl p-5 text-white">
+                  {/* Total Impact Summary - Light bg */}
+                  <div className="mt-6 bg-gradient-to-br from-blue-50 to-purple-50 border-2 border-blue-200 rounded-xl p-5">
                     <div className="flex items-center justify-between">
                       <div>
-                        <div className="text-sm opacity-90 mb-1">Total Revenue Opportunity</div>
-                        <div className="text-3xl font-bold">$635K+</div>
+                        <div className="text-sm text-gray-600 font-medium mb-1">Total Revenue Opportunity</div>
+                        <div className="text-3xl font-bold text-gray-900">$635K+</div>
+                        <div className="text-xs text-gray-500 mt-1">Example: 12-provider multi-specialty group; results vary by practice.</div>
                       </div>
-                      <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
-                        <i className="bi bi-graph-up-arrow text-3xl"></i>
+                      <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
+                        <i className="bi bi-graph-up-arrow text-blue-600 text-3xl"></i>
                       </div>
                     </div>
                   </div>
@@ -352,20 +357,20 @@ function EchoPadInsights() {
               </div>
             </div>
 
-            {/* CTA Below Visualization */}
+            {/* CTA Below Visualization - Light bg */}
             <div className="text-center mt-12">
-              <div className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl p-8 shadow-xl">
-                <h3 className="text-2xl md:text-3xl font-bold text-white mb-4">
+              <div className="bg-gradient-to-br from-purple-50 to-blue-50 border-2 border-purple-200 rounded-2xl p-8 shadow-lg">
+                <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
                   Ready to Discover Your Revenue Opportunities?
                 </h3>
-                <p className="text-white/90 text-lg mb-6 max-w-2xl mx-auto">
+                <p className="text-gray-700 text-lg mb-6 max-w-2xl mx-auto">
                   See exactly how much revenue you're leaving on the table. Get started with a free analysis.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <a
                     href="#"
                     onClick={(e) => handleIntercomClick(e, 'request-demo')}
-                    className="inline-flex items-center justify-center gap-3 bg-white text-purple-600 px-8 py-4 rounded-xl font-bold text-lg hover:bg-gray-100 transition-all shadow-lg hover:shadow-xl hover:scale-105"
+                    className="inline-flex items-center justify-center gap-3 bg-purple-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-purple-700 transition-all shadow-lg hover:shadow-xl hover:scale-105"
                   >
                     <i className="bi bi-calendar-check text-2xl"></i>
                     Get Free Analysis
@@ -373,7 +378,7 @@ function EchoPadInsights() {
                   <a
                     href="#"
                     onClick={(e) => handleIntercomClick(e, 'sign-up')}
-                    className="inline-flex items-center justify-center gap-3 bg-purple-800 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-purple-900 transition-all shadow-lg hover:shadow-xl hover:scale-105 border-2 border-white/20"
+                    className="inline-flex items-center justify-center gap-3 bg-white text-purple-600 px-8 py-4 rounded-xl font-bold text-lg hover:bg-purple-100 transition-all shadow-lg hover:shadow-xl hover:scale-105 border-2 border-purple-300"
                   >
                     <i className="bi bi-chat-dots text-2xl"></i>
                     Talk to an Expert
@@ -447,100 +452,84 @@ function EchoPadInsights() {
           </div>
         </section>
 
-        {/* Use Cases Section */}
+        {/* Use Cases Section - Focused on primary buyer: practices & medical groups */}
         <section className="py-20 bg-white">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                Who Benefits from Insights?
+                Built for Practices & Medical Groups
               </h2>
-              <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-                Healthcare organizations of all sizes use our platform to optimize revenue
+              <p className="text-lg text-gray-700 max-w-3xl mx-auto">
+                Insights is designed for practice owners and medical group leaders who want to stop leaving money on the table—without hiring expensive consultants.
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {[
-                {
-                  title: 'Hospital Systems & Health Networks',
-                  icon: 'bi-hospital',
-                  challenges: [
-                    'Managing contracts with multiple payers across regions',
-                    'Identifying underpayments across thousands of CPT codes',
-                    'Preparing for payer contract renegotiations'
-                  ],
-                  solution: 'Insights provides system-wide visibility into payer performance, helping CFOs identify $500K+ in annual underpayments and negotiate better rates.'
-                },
-                {
-                  title: 'Medical Groups & Practices',
-                  icon: 'bi-people-fill',
-                  challenges: [
-                    'Limited resources to analyze complex payer contracts',
-                    'Difficulty benchmarking against peer practices',
-                    'Time-consuming manual rate comparisons'
-                  ],
-                  solution: 'Automated benchmarking and prioritized action items help practice administrators focus on high-impact negotiations without hiring expensive consultants.'
-                },
-                {
-                  title: 'Revenue Cycle Management Teams',
-                  icon: 'bi-cash-coin',
-                  challenges: [
-                    'Tracking underpayments across multiple clients',
-                    'Proving value to leadership with data',
-                    'Staying current with market rate changes'
-                  ],
-                  solution: 'Real-time MRF data and custom reporting make it easy to demonstrate ROI and recover revenue for your organization or clients.'
-                },
-                {
-                  title: 'Healthcare Consultants & Advisors',
-                  icon: 'bi-briefcase',
-                  challenges: [
-                    'Accessing reliable market benchmark data',
-                    'Supporting multiple clients with contract negotiations',
-                    'Providing evidence-based recommendations'
-                  ],
-                  solution: 'White-label reports and nationwide benchmarking data enable consultants to deliver premium advisory services backed by real market intelligence.'
-                }
-              ].map((useCase, idx) => (
-                <div key={idx} className="bg-gradient-to-br from-gray-50 to-white border border-gray-200 rounded-xl p-8 shadow-lg">
-                  <div className="flex items-center gap-4 mb-6">
-                    <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <i className={`bi ${useCase.icon} text-purple-600 text-2xl`}></i>
-                    </div>
-                    <h3 className="text-xl font-bold text-gray-900">{useCase.title}</h3>
+            {/* Primary persona: dominant single block */}
+            <div className="max-w-4xl mx-auto mb-10">
+              <div className="bg-gradient-to-br from-purple-50 to-blue-50 border-2 border-purple-200 rounded-2xl p-8 md:p-10 shadow-xl">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-14 h-14 bg-purple-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <i className="bi bi-people-fill text-white text-2xl"></i>
                   </div>
-
-                  <div className="mb-6">
-                    <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-3">Common Challenges:</h4>
-                    <ul className="space-y-2">
-                      {useCase.challenges.map((challenge, i) => (
-                        <li key={i} className="flex items-start gap-2 text-sm text-gray-600">
-                          <i className="bi bi-x-circle text-red-500 mt-0.5 flex-shrink-0"></i>
-                          <span>{challenge}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
-                    <h4 className="text-sm font-semibold text-purple-900 mb-2">How EchoPad Helps:</h4>
-                    <p className="text-sm text-gray-700">{useCase.solution}</p>
+                  <div>
+                    <span className="text-sm font-semibold text-purple-600 uppercase tracking-wide">Primary audience</span>
+                    <h3 className="text-2xl md:text-3xl font-bold text-gray-900">Medical Groups & Practices</h3>
                   </div>
                 </div>
-              ))}
+
+                <div className="mb-6">
+                  <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-3">Common challenges we solve:</h4>
+                  <ul className="space-y-2">
+                    {[
+                      'Limited resources to analyze complex payer contracts',
+                      'Difficulty benchmarking against peer practices',
+                      'Time-consuming manual rate comparisons',
+                      'Uncertainty about where you\'re underpaid before renegotiations',
+                    ].map((challenge, i) => (
+                      <li key={i} className="flex items-start gap-2 text-gray-700">
+                        <i className="bi bi-x-circle text-red-500 mt-0.5 flex-shrink-0"></i>
+                        <span>{challenge}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div className="bg-white border border-purple-200 rounded-xl p-5">
+                  <h4 className="text-sm font-semibold text-purple-900 mb-2">How EchoPad Helps</h4>
+                  <p className="text-gray-700">
+                    Automated benchmarking and prioritized action items help practice administrators and owners focus on high-impact negotiations. See where you're underpaid across payers, benchmark against peers, and negotiate with data-backed leverage—without hiring expensive consultants.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Secondary: Enterprise CTA - one small section */}
+            <div className="max-w-2xl mx-auto">
+              <div className="bg-gray-50 border border-gray-200 rounded-xl p-6 text-center">
+                <p className="text-gray-700 mb-3">
+                  <strong>Hospital systems, RCM teams, or consultants?</strong> We offer tailored solutions for enterprise and advisory use cases.
+                </p>
+                <Link
+                  to="/echopad-insights/enterprise"
+                  className="inline-flex items-center gap-2 text-purple-600 hover:text-purple-700 font-semibold transition-colors"
+                >
+                  Explore Insights for Enterprise
+                  <i className="bi bi-arrow-right"></i>
+                </Link>
+              </div>
             </div>
           </div>
         </section>
 
-        {/* Platform Capabilities Section */}
-        <section className="py-20 bg-gradient-to-br from-purple-600 to-blue-600">
+        {/* Platform Capabilities Section - Light bg */}
+        <section className="py-20 bg-gradient-to-br from-purple-50 to-blue-50 border-y border-purple-200">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-                Comprehensive Revenue Intelligence Platform
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                Know Exactly Where You're Underpaid
               </h2>
-              <p className="text-lg text-white/90 max-w-3xl mx-auto">
-                Access the most extensive healthcare pricing database with real-time insights
+              <p className="text-lg text-gray-700 max-w-3xl mx-auto">
+                The most extensive healthcare pricing view—your underpayment intelligence stays current
               </p>
             </div>
 
@@ -549,14 +538,14 @@ function EchoPadInsights() {
                 { value: 'Billions', label: 'Data Points Analyzed', icon: 'bi-database' },
                 { value: 'All Major', label: 'Payers Included', icon: 'bi-building' },
                 { value: '50 States', label: 'Nationwide Coverage', icon: 'bi-geo-alt' },
-                { value: 'Real-Time', label: 'MRF Data Updates', icon: 'bi-arrow-repeat' }
+                { value: 'Your view stays current', label: 'Data updates', icon: 'bi-arrow-repeat' }
               ].map((stat, idx) => (
                 <div key={idx} className="text-center">
-                  <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i className={`bi ${stat.icon} text-white text-3xl`}></i>
+                  <div className="w-16 h-16 bg-white border border-purple-200 rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm">
+                    <i className={`bi ${stat.icon} text-purple-600 text-3xl`}></i>
                   </div>
-                  <div className="text-4xl font-bold text-white mb-2">{stat.value}</div>
-                  <div className="text-white/90">{stat.label}</div>
+                  <div className="text-4xl font-bold text-gray-900 mb-2">{stat.value}</div>
+                  <div className="text-gray-600">{stat.label}</div>
                 </div>
               ))}
             </div>
@@ -566,11 +555,28 @@ function EchoPadInsights() {
               <a
                 href="#"
                 onClick={(e) => handleIntercomClick(e, 'request-demo')}
-                className="inline-flex items-center justify-center gap-3 bg-white text-purple-600 px-8 py-4 rounded-xl font-bold text-lg hover:bg-gray-100 transition-all shadow-lg hover:shadow-xl hover:scale-105"
+                className="inline-flex items-center justify-center gap-3 bg-purple-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-purple-700 transition-all shadow-lg hover:shadow-xl hover:scale-105"
               >
                 <i className="bi bi-rocket-takeoff text-2xl"></i>
                 Start Optimizing Revenue Today
               </a>
+            </div>
+          </div>
+        </section>
+
+        {/* How We Get the Data - technical details, secondary */}
+        <section className="py-16 bg-white border-t border-gray-200" id="how-we-get-the-data">
+          <div className="container mx-auto px-4">
+            <div className="max-w-3xl mx-auto">
+              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
+                How We Get the Data
+              </h2>
+              <p className="text-gray-600 mb-4">
+                If you want the technical details: we use publicly available machine-readable files (MRFs) that payers publish under federal price transparency rules. These files contain actual negotiated rates—not surveys or estimates—so the benchmarks you see reflect real reimbursement data. We aggregate and update this data across major payers and all 50 states so your view stays current.
+              </p>
+              <p className="text-gray-600">
+                No proprietary data sharing is required from your side to see market benchmarks. For personalized underpayment analysis, you can optionally upload your data securely; we never use it for any purpose other than your own insights.
+              </p>
             </div>
           </div>
         </section>
@@ -583,7 +589,7 @@ function EchoPadInsights() {
                 Common Questions About Revenue Intelligence
               </h2>
               <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-                Get answers to help you understand how our platform works
+                Get answers to help you get the most from your underpayment intelligence
               </p>
             </div>
 
@@ -591,8 +597,8 @@ function EchoPadInsights() {
               {[
                 {
                   category: 'Data Source',
-                  question: 'How do you access payer rate data?',
-                  answer: 'We aggregate publicly available machine-readable files (MRFs) published by payers as required by federal price transparency mandates.',
+                  question: 'Where does your rate data come from?',
+                  answer: 'We use publicly available data that payers publish—actual negotiated rates, not surveys or estimates. For technical details (including how we source and update the data), see the How We Get the Data section above.',
                   icon: 'bi-database',
                   color: 'blue'
                 },
@@ -613,14 +619,14 @@ function EchoPadInsights() {
                 {
                   category: 'Accuracy',
                   question: 'What makes your data reliable?',
-                  answer: 'Our data comes directly from payer MRFs—actual negotiated rates, not surveys or estimates.',
+                  answer: 'We use actual negotiated rates from payer-published data—the same numbers payers are required to make public—so you see real market rates, not estimates.',
                   icon: 'bi-patch-check',
                   color: 'teal'
                 },
                 {
                   category: 'Usage',
                   question: 'Can I use this in negotiations?',
-                  answer: 'Yes. The platform includes templates, talking points, and exportable reports for payer discussions.',
+                  answer: 'Yes. You get templates, talking points, and exportable reports for payer discussions.',
                   icon: 'bi-chat-square-text',
                   color: 'orange'
                 },

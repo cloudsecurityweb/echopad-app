@@ -141,74 +141,22 @@ function AIReceptionist() {
                   Automate appointment scheduling, patient inquiries, and call routing with conversational AI that never sleeps—handling 100+ calls simultaneously.
                 </p>
 
-                <div className="space-y-6 mb-8">
-                  <div>
-                    <h2 className="flex items-center text-lg font-semibold text-gray-900 mb-3">
-                      <i className="bi bi-briefcase-fill text-teal-500 mr-2"></i>
-                      Business Value for Decision Makers
-                    </h2>
-                    <p className="text-gray-600">
-                      For healthcare leaders facing high call volumes and front-desk staffing costs, AI Receptionist delivers immediate ROI through 24/7 availability, reduced staffing needs, and improved patient satisfaction. Handle 80% of calls automatically while reducing front-desk costs by $60K-$120K annually.
-                    </p>
-                  </div>
-
-                  <div>
-                    <h2 className="flex items-center text-lg font-semibold text-gray-900 mb-3">
-                      <i className="bi bi-info-circle text-teal-500 mr-2"></i>
-                      What You See
-                    </h2>
-                    <p className="text-gray-600">
-                      Patients call anytime, day or night. AI answers instantly, understands their request, books appointments, provides information, or escalates to staff—all in natural conversation.
-                    </p>
-                  </div>
-
-                  <div>
-                    <h2 className="text-lg font-semibold text-gray-900 mb-3">Key Benefits</h2>
-                    <ul className="space-y-2">
-                      {[
-                        'Answer patient calls and messages 24/7, including after hours',
-                        'Reduce missed calls and lost appointment opportunities',
-                        'Automate appointment scheduling and basic patient requests',
-                        'Lower front-desk workload and staff burnout',
-                      ].map((benefit, idx) => (
-                        <li key={idx} className="flex items-start gap-2 text-gray-600">
-                          <i className="bi bi-check-circle-fill text-green-500 mt-0.5"></i>
-                          <span>{benefit}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <div>
-                    <h2 className="flex items-center text-lg font-semibold text-gray-900 mb-3">
-                      <i className="bi bi-graph-up text-teal-500 mr-2"></i>
-                      Impact Metrics
-                    </h2>
-                    <div className="grid grid-cols-3 gap-4 mt-4">
-                      {[
-                        { value: '80%', label: 'Calls handled automatically', icon: 'bi-telephone' },
-                        { value: '0 min', label: 'Average wait time', icon: 'bi-clock-history' },
-                        { value: '$60K+', label: 'Annual cost savings', icon: 'bi-currency-dollar' },
-                      ].map((metric, idx) => (
-                        <div key={idx} className="bg-gray-50 rounded-lg p-4 text-center border border-gray-200">
-                          <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-2">
-                            <i className={`bi ${metric.icon} text-blue-600 text-xl`}></i>
-                          </div>
-                          <div className="font-bold text-gray-900 mb-1">{metric.value}</div>
-                          <div className="text-sm text-gray-600">{metric.label}</div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div>
-                    <h2 className="text-lg font-semibold text-gray-900 mb-3">Perfect For</h2>
-                    <p className="text-gray-600">
-                      Any practice experiencing high call volumes, after-hours requests, or front-desk staff burnout.
-                    </p>
-                  </div>
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <a
+                    href="#"
+                    onClick={(e) => handleIntercomClick(e, 'request-demo')}
+                    className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-cyan-600 to-blue-600 text-white px-6 py-3.5 rounded-xl font-bold hover:from-cyan-700 hover:to-blue-700 transition-all shadow-lg hover:shadow-xl"
+                  >
+                    <i className="bi bi-telephone-fill text-xl"></i>
+                    See It In Action
+                  </a>
+                  <a
+                    href="/sign-up"
+                    className="inline-flex items-center justify-center gap-2 bg-white text-blue-600 px-6 py-3.5 rounded-xl font-semibold border-2 border-blue-600 hover:bg-blue-50 transition-colors"
+                  >
+                    Get Started
+                  </a>
                 </div>
-
               </div>
 
               <div className="lg:col-span-7">
@@ -335,6 +283,53 @@ function AIReceptionist() {
           </div>
         </section>
 
+        {/* Why 24/7 Matters - single narrative section (replaces cookie-cutter blocks) */}
+        <section className="py-20 bg-gradient-to-b from-white to-slate-50" aria-labelledby="why-receptionist-heading">
+          <div className="container mx-auto px-4">
+            <h2 id="why-receptionist-heading" className="text-3xl md:text-4xl font-bold text-gray-900 mb-12 text-center">
+              Why Practices Choose AI Receptionist
+            </h2>
+            <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <div className="space-y-6">
+                <p className="text-lg text-gray-600 leading-relaxed">
+                  For healthcare leaders facing high call volumes and front-desk staffing costs, AI Receptionist delivers immediate ROI through 24/7 availability, reduced staffing needs, and improved patient satisfaction. Handle 80% of calls automatically while reducing front-desk costs by $60K–$120K annually.
+                </p>
+                <p className="text-gray-600 leading-relaxed">
+                  Patients call anytime, day or night. AI answers instantly, understands their request, books appointments, provides information, or escalates to staff—all in natural conversation. No rigid scripts; same experience in Spanish or English. Go live in under a week with your existing phone number and no hardware changes.
+                </p>
+                <ul className="space-y-2">
+                  {['Answer calls 24/7, including after hours', 'Reduce missed calls and lost appointments', 'Automate scheduling and routine requests', 'Free front-desk staff for in-person care'].map((benefit, idx) => (
+                    <li key={idx} className="flex items-start gap-2 text-gray-600">
+                      <i className="bi bi-check-circle-fill text-green-500 mt-0.5 flex-shrink-0"></i>
+                      <span>{benefit}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="bg-gradient-to-br from-cyan-50 via-blue-50 to-purple-50 rounded-2xl p-8 border-2 border-cyan-100">
+                <h3 className="text-lg font-bold text-gray-900 mb-6">Real impact</h3>
+                <div className="grid grid-cols-1 gap-6">
+                  {[
+                    { value: '80%', label: 'Calls handled automatically', icon: 'bi-telephone' },
+                    { value: '0 min', label: 'Average wait time', icon: 'bi-clock-history' },
+                    { value: '$60K+', label: 'Annual cost savings', icon: 'bi-currency-dollar' },
+                  ].map((metric, idx) => (
+                    <div key={idx} className="flex items-center gap-4">
+                      <div className="w-12 h-12 bg-cyan-100 rounded-xl flex items-center justify-center">
+                        <i className={`bi ${metric.icon} text-cyan-600 text-xl`}></i>
+                      </div>
+                      <div>
+                        <div className="font-bold text-gray-900">{metric.value}</div>
+                        <div className="text-sm text-gray-600">{metric.label}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Strategic Implementation Section */}
         <section className="py-20 bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
           <div className="container mx-auto px-4">
@@ -355,7 +350,7 @@ function AIReceptionist() {
                 {[
                   { icon: 'bi-telephone', value: '80%', label: 'Calls Automated' },
                   { icon: 'bi-clock-history', value: '0 min', label: 'Wait Time' },
-                  { icon: 'bi-currency-dollar', value: '$60K+', label: 'Annual Savings' },
+                  { icon: 'bi-currency-dollar', value: 'Significant', label: 'Annual Savings' },
                   { icon: 'bi-graph-up-arrow', value: '24/7', label: 'Availability' },
                 ].map((stat, idx) => (
                   <div key={idx} className="glass-card rounded-xl p-4 hover-lift shadow-sm">
@@ -422,7 +417,7 @@ function AIReceptionist() {
                   items: [
                     {
                       title: 'EHR/PM Integration',
-                      description: 'Direct connection to Epic, Cerner, Athena for real-time scheduling',
+                      description: 'Appointments book straight into Epic, Cerner, Athena—no double entry',
                     },
                     {
                       title: 'HIPAA Compliant',
@@ -430,7 +425,7 @@ function AIReceptionist() {
                     },
                     {
                       title: 'Phone System Compatible',
-                      description: 'Works with existing phone infrastructure—no hardware changes needed',
+                      description: 'Use your existing phones—no new hardware or IT changes',
                     },
                     {
                       title: 'Smart Call Routing',

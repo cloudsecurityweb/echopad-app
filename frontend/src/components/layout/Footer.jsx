@@ -100,8 +100,7 @@ function Footer() {
             </a>
 
             <p className="text-gray-400 mb-4 leading-relaxed">
-              Healthcare AI platform that reduces provider burnout, cuts costs,
-              and improves patient satisfaction.
+              Reduce burnout, cut admin, and get notes done before the patient leaves.
             </p>
 
             <p className="text-sm text-gray-500">
