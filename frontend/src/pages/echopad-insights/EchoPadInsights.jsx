@@ -74,7 +74,7 @@ function EchoPadInsights() {
                 </p>
 
                 <p className="text-base text-gray-600 mb-8">
-                  See where you're underpaid—across payers and regions. Benchmark against peers and optimize outcomes. We aggregate multi-payer data nationwide so you have one place to act.
+                  We compare what you get paid to what others get—across payers and regions—so you have one place to see where you're underpaid and act.
                 </p>
 
                 {/* Interactive Stats Banner - Light bg */}
@@ -143,7 +143,7 @@ function EchoPadInsights() {
                       What You Get
                     </h4>
                     <p className="text-gray-600">
-                      See where you're underpaid across payers and regions. Benchmark your rates against peers, identify underpayments by CPT code, and discover hidden revenue opportunities—all in one dashboard. How: we keep data current from payer files.
+                      See where you're underpaid across payers and regions. Benchmark your rates against peers, identify underpayments by procedure code, and discover hidden revenue opportunities—all in one dashboard. We keep the data current so your view is always up to date.
                     </p>
                   </div>
 
@@ -203,21 +203,21 @@ function EchoPadInsights() {
                       </span>
                     </h2>
                     <h3 className="text-xl font-bold text-gray-700 mb-2">How It Works</h3>
-                    <p className="text-sm text-gray-600">Simple 3-step process to unlock revenue insights</p>
+                    <p className="text-sm text-gray-600">Three steps to see where you're underpaid and what to do about it</p>
                   </div>
 
                   {/* Step-by-Step Flow */}
                   <div className="space-y-6">
-                    {/* Step 1: Aggregate Price Transparency Data */}
+                    {/* Step 1: Compare your pay vs everyone else */}
                     <div className="relative">
                       <div className="flex items-start gap-4">
                         <div className="flex-shrink-0 w-12 h-12 bg-blue-500 text-white rounded-full flex items-center justify-center text-xl font-bold shadow-md">
                           1
                         </div>
                         <div className="flex-1">
-                          <h4 className="text-lg font-bold text-gray-900 mb-2">See Real Rates Across Payers</h4>
+                          <h4 className="text-lg font-bold text-gray-900 mb-2">Compare What You Get Paid vs Everyone Else</h4>
                           <p className="text-sm text-gray-600 mb-3">
-                            We use publicly available payer files (MRFs) so you see actual negotiated rates across all 50 states—not estimates. Compliant with federal price transparency mandates.
+                            We compare your reimbursement to what other practices get from the same payers—across all 50 states. You see real rates others are paid, not estimates, so you know exactly where you stand.
                           </p>
                           <div className="bg-blue-50 border border-blue-100 rounded-lg p-4">
                             <div className="space-y-2">
@@ -252,16 +252,16 @@ function EchoPadInsights() {
                       <div className="absolute left-6 top-12 bottom-0 w-0.5 bg-gradient-to-b from-blue-300 to-purple-300"></div>
                     </div>
 
-                    {/* Step 2: Analyze & Benchmark */}
+                    {/* Step 2: See where you're underpaid */}
                     <div className="relative">
                       <div className="flex items-start gap-4">
                         <div className="flex-shrink-0 w-12 h-12 bg-purple-500 text-white rounded-full flex items-center justify-center text-xl font-bold shadow-md">
                           2
                         </div>
                         <div className="flex-1">
-                          <h4 className="text-lg font-bold text-gray-900 mb-2">Analyze & Benchmark</h4>
+                          <h4 className="text-lg font-bold text-gray-900 mb-2">See Where You're Underpaid</h4>
                           <p className="text-sm text-gray-600 mb-3">
-                            Our AI compares your rates against nationwide benchmarks, identifying underpayments by payer and CPT code.
+                            We highlight gaps by payer and by procedure—so you see exactly which contracts and codes are leaving money on the table and by how much.
                           </p>
                           <div className="bg-purple-50 border border-purple-100 rounded-lg p-4">
                             <div className="space-y-2">
@@ -291,7 +291,7 @@ function EchoPadInsights() {
                       <div className="absolute left-6 top-12 bottom-0 w-0.5 bg-gradient-to-b from-purple-300 to-emerald-300"></div>
                     </div>
 
-                    {/* Step 3: Take Action */}
+                    {/* Step 3: Take action */}
                     <div className="relative">
                       <div className="flex items-start gap-4">
                         <div className="flex-shrink-0 w-12 h-12 bg-emerald-500 text-white rounded-full flex items-center justify-center text-xl font-bold shadow-md">
@@ -300,7 +300,7 @@ function EchoPadInsights() {
                         <div className="flex-1">
                           <h4 className="text-lg font-bold text-gray-900 mb-2">Take Action</h4>
                           <p className="text-sm text-gray-600 mb-3">
-                            Get actionable recommendations with projected revenue impact. Negotiate contracts backed by real data.
+                            Get a clear list of what to do next, with estimated revenue impact. Negotiate with payers using real numbers—not guesswork.
                           </p>
                           <div className="bg-emerald-50 border border-emerald-100 rounded-lg p-4">
                             <div className="space-y-3">
@@ -560,6 +560,23 @@ function EchoPadInsights() {
           </div>
         </section>
 
+        {/* How We Get the Data - technical details, secondary */}
+        <section className="py-16 bg-white border-t border-gray-200" id="how-we-get-the-data">
+          <div className="container mx-auto px-4">
+            <div className="max-w-3xl mx-auto">
+              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
+                How We Get the Data
+              </h2>
+              <p className="text-gray-600 mb-4">
+                If you want the technical details: we use publicly available machine-readable files (MRFs) that payers publish under federal price transparency rules. These files contain actual negotiated rates—not surveys or estimates—so the benchmarks you see reflect real reimbursement data. We aggregate and update this data across major payers and all 50 states so your view stays current.
+              </p>
+              <p className="text-gray-600">
+                No proprietary data sharing is required from your side to see market benchmarks. For personalized underpayment analysis, you can optionally upload your data securely; we never use it for any purpose other than your own insights.
+              </p>
+            </div>
+          </div>
+        </section>
+
         {/* FAQ Section - Redesigned */}
         <section className="py-20 bg-gray-50">
           <div className="container mx-auto px-4">
@@ -576,8 +593,8 @@ function EchoPadInsights() {
               {[
                 {
                   category: 'Data Source',
-                  question: 'How do you access payer rate data?',
-                  answer: 'We use publicly available payer files (MRFs) published under federal price transparency rules so you see real negotiated rates.',
+                  question: 'Where does your rate data come from?',
+                  answer: 'We use publicly available data that payers publish—actual negotiated rates, not surveys or estimates. For technical details (including how we source and update the data), see the How We Get the Data section above.',
                   icon: 'bi-database',
                   color: 'blue'
                 },
@@ -598,7 +615,7 @@ function EchoPadInsights() {
                 {
                   category: 'Accuracy',
                   question: 'What makes your data reliable?',
-                  answer: 'Our data comes directly from payer files—actual negotiated rates, not surveys or estimates.',
+                  answer: 'We use actual negotiated rates from payer-published data—the same numbers payers are required to make public—so you see real market rates, not estimates.',
                   icon: 'bi-patch-check',
                   color: 'teal'
                 },
