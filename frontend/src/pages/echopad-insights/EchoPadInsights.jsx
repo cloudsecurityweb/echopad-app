@@ -70,11 +70,11 @@ function EchoPadInsights() {
                   Insights
                 </h1>
                 <p className="text-xl md:text-2xl text-gray-700 font-semibold mb-6">
-                  Healthcare Financial Intelligence & Benchmarking
+                  Are you being underpaid? We show you where.
                 </p>
 
                 <p className="text-base text-gray-600 mb-8">
-                  We compare what you get paid to what others get—across payers and regions—so you have one place to see where you're underpaid and act.
+                  One simple dashboard shows exactly where insurers are short-paying you and how much you could recover—no spreadsheets, no jargon.
                 </p>
 
                 {/* Interactive Stats Banner - Light bg */}
@@ -86,10 +86,10 @@ function EchoPadInsights() {
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="text-gray-600 text-xs md:text-sm font-semibold uppercase tracking-wide mb-1 break-words">
-                          Revenue Intelligence
+                          What practices find
                         </div>
                         <div className="text-gray-900 text-lg md:text-xl lg:text-2xl font-bold break-words whitespace-normal">
-                          Identify: <span className="text-purple-600">$500K+</span> Annually
+                          Often <span className="text-purple-600">$500K+</span> to recover per year
                         </div>
                       </div>
                     </div>
