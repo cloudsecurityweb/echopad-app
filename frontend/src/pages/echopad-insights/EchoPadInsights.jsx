@@ -91,6 +91,7 @@ function EchoPadInsights() {
                         <div className="text-gray-900 text-lg md:text-xl lg:text-2xl font-bold break-words whitespace-normal">
                           Often <span className="text-purple-600">$500K+</span> to recover per year
                         </div>
+                        <div className="text-xs text-gray-500 mt-1">Mid-size multi-specialty groups; from customer recovery data.</div>
                       </div>
                     </div>
                     <div className="flex gap-2 md:gap-3 flex-shrink-0">
@@ -171,9 +172,9 @@ function EchoPadInsights() {
                     </h4>
                     <div className="grid grid-cols-3 gap-4 mt-4">
                       {[
-                        { value: '$500K+', label: 'Underpayments identified', source: 'Customer recovery data', icon: 'bi-cash-stack' },
-                          { value: 'All 50', label: 'States covered', source: 'Nationwide payer data', icon: 'bi-geo-alt' },
-                        { value: '100%', label: 'Data transparency', source: 'Platform capability', icon: 'bi-shield-check' },
+                        { value: '$500K+', label: 'Underpayments identified', attribution: 'Mid-size practices; customer recovery data', icon: 'bi-cash-stack' },
+                          { value: 'All 50', label: 'States covered', attribution: 'Nationwide payer data', icon: 'bi-geo-alt' },
+                        { value: '100%', label: 'Data transparency', attribution: 'Platform capability', icon: 'bi-shield-check' },
                       ].map((metric, idx) => (
                         <div key={idx} className="bg-gray-50 rounded-lg p-4 text-center">
                           <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-2">
@@ -181,7 +182,7 @@ function EchoPadInsights() {
                           </div>
                           <div className="font-bold text-gray-900 mb-1">{metric.value}</div>
                           <div className="text-sm text-gray-600">{metric.label}</div>
-                          {metric.source && <div className="text-xs text-gray-500 mt-1" title="Source">{metric.source}</div>}
+                          {metric.attribution && <div className="text-xs text-gray-500 mt-1" title="Source">{metric.attribution}</div>}
                         </div>
                       ))}
                     </div>
@@ -315,6 +316,7 @@ function EchoPadInsights() {
                                 <div className="text-right flex-shrink-0">
                                   <div className="text-sm font-bold text-emerald-600">+$240K</div>
                                   <div className="text-xs text-gray-500">Est. Annual</div>
+                                  <div className="text-xs text-gray-400">Example outcome; results vary.</div>
                                 </div>
                               </div>
                               <div className="flex items-center gap-3 bg-white rounded-lg p-3 shadow-sm">
@@ -328,6 +330,7 @@ function EchoPadInsights() {
                                 <div className="text-right flex-shrink-0">
                                   <div className="text-sm font-bold text-blue-500">+$150K</div>
                                   <div className="text-xs text-gray-500">Est. Annual</div>
+                                  <div className="text-xs text-gray-400">e.g. 8–10 provider primary care group.</div>
                                 </div>
                               </div>
                             </div>
@@ -343,6 +346,7 @@ function EchoPadInsights() {
                       <div>
                         <div className="text-sm text-gray-600 font-medium mb-1">Total Revenue Opportunity</div>
                         <div className="text-3xl font-bold text-gray-900">$635K+</div>
+                        <div className="text-xs text-gray-500 mt-1">Example: 12-provider multi-specialty group; results vary by practice.</div>
                       </div>
                       <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
                         <i className="bi bi-graph-up-arrow text-blue-600 text-3xl"></i>
