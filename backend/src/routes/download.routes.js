@@ -13,6 +13,8 @@ const router = express.Router();
 router.options("/ai-scribe/desktop", (req, res) => res.sendStatus(204));
 router.options("/ai-scribe/mac", (req, res) => res.sendStatus(204));
 router.options("/ai-scribe/version", (req, res) => res.sendStatus(204));
+router.options("/ai-scribe/update-feed/desktop/latest.yml", (req, res) => res.sendStatus(204));
+router.options("/ai-scribe/update-feed/mac/latest-mac.yml", (req, res) => res.sendStatus(204));
 
 const API_VERSION = "7.0";
 const FEEDS_API_VERSION = "7.1";
@@ -40,6 +42,27 @@ function getProject() {
 
 function getFeedName() {
   return process.env.AZURE_ARTIFACTS_FEED || "echopad-app";
+}
+
+/**
+ * Public base URL for this server (used to build full download URLs in update feed).
+ * Set DOWNLOAD_BASE_URL in env when behind a reverse proxy (e.g. https://echopad-app-service-....azurewebsites.net).
+ * If unset, falls back to req.protocol + req.get("host"). In development, if host is missing (e.g. some Electron fetch),
+ * falls back to http://127.0.0.1:PORT so the YAML path is never empty.
+ */
+function getDownloadBaseUrl(req) {
+  const fromEnv = process.env.DOWNLOAD_BASE_URL || process.env.PUBLIC_APP_URL;
+  if (fromEnv && fromEnv.trim() !== "") {
+    return fromEnv.replace(/\/$/, "");
+  }
+  const protocol = req.protocol || "http";
+  const host = req.get("host") || "";
+  if (host) {
+    return `${protocol}://${host}`;
+  }
+  // Fallback when Host header is missing (e.g. Electron in dev) so path in latest.yml is not empty
+  const port = process.env.PORT || 3000;
+  return `http://127.0.0.1:${port}`;
 }
 
 function getFeedsBaseUrl() {
@@ -487,6 +510,42 @@ router.get("/ai-scribe/version", async (req, res) => {
       filename: macInfo.filename,
     },
   });
+});
+
+/**
+ * GET /api/download/ai-scribe/update-feed/desktop/latest.yml
+ * Returns electron-updater generic provider feed for Windows (latest.yml).
+ * No auth required so the desktop app can check for updates without a user token.
+ */
+router.get("/ai-scribe/update-feed/desktop/latest.yml", async (req, res) => {
+  const bypassCache = req.query.refresh === "1" || req.query.refresh === "true";
+  const info = await getLatestPackageInfo("desktop", { bypassCache });
+  const baseUrl = getDownloadBaseUrl(req);
+  const pathUrl = baseUrl ? `${baseUrl}/api/download/ai-scribe/desktop?version=${encodeURIComponent(info.version)}` : "";
+  const yaml = `version: ${info.version}
+path: "${pathUrl}"
+releaseDate: "${new Date().toISOString()}"
+`;
+  res.setHeader("Content-Type", "application/x-yaml");
+  res.send(yaml);
+});
+
+/**
+ * GET /api/download/ai-scribe/update-feed/mac/latest-mac.yml
+ * Returns electron-updater generic provider feed for macOS (latest-mac.yml).
+ * No auth required so the desktop app can check for updates without a user token.
+ */
+router.get("/ai-scribe/update-feed/mac/latest-mac.yml", async (req, res) => {
+  const bypassCache = req.query.refresh === "1" || req.query.refresh === "true";
+  const info = await getLatestPackageInfo("mac", { bypassCache });
+  const baseUrl = getDownloadBaseUrl(req);
+  const pathUrl = baseUrl ? `${baseUrl}/api/download/ai-scribe/mac?version=${encodeURIComponent(info.version)}` : "";
+  const yaml = `version: ${info.version}
+path: "${pathUrl}"
+releaseDate: "${new Date().toISOString()}"
+`;
+  res.setHeader("Content-Type", "application/x-yaml");
+  res.send(yaml);
 });
 
 // Optional query param version must look like 1.0.19 or 1.0.0 (semver-like)
