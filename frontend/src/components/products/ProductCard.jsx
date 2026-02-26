@@ -34,7 +34,9 @@ function ProductCard({ icon, title, description, link, featured = false, comingS
           ></i>
         </div>
         <h4 className="text-sm md:text-base font-bold text-gray-900 mb-1.5">{title}</h4>
-        <p className="text-xs md:text-sm text-gray-600 mb-2.5 leading-relaxed line-clamp-2">{description}</p>
+        <p className="text-xs md:text-sm text-gray-600 mb-2.5 leading-relaxed line-clamp-2">
+          {description}
+        </p>
         {isInternalLink ? (
           <Link to={link} className={btnClass}>
             {linkContent}
