@@ -94,17 +94,17 @@ function ProductDetail({
                     {visualization.steps.map((step, index) => (
                       <div
                         key={index}
-                        className="glass-card rounded-xl p-3 md:p-4 border border-gray-200 bg-gray-50 h-full flex flex-col"
+                        className="glass-card rounded-xl p-3 md:p-4 border border-gray-200 bg-gray-50 h-full flex flex-col items-center text-center"
                       >
-                        <div className="flex items-center gap-2 md:gap-3 mb-2 md:mb-3">
-                          <span className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-xs font-bold px-2 md:px-3 py-1 md:py-1.5 rounded-lg shadow-lg">
+                        <div className="flex items-center justify-center gap-2 md:gap-3 mb-2 md:mb-3">
+                          <span className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-xs font-bold px-2 md:px-3 py-1 md:py-1.5 rounded-lg shadow-lg whitespace-nowrap">
                             STEP {index + 1}
                           </span>
-                          <span className="font-semibold text-sm md:text-base text-gray-900">
+                          <span className="font-semibold text-sm md:text-base text-gray-900 truncate max-w-[11rem] md:max-w-[12rem]">
                             {step.title}
                           </span>
                         </div>
-                        <div className="text-xs md:text-sm text-gray-700">
+                        <div className="text-xs md:text-sm text-gray-700 flex-1 flex items-center justify-center w-full">
                           {step.content}
                         </div>
                       </div>

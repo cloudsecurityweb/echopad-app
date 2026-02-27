@@ -112,7 +112,7 @@ function ProductDetails() {
                   animation-delay: var(--delay);
                 }
               `}</style>
-              <div className="flex items-center gap-1 mb-2 h-12">
+              <div className="flex items-center justify-center gap-1 mb-2 h-12">
                 <div className="flex gap-1 items-center">
                   {[...Array(25)].map((_, i) => {
                     const peakHeights = [16, 24, 32, 36, 32, 24, 18, 14, 20, 30, 38, 34, 28, 20, 16, 24, 34, 40, 36, 28, 24, 20, 28, 32, 24];
