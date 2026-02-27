@@ -19,7 +19,7 @@ function ROI() {
                   Live in about 30 days. See results in 60.
                 </h2>
                 <p className="text-xs md:text-sm lg:text-base text-gray-600">
-                  Typical impact by practice size. Sources next to each claim.
+                  Typical impact by practice size. Sources are listed next to each claim; results vary by implementation and baseline workflow.
                 </p>
               </div>
 
@@ -31,7 +31,7 @@ function ROI() {
                     <div className="w-7 h-7 md:w-8 md:h-8 lg:w-9 lg:h-9 xl:w-10 xl:h-10 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-1 md:mb-2 lg:mb-2.5 shadow-md">
                       <i className="bi bi-currency-dollar text-white text-xs md:text-sm lg:text-base xl:text-lg"></i>
                     </div>
-                    <div className="text-lg md:text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl font-bold bg-gradient-to-r from-cyan-500 to-blue-600 bg-clip-text text-transparent mb-0.5 md:mb-1">$180K</div>
+                    <div className="text-lg md:text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl font-bold bg-gradient-to-r from-cyan-500 to-blue-600 bg-clip-text text-transparent mb-0.5 md:mb-1">~$180K</div>
                     <p className="text-xs md:text-sm text-gray-600">Annual savings from reduced overtime and better billing capture</p>
                     <p className="text-[10px] md:text-xs text-gray-500 mt-1 italic">Source: Echopad practice benchmarks (10-provider cohort)</p>
                   </div>
@@ -39,16 +39,16 @@ function ROI() {
                     <div className="w-7 h-7 md:w-8 md:h-8 lg:w-9 lg:h-9 xl:w-10 xl:h-10 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-1 md:mb-2 lg:mb-2.5 shadow-md">
                       <i className="bi bi-graph-up-arrow text-white text-xs md:text-sm lg:text-base xl:text-lg"></i>
                     </div>
-                    <div className="text-lg md:text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl font-bold bg-gradient-to-r from-cyan-500 to-blue-600 bg-clip-text text-transparent mb-0.5 md:mb-1">60%</div>
-                    <p className="text-xs md:text-sm text-gray-600">60% less time on admin</p>
+                    <div className="text-lg md:text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl font-bold bg-gradient-to-r from-cyan-500 to-blue-600 bg-clip-text text-transparent mb-0.5 md:mb-1">Up to 60%</div>
+                    <p className="text-xs md:text-sm text-gray-600">Less time spent on admin tasks</p>
                     <p className="text-[10px] md:text-xs text-gray-500 mt-1 italic">Source: Self-reported by pilot practices (Echopad)</p>
                   </div>
                   <div className="glass-card rounded-2xl p-2 md:p-3 lg:p-4 xl:p-5 text-center hover-lift shadow-sm">
                     <div className="w-7 h-7 md:w-8 md:h-8 lg:w-9 lg:h-9 xl:w-10 xl:h-10 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-1 md:mb-2 lg:mb-2.5 shadow-md">
                       <i className="bi bi-people text-white text-xs md:text-sm lg:text-base xl:text-lg"></i>
                     </div>
-                    <div className="text-lg md:text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl font-bold bg-gradient-to-r from-cyan-500 to-blue-600 bg-clip-text text-transparent mb-0.5 md:mb-1">40%</div>
-                    <p className="text-xs md:text-sm text-gray-600">See more patients without burning out</p>
+                    <div className="text-lg md:text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl font-bold bg-gradient-to-r from-cyan-500 to-blue-600 bg-clip-text text-transparent mb-0.5 md:mb-1">Up to 40%</div>
+                    <p className="text-xs md:text-sm text-gray-600">Better retention and lower burnout risk</p>
                     <p className="text-[10px] md:text-xs text-gray-500 mt-1 italic">Source: Echopad practice benchmarks</p>
                   </div>
                 </div>
@@ -70,16 +70,16 @@ function ROI() {
                     <div className="w-7 h-7 md:w-8 md:h-8 lg:w-9 lg:h-9 xl:w-10 xl:h-10 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-1 md:mb-2 lg:mb-2.5 shadow-md">
                       <i className="bi bi-graph-up-arrow text-white text-xs md:text-sm lg:text-base xl:text-lg"></i>
                     </div>
-                    <div className="text-lg md:text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl font-bold bg-gradient-to-r from-cyan-500 to-blue-600 bg-clip-text text-transparent mb-0.5 md:mb-1">60%</div>
-                    <p className="text-xs md:text-sm text-gray-600">60% less time on admin</p>
+                    <div className="text-lg md:text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl font-bold bg-gradient-to-r from-cyan-500 to-blue-600 bg-clip-text text-transparent mb-0.5 md:mb-1">Up to 60%</div>
+                    <p className="text-xs md:text-sm text-gray-600">Less time spent on admin tasks</p>
                     <p className="text-[10px] md:text-xs text-gray-500 mt-1 italic">Source: Self-reported by pilot practices (Echopad)</p>
                   </div>
                   <div className="glass-card rounded-2xl p-2 md:p-3 lg:p-4 xl:p-5 text-center hover-lift shadow-sm border border-cyan-100">
                     <div className="w-7 h-7 md:w-8 md:h-8 lg:w-9 lg:h-9 xl:w-10 xl:h-10 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-1 md:mb-2 lg:mb-2.5 shadow-md">
                       <i className="bi bi-people text-white text-xs md:text-sm lg:text-base xl:text-lg"></i>
                     </div>
-                    <div className="text-lg md:text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl font-bold bg-gradient-to-r from-cyan-500 to-blue-600 bg-clip-text text-transparent mb-0.5 md:mb-1">40%</div>
-                    <p className="text-xs md:text-sm text-gray-600">See more patients without burning out</p>
+                    <div className="text-lg md:text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl font-bold bg-gradient-to-r from-cyan-500 to-blue-600 bg-clip-text text-transparent mb-0.5 md:mb-1">Up to 40%</div>
+                    <p className="text-xs md:text-sm text-gray-600">Better retention and lower burnout risk</p>
                     <p className="text-[10px] md:text-xs text-gray-500 mt-1 italic">Source: Echopad practice benchmarks</p>
                   </div>
                 </div>

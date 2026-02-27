@@ -3,12 +3,12 @@ function Platform() {
     {
       icon: 'bi-diagram-3-fill',
       title: 'Works with Your EHR',
-      description: 'Epic, Cerner, Athena, MEDITECH, and other major systems. We connect to what you already use—no custom build required.',
+      description: 'Supports Epic, Cerner, Athena, MEDITECH, and other major systems. We connect to what you already use with standard integration pathways.',
     },
     {
       icon: 'bi-shield-lock-fill',
       title: 'Your Data Is Protected',
-      description: 'HIPAA-compliant, SOC 2 Type II certified, BAA included. End-to-end encryption and a zero data retention policy.',
+      description: 'HIPAA-aligned workflows, SOC 2 Type II controls, and BAA support. Encryption in transit and at rest, with data-handling policies defined per deployment.',
     },
     {
       icon: 'bi-sliders',

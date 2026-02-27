@@ -104,10 +104,13 @@ function AgentsOverview() {
               <i className="bi bi-currency-dollar text-cyan-500 text-2xl flex-shrink-0"></i>
               <div>
                 <strong className="block text-gray-900 mb-0.5 text-sm md:text-base">
-                  Reduce costs by 60%
+                  Typical: up to 60% less admin time
                 </strong>
                 <span className="text-gray-600 text-xs md:text-sm">
-                  Spend less time on admin, more on patients
+                  Spend less time on admin and more time with patients
+                </span>
+                <span className="block text-gray-500 text-[11px] mt-0.5">
+                  Based on pilot-practice self-reports
                 </span>
               </div>
             </div>
@@ -115,10 +118,13 @@ function AgentsOverview() {
               <i className="bi bi-graph-up-arrow text-green-500 text-2xl flex-shrink-0"></i>
               <div>
                 <strong className="block text-gray-900 mb-0.5 text-sm md:text-base">
-                  Increase revenue by 15–20%
+                  Typical: 15-20% revenue lift
                 </strong>
                 <span className="text-gray-600 text-xs md:text-sm">
                   Recover billable time and reduce no-shows
+                </span>
+                <span className="block text-gray-500 text-[11px] mt-0.5">
+                  Varies by payer mix, volume, and adoption
                 </span>
               </div>
             </div>
@@ -126,10 +132,13 @@ function AgentsOverview() {
               <i className="bi bi-people text-purple-500 text-2xl flex-shrink-0"></i>
               <div>
                 <strong className="block text-gray-900 mb-0.5 text-sm md:text-base">
-                  Improve retention by 40%
+                  Typical: up to 40% better staff retention
                 </strong>
                 <span className="text-gray-600 text-xs md:text-sm">
                   Less burnout for providers and staff
+                </span>
+                <span className="block text-gray-500 text-[11px] mt-0.5">
+                  Benchmarked across participating practices
                 </span>
               </div>
             </div>

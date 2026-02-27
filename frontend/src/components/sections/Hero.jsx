@@ -29,22 +29,20 @@ function Hero() {
               <i className="bi bi-shield-fill-check text-emerald-600"></i>
               <span>HIPAA Compliant</span>
             </a>
-            <span className="text-gray-300 hidden sm:inline">|</span>
-            <div className="inline-flex items-center gap-2 glass-card px-3 py-1.5 rounded-full text-sm font-semibold">
-              <i className="bi bi-lightning-charge-fill text-cyan-500 animate-pulse"></i>
-              <span className="text-gray-800">Notes done before the patient leaves. Fewer no-shows. Less admin.</span>
-            </div>
           </div>
 
           {/* Main Heading — physician pain point: time and paperwork */}
+          <p className="text-xs sm:text-sm font-semibold uppercase tracking-wider text-cyan-700 mb-2 animate-fade-in-scale animation-delay-100">
+            AI workflow automation for medical practices
+          </p>
           <h1 className="text-3xl sm:text-4xl md:text-4xl lg:text-5xl font-bold mb-3 leading-tight animate-fade-in-scale animation-delay-100">
-            <span className="text-gray-900">Less Paperwork. </span>
-            <span className="animate-gradient-text">More Time with Patients.</span>
+            <span className="text-gray-900">One AI Platform for </span>
+            <span className="animate-gradient-text">Your Medical Practice.</span>
           </h1>
 
           {/* Subtitle — plain language, trust signals: EHR, HIPAA, setup speed */}
           <p className="text-sm sm:text-base text-gray-600 mb-6 max-w-2xl mx-auto animate-fade-in-scale animation-delay-200">
-            Your note is done before you leave the room. Phones get answered 24/7. Fewer no-shows. Works with your existing EHR—no rip-and-replace. HIPAA compliant, BAA included. Most practices are live in about 30 days, with our team guiding you.
+            Charting, phones, scheduling, reminders, and admin in one place. Works with your existing EHR-no rip-and-replace. HIPAA compliant with BAA included. Most practices go live in about 30 days with guided onboarding.
           </p>
 
           {/* Feature pills — what you get, not how it works */}
