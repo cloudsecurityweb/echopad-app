@@ -64,7 +64,7 @@ function Hero() {
 
           {/* Subtitle — plain language, trust signals: EHR, HIPAA, setup speed */}
           <p className="text-sm sm:text-base text-gray-600 mb-6 max-w-2xl mx-auto animate-fade-in-scale animation-delay-200">
-            Charting, phones, scheduling, reminders, and admin in one place. Works with your existing EHR-no rip-and-replace. HIPAA compliant with BAA included. Most practices go live in about 30 days with guided onboarding.
+            Charting, phones, scheduling, reminders, and admin in one place. Works with your existing EHR-no rip-and-replace. HIPAA compliant with BAA included. Guided onboarding helps your team get started quickly.
           </p>
 
           {/* Feature pills — what you get, not how it works */}
