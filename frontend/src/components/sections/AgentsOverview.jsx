@@ -137,23 +137,6 @@ function AgentsOverview() {
         </div>
       </FullScreenSection>
 
-      <FullScreenSection id="agents-by-problem" className="bg-gray-50" centered={false} scrollable>
-        <div className="container mx-auto px-4 py-6 w-full max-w-5xl">
-          {PROBLEM_GROUPS.map((group) => (
-            <section key={group.id} className="mb-10 last:mb-0">
-              <div className="mb-4">
-                <h3 className="text-lg md:text-xl font-bold text-gray-900">{group.label}</h3>
-                <p className="text-sm text-gray-600 mt-0.5">{group.description}</p>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                {group.products.map((product, index) => (
-                  <ProductCard key={`${group.id}-${index}`} {...product} />
-                ))}
-              </div>
-            </section>
-          ))}
-        </div>
-      </FullScreenSection>
     </>
   );
 }

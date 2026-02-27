@@ -1,5 +1,75 @@
 import { useEffect, useState } from 'react';
 import ProductDetail from './ProductDetail';
+import ProductCard from './ProductCard';
+
+const PRODUCT_TYPES = ['All', 'Clinical Documentation', 'Operations', 'Patient Engagement', 'Analytics', 'Care Coordination'];
+
+const PRODUCT_META = {
+  'ai-scribe': {
+    name: 'AI Scribe',
+    productType: 'Clinical Documentation',
+    featured: true,
+    earlyAccess: false,
+    icon: 'bi-mic-fill',
+    link: '/ai-scribe',
+  },
+  'benchmark': {
+    name: 'Benchmark',
+    productType: 'Analytics',
+    featured: true,
+    earlyAccess: false,
+    icon: 'bi-graph-up-arrow',
+    link: '#product-carousel',
+  },
+  'aperio': {
+    name: 'Aperio',
+    productType: 'Care Coordination',
+    featured: true,
+    earlyAccess: false,
+    icon: 'bi-arrow-left-right',
+    link: '/aperio',
+  },
+  'ai-docman': {
+    name: 'AI Document Manager',
+    productType: 'Clinical Documentation',
+    featured: false,
+    earlyAccess: true,
+    icon: 'bi-file-earmark-text',
+    link: '/ai-docman',
+  },
+  'ai-medical-assistant': {
+    name: 'AI Medical Assistant',
+    productType: 'Clinical Documentation',
+    featured: false,
+    earlyAccess: true,
+    icon: 'bi-person-workspace',
+    link: '/ai-medical-assistant',
+  },
+  'ai-receptionist': {
+    name: 'AI Receptionist',
+    productType: 'Operations',
+    featured: false,
+    earlyAccess: false,
+    icon: 'bi-headset',
+    link: '/ai-receptionist',
+  },
+  'ai-admin-assistant': {
+    name: 'AI Admin Assistant',
+    productType: 'Operations',
+    featured: false,
+    earlyAccess: false,
+    icon: 'bi-briefcase',
+    link: '/ai-admin-assistant',
+  },
+  'ai-reminders': {
+    name: 'AI Patient Reminders',
+    productType: 'Patient Engagement',
+    featured: false,
+    earlyAccess: false,
+    icon: 'bi-bell',
+    link: '/ai-reminders',
+  },
+};
 
 function ProductDetails() {
   const aiScribeData = {
@@ -855,6 +925,16 @@ function ProductDetails() {
   const totalSlides = products.length;
   const [activeIndex, setActiveIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const [productTypeFilter, setProductTypeFilter] = useState('all');
+
+  const productsWithMeta = products.map((p) => ({ ...p, ...PRODUCT_META[p.id] }));
+  const filteredProducts =
+    productTypeFilter === 'all'
+      ? productsWithMeta
+      : productsWithMeta.filter((p) => p.productType === productTypeFilter);
+  const featuredList = filteredProducts.filter((p) => p.featured);
+  const earlyAccessList = filteredProducts.filter((p) => p.earlyAccess && !p.featured);
+  const restList = filteredProducts.filter((p) => !p.featured && !p.earlyAccess);
 
   useEffect(() => {
     if (isPaused) {
@@ -879,6 +959,113 @@ function ProductDetails() {
   return (
     <div className="collapsible-sections-container bg-white py-8 md:py-12">
       <div className="container mx-auto px-4 sm:px-6">
+        {/* Product cards section: filter + grouped cards */}
+        <section className="mb-6 md:mb-8">
+          <div className="flex flex-wrap items-center gap-2 mb-3">
+            {PRODUCT_TYPES.map((type) => {
+              const value = type === 'All' ? 'all' : type;
+              const isActive = productTypeFilter === value;
+              return (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => setProductTypeFilter(value)}
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+                    isActive
+                      ? 'bg-cyan-500 text-white'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}
+                >
+                  {type}
+                </button>
+              );
+            })}
+          </div>
+          <div className="space-y-3">
+            {featuredList.length > 0 && (
+              <div>
+                <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+                  Featured
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                  {featuredList.map((product) => {
+                    const index = productsWithMeta.findIndex((p) => p.id === product.id);
+                    return (
+                      <ProductCard
+                        key={product.id}
+                        icon={product.icon}
+                        title={product.name}
+                        description={product.intro}
+                        link={product.link}
+                        featured={true}
+                        comingSoon={false}
+                        onSelect={() => {
+                          setActiveIndex(index);
+                          document.querySelector('#product-carousel')?.scrollIntoView({ behavior: 'smooth' });
+                        }}
+                      />
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+            {earlyAccessList.length > 0 && (
+              <div>
+                <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+                  Early Access
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                  {earlyAccessList.map((product) => {
+                    const index = productsWithMeta.findIndex((p) => p.id === product.id);
+                    return (
+                      <ProductCard
+                        key={product.id}
+                        icon={product.icon}
+                        title={product.name}
+                        description={product.intro}
+                        link={product.link}
+                        featured={false}
+                        comingSoon={true}
+                        onSelect={() => {
+                          setActiveIndex(index);
+                          document.querySelector('#product-carousel')?.scrollIntoView({ behavior: 'smooth' });
+                        }}
+                      />
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+            {restList.length > 0 && (
+              <div>
+                <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+                  Products
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                  {restList.map((product) => {
+                    const index = productsWithMeta.findIndex((p) => p.id === product.id);
+                    return (
+                      <ProductCard
+                        key={product.id}
+                        icon={product.icon}
+                        title={product.name}
+                        description={product.intro}
+                        link={product.link}
+                        featured={false}
+                        comingSoon={false}
+                        onSelect={() => {
+                          setActiveIndex(index);
+                          document.querySelector('#product-carousel')?.scrollIntoView({ behavior: 'smooth' });
+                        }}
+                      />
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+        </section>
+
         <div className="text-center mb-4 md:mb-6">
           <div className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-2">
             Products
@@ -891,7 +1078,7 @@ function ProductDetails() {
           </div>
         </div>
 
-        <div className="relative px-0 md:px-16 lg:px-20">
+        <div id="product-carousel" className="relative px-0 md:px-16 lg:px-20">
           <button
             type="button"
             onClick={handlePrev}

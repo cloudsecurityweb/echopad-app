@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 
-function ProductCard({ icon, title, description, link, featured = false, comingSoon = false }) {
+function ProductCard({ icon, title, description, link, featured = false, comingSoon = false, onSelect }) {
   const isInternalLink = link && link.startsWith('/') && !link.startsWith('http');
 
   const linkContent = (
@@ -13,11 +13,28 @@ function ProductCard({ icon, title, description, link, featured = false, comingS
   const btnClass =
     'inline-flex items-center gap-1.5 bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-4 py-2 rounded-lg hover:from-cyan-400 hover:to-blue-500 font-medium text-xs md:text-sm group/link transition-all hover:scale-105 shadow-md';
 
+  const handleClick = (e) => {
+    if (onSelect) {
+      e.preventDefault();
+      e.stopPropagation();
+      onSelect();
+    }
+  };
+
+  const handleCardClick = (e) => {
+    if (onSelect) {
+      e.preventDefault();
+      onSelect();
+    }
+  };
+
   return (
     <div
-      className={`glass-card rounded-xl p-4 md:p-5 hover-lift relative overflow-hidden shadow-sm ${
+      className={`glass-card rounded-xl p-4 md:p-5 hover-lift relative overflow-hidden shadow-sm cursor-pointer ${
         featured ? 'ring-2 ring-cyan-500/50' : ''
       } ${comingSoon ? 'opacity-90' : ''}`}
+      onClick={onSelect ? handleCardClick : undefined}
+      role={onSelect ? 'button' : undefined}
     >
       <div className="relative z-10">
         <div
@@ -37,7 +54,11 @@ function ProductCard({ icon, title, description, link, featured = false, comingS
         <p className="text-xs md:text-sm text-gray-600 mb-2.5 leading-relaxed line-clamp-2">
           {description}
         </p>
-        {isInternalLink ? (
+        {onSelect ? (
+          <span className={btnClass} onClick={handleClick}>
+            {linkContent}
+          </span>
+        ) : isInternalLink ? (
           <Link to={link} className={btnClass}>
             {linkContent}
           </Link>
