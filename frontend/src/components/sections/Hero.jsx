@@ -20,7 +20,7 @@ function Hero() {
       <div className="container mx-auto px-4 flex-1 flex flex-col justify-center">
         <div className="text-center max-w-3xl mx-auto relative z-10">
           {/* Top badges: outcomes-first, no jargon */}
-          <div className="flex flex-wrap justify-center items-center gap-2 mb-4 animate-fade-in-scale mt-3">
+          <div className="flex flex-wrap justify-center items-center gap-2 mb-4 animate-fade-in-scale mt-12">
             <a
               href="#platform"
               className="inline-flex items-center gap-2 bg-emerald-50 border border-emerald-200 text-emerald-800 px-3 py-1.5 rounded-full text-sm font-semibold hover:bg-emerald-100 transition-colors shadow-sm"

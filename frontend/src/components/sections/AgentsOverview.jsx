@@ -134,17 +134,6 @@ function AgentsOverview() {
               </div>
             </div>
           </div>
-
-          <p className="text-center text-xs text-gray-500 mt-3 max-w-2xl mx-auto">
-            Source: Echopad practice benchmarks. Results vary by practice size and use.
-          </p>
-
-          <div className="max-w-2xl mx-auto mt-8 text-center">
-            <h3 className="text-base font-semibold text-gray-800 mb-2">How to get started</h3>
-            <p className="text-sm text-gray-600">
-              Start with one solution for your biggest pain point—charting, calls, or no-shows—or add more over time. Book a 15-minute demo or start a free trial.
-            </p>
-          </div>
         </div>
       </FullScreenSection>
 
