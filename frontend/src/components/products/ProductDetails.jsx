@@ -959,9 +959,13 @@ function ProductDetails() {
   return (
     <div className="collapsible-sections-container bg-white py-8 md:py-12">
       <div className="container mx-auto px-4 sm:px-6">
+        
         {/* Product cards section: filter + grouped cards */}
-        <section className="mb-6 md:mb-8">
-          <div className="flex flex-wrap items-center gap-2 mb-3">
+        <section className="mb-4 md:mb-6">
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 text-center mb-1 pb-3 border-b border-gray-200">
+            Browse products
+          </h2>
+          <div className="flex flex-wrap items-center justify-center gap-2 mb-4 mt-4">
             {PRODUCT_TYPES.map((type) => {
               const value = type === 'All' ? 'all' : type;
               const isActive = productTypeFilter === value;
@@ -970,9 +974,9 @@ function ProductDetails() {
                   key={value}
                   type="button"
                   onClick={() => setProductTypeFilter(value)}
-                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                     isActive
-                      ? 'bg-cyan-500 text-white'
+                      ? 'bg-cyan-500 text-white shadow-sm'
                       : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                   }`}
                 >
@@ -981,29 +985,36 @@ function ProductDetails() {
               );
             })}
           </div>
-          <div className="space-y-3">
+          <div className="space-y-4">
             {featuredList.length > 0 && (
               <div>
-                <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+                <h3 className="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2 before:content-[''] before:w-1 before:h-5 before:bg-cyan-500 before:rounded-full">
                   Featured
-                </div>
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                </h3>
+                <div className={
+                  featuredList.length === 1
+                    ? 'flex justify-center'
+                    : featuredList.length === 2
+                      ? 'grid grid-cols-2 gap-3 max-w-4xl mx-auto'
+                      : 'grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3'
+                }>
                   {featuredList.map((product) => {
                     const index = productsWithMeta.findIndex((p) => p.id === product.id);
                     return (
-                      <ProductCard
-                        key={product.id}
-                        icon={product.icon}
-                        title={product.name}
-                        description={product.intro}
-                        link={product.link}
-                        featured={true}
-                        comingSoon={false}
-                        onSelect={() => {
-                          setActiveIndex(index);
-                          document.querySelector('#product-carousel')?.scrollIntoView({ behavior: 'smooth' });
-                        }}
-                      />
+                      <div key={product.id} className={featuredList.length === 1 ? 'w-full max-w-xl' : ''}>
+                        <ProductCard
+                          icon={product.icon}
+                          title={product.name}
+                          description={product.intro}
+                          link={product.link}
+                          featured={true}
+                          comingSoon={false}
+                          onSelect={() => {
+                            setActiveIndex(index);
+                            document.querySelector('#product-carousel')?.scrollIntoView({ behavior: 'smooth' });
+                          }}
+                        />
+                      </div>
                     );
                   })}
                 </div>
@@ -1011,26 +1022,33 @@ function ProductDetails() {
             )}
             {earlyAccessList.length > 0 && (
               <div>
-                <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
-                  Early Access
-                </div>
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                <h3 className="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2 before:content-[''] before:w-1 before:h-5 before:bg-amber-500 before:rounded-full">
+                  Early access
+                </h3>
+                <div className={
+                  earlyAccessList.length === 1
+                    ? 'flex justify-center'
+                    : earlyAccessList.length === 2
+                      ? 'grid grid-cols-2 gap-3 max-w-4xl mx-auto'
+                      : 'grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3'
+                }>
                   {earlyAccessList.map((product) => {
                     const index = productsWithMeta.findIndex((p) => p.id === product.id);
                     return (
-                      <ProductCard
-                        key={product.id}
-                        icon={product.icon}
-                        title={product.name}
-                        description={product.intro}
-                        link={product.link}
-                        featured={false}
-                        comingSoon={true}
-                        onSelect={() => {
-                          setActiveIndex(index);
-                          document.querySelector('#product-carousel')?.scrollIntoView({ behavior: 'smooth' });
-                        }}
-                      />
+                      <div key={product.id} className={earlyAccessList.length === 1 ? 'w-full max-w-xl' : ''}>
+                        <ProductCard
+                          icon={product.icon}
+                          title={product.name}
+                          description={product.intro}
+                          link={product.link}
+                          featured={false}
+                          comingSoon={true}
+                          onSelect={() => {
+                            setActiveIndex(index);
+                            document.querySelector('#product-carousel')?.scrollIntoView({ behavior: 'smooth' });
+                          }}
+                        />
+                      </div>
                     );
                   })}
                 </div>
@@ -1038,26 +1056,33 @@ function ProductDetails() {
             )}
             {restList.length > 0 && (
               <div>
-                <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
-                  Products
-                </div>
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                <h3 className="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2 before:content-[''] before:w-1 before:h-5 before:bg-gray-400 before:rounded-full">
+                  Other products
+                </h3>
+                <div className={
+                  restList.length === 1
+                    ? 'flex justify-center'
+                    : restList.length === 2
+                      ? 'grid grid-cols-2 gap-3 max-w-4xl mx-auto'
+                      : 'grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3'
+                }>
                   {restList.map((product) => {
                     const index = productsWithMeta.findIndex((p) => p.id === product.id);
                     return (
-                      <ProductCard
-                        key={product.id}
-                        icon={product.icon}
-                        title={product.name}
-                        description={product.intro}
-                        link={product.link}
-                        featured={false}
-                        comingSoon={false}
-                        onSelect={() => {
-                          setActiveIndex(index);
-                          document.querySelector('#product-carousel')?.scrollIntoView({ behavior: 'smooth' });
-                        }}
-                      />
+                      <div key={product.id} className={restList.length === 1 ? 'w-full max-w-xl' : ''}>
+                        <ProductCard
+                          icon={product.icon}
+                          title={product.name}
+                          description={product.intro}
+                          link={product.link}
+                          featured={false}
+                          comingSoon={false}
+                          onSelect={() => {
+                            setActiveIndex(index);
+                            document.querySelector('#product-carousel')?.scrollIntoView({ behavior: 'smooth' });
+                          }}
+                        />
+                      </div>
                     );
                   })}
                 </div>
@@ -1066,11 +1091,9 @@ function ProductDetails() {
           </div>
         </section>
 
-        <div className="text-center mb-4 md:mb-6">
-          <div className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-2">
-            Products
-          </div>
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 px-2">
+        {/* Product carousel section */}
+        <div className="text-center mb-4 md:mb-6 mt-10">
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 text-center mb-1 pb-3 border-b border-gray-200">
             Explore the Echopad Suite
           </h2>
           <div className="text-xs text-gray-500 mt-2">
