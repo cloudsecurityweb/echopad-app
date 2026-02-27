@@ -390,23 +390,23 @@ function AIScribe() {
                   id: 'deployment',
                   icon: 'bi-rocket-takeoff',
                   title: 'Get Started Quickly',
-                  subtitle: 'Up and running in under a week',
+                  subtitle: 'Install fast and start transcribing notes right away',
                   items: [
                     {
-                      title: 'No IT Required',
-                      description: 'No new servers or infrastructure—just sign up and use it.',
+                      title: 'Install and Use Immediately',
+                      description: 'No new servers or infrastructure needed—just sign up, install, and start transcribing your notes.',
                     },
                     {
                       title: 'Works With Your EHR',
-                      description: 'Works with Epic, Cerner, Athena, or any EHR via direct integration (HL7/FHIR) or one-click copy',
+                      description: 'Works with Epic, Cerner, Athena, or any EHR through direct integration (HL7/FHIR) or one-click copy.',
                     },
                     {
                       title: 'Try With a Few Providers First',
-                      description: 'Start with a small group to see how it fits your practice before expanding',
+                      description: 'Roll it out to a small group first, then expand across your practice once your team is comfortable.',
                     },
                     {
                       title: 'Templates for Your Specialty',
-                      description: 'Pre-built templates for 20+ specialties or create custom ones for your workflows',
+                      description: 'Use pre-built templates for 20+ specialties, or create custom templates that match your workflow.',
                     },
                   ],
                 },
