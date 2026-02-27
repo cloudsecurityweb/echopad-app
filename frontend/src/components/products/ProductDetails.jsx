@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import ProductDetail from './ProductDetail';
 import ProductCard from './ProductCard';
+import { getProductById } from '../../data/products';
 
 const PRODUCT_TYPES = ['All', 'Clinical Documentation', 'Operations', 'Patient Engagement', 'Analytics', 'Care Coordination'];
 
@@ -72,11 +73,20 @@ const PRODUCT_META = {
 };
 
 function ProductDetails() {
+  const aiScribeProduct = getProductById('ai-scribe');
+  const aiDocManProduct = getProductById('ai-docman');
+  const aiMedicalAssistantProduct = getProductById('ai-medical-assistant');
+  const aiReceptionistProduct = getProductById('ai-receptionist');
+  const aiAdminAssistantProduct = getProductById('ai-admin-assistant');
+  const aiRemindersProduct = getProductById('ai-reminders');
+  const insightsProduct = getProductById('echopad-insights');
+  const aperioProduct = getProductById('aperio');
+
   const aiScribeData = {
     id: 'ai-scribe',
     label: 'AI SCRIBE',
     title: 'Your Note, Done Before You Leave the Room.',
-    intro: 'No typing, no dictation commands—just talk to your patient. Your note is ready before you leave the room.',
+    intro: aiScribeProduct?.longDescription || 'No typing, no dictation commands—just talk to your patient. Your note is ready before you leave the room.',
     sections: [
       {
         title: 'What You See',
@@ -176,7 +186,7 @@ function ProductDetails() {
     id: 'ai-docman',
     label: 'AI DOCUMENT MANAGER',
     title: 'Instant Document Formatting',
-    intro: 'Turn messy transcripts into clean, structured SOAP notes, H&Ps, and discharge summaries—ready to paste into your EHR in seconds.',
+    intro: aiDocManProduct?.longDescription || 'Turn messy transcripts into clean, structured SOAP notes, H&Ps, and discharge summaries—ready to paste into your EHR in seconds.',
     sections: [
       {
         title: 'What You See',
@@ -245,7 +255,7 @@ function ProductDetails() {
     id: 'ai-medical-assistant',
     label: 'AI MEDICAL ASSISTANT',
     title: 'Complete Visit Documentation',
-    intro: 'Capture entire patient encounters and automatically generate comprehensive EHR-ready documentation.',
+    intro: aiMedicalAssistantProduct?.longDescription || 'Capture entire patient encounters and automatically generate comprehensive EHR-ready documentation.',
     sections: [
       {
         title: 'The Challenge',
@@ -348,7 +358,7 @@ function ProductDetails() {
     id: 'ai-receptionist',
     label: 'AI RECEPTIONIST',
     title: '24/7 Intelligent Call Handling',
-    intro: 'Automate appointment scheduling, patient inquiries, and call routing with conversational AI that never sleeps.',
+    intro: aiReceptionistProduct?.longDescription || 'Automate appointment scheduling, patient inquiries, and call routing with conversational AI that never sleeps.',
     sections: [
       {
         title: 'The Challenge',
@@ -468,7 +478,7 @@ function ProductDetails() {
     id: 'ai-admin-assistant',
     label: 'AI ADMIN ASSISTANT',
     title: 'Automated Operational Workflows',
-    intro: 'Eliminate repetitive administrative tasks with intelligent automation that handles forms, emails, and scheduling.',
+    intro: aiAdminAssistantProduct?.longDescription || 'Eliminate repetitive administrative tasks with intelligent automation that handles forms, emails, and scheduling.',
     sections: [
       {
         title: 'The Challenge',
@@ -583,7 +593,7 @@ function ProductDetails() {
     id: 'ai-reminders',
     label: 'AI PATIENT REMINDERS',
     title: 'Personalized Care Coordination',
-    intro: 'Automated, intelligent reminders that reduce no-shows and improve patient compliance across the care continuum.',
+    intro: aiRemindersProduct?.longDescription || 'Automated, intelligent reminders that reduce no-shows and improve patient compliance across the care continuum.',
     sections: [
       {
         title: 'The Challenge',
@@ -709,6 +719,7 @@ function ProductDetails() {
     label: 'INSIGHTS',
     title: 'Revenue Intelligence for Underpayments',
     intro:
+      insightsProduct?.longDescription ||
       "Are you being underpaid? One simple dashboard shows exactly where insurers are short-paying you and how much you could recover—no spreadsheets, no jargon.",
     sections: [
       {
@@ -809,7 +820,7 @@ function ProductDetails() {
     id: 'aperio',
     label: 'APERIO',
     title: 'Streamline Referral Management',
-    intro: 'Intelligent referral tracking that ensures seamless patient handoffs and improves care coordination across providers.',
+    intro: aperioProduct?.longDescription || 'Intelligent referral tracking that ensures seamless patient handoffs and improves care coordination across providers.',
     sections: [
       {
         title: 'What You See',
@@ -958,7 +969,7 @@ function ProductDetails() {
         {/* Product cards section: filter + grouped cards */}
         <section className="mb-4 md:mb-6">
           <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 text-center mb-1 pb-3 border-b border-gray-200">
-            Browse products
+            Browse Our Products
           </h2>
           <div className="flex flex-wrap items-center justify-center gap-2 mb-4 mt-4">
             {PRODUCT_TYPES.map((type) => {
@@ -1087,7 +1098,7 @@ function ProductDetails() {
         </section>
 
         {/* Product carousel section */}
-        <div className="text-center mb-4 md:mb-6 mt-10">
+        <div className="text-center mb-4 md:mb-6 mt-30">
           <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 text-center mb-1 pb-3 border-b border-gray-200">
             Explore the Echopad Suite
           </h2>

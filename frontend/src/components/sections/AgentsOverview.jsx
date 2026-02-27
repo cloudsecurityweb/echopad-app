@@ -91,7 +91,7 @@ function AgentsOverview() {
       <FullScreenSection id="agents" className="bg-white">
         <div className="container mx-auto px-4 w-full">
           <div className="text-center max-w-3xl mx-auto mb-8">
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3 pb-3 border-b border-gray-200">
               Fix what slows you down
             </h2>
             <p className="text-sm md:text-base text-gray-600 leading-relaxed">

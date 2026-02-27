@@ -5,7 +5,7 @@ function Testimonial() {
     <FullScreenSection id="testimonial" className="bg-white">
       <div className="container mx-auto px-4">
         <div className="max-w-2xl mx-auto">
-          <h2 className="text-sm font-semibold uppercase tracking-wider text-gray-500 mb-6 text-center">
+          <h2 className="text-sm font-semibold uppercase tracking-wider text-gray-500 mb-6 pb-3 border-b border-gray-200 text-center">
             What Our Customers Say
           </h2>
           <blockquote className="border-l-4 border-gray-300 pl-6 md:pl-8 py-2">

@@ -39,7 +39,7 @@ function Platform() {
 
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center max-w-2xl mx-auto mb-6">
-          <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-1">Works with Your EHR. One Place for Documentation, Scheduling, and Admin.</h2>
+          <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-1 pb-3 border-b border-gray-200">Works with Your EHR. One Place for Documentation, Scheduling, and Admin.</h2>
           <p className="text-sm text-gray-600">Your data is secure. We connect to your systems, fit your workflows, and scale with you.</p>
         </div>
 

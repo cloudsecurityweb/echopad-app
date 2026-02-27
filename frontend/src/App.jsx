@@ -135,8 +135,69 @@ function HomePage() {
       return () => {
         cancelAnimationFrame(frameId);
       };
+    } else {
+      // No hash: try to restore last viewed section on refresh
+      const savedSectionId = sessionStorage.getItem('homeLastSectionId');
+      if (savedSectionId) {
+        const scrollToSavedSection = () => {
+          const element = document.getElementById(savedSectionId);
+          if (element) {
+            const headerOffset = 80;
+            const elementPosition = element.getBoundingClientRect().top;
+            const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+            window.scrollTo({
+              top: offsetPosition,
+              behavior: 'smooth'
+            });
+          }
+        };
+
+        const frameId = requestAnimationFrame(() => {
+          setTimeout(scrollToSavedSection, 50);
+        });
+
+        return () => {
+          cancelAnimationFrame(frameId);
+        };
+      }
     }
   }, [location.pathname, location.hash]);
+
+  // Track which section is currently in view and persist it for refresh
+  useEffect(() => {
+    const SECTION_IDS = ['hero', 'agents', 'platform', 'roi', 'testimonial', 'contact'];
+
+    const updateCurrentSection = () => {
+      const headerOffset = 80;
+      const viewportTarget = window.scrollY + headerOffset + 1;
+      let closestId = null;
+      let smallestDistance = Infinity;
+
+      SECTION_IDS.forEach((id) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const sectionTop = el.offsetTop;
+        const distance = Math.abs(sectionTop - viewportTarget);
+        if (distance < smallestDistance) {
+          smallestDistance = distance;
+          closestId = id;
+        }
+      });
+
+      if (closestId) {
+        sessionStorage.setItem('homeLastSectionId', closestId);
+      }
+    };
+
+    // Run once on mount and then on scroll
+    updateCurrentSection();
+    window.addEventListener('scroll', updateCurrentSection, { passive: true });
+
+    return () => {
+      window.removeEventListener('scroll', updateCurrentSection);
+    };
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col">

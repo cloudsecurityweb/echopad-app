@@ -15,7 +15,7 @@ function ROI() {
                 <div className="text-xs md:text-sm font-semibold bg-gradient-to-r from-cyan-500 to-blue-600 bg-clip-text text-transparent uppercase tracking-widest mb-1 md:mb-1.5 lg:mb-2">
                   ROI Snapshot
                 </div>
-                <h2 className="text-base md:text-lg lg:text-xl xl:text-2xl 2xl:text-3xl font-bold text-gray-900 mb-1 md:mb-1.5 lg:mb-2">
+                <h2 className="text-base md:text-lg lg:text-xl xl:text-2xl 2xl:text-3xl font-bold text-gray-900 mb-1 md:mb-1.5 lg:mb-2 pb-3 border-b border-gray-200 inline-block">
                   Live in about 30 days. See results in 60.
                 </h2>
                 <p className="text-xs md:text-sm lg:text-base text-gray-600">

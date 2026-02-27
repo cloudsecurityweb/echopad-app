@@ -16,6 +16,7 @@ function AIScribe() {
   const PageTitle = usePageTitle('Echopad AI Scribe');
   const navigate = useNavigate();
   const { isAuthenticated, isLoading } = useAuth();
+  const product = getProductByRoute('/ai-scribe');
   const [expandedSections, setExpandedSections] = useState({});
   const [typingText, setTypingText] = useState('');
   const typingIndexRef = useRef(0);
@@ -135,7 +136,7 @@ function AIScribe() {
                   View All Products
                 </a>
                 <div className="text-xl md:text-2xl font-bold text-blue-600 uppercase tracking-wider mb-4">
-                  AI SCRIBE
+                  {product?.name?.toUpperCase() || 'AI SCRIBE'}
                 </div>
                 <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
                   Your Note, Done Before You Leave the Room.
@@ -176,7 +177,8 @@ function AIScribe() {
                 </div>
 
                 <p className="text-lg text-gray-600 mb-8">
-                  No typing, no dictation commands—just talk to your patient. Your note is ready before you leave the room.
+                  {product?.longDescription ||
+                    'No typing, no dictation commands—just talk to your patient. Your note is ready before you leave the room.'}
                 </p>
 
 
