@@ -13,14 +13,6 @@ function ProductCard({ icon, title, description, link, featured = false, comingS
   const btnClass =
     'inline-flex items-center gap-1.5 bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-4 py-2 rounded-lg hover:from-cyan-400 hover:to-blue-500 font-medium text-xs md:text-sm group/link transition-all hover:scale-105 shadow-md';
 
-  const handleClick = (e) => {
-    if (onSelect) {
-      e.preventDefault();
-      e.stopPropagation();
-      onSelect();
-    }
-  };
-
   const handleCardClick = (e) => {
     if (onSelect) {
       e.preventDefault();
@@ -54,19 +46,19 @@ function ProductCard({ icon, title, description, link, featured = false, comingS
         <p className="text-xs md:text-sm text-gray-600 mb-2.5 leading-relaxed line-clamp-2">
           {description}
         </p>
-        {onSelect ? (
-          <span className={btnClass} onClick={handleClick}>
-            {linkContent}
-          </span>
-        ) : isInternalLink ? (
+        {isInternalLink ? (
           <Link to={link} className={btnClass}>
             {linkContent}
           </Link>
-        ) : (
+        ) : link ? (
           <a href={link} className={btnClass}>
             {linkContent}
           </a>
-        )}
+        ) : onSelect ? (
+          <button type="button" className={btnClass} onClick={onSelect}>
+            {linkContent}
+          </button>
+        ) : null}
       </div>
 
       {featured && (
