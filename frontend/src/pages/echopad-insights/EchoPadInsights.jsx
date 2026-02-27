@@ -126,7 +126,7 @@ function EchoPadInsights() {
                       For Healthcare Leaders & CFOs
                     </h4>
                     <p className="text-gray-600">
-                      Stop negotiating blind. See where you're underpaid, get the leverage to negotiate better contracts—backed by real market benchmarks from nationwide payer data.
+                      Stop negotiating blind. See where you're underpaid, get the leverage to negotiate better contracts—backed by real market insights from nationwide payer data.
                     </p>
                   </div>
 
@@ -136,7 +136,7 @@ function EchoPadInsights() {
                       What You Get
                     </h4>
                     <p className="text-gray-600">
-                      See where you're underpaid across payers and regions. Benchmark your rates against peers, identify underpayments by procedure code, and discover hidden revenue opportunities—all in one dashboard. We keep the data current so your view is always up to date.
+                      See where you're underpaid across payers and regions. Get insights on your rates against peers, identify underpayments by procedure code, and discover hidden revenue opportunities—all in one dashboard. We keep the data current so your view is always up to date.
                     </p>
                   </div>
 
@@ -145,7 +145,7 @@ function EchoPadInsights() {
                     <ul className="space-y-2">
                       {[
                         'Identify underpayments across all payer contracts',
-                        'Benchmark against regional and specialty peers',
+                        'Get insights against regional and specialty peers',
                         'Negotiate with data-backed leverage',
                         'Discover hidden revenue opportunities',
                       ].map((benefit, idx) => (
@@ -381,7 +381,7 @@ function EchoPadInsights() {
                 Powerful Features for Revenue Optimization
               </h2>
               <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-                Everything you need to identify underpayments, benchmark performance, and negotiate better contracts
+                Everything you need to identify underpayments, get performance insights, and negotiate better contracts
               </p>
             </div>
 
@@ -389,7 +389,7 @@ function EchoPadInsights() {
               {[
                 {
                   icon: 'bi-bar-chart-line',
-                  title: 'Multi-Payer Benchmarking',
+                  title: 'Multi-Payer Insights',
                   description: 'Compare your reimbursement rates against market averages from UHC, Anthem, Aetna, Cigna, and more across all 50 states.',
                   color: 'blue'
                 },
@@ -466,7 +466,7 @@ function EchoPadInsights() {
                   <ul className="space-y-2">
                     {[
                       'Limited resources to analyze complex payer contracts',
-                      'Difficulty benchmarking against peer practices',
+                      'Difficulty getting clear insights against peer practices',
                       'Time-consuming manual rate comparisons',
                       'Uncertainty about where you\'re underpaid before renegotiations',
                     ].map((challenge, i) => (
@@ -481,7 +481,7 @@ function EchoPadInsights() {
                 <div className="bg-white border border-purple-200 rounded-xl p-5">
                   <h4 className="text-sm font-semibold text-purple-900 mb-2">How EchoPad Helps</h4>
                   <p className="text-gray-700">
-                    Automated benchmarking and prioritized action items help practice administrators and owners focus on high-impact negotiations. See where you're underpaid across payers, benchmark against peers, and negotiate with data-backed leverage—without hiring expensive consultants.
+                    Automated insights and prioritized action items help practice administrators and owners focus on high-impact negotiations. See where you're underpaid across payers, get peer insights, and negotiate with data-backed leverage—without hiring expensive consultants.
                   </p>
                 </div>
               </div>
@@ -556,10 +556,10 @@ function EchoPadInsights() {
                 How We Get the Data
               </h2>
               <p className="text-gray-600 mb-4">
-                If you want the technical details: we use publicly available machine-readable files (MRFs) that payers publish under federal price transparency rules. These files contain actual negotiated rates—not surveys or estimates—so the benchmarks you see reflect real reimbursement data. We aggregate and update this data across major payers and all 50 states so your view stays current.
+                You see where you are being underpaid using real negotiated-rate insights, not surveys or guesses. For teams that want the details, the data comes from payer-published machine-readable files (MRFs), refreshed across major payers and all 50 states.
               </p>
               <p className="text-gray-600">
-                No proprietary data sharing is required from your side to see market benchmarks. For personalized underpayment analysis, you can optionally upload your data securely; we never use it for any purpose other than your own insights.
+                No proprietary data sharing is required from your side to see market insights. For personalized underpayment analysis, you can optionally upload your data securely; we never use it for any purpose other than your own insights.
               </p>
             </div>
           </div>
@@ -596,7 +596,7 @@ function EchoPadInsights() {
                 {
                   category: 'Privacy',
                   question: 'Do I need to share my data?',
-                  answer: 'You can browse market benchmarks with zero data sharing. Personalized insights require optional secure data upload.',
+                  answer: 'You can browse market insights with zero data sharing. Personalized insights require optional secure data upload.',
                   icon: 'bi-shield-check',
                   color: 'purple'
                 },

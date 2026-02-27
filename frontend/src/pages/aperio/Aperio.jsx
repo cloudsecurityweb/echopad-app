@@ -530,11 +530,11 @@ function Aperio() {
                   items: [
                     {
                       title: 'Zero IT Burden',
-                      description: 'Go live without IT—no infrastructure changes or extra resources required.',
+                      description: 'Start closing referral loops quickly without pulling your team into long IT workstreams.',
                     },
                     {
                       title: 'EHR Agnostic',
-                      description: 'Works with Epic, Cerner, Athena, or any EHR via HL7/FHIR integration',
+                      description: 'Keep your current systems and referral workflow. Supports Epic, Cerner, Athena, and other EHRs via HL7/FHIR.',
                     },
                     {
                       title: 'Pilot-First Approach',

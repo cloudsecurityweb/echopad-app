@@ -301,7 +301,7 @@ function AIScribe() {
                   step: '2',
                   icon: 'bi-cpu-fill',
                   title: 'Your Note Builds as You Speak',
-                  description: 'Medical-grade transcription, grammar correction, and automatic medical terminology recognition. Your note is ready the moment you finish.',
+                  description: 'Finish the visit with your note already done. Transcription, grammar cleanup, and medical terminology handling happen automatically in the background.',
                   color: 'from-purple-500 to-pink-500',
                   bgColor: 'from-purple-50 to-pink-50',
                   iconBg: 'bg-gradient-to-br from-purple-500 to-pink-500',
@@ -310,7 +310,7 @@ function AIScribe() {
                   step: '3',
                   icon: 'bi-file-earmark-check-fill',
                   title: 'Export to EHR',
-                  description: 'Export to your EHR via direct integration—or use one-click copy as a fallback. Get a perfectly formatted clinical note in seconds.',
+                  description: 'Paste or send your note into the chart in seconds so chart closure happens faster. Direct integration and one-click copy are both available.',
                   color: 'from-green-500 to-emerald-500',
                   bgColor: 'from-green-50 to-emerald-50',
                   iconBg: 'bg-gradient-to-br from-green-500 to-emerald-500',
@@ -394,11 +394,11 @@ function AIScribe() {
                   items: [
                     {
                       title: 'Install and Use Immediately',
-                      description: 'No new servers or infrastructure needed—just sign up, install, and start transcribing your notes.',
+                      description: 'Start documenting on day one without long IT projects. Setup is lightweight and guided.',
                     },
                     {
                       title: 'Works With Your EHR',
-                      description: 'Works with Epic, Cerner, Athena, or any EHR through direct integration (HL7/FHIR) or one-click copy.',
+                      description: 'Keep your current EHR workflow and avoid disruption. We support direct integration (HL7/FHIR) and one-click copy.',
                     },
                     {
                       title: 'Try With a Few Providers First',

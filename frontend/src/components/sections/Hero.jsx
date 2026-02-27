@@ -33,7 +33,7 @@ function Hero() {
 
           {/* Main Heading — physician pain point: time and paperwork */}
           <p className="text-xs sm:text-sm font-semibold uppercase tracking-wider text-cyan-700 mb-2 animate-fade-in-scale animation-delay-100">
-            AI workflow automation for medical practices
+            Spend less time charting and more time with patients
           </p>
           <h1 className="text-3xl sm:text-4xl md:text-4xl lg:text-5xl font-bold mb-3 leading-tight animate-fade-in-scale animation-delay-100">
             <span className="text-gray-900">One AI Platform for </span>

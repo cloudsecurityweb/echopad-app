@@ -371,7 +371,7 @@ function AIReceptionist() {
                   items: [
                     {
                       title: 'Handle 80% of Call Volume',
-                      description: 'AI answers routine questions, schedules appointments, processes refills',
+                      description: 'Free your front desk from routine call work while patients still get help quickly for questions, appointments, and refills.',
                     },
                     {
                       title: '24/7 Availability',
@@ -398,7 +398,7 @@ function AIReceptionist() {
                     },
                     {
                       title: 'Natural Conversations',
-                      description: 'AI understands intent—patients speak naturally, not robotic menus',
+                      description: 'Give patients a smoother call experience with natural conversation instead of rigid phone trees.',
                     },
                     {
                       title: 'Consistent Service Quality',

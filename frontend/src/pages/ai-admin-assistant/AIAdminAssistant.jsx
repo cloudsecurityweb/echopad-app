@@ -442,7 +442,7 @@ function AIAdminAssistant() {
                   icon: 'bi-calendar-check',
                   title: 'Schedule Coordination',
                   subtitle: 'Automated scheduling',
-                  description: 'Manages appointment scheduling, rescheduling, and cancellations with automated notifications to all parties.',
+                  description: 'Reduce scheduling back-and-forth and keep calendars accurate with coordinated booking, rescheduling, and notifications.',
                 },
                 {
                   icon: 'bi-graph-up',

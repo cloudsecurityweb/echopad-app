@@ -269,12 +269,12 @@ function ProductDetails() {
             description: 'Captures complete patient-provider conversation',
           },
           {
-            title: 'AI Clinical Analysis',
-            description: 'Extracts symptoms, diagnoses, vitals, treatment plans',
+            title: 'Key Clinical Details Captured',
+            description: 'Symptoms, diagnoses, vitals, and treatment plans are extracted automatically.',
           },
           {
             title: 'EHR Data Export',
-            description: 'Structured fields ready for direct EHR integration',
+            description: 'Move the visit into your chart faster with structured fields ready for export.',
           },
         ],
       },
@@ -820,7 +820,7 @@ function ProductDetails() {
     id: 'aperio',
     label: 'APERIO',
     title: 'Streamline Referral Management',
-    intro: aperioProduct?.longDescription || 'Intelligent referral tracking that ensures seamless patient handoffs and improves care coordination across providers.',
+    intro: aperioProduct?.longDescription || 'Fewer patients fall through the cracks with referral tracking that keeps every handoff moving.',
     sections: [
       {
         title: 'What You See',
@@ -830,7 +830,7 @@ function ProductDetails() {
         title: 'Key Benefits',
         items: [
           'Automated referral tracking',
-          'Provider network integration',
+          'Connect referrals across your provider network',
           'Patient follow-up reminders',
           'Referral status notifications',
           'Care coordination workflows',
