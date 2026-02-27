@@ -11,8 +11,12 @@ function Hero() {
         setIsHipaaModalOpen(false);
       }
     };
+    document.body.style.overflow = 'hidden';
     window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
+    return () => {
+      window.removeEventListener('keydown', onKeyDown);
+      document.body.style.overflow = '';
+    };
   }, [isHipaaModalOpen]);
 
   const handleExploreProductsClick = (e) => {
@@ -31,15 +35,15 @@ function Hero() {
 
   return (
     <FullScreenSection id="hero" className="bg-gradient-to-b from-blue-50 via-white to-purple-50 min-h-[100vh] flex flex-col justify-center">
-      <div className="container mx-auto px-4 flex-1 flex flex-col justify-center">
+      <div className="container mx-auto px-4 sm:px-6 flex-1 flex flex-col justify-center pt-8 sm:pt-16 pb-8 sm:pb-0">
         <div className="text-center max-w-3xl mx-auto relative z-10">
           {/* Top badges: outcomes-first, no jargon */}
-          <div className="flex flex-wrap justify-center items-center gap-2 mb-4 animate-fade-in-scale mt-8">
+          <div className="flex flex-wrap justify-center items-center gap-2 mb-4 animate-fade-in-scale mt-0 sm:mt-8">
             <div className="relative inline-flex">
               <span className="absolute inset-0 rounded-full border border-emerald-300/80 animate-ping pointer-events-none"></span>
               <button
                 type="button"
-                className="relative inline-flex items-center gap-2 bg-emerald-50 border border-emerald-200 text-emerald-800 px-3 py-1.5 rounded-full text-sm font-semibold hover:bg-emerald-100 transition-colors shadow-sm"
+                className="relative inline-flex items-center gap-2 bg-emerald-50 border border-emerald-200 text-emerald-800 px-3.5 py-2 rounded-full text-sm font-semibold hover:bg-emerald-100 transition-colors shadow-sm"
                 aria-label="HIPAA Compliant"
                 onClick={() => setIsHipaaModalOpen(true)}
               >
@@ -53,7 +57,7 @@ function Hero() {
           <p className="text-xs sm:text-sm font-semibold uppercase tracking-wider text-cyan-700 mb-2 animate-fade-in-scale animation-delay-100">
             Spend less time charting and more time with patients
           </p>
-          <h1 className="text-3xl sm:text-4xl md:text-4xl lg:text-5xl font-bold mb-3 leading-tight animate-fade-in-scale animation-delay-100">
+          <h1 className="text-2xl sm:text-4xl md:text-4xl lg:text-5xl font-bold mb-3 leading-tight animate-fade-in-scale animation-delay-100">
             <span className="text-gray-900">One AI Platform for </span>
             <span className="animate-gradient-text">Your Entire Medical Practice.</span>
           </h1>
@@ -65,15 +69,15 @@ function Hero() {
 
           {/* Feature pills — what you get, not how it works */}
           <div className="flex flex-wrap justify-center gap-2 mb-6 animate-fade-in-scale animation-delay-300">
-            <div className="flex items-center gap-2 glass-card px-3 py-2 rounded-xl hover-scale group shadow-sm">
+            <div className="flex items-center justify-center gap-2 glass-card px-3 py-2 rounded-xl hover-scale group shadow-sm w-full sm:w-auto">
               <i className="bi bi-mic-fill text-cyan-500 group-hover:scale-110 transition-transform"></i>
               <span className="text-gray-800 font-medium text-sm">Clinical Documentation</span>
             </div>
-            <div className="flex items-center gap-2 glass-card px-3 py-2 rounded-xl hover-scale group shadow-sm">
+            <div className="flex items-center justify-center gap-2 glass-card px-3 py-2 rounded-xl hover-scale group shadow-sm w-full sm:w-auto">
               <i className="bi bi-headset text-purple-500 group-hover:scale-110 transition-transform"></i>
               <span className="text-gray-800 font-medium text-sm">24/7 Scheduling</span>
             </div>
-            <div className="flex items-center gap-2 glass-card px-3 py-2 rounded-xl hover-scale group shadow-sm">
+            <div className="flex items-center justify-center gap-2 glass-card px-3 py-2 rounded-xl hover-scale group shadow-sm w-full sm:w-auto">
               <i className="bi bi-bell text-pink-500 group-hover:scale-110 transition-transform"></i>
               <span className="text-gray-800 font-medium text-sm">Patient Reminders</span>
             </div>
@@ -83,7 +87,7 @@ function Hero() {
           <div className="flex flex-col sm:flex-row gap-3 justify-center mb-6 animate-fade-in-scale animation-delay-400">
             <a
               href="/sign-up"
-              className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-6 py-3 rounded-full hover:from-cyan-400 hover:to-blue-500 transition-all font-semibold text-sm shadow-lg hover:scale-105"
+              className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-6 py-3 rounded-full hover:from-cyan-400 hover:to-blue-500 transition-all font-semibold text-sm shadow-lg hover:scale-105 w-full sm:w-auto"
             >
               <i className="bi bi-rocket-takeoff"></i>
               Get Started
@@ -91,7 +95,7 @@ function Hero() {
             <a
               href="/"
               onClick={handleExploreProductsClick}
-              className="inline-flex items-center justify-center gap-2 glass-card border-2 border-cyan-500/50 text-gray-800 px-6 py-3 rounded-full hover:bg-cyan-50/50 hover:border-cyan-500 transition-all font-semibold text-sm hover:scale-105 shadow-sm"
+              className="inline-flex items-center justify-center gap-2 glass-card border-2 border-cyan-500/50 text-gray-800 px-6 py-3 rounded-full hover:bg-cyan-50/50 hover:border-cyan-500 transition-all font-semibold text-sm hover:scale-105 shadow-sm w-full sm:w-auto"
             >
               <i className="bi bi-grid-3x3-gap"></i>
               Explore products
@@ -112,14 +116,14 @@ function Hero() {
 
       {isHipaaModalOpen && (
         <div
-          className="fixed inset-0 z-50 bg-slate-900/55 backdrop-blur-sm flex items-center justify-center p-3 sm:px-4"
+          className="fixed inset-0 z-50 bg-slate-900/55 backdrop-blur-sm flex items-end sm:items-center justify-center p-3 sm:px-4"
           onClick={() => setIsHipaaModalOpen(false)}
           role="dialog"
           aria-modal="true"
           aria-labelledby="hipaa-modal-title"
         >
           <div
-            className="w-full max-w-2xl max-h-[88vh] overflow-y-auto bg-white rounded-2xl sm:rounded-3xl shadow-2xl border border-slate-100 p-4 sm:p-6 md:p-8 animate-fade-in-scale"
+            className="w-full max-w-2xl max-h-[85dvh] overflow-y-auto bg-white rounded-2xl sm:rounded-3xl shadow-2xl border border-slate-100 p-4 sm:p-6 md:p-8 animate-fade-in-scale"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-start justify-between gap-4 mb-5">
