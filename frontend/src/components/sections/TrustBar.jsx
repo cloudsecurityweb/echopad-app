@@ -35,15 +35,15 @@ function TrustBar() {
           </div>
           <div className="flex items-center gap-2 glass-card px-3 py-2 rounded-xl hover-scale group shadow-sm">
             <i className="bi bi-patch-check-fill text-cyan-500 text-lg group-hover:scale-110 transition-transform"></i>
-            <span className="text-gray-800 font-medium text-sm">SOC 2 Certified</span>
+            <span className="text-gray-800 font-medium text-sm">SOC 2 Type II Controls</span>
           </div>
           <div className="flex items-center gap-2 glass-card px-3 py-2 rounded-xl hover-scale group shadow-sm">
             <i className="bi bi-hospital text-purple-500 text-lg group-hover:scale-110 transition-transform"></i>
-            <span className="text-gray-800 font-medium text-sm">Epic, Cerner, Athena</span>
+            <span className="text-gray-800 font-medium text-sm">Epic, Cerner, Athena Integrations</span>
           </div>
           <div className="flex items-center gap-2 glass-card px-3 py-2 rounded-xl hover-scale group shadow-sm">
             <i className="bi bi-lock-fill text-pink-500 text-lg group-hover:scale-110 transition-transform"></i>
-            <span className="text-gray-800 font-medium text-sm">Zero Data Retention</span>
+            <span className="text-gray-800 font-medium text-sm">Configurable Data Handling</span>
           </div>
         </div>
       </div>

@@ -145,14 +145,14 @@ function AIReminders() {
                   <a
                     href="#"
                     onClick={(e) => handleIntercomClick(e, 'request-demo')}
-                    className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-cyan-600 to-blue-600 text-white px-6 py-3.5 rounded-xl font-bold hover:from-cyan-700 hover:to-blue-700 transition-all shadow-lg hover:shadow-xl"
+                    className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-6 py-3.5 rounded-full font-bold hover:from-cyan-400 hover:to-blue-500 transition-all shadow-lg hover:shadow-cyan-500/50 hover:scale-105"
                   >
                     <i className="bi bi-bell-fill text-xl"></i>
                     See It In Action
                   </a>
                   <a
                     href="/sign-up"
-                    className="inline-flex items-center justify-center gap-2 bg-white text-blue-600 px-6 py-3.5 rounded-xl font-semibold border-2 border-blue-600 hover:bg-blue-50 transition-colors"
+                    className="inline-flex items-center justify-center gap-2 bg-white text-blue-600 px-6 py-3.5 rounded-full font-semibold border-2 border-blue-600 hover:bg-blue-50 transition-all hover:scale-105 shadow-sm hover:shadow-md"
                   >
                     Get Started
                   </a>
@@ -384,7 +384,7 @@ function AIReminders() {
                   items: [
                     {
                       title: 'Reduce No-Shows by 40-50%',
-                      description: 'Multi-channel reminders via SMS, voice, email ensure patients remember',
+                      description: 'Keep more appointments on the schedule with reminders patients actually see (SMS, voice, and email).',
                     },
                     {
                       title: 'Recover $50K-$200K Annually',
@@ -392,7 +392,7 @@ function AIReminders() {
                     },
                     {
                       title: 'Fill Last-Minute Cancellations',
-                      description: 'Automated waitlist management maximizes schedule utilization',
+                      description: 'Backfill open slots faster so provider time is not wasted.',
                     },
                     {
                       title: 'Improve Provider Utilization',
@@ -407,7 +407,7 @@ function AIReminders() {
                   items: [
                     {
                       title: 'Multi-Channel Outreach',
-                      description: 'SMS, voice calls, email—reach patients how they prefer',
+                      description: 'Reach patients in the channel they answer most, which improves follow-through.',
                     },
                     {
                       title: 'Two-Way Confirmation',
@@ -434,7 +434,7 @@ function AIReminders() {
                     },
                     {
                       title: 'EHR/PM Integration',
-                      description: 'Pulls appointment data directly from Epic, Cerner, Athena automatically',
+                      description: 'Keep reminder workflows in sync with your schedule automatically through Epic, Cerner, Athena, and other systems.',
                     },
                     {
                       title: 'Customizable Timing',

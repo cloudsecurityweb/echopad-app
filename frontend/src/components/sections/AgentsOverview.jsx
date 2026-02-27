@@ -91,7 +91,7 @@ function AgentsOverview() {
       <FullScreenSection id="agents" className="bg-white">
         <div className="container mx-auto px-4 w-full">
           <div className="text-center max-w-3xl mx-auto mb-8">
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3 pb-3 border-b border-gray-200">
               Fix what slows you down
             </h2>
             <p className="text-sm md:text-base text-gray-600 leading-relaxed">
@@ -99,72 +99,59 @@ function AgentsOverview() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-4xl mx-auto">
-            <div className="flex items-start gap-3 glass-card p-4 rounded-xl hover-lift shadow-sm">
-              <i className="bi bi-currency-dollar text-cyan-500 text-2xl flex-shrink-0"></i>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 max-w-5xl mx-auto">
+            <div className="glass-card rounded-xl p-5 md:p-6 hover-lift shadow-sm border border-gray-100">
+              <div className="w-10 h-10 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-lg flex items-center justify-center mb-3 shadow-lg">
+                <i className="bi bi-currency-dollar text-white text-lg"></i>
+              </div>
               <div>
                 <strong className="block text-gray-900 mb-0.5 text-sm md:text-base">
-                  Reduce costs by 60%
+                  Typical: up to 60% less admin time
                 </strong>
                 <span className="text-gray-600 text-xs md:text-sm">
-                  Spend less time on admin, more on patients
+                  Spend less time on admin and more time with patients
+                </span>
+                <span className="block text-gray-500 text-[11px] mt-0.5">
+                  Based on pilot-practice self-reports
                 </span>
               </div>
             </div>
-            <div className="flex items-start gap-3 glass-card p-4 rounded-xl hover-lift shadow-sm">
-              <i className="bi bi-graph-up-arrow text-green-500 text-2xl flex-shrink-0"></i>
+            <div className="glass-card rounded-xl p-5 md:p-6 hover-lift shadow-sm border border-gray-100">
+              <div className="w-10 h-10 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-lg flex items-center justify-center mb-3 shadow-lg">
+                <i className="bi bi-graph-up-arrow text-white text-lg"></i>
+              </div>
               <div>
                 <strong className="block text-gray-900 mb-0.5 text-sm md:text-base">
-                  Increase revenue by 15–20%
+                  Typical: 15-20% revenue lift
                 </strong>
                 <span className="text-gray-600 text-xs md:text-sm">
                   Recover billable time and reduce no-shows
                 </span>
+                <span className="block text-gray-500 text-[11px] mt-0.5">
+                  Varies by payer mix, volume, and adoption
+                </span>
               </div>
             </div>
-            <div className="flex items-start gap-3 glass-card p-4 rounded-xl hover-lift shadow-sm">
-              <i className="bi bi-people text-purple-500 text-2xl flex-shrink-0"></i>
+            <div className="glass-card rounded-xl p-5 md:p-6 hover-lift shadow-sm border border-gray-100">
+              <div className="w-10 h-10 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-lg flex items-center justify-center mb-3 shadow-lg">
+                <i className="bi bi-people text-white text-lg"></i>
+              </div>
               <div>
                 <strong className="block text-gray-900 mb-0.5 text-sm md:text-base">
-                  Improve retention by 40%
+                  Typical: up to 40% better staff retention
                 </strong>
                 <span className="text-gray-600 text-xs md:text-sm">
                   Less burnout for providers and staff
                 </span>
+                <span className="block text-gray-500 text-[11px] mt-0.5">
+                  Benchmarked across participating practices
+                </span>
               </div>
             </div>
           </div>
-
-          <p className="text-center text-xs text-gray-500 mt-3 max-w-2xl mx-auto">
-            Source: Echopad practice benchmarks. Results vary by practice size and use.
-          </p>
-
-          <div className="max-w-2xl mx-auto mt-8 text-center">
-            <h3 className="text-base font-semibold text-gray-800 mb-2">How to get started</h3>
-            <p className="text-sm text-gray-600">
-              Start with one solution for your biggest pain point—charting, calls, or no-shows—or add more over time. Book a 15-minute demo or start a free trial.
-            </p>
-          </div>
         </div>
       </FullScreenSection>
 
-      <FullScreenSection id="agents-by-problem" className="bg-gray-50" centered={false} scrollable>
-        <div className="container mx-auto px-4 py-6 w-full max-w-5xl">
-          {PROBLEM_GROUPS.map((group) => (
-            <section key={group.id} className="mb-10 last:mb-0">
-              <div className="mb-4">
-                <h3 className="text-lg md:text-xl font-bold text-gray-900">{group.label}</h3>
-                <p className="text-sm text-gray-600 mt-0.5">{group.description}</p>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                {group.products.map((product, index) => (
-                  <ProductCard key={`${group.id}-${index}`} {...product} />
-                ))}
-              </div>
-            </section>
-          ))}
-        </div>
-      </FullScreenSection>
     </>
   );
 }

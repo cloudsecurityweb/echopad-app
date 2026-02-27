@@ -288,7 +288,7 @@ const AnimatedAIScribeDemo = () => {
                 e.preventDefault();
                 handleIntercomAction('request-demo');
               }}
-              className="inline-flex items-center gap-2 bg-green-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-green-700 transition-all shadow-md hover:shadow-lg hover:scale-105"
+              className="inline-flex items-center gap-2 bg-green-600 text-white px-6 py-3 rounded-full font-bold hover:bg-green-700 transition-all shadow-md hover:shadow-lg hover:scale-105"
             >
               <i className="bi bi-calendar-check-fill"></i>
               Request a Demo
@@ -299,7 +299,7 @@ const AnimatedAIScribeDemo = () => {
                 e.preventDefault();
                 handleIntercomAction('request-demo');
               }}
-              className="inline-flex items-center gap-2 bg-white text-green-600 px-6 py-3 rounded-xl font-bold hover:bg-gray-50 transition-all border-2 border-green-600 hover:border-green-700 shadow-md hover:shadow-lg"
+              className="inline-flex items-center gap-2 bg-white text-green-600 px-6 py-3 rounded-full font-bold hover:bg-gray-50 transition-all border-2 border-green-600 hover:border-green-700 shadow-md hover:shadow-lg hover:scale-105"
             >
               <i className="bi bi-play-circle-fill"></i>
               Start Free Trial

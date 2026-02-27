@@ -2,13 +2,13 @@ function Platform() {
   const features = [
     {
       icon: 'bi-diagram-3-fill',
-      title: 'Works with Your EHR',
-      description: 'Epic, Cerner, Athena, MEDITECH, and other major systems. We connect to what you already use—no custom build required.',
+      title: 'Keep Your Current EHR',
+      description: 'Avoid expensive rip-and-replace projects. We connect to Epic, Cerner, Athena, MEDITECH, and other major systems.',
     },
     {
       icon: 'bi-shield-lock-fill',
       title: 'Your Data Is Protected',
-      description: 'HIPAA-compliant, SOC 2 Type II certified, BAA included. End-to-end encryption and a zero data retention policy.',
+      description: 'HIPAA-aligned workflows, SOC 2 Type II controls, and BAA support. Encryption in transit and at rest, with data-handling policies defined per deployment.',
     },
     {
       icon: 'bi-sliders',
@@ -27,8 +27,8 @@ function Platform() {
     },
     {
       icon: 'bi-cpu-fill',
-      title: 'Accurate, Medical-Grade Documentation',
-      description: 'Documentation you can trust. Medical AI that learns and improves so your notes stay accurate and consistent.',
+      title: 'Trust the Note Before You Sign',
+      description: 'Get consistent, clinical-grade documentation that is ready for review with fewer rewrites.',
     },
   ];
 
@@ -39,8 +39,8 @@ function Platform() {
 
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center max-w-2xl mx-auto mb-6">
-          <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-1">Works with Your EHR. One Place for Documentation, Scheduling, and Admin.</h2>
-          <p className="text-sm text-gray-600">Your data is secure. We connect to your systems, fit your workflows, and scale with you.</p>
+          <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-1 pb-3 border-b border-gray-200">Keep your EHR and reduce admin load across charting, scheduling, and operations.</h2>
+          <p className="text-sm text-gray-600">Start with outcomes first, then layer in secure integrations that fit how your practice already works.</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">

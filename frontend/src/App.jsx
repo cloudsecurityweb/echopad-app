@@ -15,7 +15,6 @@ import Footer from './components/layout/Footer';
 
 // Section Components
 import Hero from './components/sections/Hero';
-import TrustStrip from './components/sections/TrustStrip';
 import TrustBar from './components/sections/TrustBar';
 import AgentsOverview from './components/sections/AgentsOverview';
 import Platform from './components/sections/Platform';
@@ -136,8 +135,69 @@ function HomePage() {
       return () => {
         cancelAnimationFrame(frameId);
       };
+    } else {
+      // No hash: try to restore last viewed section on refresh
+      const savedSectionId = sessionStorage.getItem('homeLastSectionId');
+      if (savedSectionId) {
+        const scrollToSavedSection = () => {
+          const element = document.getElementById(savedSectionId);
+          if (element) {
+            const headerOffset = 80;
+            const elementPosition = element.getBoundingClientRect().top;
+            const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+            window.scrollTo({
+              top: offsetPosition,
+              behavior: 'smooth'
+            });
+          }
+        };
+
+        const frameId = requestAnimationFrame(() => {
+          setTimeout(scrollToSavedSection, 50);
+        });
+
+        return () => {
+          cancelAnimationFrame(frameId);
+        };
+      }
     }
   }, [location.pathname, location.hash]);
+
+  // Track which section is currently in view and persist it for refresh
+  useEffect(() => {
+    const SECTION_IDS = ['hero', 'agents', 'platform', 'roi', 'testimonial', 'contact'];
+
+    const updateCurrentSection = () => {
+      const headerOffset = 80;
+      const viewportTarget = window.scrollY + headerOffset + 1;
+      let closestId = null;
+      let smallestDistance = Infinity;
+
+      SECTION_IDS.forEach((id) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const sectionTop = el.offsetTop;
+        const distance = Math.abs(sectionTop - viewportTarget);
+        if (distance < smallestDistance) {
+          smallestDistance = distance;
+          closestId = id;
+        }
+      });
+
+      if (closestId) {
+        sessionStorage.setItem('homeLastSectionId', closestId);
+      }
+    };
+
+    // Run once on mount and then on scroll
+    updateCurrentSection();
+    window.addEventListener('scroll', updateCurrentSection, { passive: true });
+
+    return () => {
+      window.removeEventListener('scroll', updateCurrentSection);
+    };
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -145,7 +205,6 @@ function HomePage() {
       <Navigation />
       <main className="flex-1">
         <Hero />
-        <TrustStrip />
         <TrustBar />
         <AgentsOverview />
         <ProductDetails />
@@ -168,8 +227,6 @@ function IntercomBootstrap() {
   const { isAuthenticated, userProfile } = useAuth();
 
   useEffect(() => {
-    if (!hasConsent()) return;
-
     if (isAuthenticated && userProfile?.user) {
       // Upgrade anonymous session → identity-verified session
       fetchIntercomIdentity()
@@ -191,22 +248,22 @@ function IntercomBootstrap() {
 }
 
 function App({ msalInstance }) {
-  // Initialize consent management and conditionally load analytics scripts
+  // Initialize consent management; Intercom always loads, analytics stay consent-gated
   useEffect(() => {
     initializeConsentManagement();
 
+    // Intercom must be available regardless of cookie consent choice.
+    loadIntercomScript();
+    // Boot in anonymous mode so the launcher icon is always visible.
+    bootIntercomAnonymous();
+
     if (hasConsent()) {
       initGoogleAnalytics();
-      loadIntercomScript();
-      // Boot in anonymous mode so the launcher icon is always visible
-      bootIntercomAnonymous();
     }
 
     // Deferred initialization — called by CookieConsent when user accepts
     window.initializeAnalytics = () => {
       initGoogleAnalytics();
-      loadIntercomScript();
-      bootIntercomAnonymous();
     };
   }, []);
 

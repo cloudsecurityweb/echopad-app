@@ -102,7 +102,7 @@ function AIDocMan() {
                 <a
                   href="#"
                   onClick={(e) => handleIntercomClick(e, 'request-demo')}
-                  className="inline-flex items-center justify-center gap-3 bg-gradient-to-r from-indigo-400 to-purple-400 text-white px-8 py-4 rounded-xl font-bold text-lg hover:from-indigo-500 hover:to-purple-500 transition-all shadow-xl hover:shadow-2xl hover:scale-105"
+                  className="inline-flex items-center justify-center gap-3 bg-gradient-to-r from-indigo-400 to-purple-400 text-white px-8 py-4 rounded-full font-bold text-lg hover:from-indigo-500 hover:to-purple-500 transition-all shadow-xl hover:shadow-2xl hover:scale-105"
                 >
                   <i className="bi bi-calendar-check text-xl"></i>
                   Schedule a Demo
@@ -110,7 +110,7 @@ function AIDocMan() {
                 <a
                   href="#"
                   onClick={(e) => handleIntercomClick(e, 'sign-up')}
-                  className="inline-flex items-center justify-center gap-3 bg-white text-indigo-400 px-8 py-4 rounded-xl font-bold text-lg hover:bg-indigo-50 transition-all border-2 border-indigo-300 shadow-lg hover:shadow-xl"
+                  className="inline-flex items-center justify-center gap-3 bg-white text-indigo-400 px-8 py-4 rounded-full font-bold text-lg hover:bg-indigo-50 transition-all border-2 border-indigo-300 shadow-lg hover:shadow-xl hover:scale-105"
                 >
                   <i className="bi bi-rocket-takeoff text-xl"></i>
                   Start Free Trial
@@ -359,7 +359,7 @@ function AIDocMan() {
                 {
                   icon: 'bi-shield-check',
                   title: 'HIPAA Compliant',
-                  description: 'Zero data retention, end-to-end encryption, SOC 2 certified',
+                  description: 'Protect patient trust while your team moves faster. Includes zero data retention, end-to-end encryption, and SOC 2 controls.',
                   color: 'from-green-400 to-emerald-500',
                 },
                 {
@@ -383,7 +383,7 @@ function AIDocMan() {
                 {
                   icon: 'bi-plug',
                   title: 'EHR Ready',
-                  description: 'Works with any EHR via copy-paste or direct integration',
+                  description: 'Get notes into your chart quickly without changing your workflow. Supports copy-paste and direct integration.',
                   color: 'from-pink-400 to-rose-500',
                 },
               ].map((feature, idx) => (
@@ -403,29 +403,29 @@ function AIDocMan() {
         </section>
 
         {/* ROI Calculator Section */}
-        <section className="py-20 bg-gradient-to-br from-indigo-300 via-purple-300 to-pink-300 text-white">
+        <section className="py-20 bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100 text-gray-900">
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto text-center">
               <h2 className="text-4xl md:text-5xl font-bold mb-6">
                 Calculate Your Time Savings
               </h2>
-              <p className="text-xl text-indigo-50 mb-8 max-w-2xl mx-auto">
+              <p className="text-xl text-gray-700 mb-8 max-w-2xl mx-auto">
                 See how much time your team could save with AI Document Manager
               </p>
 
-              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border-2 border-white/20 max-w-2xl mx-auto">
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 border-2 border-white/70 max-w-2xl mx-auto">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                   <div>
                     <div className="text-4xl font-bold mb-2">60 min</div>
-                    <div className="text-indigo-50">Saved per assistant/day</div>
+                    <div className="text-gray-700">Saved per assistant/day</div>
                   </div>
                   <div>
                     <div className="text-4xl font-bold mb-2">5 hrs</div>
-                    <div className="text-indigo-50">Saved per assistant/week</div>
+                    <div className="text-gray-700">Saved per assistant/week</div>
                   </div>
                   <div>
                     <div className="text-4xl font-bold mb-2">20 hrs</div>
-                    <div className="text-indigo-50">Saved per assistant/month</div>
+                    <div className="text-gray-700">Saved per assistant/month</div>
                   </div>
                 </div>
 
@@ -433,7 +433,7 @@ function AIDocMan() {
                   <a
                     href="#"
                     onClick={(e) => handleIntercomClick(e, 'request-demo')}
-                    className="inline-flex items-center justify-center gap-3 bg-white text-indigo-500 px-8 py-4 rounded-xl font-bold text-lg hover:bg-indigo-50 transition-all shadow-xl hover:shadow-2xl hover:scale-105"
+                    className="inline-flex items-center justify-center gap-3 bg-white text-indigo-500 px-8 py-4 rounded-full font-bold text-lg hover:bg-indigo-50 transition-all shadow-xl hover:shadow-2xl hover:scale-105"
                   >
                     <i className="bi bi-calculator text-2xl"></i>
                     Calculate Your ROI
@@ -441,7 +441,7 @@ function AIDocMan() {
                   <a
                     href="#"
                     onClick={(e) => handleIntercomClick(e, 'sign-up')}
-                    className="inline-flex items-center justify-center gap-3 bg-indigo-700 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-indigo-800 transition-all border-2 border-white/30 shadow-xl"
+                    className="inline-flex items-center justify-center gap-3 bg-indigo-700 text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-indigo-800 transition-all border-2 border-white/30 shadow-xl hover:shadow-2xl hover:scale-105"
                   >
                     <i className="bi bi-rocket-takeoff text-2xl"></i>
                     Start Free Trial
@@ -475,7 +475,7 @@ function AIDocMan() {
                   <div className="flex flex-col sm:flex-row lg:flex-col xl:flex-row items-stretch sm:items-center gap-3 flex-shrink-0">
                     <a
                       href="#"
-                      className="inline-flex items-center justify-center gap-2 bg-gray-900 text-white px-6 py-3.5 rounded-xl hover:bg-gray-800 transition-colors font-semibold text-sm shadow-md min-w-[140px]"
+                      className="inline-flex items-center justify-center gap-2 bg-gray-900 text-white px-6 py-3.5 rounded-full hover:bg-gray-800 transition-all hover:scale-105 font-semibold text-sm shadow-md hover:shadow-lg min-w-[140px]"
                       onClick={(e) => handleIntercomClick(e, 'request-demo')}
                     >
                       <i className="bi bi-chat-dots-fill text-white text-lg" aria-hidden="true" />
@@ -483,7 +483,7 @@ function AIDocMan() {
                     </a>
                     <a
                       href="/sign-up"
-                      className="inline-flex items-center justify-center gap-2 bg-white text-gray-700 px-6 py-3.5 rounded-xl border-2 border-gray-300 hover:bg-gray-50 hover:border-gray-400 transition-colors font-medium text-sm min-w-[140px]"
+                      className="inline-flex items-center justify-center gap-2 bg-white text-gray-700 px-6 py-3.5 rounded-full border-2 border-gray-300 hover:bg-gray-50 hover:border-gray-400 transition-all hover:scale-105 font-medium text-sm shadow-sm hover:shadow-md min-w-[140px]"
                     >
                       <i className="bi bi-rocket-takeoff text-cyan-500 text-lg" aria-hidden="true" />
                       Get Started

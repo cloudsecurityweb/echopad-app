@@ -16,6 +16,7 @@ function AIScribe() {
   const PageTitle = usePageTitle('Echopad AI Scribe');
   const navigate = useNavigate();
   const { isAuthenticated, isLoading } = useAuth();
+  const product = getProductByRoute('/ai-scribe');
   const [expandedSections, setExpandedSections] = useState({});
   const [typingText, setTypingText] = useState('');
   const typingIndexRef = useRef(0);
@@ -135,7 +136,7 @@ function AIScribe() {
                   View All Products
                 </a>
                 <div className="text-xl md:text-2xl font-bold text-blue-600 uppercase tracking-wider mb-4">
-                  AI SCRIBE
+                  {product?.name?.toUpperCase() || 'AI SCRIBE'}
                 </div>
                 <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
                   Your Note, Done Before You Leave the Room.
@@ -176,7 +177,8 @@ function AIScribe() {
                 </div>
 
                 <p className="text-lg text-gray-600 mb-8">
-                  No typing, no dictation commands—just talk to your patient. Your note is ready before you leave the room.
+                  {product?.longDescription ||
+                    'No typing, no dictation commands—just talk to your patient. Your note is ready before you leave the room.'}
                 </p>
 
 
@@ -299,7 +301,7 @@ function AIScribe() {
                   step: '2',
                   icon: 'bi-cpu-fill',
                   title: 'Your Note Builds as You Speak',
-                  description: 'Medical-grade transcription, grammar correction, and automatic medical terminology recognition. Your note is ready the moment you finish.',
+                  description: 'Finish the visit with your note already done. Transcription, grammar cleanup, and medical terminology handling happen automatically in the background.',
                   color: 'from-purple-500 to-pink-500',
                   bgColor: 'from-purple-50 to-pink-50',
                   iconBg: 'bg-gradient-to-br from-purple-500 to-pink-500',
@@ -308,7 +310,7 @@ function AIScribe() {
                   step: '3',
                   icon: 'bi-file-earmark-check-fill',
                   title: 'Export to EHR',
-                  description: 'Export to your EHR via direct integration—or use one-click copy as a fallback. Get a perfectly formatted clinical note in seconds.',
+                  description: 'Paste or send your note into the chart in seconds so chart closure happens faster. Direct integration and one-click copy are both available.',
                   color: 'from-green-500 to-emerald-500',
                   bgColor: 'from-green-50 to-emerald-50',
                   iconBg: 'bg-gradient-to-br from-green-500 to-emerald-500',
@@ -356,7 +358,7 @@ function AIScribe() {
                 <a
                   href="#"
                   onClick={(e) => handleIntercomClick(e, 'request-demo')}
-                  className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-cyan-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:from-blue-700 hover:to-cyan-700 transition-all shadow-lg hover:shadow-xl hover:scale-105"
+                  className="inline-flex items-center gap-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-8 py-4 rounded-full font-bold text-lg hover:from-cyan-400 hover:to-blue-500 transition-all shadow-lg hover:shadow-cyan-500/50 hover:scale-105"
                 >
                   <i className="bi bi-play-circle-fill text-2xl"></i>
                   See It In Action
@@ -388,23 +390,23 @@ function AIScribe() {
                   id: 'deployment',
                   icon: 'bi-rocket-takeoff',
                   title: 'Get Started Quickly',
-                  subtitle: 'Up and running in under a week',
+                  subtitle: 'Install fast and start transcribing notes right away',
                   items: [
                     {
-                      title: 'No IT Required',
-                      description: 'No new servers or infrastructure—just sign up and use it.',
+                      title: 'Install and Use Immediately',
+                      description: 'Start documenting on day one without long IT projects. Setup is lightweight and guided.',
                     },
                     {
                       title: 'Works With Your EHR',
-                      description: 'Works with Epic, Cerner, Athena, or any EHR via direct integration (HL7/FHIR) or one-click copy',
+                      description: 'Keep your current EHR workflow and avoid disruption. We support direct integration (HL7/FHIR) and one-click copy.',
                     },
                     {
                       title: 'Try With a Few Providers First',
-                      description: 'Start with a small group to see how it fits your practice before expanding',
+                      description: 'Roll it out to a small group first, then expand across your practice once your team is comfortable.',
                     },
                     {
                       title: 'Templates for Your Specialty',
-                      description: 'Pre-built templates for 20+ specialties or create custom ones for your workflows',
+                      description: 'Use pre-built templates for 20+ specialties, or create custom templates that match your workflow.',
                     },
                   ],
                 },
@@ -595,7 +597,7 @@ function AIScribe() {
                   <div className="flex flex-col sm:flex-row lg:flex-col xl:flex-row items-stretch sm:items-center gap-3 flex-shrink-0">
                     <a
                       href="#"
-                      className="inline-flex items-center justify-center gap-2 bg-gray-900 text-white px-6 py-3.5 rounded-xl hover:bg-gray-800 transition-colors font-semibold text-sm shadow-md min-w-[140px]"
+                      className="inline-flex items-center justify-center gap-2 bg-gray-900 text-white px-6 py-3.5 rounded-full hover:bg-gray-800 transition-all hover:scale-105 font-semibold text-sm shadow-md hover:shadow-lg min-w-[140px]"
                       onClick={(e) => handleIntercomClick(e, 'request-demo')}
                     >
                       <i className="bi bi-chat-dots-fill text-white text-lg" aria-hidden="true" />
@@ -603,7 +605,7 @@ function AIScribe() {
                     </a>
                     <a
                       href="/sign-up"
-                      className="inline-flex items-center justify-center gap-2 bg-white text-gray-700 px-6 py-3.5 rounded-xl border-2 border-gray-300 hover:bg-gray-50 hover:border-gray-400 transition-colors font-medium text-sm min-w-[140px]"
+                      className="inline-flex items-center justify-center gap-2 bg-white text-gray-700 px-6 py-3.5 rounded-full border-2 border-gray-300 hover:bg-gray-50 hover:border-gray-400 transition-all hover:scale-105 font-medium text-sm shadow-sm hover:shadow-md min-w-[140px]"
                     >
                       <i className="bi bi-rocket-takeoff text-cyan-500 text-lg" aria-hidden="true" />
                       Get Started

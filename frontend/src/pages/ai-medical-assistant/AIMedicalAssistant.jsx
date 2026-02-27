@@ -1,5 +1,5 @@
 import { useLayoutEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Navigation from '../../components/layout/Navigation';
 import Footer from '../../components/layout/Footer';
 import { handleIntercomAction } from '../../utils/intercom';
@@ -108,7 +108,7 @@ function AIMedicalAssistant() {
                   <a
                     href="#"
                     onClick={(e) => handleIntercomClick(e, 'request-demo')}
-                    className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-teal-400 to-emerald-400 text-white px-8 py-4 rounded-xl font-bold text-lg hover:from-teal-500 hover:to-emerald-500 transition-all shadow-xl hover:shadow-2xl hover:scale-105"
+                    className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-teal-400 to-emerald-400 text-white px-8 py-4 rounded-full font-bold text-lg hover:from-teal-500 hover:to-emerald-500 transition-all shadow-xl hover:shadow-2xl hover:scale-105"
                   >
                     <i className="bi bi-calendar-check text-xl"></i>
                     Book a Demo
@@ -116,7 +116,7 @@ function AIMedicalAssistant() {
                   <a
                     href="#"
                     onClick={(e) => handleIntercomClick(e, 'sign-up')}
-                    className="inline-flex items-center justify-center gap-2 bg-white text-teal-400 px-8 py-4 rounded-xl font-bold text-lg hover:bg-teal-50 transition-all border-2 border-teal-300 shadow-lg hover:shadow-xl"
+                    className="inline-flex items-center justify-center gap-2 bg-white text-teal-400 px-8 py-4 rounded-full font-bold text-lg hover:bg-teal-50 transition-all border-2 border-teal-300 shadow-lg hover:shadow-xl"
                   >
                     <i className="bi bi-rocket-takeoff text-xl"></i>
                     Get Started
@@ -318,7 +318,7 @@ function AIMedicalAssistant() {
                 {
                   icon: 'bi-file-earmark-medical',
                   title: 'EHR Integration',
-                  description: 'Structured data ready for direct integration with any EHR system',
+                  description: 'Close charts faster with structured visit data ready to move into your EHR.',
                   color: 'from-cyan-300 to-teal-400',
                 },
                 {
@@ -330,7 +330,7 @@ function AIMedicalAssistant() {
                 {
                   icon: 'bi-shield-check',
                   title: 'HIPAA Compliant',
-                  description: 'Zero data retention, end-to-end encryption, SOC 2 certified',
+                  description: 'Keep patient information protected while you scale documentation speed. Includes zero data retention, end-to-end encryption, and SOC 2 controls.',
                   color: 'from-emerald-300 to-cyan-400',
                 },
                 {
@@ -360,7 +360,7 @@ function AIMedicalAssistant() {
           <div className="container mx-auto px-4 w-full">
             <div className="max-w-4xl mx-auto">
               <div className="rounded-2xl md:rounded-3xl border border-gray-200 bg-white p-6 md:p-10 lg:p-12 shadow-lg shadow-gray-200/60">
-                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8 lg:gap-10">
+                <div className="flex flex-col gap-8 lg:gap-10">
                   <div className="flex-1 min-w-0">
                     <div className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-3">
                       Perfect For You
@@ -374,23 +374,6 @@ function AIMedicalAssistant() {
                     <p className="text-sm text-gray-500">
                       Complete documentation for routine visits, follow-ups, and annual exams.
                     </p>
-                  </div>
-                  <div className="flex flex-col sm:flex-row lg:flex-col xl:flex-row items-stretch sm:items-center gap-3 flex-shrink-0">
-                    <a
-                      href="#"
-                      className="inline-flex items-center justify-center gap-2 bg-gray-900 text-white px-6 py-3.5 rounded-xl hover:bg-gray-800 transition-colors font-semibold text-sm shadow-md min-w-[140px]"
-                      onClick={(e) => handleIntercomClick(e, 'request-demo')}
-                    >
-                      <i className="bi bi-chat-dots-fill text-white text-lg" aria-hidden="true" />
-                      Book a Demo
-                    </a>
-                    <a
-                      href="/sign-up"
-                      className="inline-flex items-center justify-center gap-2 bg-white text-gray-700 px-6 py-3.5 rounded-xl border-2 border-gray-300 hover:bg-gray-50 hover:border-gray-400 transition-colors font-medium text-sm min-w-[140px]"
-                    >
-                      <i className="bi bi-rocket-takeoff text-cyan-500 text-lg" aria-hidden="true" />
-                      Get Started
-                    </a>
                   </div>
                 </div>
               </div>
@@ -424,15 +407,7 @@ function AIMedicalAssistant() {
                           </div>
                         )}
                         <div className="max-w-md mx-auto">
-                          {!isLoading && !isAuthenticated ? (
-                            <Link
-                              to={`/sign-in?redirect=${encodeURIComponent(window.location.pathname)}`}
-                              className="inline-flex items-center justify-center gap-2 w-full px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-lg hover:from-cyan-400 hover:to-blue-500 transition-all text-base font-medium shadow-lg hover:shadow-cyan-500/50"
-                            >
-                              <i className="bi bi-lock-fill"></i>
-                              Sign in to view pricing
-                            </Link>
-                          ) : !isLoading && isAuthenticated ? (
+                          {!isLoading && isAuthenticated ? (
                             (() => {
                               const ownership = checkProductOwnership(product.id);
                               if (ownership) {
@@ -462,6 +437,15 @@ function AIMedicalAssistant() {
                             <div className="text-sm text-gray-600">{metric.label}</div>
                           </div>
                         ))}
+                      </div>
+                      <div className="mt-6 bg-gradient-to-r from-cyan-50 to-blue-50 border border-cyan-100 rounded-xl p-4 text-center">
+                        <div className="inline-flex items-center gap-2 text-cyan-700 font-semibold text-sm mb-1">
+                          <i className="bi bi-stars"></i>
+                          What you can expect
+                        </div>
+                        <p className="text-sm text-gray-700">
+                          Guided onboarding, specialty-ready templates, and support from day one so your team can adopt quickly and confidently.
+                        </p>
                       </div>
                     </>
                   );
@@ -495,7 +479,7 @@ function AIMedicalAssistant() {
                 <a
                   href="#"
                   onClick={(e) => handleIntercomClick(e, 'request-demo')}
-                  className="inline-flex items-center gap-2 bg-gray-900 text-white px-6 py-3.5 rounded-xl hover:bg-gray-800 font-semibold text-sm shadow-md min-w-[140px] transition-colors"
+                  className="inline-flex items-center gap-2 bg-gray-900 text-white px-6 py-3.5 rounded-full hover:bg-gray-800 font-semibold text-sm shadow-md hover:shadow-lg min-w-[140px] transition-all hover:scale-105"
                 >
                   <i className="bi bi-chat-dots-fill text-white text-lg"></i>
                   Book a Demo
@@ -503,7 +487,7 @@ function AIMedicalAssistant() {
                 <a
                   href="#"
                   onClick={(e) => handleIntercomClick(e, 'sign-up')}
-                  className="inline-flex items-center gap-2 bg-white text-gray-700 px-6 py-3.5 rounded-xl border-2 border-gray-300 hover:bg-gray-50 hover:border-gray-400 font-medium text-sm min-w-[140px]"
+                  className="inline-flex items-center gap-2 bg-white text-gray-700 px-6 py-3.5 rounded-full border-2 border-gray-300 hover:bg-gray-50 hover:border-gray-400 font-medium text-sm shadow-sm hover:shadow-md min-w-[140px] transition-all hover:scale-105"
                 >
                   <i className="bi bi-rocket-takeoff text-cyan-500 text-lg"></i>
                   Get Started

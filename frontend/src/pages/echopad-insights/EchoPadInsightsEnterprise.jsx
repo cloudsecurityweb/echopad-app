@@ -45,7 +45,7 @@ function EchoPadInsightsEnterprise() {
         'Staying current with market rate changes',
       ],
       solution:
-        'Real-time MRF data and custom reporting make it easy to demonstrate ROI and recover revenue for your organization or clients.',
+        'Show leaders where revenue is being missed and prioritize high-impact contract actions quickly. Real-time MRF benchmarks and custom reporting support the analysis.',
     },
     {
       title: 'Healthcare Consultants & Advisors',

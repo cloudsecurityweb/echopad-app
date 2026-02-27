@@ -1,12 +1,92 @@
 import { useEffect, useState } from 'react';
 import ProductDetail from './ProductDetail';
+import ProductCard from './ProductCard';
+import { getProductById } from '../../data/products';
+
+const PRODUCT_TYPES = ['All', 'Clinical Documentation', 'Operations', 'Patient Engagement', 'Analytics', 'Care Coordination'];
+
+const PRODUCT_META = {
+  'ai-scribe': {
+    name: 'AI Scribe',
+    productType: 'Clinical Documentation',
+    featured: true,
+    earlyAccess: false,
+    icon: 'bi-mic-fill',
+    link: '/ai-scribe',
+  },
+  'echopad-insights': {
+    name: 'Insights',
+    productType: 'Analytics',
+    featured: true,
+    earlyAccess: false,
+    icon: 'bi-graph-up-arrow',
+    link: '/echopad-insights',
+  },
+  'aperio': {
+    name: 'Aperio',
+    productType: 'Care Coordination',
+    featured: true,
+    earlyAccess: false,
+    icon: 'bi-arrow-left-right',
+    link: '/aperio',
+  },
+  'ai-docman': {
+    name: 'AI Document Manager',
+    productType: 'Clinical Documentation',
+    featured: false,
+    earlyAccess: true,
+    icon: 'bi-file-earmark-text',
+    link: '/ai-docman',
+  },
+  'ai-medical-assistant': {
+    name: 'AI Medical Assistant',
+    productType: 'Clinical Documentation',
+    featured: false,
+    earlyAccess: true,
+    icon: 'bi-person-workspace',
+    link: '/ai-medical-assistant',
+  },
+  'ai-receptionist': {
+    name: 'AI Receptionist',
+    productType: 'Operations',
+    featured: false,
+    earlyAccess: false,
+    icon: 'bi-headset',
+    link: '/ai-receptionist',
+  },
+  'ai-admin-assistant': {
+    name: 'AI Admin Assistant',
+    productType: 'Operations',
+    featured: false,
+    earlyAccess: false,
+    icon: 'bi-briefcase',
+    link: '/ai-admin-assistant',
+  },
+  'ai-reminders': {
+    name: 'AI Patient Reminders',
+    productType: 'Patient Engagement',
+    featured: false,
+    earlyAccess: false,
+    icon: 'bi-bell',
+    link: '/ai-reminders',
+  },
+};
 
 function ProductDetails() {
+  const aiScribeProduct = getProductById('ai-scribe');
+  const aiDocManProduct = getProductById('ai-docman');
+  const aiMedicalAssistantProduct = getProductById('ai-medical-assistant');
+  const aiReceptionistProduct = getProductById('ai-receptionist');
+  const aiAdminAssistantProduct = getProductById('ai-admin-assistant');
+  const aiRemindersProduct = getProductById('ai-reminders');
+  const insightsProduct = getProductById('echopad-insights');
+  const aperioProduct = getProductById('aperio');
+
   const aiScribeData = {
     id: 'ai-scribe',
     label: 'AI SCRIBE',
     title: 'Your Note, Done Before You Leave the Room.',
-    intro: 'No typing, no dictation commands—just talk to your patient. Your note is ready before you leave the room.',
+    intro: aiScribeProduct?.longDescription || 'No typing, no dictation commands—just talk to your patient. Your note is ready before you leave the room.',
     sections: [
       {
         title: 'What You See',
@@ -42,7 +122,7 @@ function ProductDetails() {
                   animation-delay: var(--delay);
                 }
               `}</style>
-              <div className="flex items-center gap-1 mb-2 h-12">
+              <div className="flex items-center justify-center gap-1 mb-2 h-12">
                 <div className="flex gap-1 items-center">
                   {[...Array(25)].map((_, i) => {
                     const peakHeights = [16, 24, 32, 36, 32, 24, 18, 14, 20, 30, 38, 34, 28, 20, 16, 24, 34, 40, 36, 28, 24, 20, 28, 32, 24];
@@ -106,24 +186,18 @@ function ProductDetails() {
     id: 'ai-docman',
     label: 'AI DOCUMENT MANAGER',
     title: 'Instant Document Formatting',
-    intro: 'Drop in messy transcripts and get back perfectly formatted SOAP notes, H&Ps, and discharge summaries—ready to paste into your EHR.',
+    intro: aiDocManProduct?.longDescription || 'Turn messy transcripts into clean, structured SOAP notes, H&Ps, and discharge summaries—ready to paste into your EHR in seconds.',
     sections: [
       {
         title: 'What You See',
-        content: 'Paste any raw transcript, select your template (SOAP note, H&P, discharge summary), and watch AI instantly organize it into professional, compliant medical documentation.',
+        content: 'Paste a raw transcript, pick a template, and instantly see a polished medical note.',
       },
       {
         title: 'Key Benefits',
         items: [
-          'Convert raw transcripts into structured SOAP, H&P, and discharge notes',
-          'Save up to 60 minutes per day for medical assistants and scribes',
-          'Ensure consistent formatting across all clinical documents',
-          'Produce EHR-ready notes without manual editing',
+          'Convert raw text into structured SOAP, H&P, and discharge notes',
+          'Save time for medical assistants and scribes',
         ],
-      },
-      {
-        title: 'Perfect For',
-        content: 'Medical assistants, scribes, and practices that need to quickly convert dictation or notes into properly formatted medical documents.',
       },
     ],
     visualization: {
@@ -181,7 +255,7 @@ function ProductDetails() {
     id: 'ai-medical-assistant',
     label: 'AI MEDICAL ASSISTANT',
     title: 'Complete Visit Documentation',
-    intro: 'Capture entire patient encounters and automatically generate comprehensive EHR-ready documentation.',
+    intro: aiMedicalAssistantProduct?.longDescription || 'Capture entire patient encounters and automatically generate comprehensive EHR-ready documentation.',
     sections: [
       {
         title: 'The Challenge',
@@ -195,12 +269,12 @@ function ProductDetails() {
             description: 'Captures complete patient-provider conversation',
           },
           {
-            title: 'AI Clinical Analysis',
-            description: 'Extracts symptoms, diagnoses, vitals, treatment plans',
+            title: 'Key Clinical Details Captured',
+            description: 'Symptoms, diagnoses, vitals, and treatment plans are extracted automatically.',
           },
           {
             title: 'EHR Data Export',
-            description: 'Structured fields ready for direct EHR integration',
+            description: 'Move the visit into your chart faster with structured fields ready for export.',
           },
         ],
       },
@@ -284,7 +358,7 @@ function ProductDetails() {
     id: 'ai-receptionist',
     label: 'AI RECEPTIONIST',
     title: '24/7 Intelligent Call Handling',
-    intro: 'Automate appointment scheduling, patient inquiries, and call routing with conversational AI that never sleeps.',
+    intro: aiReceptionistProduct?.longDescription || 'Automate appointment scheduling, patient inquiries, and call routing with conversational AI that never sleeps.',
     sections: [
       {
         title: 'The Challenge',
@@ -404,7 +478,7 @@ function ProductDetails() {
     id: 'ai-admin-assistant',
     label: 'AI ADMIN ASSISTANT',
     title: 'Automated Operational Workflows',
-    intro: 'Eliminate repetitive administrative tasks with intelligent automation that handles forms, emails, and scheduling.',
+    intro: aiAdminAssistantProduct?.longDescription || 'Eliminate repetitive administrative tasks with intelligent automation that handles forms, emails, and scheduling.',
     sections: [
       {
         title: 'The Challenge',
@@ -519,7 +593,7 @@ function ProductDetails() {
     id: 'ai-reminders',
     label: 'AI PATIENT REMINDERS',
     title: 'Personalized Care Coordination',
-    intro: 'Automated, intelligent reminders that reduce no-shows and improve patient compliance across the care continuum.',
+    intro: aiRemindersProduct?.longDescription || 'Automated, intelligent reminders that reduce no-shows and improve patient compliance across the care continuum.',
     sections: [
       {
         title: 'The Challenge',
@@ -640,99 +714,101 @@ function ProductDetails() {
     },
   };
 
-  const benchmarkData = {
-    id: 'benchmark',
-    label: 'BENCHMARK',
-    title: 'Track and Optimize Clinical Performance',
-    intro: 'Advanced analytics that benchmark your practice against industry standards and surface clear opportunities for improvement.',
+  const insightsData = {
+    id: 'echopad-insights',
+    label: 'INSIGHTS',
+    title: 'Revenue Intelligence for Underpayments',
+    intro:
+      insightsProduct?.longDescription ||
+      "Are you being underpaid? One simple dashboard shows exactly where insurers are short-paying you and how much you could recover—no spreadsheets, no jargon.",
     sections: [
       {
         title: 'What You See',
-        content: 'See how you compare to national benchmarks at a glance—drill down and export reports when you need them.',
+        content:
+          "A clear view of where you're underpaid across payers, procedures, and regions—so you know exactly which contracts and codes are leaving money on the table.",
       },
       {
         title: 'Key Benefits',
         items: [
-          'See your performance vs. benchmarks when you need it',
-          'Industry benchmark comparisons',
-          'Custom KPI tracking',
-          'Automated reporting and alerts',
-          'Quality improvement insights',
+          'Identify underpayments across all payer contracts',
+          'Benchmark your rates against regional and specialty peers',
+          'Negotiate with data-backed leverage, not guesswork',
         ],
       },
       {
         title: 'Perfect For',
-        content: 'Quality improvement teams, practice administrators, and healthcare networks focused on clinical excellence.',
+        content:
+          "Practice owners, medical groups, and finance leaders who want to stop leaving money on the table without hiring expensive consultants.",
       },
     ],
     visualization: {
-      title: 'Performance Analytics Dashboard',
+      title: 'How Insights Works',
       steps: [
         {
-          title: 'Clinical Quality Metrics',
+          title: 'Compare Your Rates to the Market',
           content: (
-            <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg p-4">
-              <div className="flex items-center justify-between mb-3">
-                <h4 className="font-semibold text-gray-900">Clinical Quality Metrics</h4>
-                <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">Live</span>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="bg-white rounded-lg p-3">
-                  <div className="text-2xl font-bold text-green-600">92%</div>
-                  <div className="text-xs text-gray-600">Patient Satisfaction</div>
-                  <div className="text-xs text-green-600 mt-1">+5% vs benchmark</div>
+            <div className="space-y-2 text-sm text-gray-700">
+              <p>
+                We line up what you get paid vs. what similar practices receive from the same payers across all 50 states.
+              </p>
+              <div className="grid grid-cols-2 gap-2 mt-2">
+                <div className="bg-blue-50 border border-blue-100 rounded-lg p-2 text-xs">
+                  <div className="font-semibold text-gray-800 mb-1">Payers Included</div>
+                  <ul className="space-y-1 text-gray-700">
+                    <li>UHC, Anthem, Aetna</li>
+                    <li>Cigna, Humana, and more</li>
+                  </ul>
                 </div>
-                <div className="bg-white rounded-lg p-3">
-                  <div className="text-2xl font-bold text-blue-600">87%</div>
-                  <div className="text-xs text-gray-600">Documentation Quality</div>
-                  <div className="text-xs text-blue-600 mt-1">+3% vs benchmark</div>
+                <div className="bg-purple-50 border border-purple-100 rounded-lg p-2 text-xs text-gray-700">
+                  <div className="font-semibold text-gray-800 mb-1">Coverage</div>
+                  <div>All 50 states • data kept current</div>
                 </div>
               </div>
             </div>
           ),
         },
         {
-          title: 'Benchmark Comparison',
+          title: "See Where You're Underpaid",
           content: (
-            <div className="space-y-3">
-              {[
-                { metric: 'Wait Time', value: 12, benchmark: 18, unit: 'min' },
-                { metric: 'Visit Duration', value: 28, benchmark: 25, unit: 'min' },
-                { metric: 'Follow-up Rate', value: 85, benchmark: 78, unit: '%' },
-              ].map((item, idx) => (
-                <div key={idx} className="bg-white rounded-lg p-3">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-sm font-medium text-gray-700">{item.metric}</span>
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-bold text-gray-900">{item.value}{item.unit}</span>
-                      <span className="text-xs text-gray-500">vs {item.benchmark}{item.unit}</span>
-                    </div>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div
-                      className={`h-2 rounded-full ${item.value > item.benchmark ? 'bg-green-500' : 'bg-blue-500'}`}
-                      style={{ width: `${Math.min((item.value / item.benchmark) * 100, 100)}%` }}
-                    ></div>
-                  </div>
+            <div className="space-y-2 text-sm text-gray-700">
+              <p>
+                Insights highlights underpaid contracts and CPT codes with clear percentages and dollar impact, so you know
+                where to focus.
+              </p>
+              <div className="bg-purple-50 border border-purple-100 rounded-lg p-3 text-xs">
+                <div className="flex justify-between mb-1">
+                  <span className="font-medium text-gray-800">Aetna vs Market Avg</span>
+                  <span className="font-bold text-red-600">-16% below</span>
                 </div>
-              ))}
+                <div className="flex justify-between text-gray-700">
+                  <span>Your: $84</span>
+                  <span>Market: $100</span>
+                </div>
+              </div>
             </div>
           ),
         },
         {
-          title: 'Actionable Insights',
+          title: 'Take Action with Real Numbers',
           content: (
-            <div className="space-y-2 text-sm">
-              {[
-                'Peak appointment times show 15% higher no-show rates',
-                'Documentation completion within 24hrs improved by 18%',
-                'Patient satisfaction correlates with provider response time',
-              ].map((insight, idx) => (
-                <div key={idx} className="flex items-start gap-2">
-                  <i className="bi bi-lightbulb-fill text-yellow-500 mt-0.5"></i>
-                  <span className="text-gray-700">{insight}</span>
+            <div className="space-y-2 text-sm text-gray-700">
+              <p>
+                Get a prioritized list of opportunities with estimated annual revenue impact so you can walk into
+                negotiations with confidence.
+              </p>
+              <div className="bg-emerald-50 border border-emerald-100 rounded-lg p-3 text-xs space-y-2">
+                <div className="flex justify-between">
+                  <span className="font-medium text-gray-800">Renegotiate Aetna Contract</span>
+                  <span className="font-bold text-emerald-600">+$240K est.</span>
                 </div>
-              ))}
+                <div className="flex justify-between">
+                  <span className="font-medium text-gray-800">Review CPT 99213/14 Rates</span>
+                  <span className="font-bold text-blue-600">+$150K est.</span>
+                </div>
+                <div className="text-[11px] text-gray-500">
+                  Example outcomes; actual results vary by practice size and mix.
+                </div>
+              </div>
             </div>
           ),
         },
@@ -744,7 +820,7 @@ function ProductDetails() {
     id: 'aperio',
     label: 'APERIO',
     title: 'Streamline Referral Management',
-    intro: 'Intelligent referral tracking that ensures seamless patient handoffs and improves care coordination across providers.',
+    intro: aperioProduct?.longDescription || 'Fewer patients fall through the cracks with referral tracking that keeps every handoff moving.',
     sections: [
       {
         title: 'What You See',
@@ -754,7 +830,7 @@ function ProductDetails() {
         title: 'Key Benefits',
         items: [
           'Automated referral tracking',
-          'Provider network integration',
+          'Connect referrals across your provider network',
           'Patient follow-up reminders',
           'Referral status notifications',
           'Care coordination workflows',
@@ -844,7 +920,7 @@ function ProductDetails() {
 
   const products = [
     aiScribeData,
-    benchmarkData,
+    insightsData,
     aperioData,
     aiDocManData,
     aiMedicalAssistantData,
@@ -855,6 +931,16 @@ function ProductDetails() {
   const totalSlides = products.length;
   const [activeIndex, setActiveIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const [productTypeFilter, setProductTypeFilter] = useState('all');
+
+  const productsWithMeta = products.map((p) => ({ ...p, ...PRODUCT_META[p.id] }));
+  const filteredProducts =
+    productTypeFilter === 'all'
+      ? productsWithMeta
+      : productsWithMeta.filter((p) => p.productType === productTypeFilter);
+  const featuredList = filteredProducts.filter((p) => p.featured);
+  const earlyAccessList = filteredProducts.filter((p) => p.earlyAccess && !p.featured);
+  const restList = filteredProducts.filter((p) => !p.featured && !p.earlyAccess);
 
   useEffect(() => {
     if (isPaused) {
@@ -879,11 +965,141 @@ function ProductDetails() {
   return (
     <div className="collapsible-sections-container bg-white py-8 md:py-12">
       <div className="container mx-auto px-4 sm:px-6">
-        <div className="text-center mb-4 md:mb-6">
-          <div className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-2">
-            Products
+        
+        {/* Product cards section: filter + grouped cards */}
+        <section className="mb-4 md:mb-6">
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 text-center mb-1 pb-3 border-b border-gray-200">
+            Browse Our Products
+          </h2>
+          <div className="flex flex-wrap items-center justify-center gap-2 mb-4 mt-4">
+            {PRODUCT_TYPES.map((type) => {
+              const value = type === 'All' ? 'all' : type;
+              const isActive = productTypeFilter === value;
+              return (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => setProductTypeFilter(value)}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    isActive
+                      ? 'bg-cyan-500 text-white shadow-sm'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}
+                >
+                  {type}
+                </button>
+              );
+            })}
           </div>
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 px-2">
+          <div className="space-y-4">
+            {featuredList.length > 0 && (
+              <div>
+                <h3 className="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2 before:content-[''] before:w-1 before:h-5 before:bg-cyan-500 before:rounded-full">
+                  Featured
+                </h3>
+                <div className={
+                  featuredList.length === 1
+                    ? 'flex justify-center'
+                    : featuredList.length === 2
+                      ? 'grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-4xl mx-auto'
+                      : 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3'
+                }>
+                  {featuredList.map((product) => {
+                    const index = productsWithMeta.findIndex((p) => p.id === product.id);
+                    return (
+                      <div key={product.id} className={featuredList.length === 1 ? 'w-full max-w-xl' : ''}>
+                        <ProductCard
+                          icon={product.icon}
+                          title={product.name}
+                          description={product.intro}
+                          link={product.link}
+                          featured={true}
+                          comingSoon={false}
+                          onSelect={() => {
+                            setActiveIndex(index);
+                            document.querySelector('#product-carousel')?.scrollIntoView({ behavior: 'smooth' });
+                          }}
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+            {earlyAccessList.length > 0 && (
+              <div>
+                <h3 className="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2 before:content-[''] before:w-1 before:h-5 before:bg-amber-500 before:rounded-full">
+                  Early access
+                </h3>
+                <div className={
+                  earlyAccessList.length === 1
+                    ? 'flex justify-center'
+                    : earlyAccessList.length === 2
+                      ? 'grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-4xl mx-auto'
+                      : 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3'
+                }>
+                  {earlyAccessList.map((product) => {
+                    const index = productsWithMeta.findIndex((p) => p.id === product.id);
+                    return (
+                      <div key={product.id} className={earlyAccessList.length === 1 ? 'w-full max-w-xl' : ''}>
+                        <ProductCard
+                          icon={product.icon}
+                          title={product.name}
+                          description={product.intro}
+                          link={product.link}
+                          featured={false}
+                          comingSoon={true}
+                          onSelect={() => {
+                            setActiveIndex(index);
+                            document.querySelector('#product-carousel')?.scrollIntoView({ behavior: 'smooth' });
+                          }}
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+            {restList.length > 0 && (
+              <div>
+                <h3 className="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2 before:content-[''] before:w-1 before:h-5 before:bg-gray-400 before:rounded-full">
+                  Other products
+                </h3>
+                <div className={
+                  restList.length === 1
+                    ? 'flex justify-center'
+                    : restList.length === 2
+                      ? 'grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-4xl mx-auto'
+                      : 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3'
+                }>
+                  {restList.map((product) => {
+                    const index = productsWithMeta.findIndex((p) => p.id === product.id);
+                    return (
+                      <div key={product.id} className={restList.length === 1 ? 'w-full max-w-xl' : ''}>
+                        <ProductCard
+                          icon={product.icon}
+                          title={product.name}
+                          description={product.intro}
+                          link={product.link}
+                          featured={false}
+                          comingSoon={false}
+                          onSelect={() => {
+                            setActiveIndex(index);
+                            document.querySelector('#product-carousel')?.scrollIntoView({ behavior: 'smooth' });
+                          }}
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+        </section>
+
+        {/* Product carousel section */}
+        <div className="text-center mb-4 md:mb-6 mt-30">
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 text-center mb-1 pb-3 border-b border-gray-200">
             Explore the Echopad Suite
           </h2>
           <div className="text-xs text-gray-500 mt-2">
@@ -891,15 +1107,7 @@ function ProductDetails() {
           </div>
         </div>
 
-        <div className="relative px-0 md:px-16 lg:px-20">
-          <button
-            type="button"
-            onClick={handlePrev}
-            aria-label="Previous product"
-            className="hidden md:flex items-center justify-center absolute left-0 top-1/2 -translate-y-1/2 w-14 h-14 md:w-16 md:h-16 rounded-full bg-white border border-gray-300 text-gray-600 hover:bg-gray-100 hover:text-gray-900 shadow-md hover:shadow-lg transition-all cursor-pointer z-10 hover:scale-110"
-          >
-            <i className="bi bi-arrow-left text-xl md:text-2xl font-bold"></i>
-          </button>
+        <div id="product-carousel" className="relative px-0 md:px-16 lg:px-20">
           <div
             key={products[activeIndex].id}
             className="animate-fade-in-scale"
@@ -908,14 +1116,6 @@ function ProductDetails() {
           >
             <ProductDetail {...products[activeIndex]} />
           </div>
-          <button
-            type="button"
-            onClick={handleNext}
-            aria-label="Next product"
-            className="hidden md:flex items-center justify-center absolute right-0 top-1/2 -translate-y-1/2 w-14 h-14 md:w-16 md:h-16 rounded-full bg-white border border-gray-300 text-gray-600 hover:bg-gray-100 hover:text-gray-900 shadow-md hover:shadow-lg transition-all cursor-pointer z-10 hover:scale-110"
-          >
-            <i className="bi bi-arrow-right text-xl md:text-2xl font-bold"></i>
-          </button>
         </div>
 
         {/* Dot Indicators */}
