@@ -20,7 +20,7 @@ function Hero() {
       <div className="container mx-auto px-4 flex-1 flex flex-col justify-center">
         <div className="text-center max-w-3xl mx-auto relative z-10">
           {/* Top badges: outcomes-first, no jargon */}
-          <div className="flex flex-wrap justify-center items-center gap-2 mb-4 animate-fade-in-scale mt-12">
+          <div className="flex flex-wrap justify-center items-center gap-2 mb-4 animate-fade-in-scale mt-8">
             <a
               href="#platform"
               className="inline-flex items-center gap-2 bg-emerald-50 border border-emerald-200 text-emerald-800 px-3 py-1.5 rounded-full text-sm font-semibold hover:bg-emerald-100 transition-colors shadow-sm"
@@ -37,7 +37,7 @@ function Hero() {
           </p>
           <h1 className="text-3xl sm:text-4xl md:text-4xl lg:text-5xl font-bold mb-3 leading-tight animate-fade-in-scale animation-delay-100">
             <span className="text-gray-900">One AI Platform for </span>
-            <span className="animate-gradient-text">Your Medical Practice.</span>
+            <span className="animate-gradient-text">Your Entire Medical Practice.</span>
           </h1>
 
           {/* Subtitle — plain language, trust signals: EHR, HIPAA, setup speed */}

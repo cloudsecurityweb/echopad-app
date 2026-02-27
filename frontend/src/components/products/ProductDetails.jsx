@@ -1001,8 +1001,8 @@ function ProductDetails() {
                   featuredList.length === 1
                     ? 'flex justify-center'
                     : featuredList.length === 2
-                      ? 'grid grid-cols-2 gap-3 max-w-4xl mx-auto'
-                      : 'grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3'
+                      ? 'grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-4xl mx-auto'
+                      : 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3'
                 }>
                   {featuredList.map((product) => {
                     const index = productsWithMeta.findIndex((p) => p.id === product.id);
@@ -1035,8 +1035,8 @@ function ProductDetails() {
                   earlyAccessList.length === 1
                     ? 'flex justify-center'
                     : earlyAccessList.length === 2
-                      ? 'grid grid-cols-2 gap-3 max-w-4xl mx-auto'
-                      : 'grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3'
+                      ? 'grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-4xl mx-auto'
+                      : 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3'
                 }>
                   {earlyAccessList.map((product) => {
                     const index = productsWithMeta.findIndex((p) => p.id === product.id);
@@ -1069,8 +1069,8 @@ function ProductDetails() {
                   restList.length === 1
                     ? 'flex justify-center'
                     : restList.length === 2
-                      ? 'grid grid-cols-2 gap-3 max-w-4xl mx-auto'
-                      : 'grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3'
+                      ? 'grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-4xl mx-auto'
+                      : 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3'
                 }>
                   {restList.map((product) => {
                     const index = productsWithMeta.findIndex((p) => p.id === product.id);

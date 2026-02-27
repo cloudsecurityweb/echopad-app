@@ -99,9 +99,11 @@ function AgentsOverview() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-4xl mx-auto">
-            <div className="flex items-start gap-3 glass-card p-4 rounded-xl hover-lift shadow-sm">
-              <i className="bi bi-currency-dollar text-cyan-500 text-2xl flex-shrink-0"></i>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 max-w-5xl mx-auto">
+            <div className="glass-card rounded-xl p-5 md:p-6 hover-lift shadow-sm border border-gray-100">
+              <div className="w-10 h-10 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-lg flex items-center justify-center mb-3 shadow-lg">
+                <i className="bi bi-currency-dollar text-white text-lg"></i>
+              </div>
               <div>
                 <strong className="block text-gray-900 mb-0.5 text-sm md:text-base">
                   Typical: up to 60% less admin time
@@ -114,8 +116,10 @@ function AgentsOverview() {
                 </span>
               </div>
             </div>
-            <div className="flex items-start gap-3 glass-card p-4 rounded-xl hover-lift shadow-sm">
-              <i className="bi bi-graph-up-arrow text-green-500 text-2xl flex-shrink-0"></i>
+            <div className="glass-card rounded-xl p-5 md:p-6 hover-lift shadow-sm border border-gray-100">
+              <div className="w-10 h-10 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-lg flex items-center justify-center mb-3 shadow-lg">
+                <i className="bi bi-graph-up-arrow text-white text-lg"></i>
+              </div>
               <div>
                 <strong className="block text-gray-900 mb-0.5 text-sm md:text-base">
                   Typical: 15-20% revenue lift
@@ -128,8 +132,10 @@ function AgentsOverview() {
                 </span>
               </div>
             </div>
-            <div className="flex items-start gap-3 glass-card p-4 rounded-xl hover-lift shadow-sm">
-              <i className="bi bi-people text-purple-500 text-2xl flex-shrink-0"></i>
+            <div className="glass-card rounded-xl p-5 md:p-6 hover-lift shadow-sm border border-gray-100">
+              <div className="w-10 h-10 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-lg flex items-center justify-center mb-3 shadow-lg">
+                <i className="bi bi-people text-white text-lg"></i>
+              </div>
               <div>
                 <strong className="block text-gray-900 mb-0.5 text-sm md:text-base">
                   Typical: up to 40% better staff retention

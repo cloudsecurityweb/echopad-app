@@ -35,12 +35,17 @@ function ProductDetail({
                 const perfectFor = sections.find((s) => s.title === 'Perfect For');
                 const howItWorks = sections.find((s) => s.title === 'How It Works');
                 const clinicalImpact = sections.find((s) => s.title === 'Clinical Impact');
+                const operationalImpact = sections.find((s) => s.title === 'Operational Impact');
+                const patientEngagementImpact = sections.find((s) => s.title === 'Patient Engagement Impact');
+                const impactSection = clinicalImpact || operationalImpact || patientEngagementImpact;
                 const otherSections = sections.filter(
                   (s) =>
                     s.title !== 'Key Benefits' &&
                     s.title !== 'Perfect For' &&
                     s.title !== 'How It Works' &&
-                    s.title !== 'Clinical Impact'
+                    s.title !== 'Clinical Impact' &&
+                    s.title !== 'Operational Impact' &&
+                    s.title !== 'Patient Engagement Impact'
                 );
 
                 return (
@@ -150,7 +155,7 @@ function ProductDetail({
                       </div>
                     )}
 
-                    {(howItWorks || clinicalImpact) && (
+                    {(howItWorks || impactSection) && (
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-4 md:mb-5 items-start">
                         {howItWorks && (
                           <div>
@@ -195,19 +200,19 @@ function ProductDetail({
                           </div>
                         )}
 
-                        {clinicalImpact && (
+                        {impactSection && (
                           <div>
                             <h4 className="text-lg md:text-xl font-bold text-gray-900 mb-1 md:mb-2">
-                              {clinicalImpact.title}
+                              {impactSection.title}
                             </h4>
-                            {clinicalImpact.content && (
+                            {impactSection.content && (
                               <p className="text-sm md:text-base text-gray-600 mb-2 md:mb-3 leading-relaxed">
-                                {clinicalImpact.content}
+                                {impactSection.content}
                               </p>
                             )}
-                            {clinicalImpact.items && (
+                            {impactSection.items && (
                               <ul className="space-y-1.5 md:space-y-2">
-                                {clinicalImpact.items.map((item, itemIndex) => (
+                                {impactSection.items.map((item, itemIndex) => (
                                   <li
                                     key={itemIndex}
                                     className="flex items-start gap-2 md:gap-3 text-sm md:text-base text-gray-600"
@@ -218,9 +223,9 @@ function ProductDetail({
                                 ))}
                               </ul>
                             )}
-                            {clinicalImpact.processSteps && (
+                            {impactSection.processSteps && (
                               <div className="space-y-2 md:space-y-3">
-                                {clinicalImpact.processSteps.map((step, stepIndex) => (
+                                {impactSection.processSteps.map((step, stepIndex) => (
                                   <div key={stepIndex} className="flex gap-2.5 md:gap-3">
                                     <div className="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-cyan-500 to-blue-600 text-white rounded-full flex items-center justify-center font-bold flex-shrink-0 shadow-lg text-sm md:text-base">
                                       {stepIndex + 1}
