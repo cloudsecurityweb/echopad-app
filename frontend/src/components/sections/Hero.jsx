@@ -16,7 +16,7 @@ function Hero() {
   };
 
   return (
-    <FullScreenSection id="hero" className="bg-gradient-to-b from-blue-50 via-white to-purple-50 min-h-[72vh] flex flex-col justify-center">
+    <FullScreenSection id="hero" className="bg-gradient-to-b from-blue-50 via-white to-purple-50 min-h-[100vh] flex flex-col justify-center">
       <div className="container mx-auto px-4 flex-1 flex flex-col justify-center">
         <div className="text-center max-w-3xl mx-auto relative z-10">
           {/* Top badges: outcomes-first, no jargon */}
@@ -66,11 +66,11 @@ function Hero() {
           {/* CTAs */}
           <div className="flex flex-col sm:flex-row gap-3 justify-center mb-6 animate-fade-in-scale animation-delay-400">
             <a
-              href="#demo"
+              href="/sign-up"
               className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-6 py-3 rounded-xl hover:from-cyan-400 hover:to-blue-500 transition-all font-semibold text-sm shadow-lg hover:scale-105"
             >
-              <i className="bi bi-play-circle-fill"></i>
-              See a 2-minute demo
+              <i className="bi bi-rocket-takeoff"></i>
+              Get Started
             </a>
             <a
               href="/"
@@ -78,30 +78,12 @@ function Hero() {
               className="inline-flex items-center justify-center gap-2 glass-card border-2 border-cyan-500/50 text-gray-800 px-6 py-3 rounded-xl hover:bg-cyan-50/50 hover:border-cyan-500 transition-all font-semibold text-sm hover:scale-105 shadow-sm"
             >
               <i className="bi bi-grid-3x3-gap"></i>
-              See Solutions
+              Explore products
             </a>
           </div>
 
           {/* Trusted by — social proof above the fold */}
-          <p className="text-xs sm:text-sm text-gray-500 mb-6 animate-fade-in-scale animation-delay-400">
-            Trusted by <span className="font-semibold text-gray-700">50+ practices</span> across family medicine, multi-specialty, and health systems
-          </p>
-
-          {/* Trust / differentiators — EHR, HIPAA, setup speed only */}
-          <div className="flex flex-wrap justify-center gap-6 sm:gap-8 animate-fade-in-scale animation-delay-500 text-sm">
-            <div className="text-center">
-              <div className="font-semibold text-gray-800">EHR compatible</div>
-              <div className="text-xs text-gray-500">Works with your existing system</div>
-            </div>
-            <div className="text-center">
-              <div className="font-semibold text-gray-800">HIPAA compliant</div>
-              <div className="text-xs text-gray-500">BAA included</div>
-            </div>
-            <div className="text-center">
-              <div className="font-semibold text-gray-800">Live in ~30 days</div>
-              <div className="text-xs text-gray-500">We handle setup—no IT needed</div>
-            </div>
-          </div>
+          
         </div>
       </div>
 
