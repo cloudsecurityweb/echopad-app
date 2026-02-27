@@ -227,8 +227,6 @@ function IntercomBootstrap() {
   const { isAuthenticated, userProfile } = useAuth();
 
   useEffect(() => {
-    if (!hasConsent()) return;
-
     if (isAuthenticated && userProfile?.user) {
       // Upgrade anonymous session → identity-verified session
       fetchIntercomIdentity()
@@ -250,22 +248,22 @@ function IntercomBootstrap() {
 }
 
 function App({ msalInstance }) {
-  // Initialize consent management and conditionally load analytics scripts
+  // Initialize consent management; Intercom always loads, analytics stay consent-gated
   useEffect(() => {
     initializeConsentManagement();
 
+    // Intercom must be available regardless of cookie consent choice.
+    loadIntercomScript();
+    // Boot in anonymous mode so the launcher icon is always visible.
+    bootIntercomAnonymous();
+
     if (hasConsent()) {
       initGoogleAnalytics();
-      loadIntercomScript();
-      // Boot in anonymous mode so the launcher icon is always visible
-      bootIntercomAnonymous();
     }
 
     // Deferred initialization — called by CookieConsent when user accepts
     window.initializeAnalytics = () => {
       initGoogleAnalytics();
-      loadIntercomScript();
-      bootIntercomAnonymous();
     };
   }, []);
 
