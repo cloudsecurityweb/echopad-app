@@ -112,18 +112,10 @@ function EchoPadInsights() {
                   <a
                     href="#"
                     onClick={(e) => handleIntercomClick(e, 'request-demo')}
-                    className="inline-flex items-center justify-center gap-3 bg-purple-600 text-white px-6 py-3 rounded-xl font-bold text-base hover:bg-purple-700 transition-all shadow-lg hover:shadow-xl hover:scale-105"
+                    className="inline-flex items-center justify-center gap-3 bg-purple-600 text-white px-6 py-3 rounded-full font-bold text-base hover:bg-purple-700 transition-all shadow-lg hover:shadow-xl hover:scale-105"
                   >
                     <i className="bi bi-calendar-check text-xl"></i>
                     Request a Demo
-                  </a>
-                  <a
-                    href="#"
-                    onClick={(e) => handleIntercomClick(e, 'sign-up')}
-                    className="inline-flex items-center justify-center gap-3 bg-white text-purple-600 px-6 py-3 rounded-xl font-bold text-base hover:bg-gray-50 transition-all border-2 border-purple-600 hover:border-purple-700"
-                  >
-                    <i className="bi bi-play-circle text-xl"></i>
-                    See How It Works
                   </a>
                 </div>
 
@@ -370,18 +362,10 @@ function EchoPadInsights() {
                   <a
                     href="#"
                     onClick={(e) => handleIntercomClick(e, 'request-demo')}
-                    className="inline-flex items-center justify-center gap-3 bg-purple-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-purple-700 transition-all shadow-lg hover:shadow-xl hover:scale-105"
+                    className="inline-flex items-center justify-center gap-3 bg-purple-600 text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-purple-700 transition-all shadow-lg hover:shadow-xl hover:scale-105"
                   >
                     <i className="bi bi-calendar-check text-2xl"></i>
                     Get Free Analysis
-                  </a>
-                  <a
-                    href="#"
-                    onClick={(e) => handleIntercomClick(e, 'sign-up')}
-                    className="inline-flex items-center justify-center gap-3 bg-white text-purple-600 px-8 py-4 rounded-xl font-bold text-lg hover:bg-purple-100 transition-all shadow-lg hover:shadow-xl hover:scale-105 border-2 border-purple-300"
-                  >
-                    <i className="bi bi-chat-dots text-2xl"></i>
-                    Talk to an Expert
                   </a>
                 </div>
               </div>
@@ -555,7 +539,7 @@ function EchoPadInsights() {
               <a
                 href="#"
                 onClick={(e) => handleIntercomClick(e, 'request-demo')}
-                className="inline-flex items-center justify-center gap-3 bg-purple-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-purple-700 transition-all shadow-lg hover:shadow-xl hover:scale-105"
+                className="inline-flex items-center justify-center gap-3 bg-purple-600 text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-purple-700 transition-all shadow-lg hover:shadow-xl hover:scale-105"
               >
                 <i className="bi bi-rocket-takeoff text-2xl"></i>
                 Start Optimizing Revenue Today
@@ -691,7 +675,7 @@ function EchoPadInsights() {
                   <div className="flex flex-col sm:flex-row lg:flex-col xl:flex-row items-stretch sm:items-center gap-3 flex-shrink-0">
                     <a
                       href="#"
-                      className="inline-flex items-center justify-center gap-2 bg-gray-900 text-white px-6 py-3.5 rounded-xl hover:bg-gray-800 transition-colors font-semibold text-sm shadow-md min-w-[140px]"
+                      className="inline-flex items-center justify-center gap-2 bg-gray-900 text-white px-6 py-3.5 rounded-full hover:bg-gray-800 transition-all hover:scale-105 font-semibold text-sm shadow-md hover:shadow-lg min-w-[140px]"
                       onClick={(e) => handleIntercomClick(e, 'request-demo')}
                     >
                       <i className="bi bi-chat-dots-fill text-white text-lg" aria-hidden="true" />

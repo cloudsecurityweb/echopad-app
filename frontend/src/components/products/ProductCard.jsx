@@ -6,12 +6,11 @@ function ProductCard({ icon, title, description, link, featured = false, comingS
   const linkContent = (
     <>
       Learn More
-      <i className="bi bi-arrow-right group-hover:translate-x-1 transition-transform text-xs"></i>
     </>
   );
 
   const btnClass =
-    'inline-flex items-center gap-1.5 bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-4 py-2 rounded-lg hover:from-cyan-400 hover:to-blue-500 font-medium text-xs md:text-sm group/link transition-all hover:scale-105 shadow-md';
+    'inline-flex items-center bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-4 py-2 rounded-lg hover:from-cyan-400 hover:to-blue-500 font-medium text-xs md:text-sm group/link transition-all hover:scale-105 shadow-md';
 
   const handleCardClick = (e) => {
     if (onSelect) {

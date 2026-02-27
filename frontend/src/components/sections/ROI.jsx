@@ -27,21 +27,21 @@ function ROI() {
               <div>
                 <h3 className="text-xs md:text-sm font-semibold text-gray-700 mb-1.5 md:mb-2">10-provider practice</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-3 lg:gap-4">
-                  <div className="glass-card rounded-2xl p-2 md:p-3 lg:p-4 xl:p-5 text-center hover-lift shadow-sm">
+                  <div className="glass-card rounded-2xl p-3 md:p-4 lg:p-5 xl:p-6 min-h-[160px] md:min-h-[180px] text-center hover-lift shadow-sm">
                     <div className="w-7 h-7 md:w-8 md:h-8 lg:w-9 lg:h-9 xl:w-10 xl:h-10 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-1 md:mb-2 lg:mb-2.5 shadow-md">
                       <i className="bi bi-currency-dollar text-white text-xs md:text-sm lg:text-base xl:text-lg"></i>
                     </div>
                     <div className="text-lg md:text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl font-bold bg-gradient-to-r from-cyan-500 to-blue-600 bg-clip-text text-transparent mb-0.5 md:mb-1">$180K</div>
                     <p className="text-xs md:text-sm text-gray-600">Annual savings from reduced overtime and better billing capture</p>
                   </div>
-                  <div className="glass-card rounded-2xl p-2 md:p-3 lg:p-4 xl:p-5 text-center hover-lift shadow-sm">
+                  <div className="glass-card rounded-2xl p-3 md:p-4 lg:p-5 xl:p-6 min-h-[160px] md:min-h-[180px] text-center hover-lift shadow-sm">
                     <div className="w-7 h-7 md:w-8 md:h-8 lg:w-9 lg:h-9 xl:w-10 xl:h-10 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-1 md:mb-2 lg:mb-2.5 shadow-md">
                       <i className="bi bi-graph-up-arrow text-white text-xs md:text-sm lg:text-base xl:text-lg"></i>
                     </div>
                     <div className="text-lg md:text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl font-bold bg-gradient-to-r from-cyan-500 to-blue-600 bg-clip-text text-transparent mb-0.5 md:mb-1">Up to 60%</div>
                     <p className="text-xs md:text-sm text-gray-600">Less time spent on admin tasks</p>
                   </div>
-                  <div className="glass-card rounded-2xl p-2 md:p-3 lg:p-4 xl:p-5 text-center hover-lift shadow-sm">
+                  <div className="glass-card rounded-2xl p-3 md:p-4 lg:p-5 xl:p-6 min-h-[160px] md:min-h-[180px] text-center hover-lift shadow-sm">
                     <div className="w-7 h-7 md:w-8 md:h-8 lg:w-9 lg:h-9 xl:w-10 xl:h-10 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-1 md:mb-2 lg:mb-2.5 shadow-md">
                       <i className="bi bi-people text-white text-xs md:text-sm lg:text-base xl:text-lg"></i>
                     </div>
@@ -55,21 +55,21 @@ function ROI() {
               <div>
                 <h3 className="text-xs md:text-sm font-semibold text-gray-700 mb-1.5 md:mb-2">Small practice (1–3 providers)</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-3 lg:gap-4">
-                  <div className="glass-card rounded-2xl p-2 md:p-3 lg:p-4 xl:p-5 text-center hover-lift shadow-sm border border-cyan-100">
+                  <div className="glass-card rounded-2xl p-3 md:p-4 lg:p-5 xl:p-6 min-h-[160px] md:min-h-[180px] text-center hover-lift shadow-sm border border-cyan-100">
                     <div className="w-7 h-7 md:w-8 md:h-8 lg:w-9 lg:h-9 xl:w-10 xl:h-10 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-1 md:mb-2 lg:mb-2.5 shadow-md">
                       <i className="bi bi-currency-dollar text-white text-xs md:text-sm lg:text-base xl:text-lg"></i>
                     </div>
                     <div className="text-lg md:text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl font-bold bg-gradient-to-r from-cyan-500 to-blue-600 bg-clip-text text-transparent mb-0.5 md:mb-1">$45K–$55K</div>
                     <p className="text-xs md:text-sm text-gray-600">Annual savings from reduced overtime and better billing capture</p>
                   </div>
-                  <div className="glass-card rounded-2xl p-2 md:p-3 lg:p-4 xl:p-5 text-center hover-lift shadow-sm border border-cyan-100">
+                  <div className="glass-card rounded-2xl p-3 md:p-4 lg:p-5 xl:p-6 min-h-[160px] md:min-h-[180px] text-center hover-lift shadow-sm border border-cyan-100">
                     <div className="w-7 h-7 md:w-8 md:h-8 lg:w-9 lg:h-9 xl:w-10 xl:h-10 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-1 md:mb-2 lg:mb-2.5 shadow-md">
                       <i className="bi bi-graph-up-arrow text-white text-xs md:text-sm lg:text-base xl:text-lg"></i>
                     </div>
                     <div className="text-lg md:text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl font-bold bg-gradient-to-r from-cyan-500 to-blue-600 bg-clip-text text-transparent mb-0.5 md:mb-1">Up to 60%</div>
                     <p className="text-xs md:text-sm text-gray-600">Less time spent on admin tasks</p>
                   </div>
-                  <div className="glass-card rounded-2xl p-2 md:p-3 lg:p-4 xl:p-5 text-center hover-lift shadow-sm border border-cyan-100">
+                  <div className="glass-card rounded-2xl p-3 md:p-4 lg:p-5 xl:p-6 min-h-[160px] md:min-h-[180px] text-center hover-lift shadow-sm border border-cyan-100">
                     <div className="w-7 h-7 md:w-8 md:h-8 lg:w-9 lg:h-9 xl:w-10 xl:h-10 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-1 md:mb-2 lg:mb-2.5 shadow-md">
                       <i className="bi bi-people text-white text-xs md:text-sm lg:text-base xl:text-lg"></i>
                     </div>
@@ -82,19 +82,19 @@ function ROI() {
                 <div>
                 <h3 className="text-sm md:text-base lg:text-lg xl:text-xl font-semibold text-gray-900 text-center mb-1.5 md:mb-2 lg:mb-3 xl:mb-4">Start your new and improved Agentic journey in 4 simple steps</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-1.5 md:gap-2 lg:gap-3">
-                  <div className="glass-card rounded-xl p-2 md:p-3 lg:p-4 xl:p-4 text-center hover-lift shadow-sm">
+                  <div className="glass-card rounded-xl p-3 md:p-4 lg:p-5 xl:p-5 min-h-[130px] md:min-h-[145px] text-center hover-lift shadow-sm">
                     <div className="text-xs md:text-sm lg:text-base xl:text-lg font-semibold text-gray-900 mb-0.5 md:mb-1">Step 1</div>
                     <p className="text-xs md:text-sm text-gray-600">Sign up</p>
                   </div>
-                  <div className="glass-card rounded-xl p-2 md:p-3 lg:p-4 xl:p-4 text-center hover-lift shadow-sm">
+                  <div className="glass-card rounded-xl p-3 md:p-4 lg:p-5 xl:p-5 min-h-[130px] md:min-h-[145px] text-center hover-lift shadow-sm">
                     <div className="text-xs md:text-sm lg:text-base xl:text-lg font-semibold text-gray-900 mb-0.5 md:mb-1">Step 2</div>
                     <p className="text-xs md:text-sm text-gray-600">Familiarize yourself with the tool (less than 15 min)</p>
                   </div>
-                  <div className="glass-card rounded-xl p-2 md:p-3 lg:p-4 xl:p-4 text-center hover-lift shadow-sm">
+                  <div className="glass-card rounded-xl p-3 md:p-4 lg:p-5 xl:p-5 min-h-[130px] md:min-h-[145px] text-center hover-lift shadow-sm">
                     <div className="text-xs md:text-sm lg:text-base xl:text-lg font-semibold text-gray-900 mb-0.5 md:mb-1">Step 3</div>
                     <p className="text-xs md:text-sm text-gray-600">Bring your team together</p>
                   </div>
-                  <div className="glass-card rounded-xl p-2 md:p-3 lg:p-4 xl:p-4 text-center hover-lift shadow-sm">
+                  <div className="glass-card rounded-xl p-3 md:p-4 lg:p-5 xl:p-5 min-h-[130px] md:min-h-[145px] text-center hover-lift shadow-sm">
                     <div className="text-xs md:text-sm lg:text-base xl:text-lg font-semibold text-gray-900 mb-0.5 md:mb-1">Step 4</div>
                     <p className="text-xs md:text-sm text-gray-600">Allow agents to simplify your work</p>
                   </div>

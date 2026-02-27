@@ -145,14 +145,14 @@ function AIAdminAssistant() {
                   <a
                     href="#"
                     onClick={(e) => handleIntercomClick(e, 'request-demo')}
-                    className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-cyan-600 to-blue-600 text-white px-6 py-3.5 rounded-xl font-bold hover:from-cyan-700 hover:to-blue-700 transition-all shadow-lg hover:shadow-xl"
+                    className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-6 py-3.5 rounded-full font-bold hover:from-cyan-400 hover:to-blue-500 transition-all shadow-lg hover:shadow-cyan-500/50 hover:scale-105"
                   >
                     <i className="bi bi-play-circle-fill text-xl"></i>
                     See It In Action
                   </a>
                   <a
                     href="/sign-up"
-                    className="inline-flex items-center justify-center gap-2 bg-white text-blue-600 px-6 py-3.5 rounded-xl font-semibold border-2 border-blue-600 hover:bg-blue-50 transition-colors"
+                    className="inline-flex items-center justify-center gap-2 bg-white text-blue-600 px-6 py-3.5 rounded-full font-semibold border-2 border-blue-600 hover:bg-blue-50 transition-all hover:scale-105 shadow-sm hover:shadow-md"
                   >
                     Get Started
                   </a>

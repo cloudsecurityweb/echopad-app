@@ -358,7 +358,7 @@ function AIScribe() {
                 <a
                   href="#"
                   onClick={(e) => handleIntercomClick(e, 'request-demo')}
-                  className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-cyan-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:from-blue-700 hover:to-cyan-700 transition-all shadow-lg hover:shadow-xl hover:scale-105"
+                  className="inline-flex items-center gap-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-8 py-4 rounded-full font-bold text-lg hover:from-cyan-400 hover:to-blue-500 transition-all shadow-lg hover:shadow-cyan-500/50 hover:scale-105"
                 >
                   <i className="bi bi-play-circle-fill text-2xl"></i>
                   See It In Action
@@ -597,7 +597,7 @@ function AIScribe() {
                   <div className="flex flex-col sm:flex-row lg:flex-col xl:flex-row items-stretch sm:items-center gap-3 flex-shrink-0">
                     <a
                       href="#"
-                      className="inline-flex items-center justify-center gap-2 bg-gray-900 text-white px-6 py-3.5 rounded-xl hover:bg-gray-800 transition-colors font-semibold text-sm shadow-md min-w-[140px]"
+                      className="inline-flex items-center justify-center gap-2 bg-gray-900 text-white px-6 py-3.5 rounded-full hover:bg-gray-800 transition-all hover:scale-105 font-semibold text-sm shadow-md hover:shadow-lg min-w-[140px]"
                       onClick={(e) => handleIntercomClick(e, 'request-demo')}
                     >
                       <i className="bi bi-chat-dots-fill text-white text-lg" aria-hidden="true" />
@@ -605,7 +605,7 @@ function AIScribe() {
                     </a>
                     <a
                       href="/sign-up"
-                      className="inline-flex items-center justify-center gap-2 bg-white text-gray-700 px-6 py-3.5 rounded-xl border-2 border-gray-300 hover:bg-gray-50 hover:border-gray-400 transition-colors font-medium text-sm min-w-[140px]"
+                      className="inline-flex items-center justify-center gap-2 bg-white text-gray-700 px-6 py-3.5 rounded-full border-2 border-gray-300 hover:bg-gray-50 hover:border-gray-400 transition-all hover:scale-105 font-medium text-sm shadow-sm hover:shadow-md min-w-[140px]"
                     >
                       <i className="bi bi-rocket-takeoff text-cyan-500 text-lg" aria-hidden="true" />
                       Get Started

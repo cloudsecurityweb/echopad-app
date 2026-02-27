@@ -378,7 +378,7 @@ function AIMedicalAssistant() {
                   <div className="flex flex-col sm:flex-row lg:flex-col xl:flex-row items-stretch sm:items-center gap-3 flex-shrink-0">
                     <a
                       href="#"
-                      className="inline-flex items-center justify-center gap-2 bg-gray-900 text-white px-6 py-3.5 rounded-xl hover:bg-gray-800 transition-colors font-semibold text-sm shadow-md min-w-[140px]"
+                      className="inline-flex items-center justify-center gap-2 bg-gray-900 text-white px-6 py-3.5 rounded-full hover:bg-gray-800 transition-all hover:scale-105 font-semibold text-sm shadow-md hover:shadow-lg min-w-[140px]"
                       onClick={(e) => handleIntercomClick(e, 'request-demo')}
                     >
                       <i className="bi bi-chat-dots-fill text-white text-lg" aria-hidden="true" />
@@ -386,7 +386,7 @@ function AIMedicalAssistant() {
                     </a>
                     <a
                       href="/sign-up"
-                      className="inline-flex items-center justify-center gap-2 bg-white text-gray-700 px-6 py-3.5 rounded-xl border-2 border-gray-300 hover:bg-gray-50 hover:border-gray-400 transition-colors font-medium text-sm min-w-[140px]"
+                      className="inline-flex items-center justify-center gap-2 bg-white text-gray-700 px-6 py-3.5 rounded-full border-2 border-gray-300 hover:bg-gray-50 hover:border-gray-400 transition-all hover:scale-105 font-medium text-sm shadow-sm hover:shadow-md min-w-[140px]"
                     >
                       <i className="bi bi-rocket-takeoff text-cyan-500 text-lg" aria-hidden="true" />
                       Get Started
@@ -495,7 +495,7 @@ function AIMedicalAssistant() {
                 <a
                   href="#"
                   onClick={(e) => handleIntercomClick(e, 'request-demo')}
-                  className="inline-flex items-center gap-2 bg-gray-900 text-white px-6 py-3.5 rounded-xl hover:bg-gray-800 font-semibold text-sm shadow-md min-w-[140px] transition-colors"
+                  className="inline-flex items-center gap-2 bg-gray-900 text-white px-6 py-3.5 rounded-full hover:bg-gray-800 font-semibold text-sm shadow-md hover:shadow-lg min-w-[140px] transition-all hover:scale-105"
                 >
                   <i className="bi bi-chat-dots-fill text-white text-lg"></i>
                   Book a Demo
@@ -503,7 +503,7 @@ function AIMedicalAssistant() {
                 <a
                   href="#"
                   onClick={(e) => handleIntercomClick(e, 'sign-up')}
-                  className="inline-flex items-center gap-2 bg-white text-gray-700 px-6 py-3.5 rounded-xl border-2 border-gray-300 hover:bg-gray-50 hover:border-gray-400 font-medium text-sm min-w-[140px]"
+                  className="inline-flex items-center gap-2 bg-white text-gray-700 px-6 py-3.5 rounded-full border-2 border-gray-300 hover:bg-gray-50 hover:border-gray-400 font-medium text-sm shadow-sm hover:shadow-md min-w-[140px] transition-all hover:scale-105"
                 >
                   <i className="bi bi-rocket-takeoff text-cyan-500 text-lg"></i>
                   Get Started

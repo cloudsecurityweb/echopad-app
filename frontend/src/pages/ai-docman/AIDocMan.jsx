@@ -110,7 +110,7 @@ function AIDocMan() {
                 <a
                   href="#"
                   onClick={(e) => handleIntercomClick(e, 'sign-up')}
-                  className="inline-flex items-center justify-center gap-3 bg-white text-indigo-400 px-8 py-4 rounded-xl font-bold text-lg hover:bg-indigo-50 transition-all border-2 border-indigo-300 shadow-lg hover:shadow-xl"
+                  className="inline-flex items-center justify-center gap-3 bg-white text-indigo-400 px-8 py-4 rounded-full font-bold text-lg hover:bg-indigo-50 transition-all border-2 border-indigo-300 shadow-lg hover:shadow-xl hover:scale-105"
                 >
                   <i className="bi bi-rocket-takeoff text-xl"></i>
                   Start Free Trial
@@ -441,7 +441,7 @@ function AIDocMan() {
                   <a
                     href="#"
                     onClick={(e) => handleIntercomClick(e, 'sign-up')}
-                    className="inline-flex items-center justify-center gap-3 bg-indigo-700 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-indigo-800 transition-all border-2 border-white/30 shadow-xl"
+                    className="inline-flex items-center justify-center gap-3 bg-indigo-700 text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-indigo-800 transition-all border-2 border-white/30 shadow-xl hover:shadow-2xl hover:scale-105"
                   >
                     <i className="bi bi-rocket-takeoff text-2xl"></i>
                     Start Free Trial
@@ -475,7 +475,7 @@ function AIDocMan() {
                   <div className="flex flex-col sm:flex-row lg:flex-col xl:flex-row items-stretch sm:items-center gap-3 flex-shrink-0">
                     <a
                       href="#"
-                      className="inline-flex items-center justify-center gap-2 bg-gray-900 text-white px-6 py-3.5 rounded-xl hover:bg-gray-800 transition-colors font-semibold text-sm shadow-md min-w-[140px]"
+                      className="inline-flex items-center justify-center gap-2 bg-gray-900 text-white px-6 py-3.5 rounded-full hover:bg-gray-800 transition-all hover:scale-105 font-semibold text-sm shadow-md hover:shadow-lg min-w-[140px]"
                       onClick={(e) => handleIntercomClick(e, 'request-demo')}
                     >
                       <i className="bi bi-chat-dots-fill text-white text-lg" aria-hidden="true" />
@@ -483,7 +483,7 @@ function AIDocMan() {
                     </a>
                     <a
                       href="/sign-up"
-                      className="inline-flex items-center justify-center gap-2 bg-white text-gray-700 px-6 py-3.5 rounded-xl border-2 border-gray-300 hover:bg-gray-50 hover:border-gray-400 transition-colors font-medium text-sm min-w-[140px]"
+                      className="inline-flex items-center justify-center gap-2 bg-white text-gray-700 px-6 py-3.5 rounded-full border-2 border-gray-300 hover:bg-gray-50 hover:border-gray-400 transition-all hover:scale-105 font-medium text-sm shadow-sm hover:shadow-md min-w-[140px]"
                     >
                       <i className="bi bi-rocket-takeoff text-cyan-500 text-lg" aria-hidden="true" />
                       Get Started
