@@ -87,10 +87,11 @@ import HelpDocDetail from './pages/dashboard/HelpDocDetail';
 import ClientManagementPage from './pages/dashboard/super-admin/ClientManagementPage';
 import usePageTitle from './hooks/usePageTitle';
 
-// Scroll to top on route change
+// Scroll to top on route change (skip when returning to home products section)
 function ScrollToTop() {
   const { pathname } = useLocation();
   useEffect(() => {
+    if (pathname === '/' && sessionStorage.getItem('homeScrollTo')) return;
     window.scrollTo(0, 0);
   }, [pathname]);
   return null;
@@ -136,6 +137,22 @@ function HomePage() {
         cancelAnimationFrame(frameId);
       };
     } else {
+      // When returning from a product page, scroll to products section
+      const scrollToSection = sessionStorage.getItem('homeScrollTo');
+      if (scrollToSection && location.pathname === '/') {
+        const scrollToElement = () => {
+          const element = document.getElementById(scrollToSection);
+          if (element) {
+            const headerOffset = 80;
+            const elementPosition = element.getBoundingClientRect().top;
+            const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+            window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
+          }
+          sessionStorage.removeItem('homeScrollTo');
+        };
+        const frameId = requestAnimationFrame(() => setTimeout(scrollToElement, 50));
+        return () => cancelAnimationFrame(frameId);
+      }
       // No hash: try to restore last viewed section on refresh
       const savedSectionId = sessionStorage.getItem('homeLastSectionId');
       if (savedSectionId) {
@@ -166,7 +183,7 @@ function HomePage() {
 
   // Track which section is currently in view and persist it for refresh
   useEffect(() => {
-    const SECTION_IDS = ['hero', 'agents', 'platform', 'roi', 'testimonial', 'contact'];
+    const SECTION_IDS = ['hero', 'agents', 'products', 'platform', 'roi', 'testimonial', 'contact'];
 
     const updateCurrentSection = () => {
       const headerOffset = 80;

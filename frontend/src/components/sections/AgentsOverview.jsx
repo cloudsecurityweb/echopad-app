@@ -95,7 +95,7 @@ function AgentsOverview() {
               Fix what slows you down
             </h2>
             <p className="text-sm md:text-base text-gray-600 leading-relaxed">
-              Choose what you need—charting, phones, admin, or no-shows. Each solution works with your existing systems and most practices are live in about 30 days. We handle setup; no IT required.
+              Choose what you need—charting, phones, admin, or no-shows. Each solution works with your existing systems and supports a smooth rollout. We handle setup; no IT required.
             </p>
           </div>
 

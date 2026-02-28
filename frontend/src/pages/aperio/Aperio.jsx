@@ -550,7 +550,7 @@ function Aperio() {
                   id: 'adoption',
                   icon: 'bi-people-fill',
                   title: 'Staff-Friendly Training',
-                  subtitle: '95%+ adoption in 30 days',
+                  subtitle: 'High team adoption with guided rollout',
                   items: [
                     {
                       title: '15-Minute Training',

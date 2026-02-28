@@ -23,7 +23,7 @@ function Platform() {
     {
       icon: 'bi-arrow-up-right-circle-fill',
       title: 'Grows with You',
-      description: 'From one provider to many. Most practices are live in about 30 days; we support multi-location when you scale.',
+      description: 'From one provider to many. Roll out smoothly today and support multi-location growth as you scale.',
     },
     {
       icon: 'bi-cpu-fill',
