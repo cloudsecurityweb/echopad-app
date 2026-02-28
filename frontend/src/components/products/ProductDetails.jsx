@@ -13,6 +13,7 @@ const PRODUCT_META = {
     earlyAccess: false,
     icon: 'bi-mic-fill',
     link: '/ai-scribe',
+    image: '/assets/images/products/aiscribe.png',
   },
   'echopad-insights': {
     name: 'Insights',
@@ -21,6 +22,7 @@ const PRODUCT_META = {
     earlyAccess: false,
     icon: 'bi-graph-up-arrow',
     link: '/echopad-insights',
+    image: '/assets/images/products/insights.png',
   },
   'aperio': {
     name: 'Aperio',
@@ -29,6 +31,7 @@ const PRODUCT_META = {
     earlyAccess: false,
     icon: 'bi-arrow-left-right',
     link: '/aperio',
+    image: '/assets/images/products/aperio.png',
   },
   'ai-docman': {
     name: 'AI Document Manager',
@@ -963,7 +966,7 @@ function ProductDetails() {
   };
 
   return (
-    <div className="collapsible-sections-container bg-white py-8 md:py-12">
+    <div id="products" className="collapsible-sections-container bg-white py-8 md:py-12">
       <div className="container mx-auto px-4 sm:px-6">
         
         {/* Product cards section: filter + grouped cards */}
@@ -995,17 +998,16 @@ function ProductDetails() {
             {featuredList.length > 0 && (
               <div>
                 <h3 className="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2 before:content-[''] before:w-1 before:h-5 before:bg-cyan-500 before:rounded-full">
-                  Featured
+                  Featured Products
                 </h3>
                 <div className={
                   featuredList.length === 1
                     ? 'flex justify-center'
                     : featuredList.length === 2
-                      ? 'grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-4xl mx-auto'
-                      : 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3'
+                      ? 'grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 max-w-4xl mx-auto'
+                      : 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6'
                 }>
                   {featuredList.map((product) => {
-                    const index = productsWithMeta.findIndex((p) => p.id === product.id);
                     return (
                       <div key={product.id} className={featuredList.length === 1 ? 'w-full max-w-xl' : ''}>
                         <ProductCard
@@ -1015,10 +1017,7 @@ function ProductDetails() {
                           link={product.link}
                           featured={true}
                           comingSoon={false}
-                          onSelect={() => {
-                            setActiveIndex(index);
-                            document.querySelector('#product-carousel')?.scrollIntoView({ behavior: 'smooth' });
-                          }}
+                          image={product.image}
                         />
                       </div>
                     );
@@ -1039,7 +1038,6 @@ function ProductDetails() {
                       : 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3'
                 }>
                   {earlyAccessList.map((product) => {
-                    const index = productsWithMeta.findIndex((p) => p.id === product.id);
                     return (
                       <div key={product.id} className={earlyAccessList.length === 1 ? 'w-full max-w-xl' : ''}>
                         <ProductCard
@@ -1049,10 +1047,6 @@ function ProductDetails() {
                           link={product.link}
                           featured={false}
                           comingSoon={true}
-                          onSelect={() => {
-                            setActiveIndex(index);
-                            document.querySelector('#product-carousel')?.scrollIntoView({ behavior: 'smooth' });
-                          }}
                         />
                       </div>
                     );
@@ -1073,7 +1067,6 @@ function ProductDetails() {
                       : 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3'
                 }>
                   {restList.map((product) => {
-                    const index = productsWithMeta.findIndex((p) => p.id === product.id);
                     return (
                       <div key={product.id} className={restList.length === 1 ? 'w-full max-w-xl' : ''}>
                         <ProductCard
@@ -1083,10 +1076,6 @@ function ProductDetails() {
                           link={product.link}
                           featured={false}
                           comingSoon={false}
-                          onSelect={() => {
-                            setActiveIndex(index);
-                            document.querySelector('#product-carousel')?.scrollIntoView({ behavior: 'smooth' });
-                          }}
                         />
                       </div>
                     );
