@@ -1,5 +1,5 @@
 import { useLayoutEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Navigation from '../../components/layout/Navigation';
 import Footer from '../../components/layout/Footer';
 import { handleIntercomAction } from '../../utils/intercom';
@@ -7,9 +7,10 @@ import BuyNowCTA from '../../components/products/BuyNowCTA';
 import { getProductByRoute } from '../../data/products';
 import BeforeAfterSlider from '../../components/products/BeforeAfterSlider';
 import usePageTitle from '../../hooks/usePageTitle';
+import { ReferralWorkflowBeam } from '../../components/aperio/ReferralWorkflowBeam';
 
 function Aperio() {
-  const PageTitle = usePageTitle('Echopad Aperio');
+  const PageTitle = usePageTitle('Echopad Aperio – Referral Tracking and Coordination');
   const navigate = useNavigate();
   const handleIntercomClick = (e, action) => {
     e.preventDefault();
@@ -69,9 +70,12 @@ function Aperio() {
                   <i className="bi bi-arrow-left"></i>
                   View All Products
                 </a>
-                <div className="text-xl md:text-2xl font-bold text-blue-600 uppercase tracking-wider mb-4">
+                <div className="text-xl md:text-2xl font-bold text-blue-600 uppercase tracking-wider mb-1">
                   APERIO
                 </div>
+                <p className="text-sm md:text-base text-gray-600 font-medium mb-4">
+                  Referral Tracking and Coordination
+                </p>
                 <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
                   Fewer Patients Fall Through the Cracks <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Referrals Get Completed, Not Lost</span>
                 </h1>
@@ -111,7 +115,7 @@ function Aperio() {
                 </div>
 
                 <p className="text-lg text-gray-600 mb-8">
-                  Fewer patients fall through the cracks. Track every referral to completion with automated follow-up—so patients get the care they need and you close the loop.
+                  Fewer patients fall through the cracks. Track every referral to completion with automated follow-up so patients get to the specialist and you know when it’s done. We send referral follow-up reminders so patients schedule and complete specialist visits.
                 </p>
 
                 {/* Interactive Stats Banner - Light bg */}
@@ -178,24 +182,25 @@ function Aperio() {
                         Echopad Aperio
                       </span>
                     </h2>
+                    <p className="text-sm text-gray-600 mb-2">Referral Tracking and Coordination</p>
                     <h3 className="text-xl md:text-2xl font-semibold text-gray-700 mb-2">
-                      Referral → Tracking → Completion
+                      Send Referral→ Acknowledge → Accept → Close
                     </h3>
                   </div>
 
-                  {/* Step 1 */}
+                  {/* Step 1 — Send */}
                   <div className="mb-6">
                     <div className="flex items-center gap-3 mb-3">
                       <span className="bg-blue-600 text-white text-xs font-semibold px-3 py-1 rounded-full">
                         STEP 1
                       </span>
-                      <span className="text-sm font-semibold text-gray-900">Referral Created</span>
+                      <span className="text-sm font-semibold text-gray-900">Send</span>
                     </div>
                     <div className="bg-gray-50 rounded-lg p-4">
                       <div className="bg-white rounded-lg p-4">
                         <div className="flex items-center gap-2 mb-3 pb-3 border-b border-gray-200">
-                          <i className="bi bi-arrow-right-circle text-blue-600"></i>
-                          <span className="text-sm font-semibold text-gray-900">Specialist Referral</span>
+                          <i className="bi bi-send text-blue-600"></i>
+                          <span className="text-sm font-semibold text-gray-900">Referral sent to specialist</span>
                         </div>
                         <div className="text-sm text-gray-700 mb-2">
                           <strong>Patient:</strong> John Smith
@@ -219,37 +224,25 @@ function Aperio() {
                     <i className="bi bi-arrow-down text-2xl text-gray-400"></i>
                   </div>
 
-                  {/* Step 2 */}
+                  {/* Step 2 — Acknowledged */}
                   <div className="mb-6">
                     <div className="flex items-center gap-3 mb-3">
                       <span className="bg-blue-600 text-white text-xs font-semibold px-3 py-1 rounded-full">
                         STEP 2
                       </span>
-                      <span className="text-sm font-semibold text-gray-900">Automated Follow-up</span>
+                      <span className="text-sm font-semibold text-gray-900">Acknowledged</span>
                     </div>
-                    <div className="bg-gray-50 rounded-lg p-4 space-y-3">
-                      <div className="bg-white rounded-lg p-3">
+                    <div className="bg-gray-50 rounded-lg p-4">
+                      <div className="bg-white rounded-lg p-4">
                         <div className="flex items-center justify-between mb-2">
                           <div className="flex items-center gap-2">
-                            <i className="bi bi-chat-dots-fill text-blue-600"></i>
-                            <strong className="text-sm text-gray-900">Patient Reminder</strong>
+                            <i className="bi bi-check2-all text-blue-600"></i>
+                            <span className="text-sm font-semibold text-gray-900">Receiver acknowledged receipt</span>
                           </div>
-                          <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">Day 2</span>
+                          <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">Acknowledged</span>
                         </div>
-                        <p className="text-sm text-gray-700 italic">
-                          "Hi John! Dr. Johnson referred you to Dr. Martinez for cardiac evaluation. Please call to schedule: (555) 123-4567"
-                        </p>
-                      </div>
-                      <div className="bg-white rounded-lg p-3">
-                        <div className="flex items-center justify-between mb-2">
-                          <div className="flex items-center gap-2">
-                            <i className="bi bi-bell-fill text-blue-600"></i>
-                            <strong className="text-sm text-gray-900">Status Check</strong>
-                          </div>
-                          <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">Day 7</span>
-                        </div>
-                        <p className="text-sm text-gray-700 italic">
-                          "Following up on referral—have you scheduled with Dr. Martinez yet? Reply YES if completed."
+                        <p className="text-sm text-gray-700">
+                          Dr. Martinez&apos;s office acknowledged the referral. Received March 10 at 9:15 AM.
                         </p>
                       </div>
                     </div>
@@ -260,18 +253,44 @@ function Aperio() {
                     <i className="bi bi-arrow-down text-2xl text-gray-400"></i>
                   </div>
 
-                  {/* Step 3 */}
-                  <div>
+                  {/* Step 3 — Accept */}
+                  <div className="mb-6">
                     <div className="flex items-center gap-3 mb-3">
                       <span className="bg-blue-600 text-white text-xs font-semibold px-3 py-1 rounded-full">
                         STEP 3
                       </span>
-                      <span className="text-sm font-semibold text-gray-900">Referral Completed</span>
+                      <span className="text-sm font-semibold text-gray-900">Accept</span>
+                    </div>
+                    <div className="bg-gray-50 rounded-lg p-4">
+                      <div className="bg-white rounded-lg p-4">
+                        <div className="flex items-center gap-2">
+                          <i className="bi bi-check-circle text-green-500 text-xl"></i>
+                          <span className="text-sm font-semibold text-gray-900">Referral accepted by specialist</span>
+                        </div>
+                        <p className="text-sm text-gray-700 mt-2">
+                          Accepted in Aperio. Appointment slot confirmed with patient.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Arrow */}
+                  <div className="flex justify-center mb-6">
+                    <i className="bi bi-arrow-down text-2xl text-gray-400"></i>
+                  </div>
+
+                  {/* Step 4 — Close */}
+                  <div>
+                    <div className="flex items-center gap-3 mb-3">
+                      <span className="bg-blue-600 text-white text-xs font-semibold px-3 py-1 rounded-full">
+                        STEP 4
+                      </span>
+                      <span className="text-sm font-semibold text-gray-900">Close</span>
                     </div>
                     <div className="bg-gray-50 rounded-lg p-4">
                       <div className="flex items-center gap-2 mb-4 pb-4 border-b border-gray-200">
-                        <i className="bi bi-check-circle-fill text-green-500 text-xl"></i>
-                        <span className="font-semibold text-gray-900">Patient Seen by Specialist</span>
+                        <i className="bi bi-clipboard-check-fill text-green-500 text-xl"></i>
+                        <span className="font-semibold text-gray-900">Referral completed</span>
                       </div>
                       <div className="space-y-3 mb-4">
                         <div className="flex items-center gap-3">
@@ -291,7 +310,7 @@ function Aperio() {
                       </div>
                       <div className="bg-blue-50 rounded-lg p-3 flex items-center gap-2 text-sm text-blue-700">
                         <i className="bi bi-clipboard-check-fill"></i>
-                        <span>Referral complete • Care continuity maintained • Outcome documented</span>
+                        <span>Referral complete • Patient got the follow-up care they need • Outcome documented</span>
                       </div>
                     </div>
                   </div>
@@ -301,22 +320,24 @@ function Aperio() {
           </div>
         </section>
 
+        <ReferralWorkflowBeam />
+
         {/* Why It Matters - referral loop story (replaces cookie-cutter value blocks) */}
         <section className="py-20 bg-gradient-to-b from-white to-gray-50" aria-labelledby="why-aperio-heading">
           <div className="container mx-auto px-4">
             <h2 id="why-aperio-heading" className="text-3xl md:text-4xl font-bold text-gray-900 mb-12 text-center">
-              Why Closing the Referral Loop Matters
+              Why It Matters That Referrals Get Completed
             </h2>
             <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8">
               <div className="space-y-6">
                 <p className="text-lg text-gray-600 leading-relaxed">
-                  Fewer patients fall through the cracks. For healthcare leaders facing lost referrals and care coordination gaps, Aperio delivers immediate ROI through improved patient retention, reduced administrative burden, and enhanced care continuity.
+                  Stop losing patients between referral and specialist. For healthcare leaders facing lost referrals and care coordination gaps, Aperio delivers measurable impact through improved follow-through, reduced administrative burden, and better outcomes so patients get the care they need.
                 </p>
                 <p className="text-gray-600 leading-relaxed">
-                  When a referral is created, we automatically track status, send reminders, and ensure patients complete their referred appointments—all without manual staff intervention.
+                  When a referral is created, we automatically track status, send referral follow-up reminders, and ensure patients complete their referred appointments—all without manual staff intervention.
                 </p>
                 <ul className="space-y-2">
-                  {['Fewer patients fall through the cracks—better care continuity', 'Automate referral tracking and follow-up', 'Ensure patients complete specialist appointments', 'Track referral outcomes and measure success'].map((benefit, idx) => (
+                  {['Stop losing patients between referral and specialist—fewer fall through the cracks', 'Automate referral tracking and follow-up', 'Ensure patients complete specialist appointments', 'Track referral outcomes and measure success'].map((benefit, idx) => (
                     <li key={idx} className="flex items-start gap-2 text-gray-600">
                       <i className="bi bi-check-circle-fill text-green-500 mt-0.5 flex-shrink-0"></i>
                       <span>{benefit}</span>
@@ -411,7 +432,7 @@ function Aperio() {
                   step: '2',
                   icon: 'bi-robot',
                   title: 'AI Follows Up',
-                  description: 'AI sends patient reminders via SMS/email, tracks status, and escalates if needed—all automatically without staff intervention.',
+                  description: 'AI sends referral follow-up reminders (email), tracks status, and escalates until the referral is completed—all automatically without staff intervention.',
                   color: 'from-purple-500 to-pink-500',
                   bgColor: 'from-purple-50 to-pink-50',
                   iconBg: 'bg-gradient-to-br from-purple-500 to-pink-500',
@@ -420,7 +441,7 @@ function Aperio() {
                   step: '3',
                   icon: 'bi-check-circle-fill',
                   title: 'Patient Completes',
-                  description: 'Patient schedules and attends appointment. Status syncs back to EHR automatically. Referral loop closed.',
+                  description: 'Patient schedules and attends appointment. Status syncs back to EHR automatically. Referral completed.',
                   color: 'from-green-500 to-emerald-500',
                   bgColor: 'from-green-50 to-emerald-50',
                   iconBg: 'bg-gradient-to-br from-green-500 to-emerald-500',
@@ -525,24 +546,24 @@ function Aperio() {
                 {
                   id: 'deployment',
                   icon: 'bi-rocket-takeoff',
-                  title: 'Quick Deployment',
-                  subtitle: 'Live in less than 2 weeks',
+                  title: 'Quick start',
+                  subtitle: 'Just sign up and start using Aperio',
                   items: [
                     {
-                      title: 'Zero IT Burden',
-                      description: 'Start closing referral loops quickly without pulling your team into long IT workstreams.',
+                      title: 'Sign up and go',
+                      description: 'Create your account and begin making sure every referral gets completed—no lengthy setup or IT involvement.',
                     },
                     {
-                      title: 'EHR Agnostic',
-                      description: 'Keep your current systems and referral workflow. Supports Epic, Cerner, Athena, and other EHRs via HL7/FHIR.',
+                      title: 'Works with your systems',
+                      description: 'Supports Epic, Cerner, Athena, and other EHRs via HL7/FHIR. Keep your current referral workflow.',
                     },
                     {
-                      title: 'Pilot-First Approach',
-                      description: 'Start with selected providers to prove ROI before full rollout',
+                      title: 'Start when you\'re ready',
+                      description: 'Use Aperio with selected providers first, or roll out across your practice.',
                     },
                     {
-                      title: 'Custom Workflows',
-                      description: 'Configure reminder timing and escalation rules for your practice',
+                      title: 'Configure as you go',
+                      description: 'Set reminder timing and escalation rules to match your practice—all in the product.',
                     },
                   ],
                 },
@@ -577,6 +598,10 @@ function Aperio() {
                   subtitle: 'HIPAA compliant & patient data protected',
                   items: [
                     {
+                      title: 'Only the accepting receiver sees patient details',
+                      description: 'Patient details and history are shared only with the provider who accepts the referral—no broader access.',
+                    },
+                    {
                       title: 'HIPAA & SOC 2 Certified',
                       description: 'Full HIPAA compliance with BAA included, SOC 2 Type II certified annually',
                     },
@@ -601,8 +626,12 @@ function Aperio() {
                   subtitle: 'See immediate financial impact',
                   items: [
                     {
-                      title: 'Fewer Lost Referrals',
-                      description: 'Average 40% fewer lost referrals = $350K+ annual revenue retained.',
+                      title: 'Stop losing patients between referral and specialist',
+                      description: 'When fewer referrals drop between you and the specialist, more patients get the care they need and your practice keeps the revenue.',
+                    },
+                    {
+                      title: 'Revenue impact scales with your practice',
+                      description: 'Solo and small practices often retain an extra $30K–$80K+ annually when referral completion improves; larger groups can see $200K–$350K+. Results vary by volume and specialty mix.',
                     },
                     {
                       title: 'Faster Completion',
@@ -613,8 +642,8 @@ function Aperio() {
                       description: '80% reduction in manual follow-up calls saves hours per week',
                     },
                     {
-                      title: 'Network Retention',
-                      description: 'Keep patients within your healthcare system, improving care continuity',
+                      title: 'Keep patients in your network',
+                      description: 'When referrals get completed, patients stay within your system and get the follow-up care they need.',
                     },
                   ],
                 },
@@ -658,7 +687,7 @@ function Aperio() {
           </div>
         </section>
 
-        {/* Schedule a Demo - Contact-style */}
+        {/* Quick start */}
         <section className="py-12 md:py-20 bg-white">
           <div className="container mx-auto px-4 w-full">
             <div className="max-w-4xl mx-auto">
@@ -666,33 +695,33 @@ function Aperio() {
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8 lg:gap-10">
                   <div className="flex-1 min-w-0">
                     <div className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-3">
-                      Get Started
+                      Quick start
                     </div>
                     <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
-                      Ready to see Aperio in action?
+                      Just sign up and start using Aperio
                     </h2>
                     <p className="text-base md:text-lg text-gray-600 mb-2 leading-relaxed">
-                      Book a quick walkthrough and leave with a clear automation plan.
+                      No lengthy setup. Create your account and start making sure every referral gets completed.
                     </p>
                     <p className="text-sm text-gray-500">
-                      15-minute call, no obligation.
+                      Or book a demo for a walkthrough—15-minute call, no obligation.
                     </p>
                   </div>
                   <div className="flex flex-col sm:flex-row lg:flex-col xl:flex-row items-stretch sm:items-center gap-3 flex-shrink-0">
                     <a
-                      href="#"
+                      href="/sign-up"
                       className="inline-flex items-center justify-center gap-2 bg-gray-900 text-white px-6 py-3.5 rounded-full hover:bg-gray-800 transition-all hover:scale-105 font-semibold text-sm shadow-md hover:shadow-lg min-w-[140px]"
-                      onClick={(e) => handleIntercomClick(e, 'request-demo')}
                     >
-                      <i className="bi bi-chat-dots-fill text-white text-lg" aria-hidden="true" />
-                      Book a Demo
+                      <i className="bi bi-rocket-takeoff text-white text-lg" aria-hidden="true" />
+                      Sign up and start using Aperio
                     </a>
                     <a
-                      href="/sign-up"
+                      href="#"
                       className="inline-flex items-center justify-center gap-2 bg-white text-gray-700 px-6 py-3.5 rounded-full border-2 border-gray-300 hover:bg-gray-50 hover:border-gray-400 transition-all hover:scale-105 font-medium text-sm shadow-sm hover:shadow-md min-w-[140px]"
+                      onClick={(e) => handleIntercomClick(e, 'request-demo')}
                     >
-                      <i className="bi bi-rocket-takeoff text-cyan-500 text-lg" aria-hidden="true" />
-                      Get Started
+                      <i className="bi bi-chat-dots-fill text-cyan-500 text-lg" aria-hidden="true" />
+                      Book a Demo
                     </a>
                   </div>
                 </div>

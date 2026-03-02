@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 
-function ProductCard({ icon, title, description, link, featured = false, comingSoon = false, onSelect, image }) {
+function ProductCard({ icon, title, description, link, featured = false, comingSoon = false, onSelect, image, subtitle }) {
   const isInternalLink = link && link.startsWith('/') && !link.startsWith('http');
   const useFeaturedImageLayout = featured && image;
 
@@ -42,6 +42,7 @@ function ProductCard({ icon, title, description, link, featured = false, comingS
           </div>
           <div className="relative z-10 p-4 md:p-5">
             <h4 className="text-base md:text-lg font-bold text-gray-900 mb-2">{title}</h4>
+            {subtitle && <p className="text-xs md:text-sm text-gray-600 font-medium mb-1.5">{subtitle}</p>}
             <p className="text-xs md:text-sm text-gray-600 mb-3 leading-relaxed line-clamp-2">{description}</p>
             {isInternalLink ? (
               <Link to={link} className={btnClass} onClick={(e) => { handleLearnMoreClick(); e.stopPropagation(); }}>
@@ -74,6 +75,7 @@ function ProductCard({ icon, title, description, link, featured = false, comingS
             ></i>
           </div>
           <h4 className="text-sm md:text-base font-bold text-gray-900 mb-1.5">{title}</h4>
+          {subtitle && <p className="text-xs text-gray-600 font-medium mb-1">{subtitle}</p>}
           <p className="text-xs md:text-sm text-gray-600 mb-2.5 leading-relaxed line-clamp-2">{description}</p>
           {isInternalLink ? (
             <Link to={link} className={btnClass} onClick={handleLearnMoreClick}>

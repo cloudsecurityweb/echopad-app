@@ -64,6 +64,7 @@ const PROBLEM_GROUPS = [
       {
         icon: 'bi-arrow-left-right',
         title: 'Aperio',
+        subtitle: 'Referral Tracking and Coordination',
         description: 'Fewer patients fall through the cracks. Referrals get completed, not lost.',
         link: '/aperio',
         featured: true,
@@ -78,7 +79,7 @@ const PROBLEM_GROUPS = [
       {
         icon: 'bi-bell',
         title: 'AI Patient Reminders',
-        description: 'Automated reminders for appointments, procedures, medications, and follow-ups.',
+        description: 'Automated reminders for appointments, procedures, medications, and prep.',
         link: '/ai-reminders',
       },
     ],
@@ -157,3 +158,4 @@ function AgentsOverview() {
 }
 
 export default AgentsOverview;
+

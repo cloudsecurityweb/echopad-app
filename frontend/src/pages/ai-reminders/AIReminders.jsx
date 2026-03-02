@@ -1,5 +1,5 @@
 import { useLayoutEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Navigation from '../../components/layout/Navigation';
 import Footer from '../../components/layout/Footer';
 import { handleIntercomAction } from '../../utils/intercom';
@@ -338,6 +338,22 @@ function AIReminders() {
                     </div>
                   ))}
                 </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* How is this different? AI Patient Reminders vs Aperio */}
+        <section className="py-16 bg-white" aria-labelledby="how-different-reminders-heading">
+          <div className="container mx-auto px-4">
+            <div className="max-w-4xl mx-auto">
+              <div className="bg-gradient-to-br from-cyan-50 via-blue-50 to-purple-50 border-2 border-cyan-200 rounded-2xl p-6 md:p-8 shadow-lg">
+                <h2 id="how-different-reminders-heading" className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
+                  How is this different from Aperio?
+                </h2>
+                <p className="text-gray-700 mb-6 leading-relaxed">
+                  <strong>AI Patient Reminders</strong> are for <strong>appointment reminders</strong> (already-scheduled visits), <strong>medication reminders</strong>, and <strong>prep instructions</strong>—not referral tracking or loop closure. For <strong>referral follow-up and closing the loop</strong>, see <Link to="/aperio" className="text-blue-600 font-semibold hover:text-blue-800 underline">Aperio – Referral Tracking and Coordination</Link>.
+                </p>
               </div>
             </div>
           </div>
