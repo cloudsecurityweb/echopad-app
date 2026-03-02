@@ -26,6 +26,7 @@ const PRODUCT_META = {
   },
   'aperio': {
     name: 'Aperio',
+    subtitle: 'Referral Tracking and Coordination',
     productType: 'Care Coordination',
     featured: true,
     earlyAccess: false,
@@ -822,19 +823,20 @@ function ProductDetails() {
   const aperioData = {
     id: 'aperio',
     label: 'APERIO',
+    subtitle: 'Referral Tracking and Coordination',
     title: 'Streamline Referral Management',
     intro: aperioProduct?.longDescription || 'Fewer patients fall through the cracks with referral tracking that keeps every handoff moving.',
     sections: [
       {
         title: 'What You See',
-        content: 'End-to-end visibility into every referral with automated status updates, patient reminders, and provider notifications.',
+        content: 'End-to-end visibility into every referral with automated status updates, referral follow-up reminders and loop-closure notifications, and provider notifications.',
       },
       {
         title: 'Key Benefits',
         items: [
           'Automated referral tracking',
           'Connect referrals across your provider network',
-          'Patient follow-up reminders',
+          'Referral follow-up reminders and loop closure',
           'Referral status notifications',
           'Care coordination workflows',
         ],
@@ -1018,6 +1020,7 @@ function ProductDetails() {
                           featured={true}
                           comingSoon={false}
                           image={product.image}
+                          subtitle={product.subtitle}
                         />
                       </div>
                     );
@@ -1047,6 +1050,7 @@ function ProductDetails() {
                           link={product.link}
                           featured={false}
                           comingSoon={true}
+                          subtitle={product.subtitle}
                         />
                       </div>
                     );
@@ -1076,6 +1080,7 @@ function ProductDetails() {
                           link={product.link}
                           featured={false}
                           comingSoon={false}
+                          subtitle={product.subtitle}
                         />
                       </div>
                     );

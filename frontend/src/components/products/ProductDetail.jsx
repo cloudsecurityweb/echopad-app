@@ -3,6 +3,7 @@ import { handleIntercomAction } from '../../utils/intercom';
 function ProductDetail({ 
   id, 
   label, 
+  subtitle,
   title, 
   intro, 
   sections, 
@@ -26,6 +27,7 @@ function ProductDetail({
               <div className="text-xs font-semibold bg-gradient-to-r from-cyan-500 to-blue-600 bg-clip-text text-transparent uppercase tracking-wider mb-2">
                 {label}
               </div>
+              {subtitle && <p className="text-sm md:text-base text-gray-600 font-medium mb-1 md:mb-2">{subtitle}</p>}
               <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-2 md:mb-3">{title}</h2>
               <p className="text-sm md:text-base text-gray-600 mb-4 md:mb-5 leading-relaxed">{intro}</p>
 
