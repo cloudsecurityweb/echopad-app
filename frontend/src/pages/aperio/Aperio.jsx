@@ -7,6 +7,7 @@ import BuyNowCTA from '../../components/products/BuyNowCTA';
 import { getProductByRoute } from '../../data/products';
 import BeforeAfterSlider from '../../components/products/BeforeAfterSlider';
 import usePageTitle from '../../hooks/usePageTitle';
+import { ReferralWorkflowBeam } from '../../components/aperio/ReferralWorkflowBeam';
 
 function Aperio() {
   const PageTitle = usePageTitle('Echopad Aperio – Referral Tracking and Coordination');
@@ -318,6 +319,8 @@ function Aperio() {
             </div>
           </div>
         </section>
+
+        <ReferralWorkflowBeam />
 
         {/* Why It Matters - referral loop story (replaces cookie-cutter value blocks) */}
         <section className="py-20 bg-gradient-to-b from-white to-gray-50" aria-labelledby="why-aperio-heading">
