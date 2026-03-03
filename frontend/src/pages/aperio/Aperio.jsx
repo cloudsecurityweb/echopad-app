@@ -77,7 +77,7 @@ function Aperio() {
                   Referral Tracking and Coordination
                 </p>
                 <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
-                  Fewer Patients Fall Through the Cracks <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Referrals Get Completed, Not Lost</span>
+                  Open the Loop, Referrals Completed, Not Lost.
                 </h1>
 
                 {/* 3-Second Value Proposition - Smaller Size */}
@@ -115,7 +115,7 @@ function Aperio() {
                 </div>
 
                 <p className="text-lg text-gray-600 mb-8">
-                  Fewer patients fall through the cracks. Track every referral to completion with automated follow-up so patients get to the specialist and you know when it’s done. We send referral follow-up reminders so patients schedule and complete specialist visits.
+                  Aperio tracks every referral to completion with automated follow-up—so patients get to the specialist and you know when it’s done. Reminders keep patients on track to schedule and complete their visits.
                 </p>
 
                 {/* Interactive Stats Banner - Light bg */}

@@ -221,7 +221,7 @@ export const products = [
   {
     id: 'aperio',
     name: 'Aperio',
-    subtitle: 'Referral Tracking and Coordination',
+    subtitle: 'Intelligent referral tracking system that ensures seamless patient handoffs and improves care coordination across providers.',
     shortDescription: 'Streamline referral management and patient care coordination',
     longDescription: 'Intelligent referral tracking system that ensures seamless patient handoffs and improves care coordination across providers.',
     price: '$279',
