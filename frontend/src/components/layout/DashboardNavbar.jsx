@@ -4,7 +4,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useRole } from '../../contexts/RoleContext';
 import echopadLogo from '../../assets/images/logos/echopad-logo.svg';
 
-function DashboardNavbar({ onToggleSidebar }) {
+function DashboardNavbar({ onToggleSidebar, isOpen }) {
   const { account, googleUser, authProvider, logout, isLoading, isAuthenticated, tokenRoles, userProfile } = useAuth();
   const { currentRole, isSuperAdmin, isClientAdmin, isUserAdmin } = useRole();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -88,20 +88,20 @@ function DashboardNavbar({ onToggleSidebar }) {
   const displayName = userInfo.name;
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 p-4">
-      <div className="container mx-auto px-4 rounded-2xl backdrop-blur-md transition-colors shadow-lg shadow-blue-200/50 border border-gray-200/50 bg-white/95">
+    <nav className="fixed top-0 left-0 right-0 z-50 pt-4 px-[1.5%]">
+      <div className="w-full px-4 rounded-2xl backdrop-blur-md transition-colors shadow-lg shadow-blue-200/50 border border-gray-200/50 bg-white/95">
         <div className="flex items-center justify-between h-16">
           {/* Left Section: Sidebar Toggle + Brand Name */}
           <div className="flex items-center gap-4">
             {/* Sidebar Toggle */}
             <button
               onClick={onToggleSidebar}
-              className="p-2 rounded-lg hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2"
+              className="p-2 rounded-lg hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 w-10 h-10 flex flex-col justify-center items-center gap-1 group cursor-pointer"
               aria-label="Toggle sidebar"
             >
-              <svg className="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-              </svg>
+              <span className={`block w-5 h-0.5 bg-gray-700 rounded-sm transition-all duration-300 ease-in-out ${isOpen ? 'rotate-45 translate-y-1.5' : ''}`}></span>
+              <span className={`block w-5 h-0.5 bg-gray-700 rounded-sm transition-all duration-300 ease-in-out ${isOpen ? 'opacity-0' : ''}`}></span>
+              <span className={`block w-5 h-0.5 bg-gray-700 rounded-sm transition-all duration-300 ease-in-out ${isOpen ? '-rotate-45 -translate-y-1.5' : ''}`}></span>
             </button>
 
             {/* Brand Name - same as homepage */}

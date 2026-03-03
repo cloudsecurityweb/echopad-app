@@ -32,7 +32,7 @@ function ProductTab({
         getAccessToken={getAccessToken}
       />
 
-      <UsageSection usage={usageData} loading={usageLoading} error={usageError} />
+      <UsageSection users={users} product={product} usage={usageData} loading={usageLoading} error={usageError} />
     </div>
   );
 }

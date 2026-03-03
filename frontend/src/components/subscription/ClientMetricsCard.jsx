@@ -1,6 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { useUserMetrics } from '../../hooks/useUserMetrics';
-
+import { useClientMetrics } from '../../hooks/useClientMetrics';
 /* ------------------------------------------------------------------ */
 /*  SVG Icons                                                         */
 /* ------------------------------------------------------------------ */
@@ -39,38 +38,38 @@ const ChartIcon = () => (
 /* ------------------------------------------------------------------ */
 /*  Sparkline SVG (smooth line chart)                                 */
 /* ------------------------------------------------------------------ */
-// function Sparkline({ data, color = '#06b6d4', height = 40, width = 120 }) {
-//   if (!data || data.length < 2) return null;
+function Sparkline({ data, color = '#06b6d4', height = 40, width = 120 }) {
+  if (!data || data.length < 2) return null;
 
-//   const values = data.map(d => d.value);
-//   const max = Math.max(...values, 1);
-//   const min = Math.min(...values, 0);
-//   const range = max - min || 1;
+  const values = data.map(d => d.value);
+  const max = Math.max(...values, 1);
+  const min = Math.min(...values, 0);
+  const range = max - min || 1;
 
-//   const points = values.map((v, i) => {
-//     const x = (i / (values.length - 1)) * width;
-//     const y = height - ((v - min) / range) * (height - 4) - 2;
-//     return `${x},${y}`;
-//   });
+  const points = values.map((v, i) => {
+    const x = (i / (values.length - 1)) * width;
+    const y = height - ((v - min) / range) * (height - 4) - 2;
+    return `${x},${y}`;
+  });
 
-//   const linePath = `M${points.join(' L')}`;
-//   const areaPath = `${linePath} L${width},${height} L0,${height} Z`;
+  const linePath = `M${points.join(' L')}`;
+  const areaPath = `${linePath} L${width},${height} L0,${height} Z`;
 
-//   return (
-//     <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} className="overflow-visible">
-//       <defs>
-//         <linearGradient id={`grad-${color.replace('#', '')}`} x1="0" y1="0" x2="0" y2="1">
-//           <stop offset="0%" stopColor={color} stopOpacity="0.25" />
-//           <stop offset="100%" stopColor={color} stopOpacity="0.02" />
-//         </linearGradient>
-//       </defs>
-//       <path d={areaPath} fill={`url(#grad-${color.replace('#', '')})`} />
-//       <path d={linePath} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-//       {/* End dot */}
-//       <circle cx={width} cy={parseFloat(points[points.length - 1].split(',')[1])} r="3" fill={color} />
-//     </svg>
-//   );
-// }
+  return (
+    <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} className="overflow-visible">
+      <defs>
+        <linearGradient id={`grad-${color.replace('#', '')}`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={color} stopOpacity="0.25" />
+          <stop offset="100%" stopColor={color} stopOpacity="0.02" />
+        </linearGradient>
+      </defs>
+      <path d={areaPath} fill={`url(#grad-${color.replace('#', '')})`} />
+      <path d={linePath} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      {/* End dot */}
+      <circle cx={width} cy={parseFloat(points[points.length - 1].split(',')[1])} r="3" fill={color} />
+    </svg>
+  );
+}
 
 /* ------------------------------------------------------------------ */
 /*  Stat Card                                                         */
@@ -85,6 +84,11 @@ function StatCard({ icon, label, value, subtitle, chartData, accentColor, gradie
         <div className={`p-2.5 rounded-xl ${iconBg} shadow-sm`}>
           {icon}
         </div>
+        {chartData && chartData.length >= 2 && (
+          <div className="opacity-60 group-hover:opacity-100 transition-opacity">
+            <Sparkline data={chartData} color={accentColor} height={32} width={80} />
+          </div>
+        )}
       </div>
       <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">{label}</p>
       <p className="text-2xl font-extrabold text-gray-900 tracking-tight">{value}</p>
@@ -274,16 +278,68 @@ function getDateRange(days) {
 }
 
 /* ------------------------------------------------------------------ */
+/*  User Usage Table                                                  */
+/* ------------------------------------------------------------------ */
+function UserUsageTable({ breakdownData, users = [] }) {
+  if (!breakdownData || breakdownData.length === 0) return null;
+
+  return (
+    <div className="mt-8">
+      <h4 className="text-sm font-semibold text-gray-700 mb-4">User Breakdown</h4>
+      <div className="overflow-x-auto rounded-xl border border-gray-100 shadow-sm">
+        <table className="w-full text-left bg-white">
+          <thead className="bg-gray-50/80 text-gray-500 text-xs uppercase tracking-wider">
+            <tr>
+              <th className="px-5 py-3 font-medium">User</th>
+              <th className="px-5 py-3 font-medium text-right">Transcriptions</th>
+              <th className="px-5 py-3 font-medium text-right">Minutes</th>
+              <th className="px-5 py-3 font-medium text-right">Words</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-100 text-sm">
+            {breakdownData
+              .sort((a, b) => b.totalTranscriptions - a.totalTranscriptions)
+              .map((row, i) => {
+                const user = users.find(u => u.id === row.userId || u.uid === row.userId || u.objectId === row.userId) || {};
+                const name = user.displayName || user.name || 'Unknown User';
+                const email = user.email || row.userId;
+
+                return (
+                  <tr key={i} className="hover:bg-gray-50/50 transition-colors">
+                    <td className="px-5 py-3">
+                      <div className="font-medium text-gray-900">{name}</div>
+                      <div className="text-xs text-gray-500">{email !== name ? email : ''}</div>
+                    </td>
+                    <td className="px-5 py-3 text-right text-gray-700 font-medium">
+                      {formatNumber(row.totalTranscriptions)}
+                    </td>
+                    <td className="px-5 py-3 text-right text-gray-700">
+                      {formatMinutes(row.totalMinutes)}
+                    </td>
+                    <td className="px-5 py-3 text-right text-gray-700">
+                      {formatNumber(row.totalWords)}
+                    </td>
+                  </tr>
+                );
+              })}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
 /*  Main Component                                                    */
 /* ------------------------------------------------------------------ */
-const UserMetricsCard = ({ activeProduct }) => {
+const ClientMetricsCard = ({ activeProduct, users = [] }) => {
   const [activePeriod, setActivePeriod] = useState('all');
   const dateRange = useMemo(() => {
     const period = TIME_PERIODS.find(p => p.key === activePeriod);
     return getDateRange(period?.days);
   }, [activePeriod]);
 
-  const { data, loading, error, refresh } = useUserMetrics({ dateRange });
+  const { data, loading, error, refresh } = useClientMetrics({ dateRange });
 
   const summary = data?.summary || {};
   const trends = data?.trends || {};
@@ -423,6 +479,9 @@ const UserMetricsCard = ({ activeProduct }) => {
               <DailyActivityChart data={trends.last30Days} />
             )}
 
+            {/* User Breakdown Table */}
+            <UserUsageTable breakdownData={data?.breakdown?.byUser} users={users} />
+
             {/* Empty State */}
             {!loading && summary.totalTranscriptions === 0 && (
               <div className="mt-8 text-center py-10">
@@ -440,4 +499,4 @@ const UserMetricsCard = ({ activeProduct }) => {
   );
 };
 
-export default UserMetricsCard;
+export default ClientMetricsCard;
