@@ -64,8 +64,7 @@ const PROBLEM_GROUPS = [
       {
         icon: 'bi-arrow-left-right',
         title: 'Aperio',
-        subtitle: 'Referral Tracking and Coordination',
-        description: 'Fewer patients fall through the cracks. Referrals get completed, not lost.',
+        description: 'Intelligent referral tracking system that ensures seamless patient handoffs and improves care coordination across providers.',
         link: '/aperio',
         featured: true,
       },

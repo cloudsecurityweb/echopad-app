@@ -26,7 +26,6 @@ const PRODUCT_META = {
   },
   'aperio': {
     name: 'Aperio',
-    subtitle: 'Referral Tracking and Coordination',
     productType: 'Care Coordination',
     featured: true,
     earlyAccess: false,
@@ -823,7 +822,6 @@ function ProductDetails() {
   const aperioData = {
     id: 'aperio',
     label: 'APERIO',
-    subtitle: 'Referral Tracking and Coordination',
     title: 'Streamline Referral Management',
     intro: aperioProduct?.longDescription || 'Fewer patients fall through the cracks with referral tracking that keeps every handoff moving.',
     sections: [
