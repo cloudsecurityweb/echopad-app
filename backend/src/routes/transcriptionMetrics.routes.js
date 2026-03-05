@@ -30,7 +30,7 @@ router.post("/internal/metrics", verifyAnyAuth, recordMetrics);
  * Returns aggregated usage for the currently logged-in user
  * Query params: ?from=<ISO>&to=<ISO>
  */
-router.get("/metrics/user", verifyAnyAuth, getMyMetrics);
+router.get("/metrics/user", verifyAnyAuth, metricsLimiter, getMyMetrics);
 
 /**
  * GET /api/metrics/client
