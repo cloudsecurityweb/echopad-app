@@ -6,8 +6,14 @@ import path from "path";
 import os from "os";
 import archiver from "archiver";
 import { verifyAnyAuth } from "../middleware/auth.js";
+import rateLimit from "express-rate-limit";
 
 const router = express.Router();
+const downloadLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 50, // 50 download requests per 15 minutes per IP
+  message: { success: false, error: "Too many download requests, please try again later." },
+});
 
 // Explicit OPTIONS for CORS preflight so the browser gets a clear 204 (avoids "No content for preflight" in DevTools)
 router.options("/ai-scribe/desktop", (req, res) => res.sendStatus(204));
@@ -539,6 +545,7 @@ function resolveMacDownloadInfo(req) {
 router.get(
   "/ai-scribe/desktop",
   verifyAnyAuth,
+  downloadLimiter,
   async (req, res) => {
     const resolved = resolveDesktopDownloadInfo(req) || await getLatestPackageInfo("desktop", { bypassCache: false });
     const { version, packageName, filename } = resolved;
@@ -556,6 +563,7 @@ router.get(
 router.get(
   "/ai-scribe/mac",
   verifyAnyAuth,
+  downloadLimiter
   async (req, res) => {
     const resolved = resolveMacDownloadInfo(req) || await getLatestPackageInfo("mac", { bypassCache: false });
     const { version, packageName, filename } = resolved;
