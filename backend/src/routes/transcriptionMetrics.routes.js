@@ -8,8 +8,14 @@ import {
     getPlatformMetrics,
     getUserMetricsById,
 } from "../controllers/transcriptionMetrics.controller.js";
+import rateLimit from "express-rate-limit";
 
 const router = express.Router();
+const metricsLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 50, // 50 requests per 15 minutes per IP
+  message: { success: false, error: "Too many requests, please try again later." },
+});
 
 // ===== ROUTES ==================================================================
 
@@ -34,6 +40,7 @@ router.get("/metrics/user", verifyAnyAuth, getMyMetrics);
 router.get(
     "/metrics/client",
     verifyAnyAuth,
+    metricsLimiter, 
     requireRole(
         ["SuperAdmin", "ClientAdmin"],
         ["superAdmin", "clientAdmin"]
@@ -49,6 +56,7 @@ router.get(
 router.get(
     "/metrics/platform",
     verifyAnyAuth,
+    metricsLimiter,
     requireRole(["SuperAdmin"], ["superAdmin"]),
     getPlatformMetrics
 );
@@ -61,6 +69,7 @@ router.get(
 router.get(
     "/metrics/user/:userId",
     verifyAnyAuth,
+    metricsLimiter,
     requireRole(
         ["SuperAdmin", "ClientAdmin"],
         ["superAdmin", "clientAdmin"]
