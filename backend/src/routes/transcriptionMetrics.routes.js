@@ -23,7 +23,7 @@ const metricsLimiter = rateLimit({
  * POST /api/internal/metrics
  * Record metrics from aiscribe — authenticated via user JWT
  */
-router.post("/internal/metrics", verifyAnyAuth, recordMetrics);
+router.post("/internal/metrics", verifyAnyAuth, metricsLimiter, recordMetrics);
 
 /**
  * GET /api/metrics/user
