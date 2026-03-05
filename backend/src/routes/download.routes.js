@@ -134,8 +134,8 @@ function getArtifactContentUrl(packageName, version, pathStyle = "universal") {
   const orgName = pathSegments[0] || "cloudsecurityweb";
   const project = getProject();
   const feed = getFeedName();
-  return `https://pkgs.dev.azure.com/${orgName}/${encodeURIComponent(project)}/_apis/packaging/feeds/${feed}/${pathStyle}/packages/${packageName}/versions/${version}/content?api-version=${API_VERSION}`;
-}
+  const safeVersion = encodeURIComponent(version); // ✅ sanitize user input
+  return `https://pkgs.dev.azure.com/${orgName}/${encodeURIComponent(project)}/_apis/packaging/feeds/${feed}/${pathStyle}/packages/${packageName}/versions/${safeVersion}/content?api-version=${API_VERSION}`;
 
 /**
  * Recursively list all files in a directory.
@@ -395,7 +395,26 @@ async function streamFromArtifacts(req, res, artifactUrl, filename, packageName,
   }
 
   try {
-    let response = await doFetch(artifactUrl);
+   let parsedUrl;
+   try {
+    parsedUrl = new URL(artifactUrl);
+   } catch (e) {
+    console.error("[DOWNLOAD] Invalid artifact URL:", artifactUrl, e);
+    return res.status(400).json({
+      success: false,
+      error: "Invalid artifact URL",
+    });
+  }
+
+  if (parsedUrl.hostname !== "pkgs.dev.azure.com") {
+    console.error("[DOWNLOAD] Blocked SSRF attempt to:", parsedUrl.hostname);
+    return res.status(400).json({
+      success: false,
+      error: "Invalid artifact URL",
+    });
+  }
+
+  let response = await doFetch(artifactUrl);
     const altPathStyle = artifactUrl.includes("/universal/") ? "upack" : "universal";
     const altUrl = artifactUrl.replace(`/${altPathStyle === "upack" ? "universal" : "upack"}/`, `/${altPathStyle}/`);
     if (!response.ok && response.status === 404 && altUrl !== artifactUrl) {
