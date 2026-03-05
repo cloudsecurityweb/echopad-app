@@ -180,7 +180,7 @@ router.post('/sign-in-email', signInEmail);
  * Exchange refresh token for new access (session) token
  * Body: { refreshToken: string }
  */
-router.post('/refresh', refreshToken);
+router.post('/refresh', authLimiter, refreshToken);
 
 /**
  * POST /api/auth/change-password
