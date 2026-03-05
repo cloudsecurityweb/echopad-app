@@ -14,11 +14,14 @@ const ProductDownloadCard = ({ activeProduct }) => {
   }
 
   const { name, description, version = '1.0.0' } = activeProduct;
+  const isAperio = activeProduct.id?.toLowerCase() === 'aperio';
 
   const handleDownloadClick = () => {
-    // Check if it's the AI Scribe product (you might want to check by ID or productCode if available)
-    // For now we'll route all downloads for AI Scribe here, or you can check activeProduct.id === 'AI_SCRIBE'
-    navigate('/dashboard/product/download/ai-scribe');
+    if (isAperio) {
+      navigate('');
+    } else {
+      navigate('/dashboard/product/download/ai-scribe');
+    }
   };
 
   return (
@@ -38,10 +41,10 @@ const ProductDownloadCard = ({ activeProduct }) => {
                 <path fillRule="evenodd" d="M10.293 15.707a1 1 0 010-1.414L14.586 10l-4.293-4.293a1 1 0 111.414-1.414l5 5a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0z" clipRule="evenodd" />
                 <path fillRule="evenodd" d="M4.293 15.707a1 1 0 010-1.414L8.586 10 4.293 5.707a1 1 0 011.414-1.414l5 5a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0z" clipRule="evenodd" />
               </svg>
-              <span>Go to Download Page</span>
+              <span>{isAperio ? 'Start using Aperio' : 'Go to Download Page'}</span>
             </button>
             <p className="text-xs text-gray-500 mt-2 text-center md:text-left pl-1">
-              Select your operating system on the next page.
+              {isAperio ? 'Open the referral tracking app.' : 'Select your operating system on the next page.'}
             </p>
           </div>
         </div>
