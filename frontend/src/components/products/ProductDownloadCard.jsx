@@ -32,7 +32,7 @@ const ProductDownloadCard = ({ activeProduct }) => {
           console.warn('[Aperio] Could not attach auth token:', e);
         }
       }
-      window.location.href = url;
+      window.open(url, '_blank', 'noopener,noreferrer');
     } else {
       navigate('/dashboard/product/download/ai-scribe');
     }
