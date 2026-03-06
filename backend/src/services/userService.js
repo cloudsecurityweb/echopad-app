@@ -80,7 +80,7 @@ export async function createUserRecord(userData, actorUserId) {
     const auditContainer = getContainer(AUDIT_CONTAINER_NAME);
     if (auditContainer) {
       const auditEvent = createAuditEvent({
-        id: `audit_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        id: `audit_${Date.now()}_${require('crypto').randomBytes(6).toString('hex')}`,
         tenantId: user.tenantId,
         type: AUDIT_EVENT_TYPES.USER_CREATED,
         actorUserId,
