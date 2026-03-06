@@ -8,6 +8,8 @@ import Footer from '../../components/layout/Footer';
 import usePageTitle from '../../hooks/usePageTitle';
 import { DESKTOP_REDIRECT_KEY } from '../../utils/auth';
 
+
+
 // Security validation function
 function isValidRedirectUri(uri) {
   try {
@@ -18,7 +20,24 @@ function isValidRedirectUri(uri) {
     return false;
   }
 }
-
+async function encryptData(data) {
+  const encoded = new TextEncoder().encode(JSON.stringify(data));
+  const key = await window.crypto.subtle.generateKey(
+    { name: "AES-GCM", length: 256 },
+    false,
+    ["encrypt", "decrypt"]
+  );
+  const iv = window.crypto.getRandomValues(new Uint8Array(12));
+  const encrypted = await window.crypto.subtle.encrypt(
+    { name: "AES-GCM", iv },
+    key,
+    encoded
+  );
+  return {
+    iv: Array.from(iv),
+    data: Array.from(new Uint8Array(encrypted)),
+  };
+}
 function SignIn() {
   const PageTitle = usePageTitle('Sign In');
   const { login, loginWithGoogle, isAuthenticated, isLoading, hasTokenForElectronRedirect, account, getAccessToken, googleUser, userProfile, authProvider, logout, syncUserProfile, syncGoogleUserProfile, clearGoogleAuth, signInEmailPassword, emailPasswordRefreshToken } = useAuth();
@@ -89,17 +108,16 @@ function SignIn() {
       const refreshTokenForDesktop = emailPasswordRefreshToken ?? sessionStorage.getItem('echopad_email_refresh_token') ?? null;
 
       // Send user to success page; it will redirect to Electron with token and display_name
-      sessionStorage.setItem(
-        DESKTOP_REDIRECT_KEY,
-        JSON.stringify({
-          redirectUri,
-          token,
-          name: userName,
-          email: userEmail,
-          display_name: displayName || userName,
-          ...(refreshTokenForDesktop ? { refresh_token: refreshTokenForDesktop } : {}),
-        })
-      );
+      const sensitivePayload = {
+        redirectUri,
+        token,
+        name: userName,
+        email: userEmail,
+        display_name: displayName || userName,
+        ...(refreshTokenForDesktop ? { refresh_token: refreshTokenForDesktop } : {}),
+      };
+const encrypted = await encryptData(sensitivePayload);
+sessionStorage.setItem(DESKTOP_REDIRECT_KEY, JSON.stringify(encrypted));
       navigate('/login-complete', { replace: true });
     } catch (error) {
       console.error('[Electron Auth] Failed to redirect:', error);
@@ -448,7 +466,7 @@ function SignIn() {
                     </p>
                   </div>
                   <p className="text-blue-100 text-xs md:text-sm">
-                    HIPAA-compliant platform with enterprise-grade security. Your data is encrypted and protected.
+                    Your data is secure and HIPAA-compliant. Encrypted and protected.
                   </p>
                 </div>
 

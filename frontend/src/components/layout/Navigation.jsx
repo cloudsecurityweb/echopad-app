@@ -292,7 +292,7 @@ function Navigation() {
                 {/* ✅ Request Demo (Desktop Auth) */}
                 <a
                   href="#"
-                  className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-5 py-2 rounded-lg hover:from-cyan-400 hover:to-blue-500 transition-all font-semibold text-sm shadow-lg hover:shadow-cyan-500/50 hover:scale-105"
+                  className="inline-flex items-center justify-center h-10 px-5 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-full hover:from-cyan-400 hover:to-blue-500 transition-all font-semibold text-sm shadow-lg hover:shadow-cyan-500/50 hover:scale-105"
                   onClick={(e) => handleIntercomClick(e, 'request-demo')}
                 >
                   Request Demo
@@ -300,14 +300,14 @@ function Navigation() {
               </>
             ) : (
               <>
-                <Link to="/sign-in" className="border-2 border-gray-300 text-gray-700 px-5 py-2 rounded-lg">
+                <Link to="/sign-in" className="inline-flex items-center justify-center h-10 px-5 border-2 border-gray-300 text-gray-700 rounded-full font-semibold text-sm hover:bg-gray-50 hover:border-gray-400 transition-all hover:scale-105 shadow-sm hover:shadow-md">
                   Sign in
                 </Link>
 
                 {/* ✅ Request Demo (Desktop Guest) */}
                 <a
                   href="#"
-                  className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-5 py-2 rounded-lg hover:from-cyan-400 hover:to-blue-500 transition-all font-semibold text-sm shadow-lg hover:shadow-cyan-500/50 hover:scale-105"
+                  className="inline-flex items-center justify-center h-10 px-5 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-full hover:from-cyan-400 hover:to-blue-500 transition-all font-semibold text-sm shadow-lg hover:shadow-cyan-500/50 hover:scale-105"
                   onClick={(e) => handleIntercomClick(e, 'request-demo')}
                 >
                   Request Demo
@@ -397,7 +397,7 @@ function Navigation() {
                 </button>
                 <a
                   href="#"
-                  className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-5 py-3 rounded-lg hover:from-cyan-400 hover:to-blue-500 transition-all font-medium text-center shadow-lg"
+                  className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-5 py-3 rounded-full hover:from-cyan-400 hover:to-blue-500 transition-all font-medium text-center shadow-lg"
                   onClick={(e) => {
                     handleIntercomClick(e, 'request-demo');
                     setIsMobileMenuOpen(false);
@@ -410,14 +410,14 @@ function Navigation() {
               <>
                 <Link
                   to="/sign-in"
-                  className="border border-gray-300 text-gray-700 px-5 py-3 rounded-lg hover:bg-gray-50 transition-all font-medium text-center"
+                  className="inline-flex items-center justify-center h-11 px-5 border border-gray-300 text-gray-700 rounded-full hover:bg-gray-50 hover:border-gray-400 transition-all hover:scale-105 shadow-sm hover:shadow-md font-semibold text-sm text-center"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   Sign in
                 </Link>
                 <a
                   href="#"
-                  className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-5 py-3 rounded-lg hover:from-cyan-400 hover:to-blue-500 transition-all font-medium text-center shadow-lg"
+                  className="inline-flex items-center justify-center h-11 px-5 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-full hover:from-cyan-400 hover:to-blue-500 transition-all font-semibold text-sm text-center shadow-lg"
                   onClick={(e) => {
                     handleIntercomClick(e, 'request-demo');
                     setIsMobileMenuOpen(false);

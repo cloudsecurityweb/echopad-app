@@ -8,8 +8,14 @@ import {
 } from "../services/userLicenseService.js";
 import { verifyAnyAuth } from "../middleware/auth.js";
 import { requireRole } from "../middleware/entraAuth.js";
+import rateLimit from "express-rate-limit";
 
 const router = express.Router();
+const userLicensesLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 50, // 50 requests per 15 minutes per IP
+  message: { success: false, error: "Too many requests, please try again later." },
+});
 
 /**
  * GET /api/user-licenses
@@ -18,6 +24,7 @@ const router = express.Router();
 router.get(
   "/",
   verifyAnyAuth,
+  userLicensesLimiter
   async (req, res) => {
     try {
       const tenantId = req.currentUser.tenantId;
@@ -54,6 +61,7 @@ router.get(
 router.post(
   "/assign",
   verifyAnyAuth,
+  userLicensesLimiter
   requireRole(["SuperAdmin", "ClientAdmin"], ["superAdmin", "clientAdmin"]),
   async (req, res) => {
     try {
@@ -90,6 +98,7 @@ router.post(
 router.post(
   "/revoke",
   verifyAnyAuth,
+  userLicensesLimiter
   requireRole(["SuperAdmin", "ClientAdmin"], ["superAdmin", "clientAdmin"]),
   async (req, res) => {
     try {
@@ -114,6 +123,7 @@ router.post(
 router.post(
   "/request",
   verifyAnyAuth,
+  userLicensesLimiter
   async (req, res) => {
     try {
       const tenantId = req.currentUser.tenantId;

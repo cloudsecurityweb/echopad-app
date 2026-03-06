@@ -76,6 +76,11 @@ body {
   to { transform: rotate(360deg); }
 }
 
+@keyframes animated-beam-draw {
+  from { stroke-dashoffset: var(--beam-length, 1000); }
+  to { stroke-dashoffset: 0; }
+}
+
 .animate-spin-slow {
   animation: spinSlow 6s linear infinite;
 }
@@ -378,24 +383,42 @@ body {
   transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
 }
 
-/* Modern Custom Scrollbar - Light Theme */
+/* Modern Custom Scrollbar - Thin, auto-hide when not scrolling */
 ::-webkit-scrollbar {
-  width: 12px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #F1F5F9;
-  border-radius: 6px;
+  background: transparent;
+  border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb {
   background: linear-gradient(180deg, var(--color-primary-start), var(--color-primary-end));
-  border-radius: 6px;
-  border: 2px solid #F1F5F9;
+  border-radius: 3px;
+  transition: opacity 0.25s ease-out;
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(180deg, var(--color-accent-start), var(--color-accent-end));
+}
+
+/* Viewport scrollbar: hidden when not scrolling (class added by JS) */
+html::-webkit-scrollbar-track,
+html::-webkit-scrollbar-thumb {
+  opacity: 0;
+  transition: opacity 0.25s ease-out;
+}
+html.scrollbar-visible::-webkit-scrollbar-track,
+html.scrollbar-visible::-webkit-scrollbar-thumb {
+  opacity: 1;
+}
+
+/* Firefox: thin scrollbar that auto-hides (uses overlay behavior) */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-primary) transparent;
 }
 
 /* Container - Mobile-First with Fixed Widths for md/lg/xl */
@@ -454,6 +477,40 @@ video {
   max-width: 100%;
   height: auto;
   display: block;
+}
+
+/* Unified CTA pattern across pages */
+button[class*="from-cyan-500"][class*="to-blue-600"],
+button[class*="from-blue-600"][class*="to-cyan-600"],
+button[class*="bg-blue-600"],
+button[class*="bg-gray-900"][class*="text-white"],
+button[class*="bg-white"][class*="border"][class*="text-gray-7"],
+a[class*="from-cyan-500"][class*="to-blue-600"],
+a[class*="from-blue-600"][class*="to-cyan-600"],
+a[class*="bg-blue-600"],
+a[class*="bg-gray-900"][class*="text-white"],
+a[class*="bg-white"][class*="border"][class*="text-gray-7"] {
+  border-radius: 9999px !important;
+  font-weight: 600;
+  box-shadow: 0 10px 24px rgba(14, 165, 233, 0.25);
+  transition: transform 200ms cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 200ms cubic-bezier(0.4, 0, 0.2, 1),
+              filter 200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+button[class*="from-cyan-500"][class*="to-blue-600"]:hover,
+button[class*="from-blue-600"][class*="to-cyan-600"]:hover,
+button[class*="bg-blue-600"]:hover,
+button[class*="bg-gray-900"][class*="text-white"]:hover,
+button[class*="bg-white"][class*="border"][class*="text-gray-7"]:hover,
+a[class*="from-cyan-500"][class*="to-blue-600"]:hover,
+a[class*="from-blue-600"][class*="to-cyan-600"]:hover,
+a[class*="bg-blue-600"]:hover,
+a[class*="bg-gray-900"][class*="text-white"]:hover,
+a[class*="bg-white"][class*="border"][class*="text-gray-7"]:hover {
+  transform: translateY(-1px) scale(1.04);
+  box-shadow: 0 14px 30px rgba(14, 165, 233, 0.3);
+  filter: brightness(1.03);
 }
 
 /* Consistent Gutters - Mobile-First */

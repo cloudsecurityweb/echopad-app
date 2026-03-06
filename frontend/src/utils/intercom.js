@@ -4,10 +4,8 @@
  * - App ID sourced from environment variable (VITE_INTERCOM_APP_ID)
  * - Identity Verification via server-side HMAC (user_hash)
  * - Single boot guard to prevent double-initialization
- * - All public helpers gate on consent before calling Intercom
+ * - Intercom is always available (not consent-gated)
  */
-
-import { hasConsent } from './cookieConsent';
 
 const INTERCOM_APP_ID = import.meta.env.VITE_INTERCOM_APP_ID;
 
@@ -20,7 +18,7 @@ const log = (...args) => {
 let isBooted = false;
 
 // ---------------------------------------------------------------------------
-// Script loading (consent-gated, idempotent)
+// Script loading (idempotent)
 // ---------------------------------------------------------------------------
 
 /**
@@ -143,14 +141,14 @@ export function shutdownIntercom({ rebootAnonymous = false } = {}) {
 }
 
 // ---------------------------------------------------------------------------
-// Messenger helpers (consent-gated)
+// Messenger helpers
 // ---------------------------------------------------------------------------
 
 /**
  * Show the Intercom messenger.
  */
 export function showIntercom() {
-  if (!hasConsent() || !window.Intercom) return;
+  if (!window.Intercom) return;
   window.Intercom('show');
 }
 
@@ -167,7 +165,7 @@ export function hideIntercom() {
  * Falls back to scrolling to the #contact section when Intercom is unavailable.
  */
 export function handleIntercomAction(action) {
-  if (!hasConsent() || !window.Intercom) {
+  if (!window.Intercom) {
     // Fallback — scroll to contact form
     const contactSection = document.getElementById('contact');
     if (contactSection) {
@@ -214,8 +212,8 @@ function isValidEmail(email) {
  * @param {Object} formData - { name, email, organization, role, providers, ehr, message }
  */
 export function openIntercomWithFormData(formData) {
-  if (!hasConsent() || !window.Intercom) {
-    log('Cannot open — no consent or Intercom not loaded');
+  if (!window.Intercom) {
+    log('Cannot open — Intercom not loaded');
     return;
   }
 
