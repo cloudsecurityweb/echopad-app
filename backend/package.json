@@ -8,8 +8,8 @@
     "start": "node src/server.js",
     "dev": "node --watch src/server.js",
     "build:aperio": "node scripts/build-aperio.js",
-    "dev:aperio": "npm run dev --prefix ./node_modules/echopad-aperio/frontend -- --port 5174",
-    "dev:aperio:backend": "cross-env NODE_ENV=development PORT=3001 node node_modules/echopad-aperio/backend/src/server.js"
+    "dev:aperio": "cross-env VITE_APERIO_API_URL=http://localhost:3000 npm run dev --prefix ./node_modules/echopad-aperio/frontend -- --port 5174",
+    "dev:aperio:backend": "node scripts/run-aperio-backend.js"
   },
   "keywords": [
     "express",
@@ -21,6 +21,7 @@
   "dependencies": {
     "@azure/communication-email": "^1.0.0",
     "@azure/cosmos": "^4.0.0",
+    "@azure/storage-blob": "^12.31.0",
     "archiver": "^7.0.1",
     "bcrypt": "^5.1.1",
     "cors": "^2.8.6",
@@ -30,7 +31,9 @@
     "helmet": "^8.1.0",
     "html-to-text": "^9.0.5",
     "jose": "^5.2.0",
-    "nunjucks": "^3.2.4"
+    "nunjucks": "^3.2.4",
+    "node-cron": "^4.2.1",
+    "multer": "^2.0.2"
   },
   "engines": {
     "node": ">=18.0.0"

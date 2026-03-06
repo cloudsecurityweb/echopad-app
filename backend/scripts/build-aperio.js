@@ -47,20 +47,25 @@ function copyRecursive(src, dest) {
 }
 
 // When Aperio runs inside echopad-app, there is no separate "Aperio server" — the same backend serves
-// everything. Replace the in-app error message so it says "Echopad app server" instead.
-function patchAperioErrorMessage(dir) {
-  if (!fs.existsSync(dir)) return;
-  const entries = fs.readdirSync(dir, { withFileTypes: true });
+// everything. Patch the built JS so messages and any hardcoded 3001 URL point to the app server.
+// rootDir: directory containing the build (for logging); can be package dist or public/aperio.
+function patchAperioBuildAssets(assetsDir, rootDir) {
+  if (!fs.existsSync(assetsDir)) return;
+  const logRoot = rootDir || assetsDir;
+  const entries = fs.readdirSync(assetsDir, { withFileTypes: true });
   for (const e of entries) {
-    const full = path.join(dir, e.name);
-    if (e.isDirectory()) patchAperioErrorMessage(full);
+    const full = path.join(assetsDir, e.name);
+    if (e.isDirectory()) patchAperioBuildAssets(full, logRoot);
     else if (e.name.endsWith(".js")) {
       let content = fs.readFileSync(full, "utf8");
       const before = content;
       content = content.replace(/the Aperio server/g, "the Echopad app server");
+      // Fix hardcoded default API URL / error message so embedded app uses same origin
+      content = content.replace(/http:\/\/localhost:3001\. Check that the server/g, "the app server. Check that the server");
+      content = content.replace(/http:\/\/localhost:3001/g, "");
       if (content !== before) {
         fs.writeFileSync(full, content);
-        log(`Patched error message in ${path.relative(publicAperio, full)}`);
+        log(`Patched: ${path.relative(logRoot, full)}`);
       }
     }
   }
@@ -85,7 +90,7 @@ if (!pkg.scripts || !pkg.scripts.build) {
     log(`Copying existing ${APERIO_BUILD_OUTPUT}/ to public/aperio`);
     rmDirRecursive(publicAperio);
     copyRecursive(possibleOutput, publicAperio);
-    patchAperioErrorMessage(path.join(publicAperio, "assets"));
+    patchAperioBuildAssets(path.join(publicAperio, "assets"), publicAperio);
     log("Done.");
   } else {
     log("No build output found. Create backend/src/public/aperio and add the Aperio SPA build manually, or add a build script to echopad-Aperio.");
@@ -102,6 +107,7 @@ const frontendDir = path.join(nodeModulesAperio, "frontend");
 const buildEnv = {
   ...process.env,
   VITE_BASE: "/aperio/",
+  VITE_APERIO_API_URL: "",
   VITE_API_BASE_URL: "",
   VITE_APERIO_API_BASE: "",
 };
@@ -129,9 +135,12 @@ if (!actualBuildOut) {
 }
 
 log(`Copying build output to src/public/aperio`);
+// Patch the PACKAGE dist first — the server serves from node_modules/echopad-aperio/frontend/dist,
+// not from public/aperio. So we must patch the dist that gets served.
+const packageAssets = path.join(actualBuildOut, "assets");
+patchAperioBuildAssets(packageAssets, actualBuildOut);
+
 rmDirRecursive(publicAperio);
 copyRecursive(actualBuildOut, publicAperio);
-
-patchAperioErrorMessage(path.join(publicAperio, "assets"));
 
 log("Done.");

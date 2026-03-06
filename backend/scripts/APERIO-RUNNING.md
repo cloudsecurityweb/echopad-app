@@ -22,12 +22,14 @@ To save cost, **Aperio runs inside the same process** as the echopad-app backend
 ## Development
 
 - **In-process (recommended):** Just start the main backend (`npm run dev`). After `npm run build:aperio`, it will load the echopad-aperio package and mount it at /aperio. Hit `http://localhost:3000/aperio` for the Aperio app and API.
-- **Separate Aperio frontend (optional):** Run `npm run dev:aperio` for the Aperio Vite app on 5174, and set `VITE_APERIO_URL=http://localhost:5174` in the main app’s frontend `.env` so “Start using Aperio” opens the dev server.
-- **Separate Aperio backend (optional):** Run `npm run dev:aperio:backend` for the Aperio API on 3001 if you want to run it as a separate process (e.g. to debug Aperio in isolation). The in-process mount still works without this.
+- **Separate Aperio frontend (optional):** Run `npm run dev:aperio` for the Aperio Vite app on 5174 (it is started with `VITE_APERIO_API_URL=http://localhost:3000` so it uses the echopad-app backend). Set `VITE_APERIO_URL=http://localhost:5174` in the main app’s frontend `.env` so “Start using Aperio” opens the dev server.
+- **Separate Aperio backend (optional):** Run `npm run dev:aperio:backend` for the Aperio API on 3001 if you want to run it as a separate process (e.g. to debug Aperio in isolation). The in-process mount still works without this. **Set `JWT_SECRET` in `backend/.env`** (same value as `EMAIL_PASSWORD_JWT_SECRET` so auth works); otherwise you’ll see “JWT_SECRET not set. Email/Password Auth will fail.”
 
 ## Env / config
 
 - The **echopad-aperio** backend (when loaded in-process) reads its own config from the package (e.g. Cosmos, Blob). Use the same env vars you would use for a standalone Aperio backend (e.g. on the same App Service as echopad-app, so they share the same environment).
+- **Standalone Aperio backend (3001):** It loads `backend/.env` via dotenv. Set **`JWT_SECRET`** (use the same value as `EMAIL_PASSWORD_JWT_SECRET` so tokens issued by the main app are valid). Without it you get “JWT_SECRET not set. Email/Password Auth will fail.”
+- **Aperio at 5174:** Start it with `npm run dev:aperio` from the **backend** directory so it uses the code that reads the sign-in token from the URL hash (`#access_token=...`). The app at 5174 does **not** read `echopad-app/frontend/.env`; it reads `.env` from `backend/node_modules/echopad-aperio/frontend/` (or uses the token from the URL when you open it via "Start using Aperio"). See [APERIO-TOKEN-IN-HASH.md](APERIO-TOKEN-IN-HASH.md) and [APERIO-APERIOAPI-SNIPPET.md](APERIO-APERIOAPI-SNIPPET.md) for making the token-from-hash fix permanent in the echopad-aperio repo.
 
 ## Summary
 

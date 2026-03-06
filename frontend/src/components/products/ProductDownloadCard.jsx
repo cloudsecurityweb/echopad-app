@@ -21,12 +21,12 @@ const ProductDownloadCard = ({ activeProduct }) => {
 
   const handleDownloadClick = async () => {
     if (isAperio) {
-      let url = APERIO_APP_URL;
+      let url = APERIO_APP_URL.replace(/\/$/, '');
       if (isAuthenticated) {
         try {
           const token = await getAccessToken();
           if (token) {
-            url += `#access_token=${encodeURIComponent(token)}`;
+            url += `/#access_token=${encodeURIComponent(token)}`;
           }
         } catch (e) {
           console.warn('[Aperio] Could not attach auth token:', e);
