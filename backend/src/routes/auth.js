@@ -166,14 +166,14 @@ router.post('/sign-up', signUp);
  * Sign up with email and password
  * Body: { organizationName, organizerName, email, password }
  */
-router.post('/sign-in-email', authLimiter, signInEmail);
+router.post('/sign-up-email', signUpEmail);
 
 /**
  * POST /api/auth/sign-in-email
  * Sign in with email and password
  * Body: { email, password }
  */
-router.post('/sign-in-email', signInEmail);
+router.post('/sign-in-email', authLimiter, signInEmail);
 
 /**
  * POST /api/auth/refresh
