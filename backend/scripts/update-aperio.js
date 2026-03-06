@@ -37,11 +37,28 @@ function run(cmd, args, opts = {}) {
 // 1) Remove existing echopad-aperio so we get a fresh clone without running postinstall in temp
 if (fs.existsSync(nodeModulesAperio)) {
   log("Removing existing node_modules/echopad-aperio ...");
-  try {
-    fs.rmSync(nodeModulesAperio, { recursive: true, maxRetries: 3 });
-  } catch (err) {
-    log("Could not remove. Close any terminals/editors using that folder, then run again.");
-    console.error(err.message);
+  const maxRetries = 5;
+  const retryDelayMs = 1500;
+  let lastErr;
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      fs.rmSync(nodeModulesAperio, { recursive: true, maxRetries: 2 });
+      lastErr = null;
+      break;
+    } catch (err) {
+      lastErr = err;
+      if (attempt < maxRetries) {
+        log(`Attempt ${attempt}/${maxRetries} failed. Retrying in ${retryDelayMs / 1000}s ...`);
+        await new Promise((r) => setTimeout(r, retryDelayMs));
+      }
+    }
+  }
+  if (lastErr) {
+    log("Could not remove. Close any process using that folder:");
+    log("  - Stop dev servers (npm run dev, run-aperio-dev, etc.)");
+    log("  - Close terminals whose cwd is backend or echopad-aperio");
+    log("  - Then run again.");
+    console.error(lastErr.message);
     process.exit(1);
   }
 }
