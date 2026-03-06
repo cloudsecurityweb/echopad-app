@@ -21,6 +21,9 @@ const PORT = process.env.PORT || 3000;
 // Serve static files (email assets)
 app.use('/public', express.static(path.join(__dirname, 'public')));
 
+// Serve Aperio app static build (SPA at /aperio); mount before routes so static files take precedence
+app.use('/aperio', express.static(path.join(__dirname, 'public', 'aperio')));
+
 // CORS Configuration
 // Allow requests from localhost (development) and production frontend URL
 const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";

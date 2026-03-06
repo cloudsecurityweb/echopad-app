@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { APERIO_APP_URL } from '../../config/aperio';
 
 const ProductDownloadCard = ({ activeProduct }) => {
   const navigate = useNavigate();
@@ -18,7 +19,7 @@ const ProductDownloadCard = ({ activeProduct }) => {
 
   const handleDownloadClick = () => {
     if (isAperio) {
-      navigate('');
+      window.location.href = APERIO_APP_URL;
     } else {
       navigate('/dashboard/product/download/ai-scribe');
     }

@@ -25,6 +25,7 @@ import transcriptionHistoryRouter from "./transcriptionHistory.routes.js";
 import transcriptionMetricsRouter from "./transcriptionMetrics.routes.js";
 import intercomRouter from "./intercom.routes.js";
 import downloadRouter from "./download.routes.js";
+import aperioRouter from "./aperio.js";
 import { seedSaasDemoData } from "../services/seed-saas-data.js";
 
 const router = express.Router();
@@ -126,6 +127,11 @@ router.post("/health/containers", async (req, res) => {
     });
   }
 });
+
+/**
+ * Mount Aperio routes (echopad-Aperio app at /aperio)
+ */
+router.use("/aperio", aperioRouter);
 
 /**
  * Mount user routes

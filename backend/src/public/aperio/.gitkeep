@@ -1,0 +1,2 @@
+# Aperio SPA build is copied here by `npm run build:aperio` (backend).
+# Run from backend: npm run build:aperio
