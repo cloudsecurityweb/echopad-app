@@ -575,7 +575,7 @@ export async function attachUserFromDb(req, res, next) {
       }
     } else {
       // If no token roles, keep DB role but log warning
-      console.warn(`⚠️ [OID-LOOKUP] No roles in token for OID ${oid.substring(0, 8)}..., using DB role:`, user.role);
+      console.warn('⚠️ [OID-LOOKUP] No roles in token for OID %s..., using DB role: %s', oid.substring(0, 8), user.role);
       console.log('👤 [USER] Using DB role (no token roles):', {
         oid: oid.substring(0, 8) + '...',
         email: user.email,
