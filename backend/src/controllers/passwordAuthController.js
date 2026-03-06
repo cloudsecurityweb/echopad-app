@@ -202,7 +202,7 @@ export async function signUpEmail(req, res) {
     } catch (emailError) {
       emailSent = false;
       emailError = emailError.message || 'Failed to send verification email';
-      console.error(`❌ [SIGN-UP] Failed to send verification email to ${normalizedEmail}:`, emailError);
+      console.error('❌ [SIGN-UP] Failed to send verification email to %s:', normalizedEmail, emailError);
       console.error('   Error details:', {
         message: emailError.message,
         stack: emailError.stack,
