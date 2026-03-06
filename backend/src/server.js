@@ -10,6 +10,7 @@ import { errorHandler } from "./middleware/errorHandler.js";
 import { notFound } from "./middleware/notFound.js";
 
 import path from "path";
+import fs from "fs";
 import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -182,9 +183,48 @@ app.use(express.json());
 
 /** Load Aperio (backend + frontend from echopad-aperio) and mount at /aperio. Single App Service in production. */
 async function mountAperio() {
+  const publicAperio = path.join(__dirname, 'public', 'aperio');
+  const aperioIndex = path.join(publicAperio, 'index.html');
+
+  // Aperio auth middleware expects JWT_SECRET to verify email/password tokens. Use main app's secret when not set.
+  if (!process.env.JWT_SECRET && process.env.EMAIL_PASSWORD_JWT_SECRET) {
+    process.env.JWT_SECRET = process.env.EMAIL_PASSWORD_JWT_SECRET;
+  }
+
+  // Serve SPA for GET /aperio and /aperio/ so users get the app, not the API info JSON
+  if (fs.existsSync(aperioIndex)) {
+    app.get('/aperio', (req, res) => res.sendFile(aperioIndex));
+    app.get('/aperio/', (req, res) => res.sendFile(aperioIndex));
+  }
+
   try {
     const { default: aperioRouter } = await import('echopad-aperio');
+
+    // Log Aperio API requests and errors so you can check backend logs for /aperio/* and /api/aperio/*
+    app.use('/aperio', (req, res, next) => {
+      const isApi = req.path.includes('/api') || req.path === '/health';
+      if (isApi) {
+        const start = Date.now();
+        const onFinish = () => {
+          res.removeListener('finish', onFinish);
+          const duration = Date.now() - start;
+          const status = res.statusCode;
+          const level = status >= 500 ? 'error' : status >= 400 ? 'warn' : 'log';
+          console[level](`[aperio] ${req.method} ${req.originalUrl} ${status} ${duration}ms`);
+        };
+        res.on('finish', onFinish);
+      }
+      next();
+    });
+
     app.use('/aperio', aperioRouter);
+
+    // Also serve Aperio API at /api/aperio/* so frontend can call /api/aperio/transfers (path the Aperio app expects)
+    app.use('/api/aperio', (req, res, next) => {
+      req.url = '/api/aperio' + (req.url || '');
+      next();
+    }, aperioRouter);
+
     console.log('✅ [aperio] Mounted echopad-aperio at /aperio (API + static from package)');
   } catch (err) {
     console.warn('[aperio] echopad-aperio not loaded, using static build + stub:', err.message);

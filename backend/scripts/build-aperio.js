@@ -48,7 +48,11 @@ function copyRecursive(src, dest) {
 
 // When Aperio runs inside echopad-app, there is no separate "Aperio server" — the same backend serves
 // everything. Patch the built JS so messages and any hardcoded 3001 URL point to the app server.
+// Also patch getToken() to read access_token from URL hash first (Azure sign-in callback from "Start using Aperio").
 // rootDir: directory containing the build (for logging); can be package dist or public/aperio.
+const GET_TOKEN_ORIGINAL = 'function Hr(){return typeof import.meta<"u"?fg?.VITE_APERIO_TOKEN:null}';
+const GET_TOKEN_PATCHED = 'function Hr(){if(Hr._ht===void 0){var h=typeof window!=="undefined"&&window.location&&window.location.hash?window.location.hash.slice(1):"";Hr._ht=h?(function(){try{var p=new URLSearchParams(h),a=p.get("access_token");if(a){window.history&&window.history.replaceState&&window.history.replaceState(null,"",window.location.pathname+window.location.search);return decodeURIComponent(a)}return null}catch(e){return null}})():null}if(Hr._ht)return Hr._ht;return typeof import.meta<"u"?fg?.VITE_APERIO_TOKEN:null}';
+
 function patchAperioBuildAssets(assetsDir, rootDir) {
   if (!fs.existsSync(assetsDir)) return;
   const logRoot = rootDir || assetsDir;
@@ -63,6 +67,10 @@ function patchAperioBuildAssets(assetsDir, rootDir) {
       // Fix hardcoded default API URL / error message so embedded app uses same origin
       content = content.replace(/http:\/\/localhost:3001\. Check that the server/g, "the app server. Check that the server");
       content = content.replace(/http:\/\/localhost:3001/g, "");
+      // Use token from URL hash (Azure callback) first; fall back to VITE_APERIO_TOKEN for standalone dev
+      if (content.includes(GET_TOKEN_ORIGINAL)) {
+        content = content.replace(GET_TOKEN_ORIGINAL, GET_TOKEN_PATCHED);
+      }
       if (content !== before) {
         fs.writeFileSync(full, content);
         log(`Patched: ${path.relative(logRoot, full)}`);
