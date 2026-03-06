@@ -21,8 +21,7 @@ const PORT = process.env.PORT || 3000;
 // Serve static files (email assets)
 app.use('/public', express.static(path.join(__dirname, 'public')));
 
-// Serve Aperio app static build (SPA at /aperio); mount before routes so static files take precedence
-app.use('/aperio', express.static(path.join(__dirname, 'public', 'aperio')));
+// Aperio: mounted after async load below (either echopad-aperio router or static + stub)
 
 // CORS Configuration
 // Allow requests from localhost (development) and production frontend URL
@@ -180,6 +179,22 @@ app.use((req, res, next) => {
 
 app.use(cors(corsOptions));
 app.use(express.json());
+
+/** Load Aperio (backend + frontend from echopad-aperio) and mount at /aperio. Single App Service in production. */
+async function mountAperio() {
+  try {
+    const { default: aperioRouter } = await import('echopad-aperio');
+    app.use('/aperio', aperioRouter);
+    console.log('✅ [aperio] Mounted echopad-aperio at /aperio (API + static from package)');
+  } catch (err) {
+    console.warn('[aperio] echopad-aperio not loaded, using static build + stub:', err.message);
+    app.use('/aperio', express.static(path.join(__dirname, 'public', 'aperio')));
+    const { stubRouter } = await import('./routes/aperio.js');
+    app.use('/aperio', stubRouter);
+  }
+}
+
+await mountAperio();
 
 // Routes
 app.use(routes);

@@ -7,7 +7,9 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "node --watch src/server.js",
-    "build:aperio": "node scripts/build-aperio.js"
+    "build:aperio": "node scripts/build-aperio.js",
+    "dev:aperio": "npm run dev --prefix ./node_modules/echopad-aperio/frontend -- --port 5174",
+    "dev:aperio:backend": "cross-env NODE_ENV=development PORT=3001 node node_modules/echopad-aperio/backend/src/server.js"
   },
   "keywords": [
     "express",
@@ -32,5 +34,8 @@
   },
   "engines": {
     "node": ">=18.0.0"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.3"
   }
 }

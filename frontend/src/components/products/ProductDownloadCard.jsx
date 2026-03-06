@@ -1,9 +1,11 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
 import { APERIO_APP_URL } from '../../config/aperio';
 
 const ProductDownloadCard = ({ activeProduct }) => {
   const navigate = useNavigate();
+  const { getAccessToken, isAuthenticated } = useAuth();
 
   if (!activeProduct) {
     return (
@@ -17,9 +19,20 @@ const ProductDownloadCard = ({ activeProduct }) => {
   const { name, description, version = '1.0.0' } = activeProduct;
   const isAperio = activeProduct.id?.toLowerCase() === 'aperio';
 
-  const handleDownloadClick = () => {
+  const handleDownloadClick = async () => {
     if (isAperio) {
-      window.location.href = APERIO_APP_URL;
+      let url = APERIO_APP_URL;
+      if (isAuthenticated) {
+        try {
+          const token = await getAccessToken();
+          if (token) {
+            url += `#access_token=${encodeURIComponent(token)}`;
+          }
+        } catch (e) {
+          console.warn('[Aperio] Could not attach auth token:', e);
+        }
+      }
+      window.location.href = url;
     } else {
       navigate('/dashboard/product/download/ai-scribe');
     }

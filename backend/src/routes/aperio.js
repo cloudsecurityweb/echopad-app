@@ -1,24 +1,36 @@
 /**
  * Aperio route handler - mounts echopad-Aperio Express router at /aperio when installed.
- * If the echopad-aperio package is not installed, exports a stub router so the server still starts.
+ * When loaded via dynamic import in server.js, the real echopad-aperio router is mounted there instead.
+ * This file exports the stub router for when the package fails to load (ESM/require issues).
  */
-import { createRequire } from "module";
 import express from "express";
+import path from "path";
+import fs from "fs";
+import { fileURLToPath } from "url";
 
-let aperioRouter;
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const publicAperio = path.join(__dirname, "..", "public", "aperio");
+const indexPath = path.join(publicAperio, "index.html");
 
-try {
-  const require = createRequire(import.meta.url);
-  aperioRouter = require("echopad-aperio");
-} catch (err) {
-  console.warn("[aperio] echopad-aperio not installed or failed to load:", err.message);
-  aperioRouter = express.Router();
-  aperioRouter.use((req, res) => {
+export const stubRouter = (() => {
+  const router = express.Router();
+  router.use((req, res, next) => {
+    const isGet = req.method === "GET";
+    const pathIsRoot = !req.path || req.path === "/";
+    if (isGet && pathIsRoot && fs.existsSync(indexPath)) {
+      res.sendFile(indexPath);
+      return;
+    }
+    if (isGet && req.path !== "/" && !req.path.startsWith("/api") && fs.existsSync(indexPath)) {
+      res.sendFile(indexPath);
+      return;
+    }
     res.status(503).json({
       error: "Aperio not available",
-      message: "Install the echopad-aperio package (e.g. npm install) to enable the Aperio app at /aperio.",
+      message: "Ensure the Echopad app backend is running (this server). Run: npm run build:aperio in backend, then start the backend. Aperio is served at /aperio on the same server.",
     });
   });
-}
+  return router;
+})();
 
-export default aperioRouter;
+export default stubRouter;

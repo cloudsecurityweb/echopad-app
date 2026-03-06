@@ -17,8 +17,9 @@ const backendRoot = path.resolve(__dirname, "..");
 const nodeModulesAperio = path.join(backendRoot, "node_modules", "echopad-aperio");
 const publicAperio = path.join(backendRoot, "src", "public", "aperio");
 
-// Where echopad-Aperio writes its frontend build (adjust if the package uses build/ or other)
+// Where echopad-Aperio writes its frontend build (package root dist/ or frontend/dist/)
 const APERIO_BUILD_OUTPUT = "dist";
+const APERIO_BUILD_OUTPUT_ALT = "frontend/dist";
 
 function log(msg) {
   console.log(`[build-aperio] ${msg}`);
@@ -45,6 +46,26 @@ function copyRecursive(src, dest) {
   }
 }
 
+// When Aperio runs inside echopad-app, there is no separate "Aperio server" — the same backend serves
+// everything. Replace the in-app error message so it says "Echopad app server" instead.
+function patchAperioErrorMessage(dir) {
+  if (!fs.existsSync(dir)) return;
+  const entries = fs.readdirSync(dir, { withFileTypes: true });
+  for (const e of entries) {
+    const full = path.join(dir, e.name);
+    if (e.isDirectory()) patchAperioErrorMessage(full);
+    else if (e.name.endsWith(".js")) {
+      let content = fs.readFileSync(full, "utf8");
+      const before = content;
+      content = content.replace(/the Aperio server/g, "the Echopad app server");
+      if (content !== before) {
+        fs.writeFileSync(full, content);
+        log(`Patched error message in ${path.relative(publicAperio, full)}`);
+      }
+    }
+  }
+}
+
 if (!fs.existsSync(nodeModulesAperio)) {
   log("echopad-aperio not found in node_modules. Run: npm install");
   process.exit(1);
@@ -64,6 +85,7 @@ if (!pkg.scripts || !pkg.scripts.build) {
     log(`Copying existing ${APERIO_BUILD_OUTPUT}/ to public/aperio`);
     rmDirRecursive(publicAperio);
     copyRecursive(possibleOutput, publicAperio);
+    patchAperioErrorMessage(path.join(publicAperio, "assets"));
     log("Done.");
   } else {
     log("No build output found. Create backend/src/public/aperio and add the Aperio SPA build manually, or add a build script to echopad-Aperio.");
@@ -72,24 +94,44 @@ if (!pkg.scripts || !pkg.scripts.build) {
   process.exit(0);
 }
 
-log("Running npm run build in echopad-aperio...");
-const buildResult = spawnSync("npm", ["run", "build"], {
-  cwd: nodeModulesAperio,
-  stdio: "inherit",
-  shell: true,
-});
+log("Running npm run build in echopad-aperio (base /aperio/ for mounting at /aperio)...");
+const frontendDir = path.join(nodeModulesAperio, "frontend");
+// When embedded in echopad-app, Aperio uses the same server (same origin). Pass empty API base
+// so the built app uses relative URLs instead of localhost:3001. echopad-aperio can read
+// VITE_API_BASE_URL or VITE_APERIO_API_BASE; empty = same origin.
+const buildEnv = {
+  ...process.env,
+  VITE_BASE: "/aperio/",
+  VITE_API_BASE_URL: "",
+  VITE_APERIO_API_BASE: "",
+};
+const buildResult = spawnSync(
+  "npm",
+  ["run", "build", "--", "--base", "/aperio/"],
+  {
+    cwd: fs.existsSync(path.join(frontendDir, "package.json")) ? frontendDir : nodeModulesAperio,
+    stdio: "inherit",
+    shell: true,
+    env: buildEnv,
+  }
+);
 if (buildResult.status !== 0) {
   log("Build failed.");
   process.exit(1);
 }
 
 const buildOut = path.join(nodeModulesAperio, APERIO_BUILD_OUTPUT);
-if (!fs.existsSync(buildOut)) {
-  log(`Build output directory not found: ${buildOut}. Set APERIO_BUILD_OUTPUT in this script if the package uses a different path (e.g. build/).`);
+const buildOutAlt = path.join(nodeModulesAperio, APERIO_BUILD_OUTPUT_ALT);
+const actualBuildOut = fs.existsSync(buildOut) ? buildOut : fs.existsSync(buildOutAlt) ? buildOutAlt : null;
+if (!actualBuildOut) {
+  log(`Build output directory not found: ${buildOut} or ${buildOutAlt}. Set APERIO_BUILD_OUTPUT in this script if the package uses a different path.`);
   process.exit(1);
 }
 
-log(`Copying ${APERIO_BUILD_OUTPUT}/ to src/public/aperio`);
+log(`Copying build output to src/public/aperio`);
 rmDirRecursive(publicAperio);
-copyRecursive(buildOut, publicAperio);
+copyRecursive(actualBuildOut, publicAperio);
+
+patchAperioErrorMessage(path.join(publicAperio, "assets"));
+
 log("Done.");
