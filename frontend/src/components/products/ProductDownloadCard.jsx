@@ -21,6 +21,7 @@ const ProductDownloadCard = ({ activeProduct }) => {
 
   const handleDownloadClick = async () => {
     if (isAperio) {
+      // Open Aperio in new tab; token in hash is the first source echopad-aperio checks.
       let url = APERIO_APP_URL.replace(/\/$/, '');
       if (isAuthenticated) {
         try {

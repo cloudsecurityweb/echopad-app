@@ -1,17 +1,30 @@
 /**
- * Aperio app URL for redirects and links.
- * Points to the Aperio SPA from echopad-aperio repo, served by the backend at /aperio.
- * Set VITE_APERIO_URL to override (e.g. when frontend and backend are on different origins).
+ * Aperio app URL and token integration with echopad-aperio.
  *
- * When used from echopad-app, Aperio runs on the same server — only the Echopad app backend
- * needs to be running (no separate Aperio server on port 3001).
+ * Aperio is served by the backend at /aperio (echopad-aperio SPA). Set VITE_APERIO_URL to
+ * override (e.g. when frontend and backend are on different origins).
  *
- * When the user is logged in, "Start using Aperio" appends #access_token=<JWT> so the Aperio app
- * can use it for Authorization: Bearer when calling the same backend. echopad-aperio should read
- * window.location.hash or use a router hash fragment to get access_token on load.
+ * --- How echopad-app currently opens Aperio ---
+ * - "Start using Aperio" (ProductDownloadCard) opens Aperio in a NEW TAB via window.open().
+ * - When the user is signed in, we append #access_token=<JWT> to the URL so Aperio reads it
+ *   from window.location.hash (first token source in echopad-aperio).
+ * - We have the token at click time (getAccessToken() from AuthContext).
  *
- * In dev, if neither env is set, we default to backend :3000/aperio so the link opens the real
- * Aperio SPA (not the main app's /aperio marketing route).
+ * --- Token sources in echopad-aperio (order) ---
+ * 1. URL hash – #access_token=... (we use this for new-tab open)
+ * 2. postMessage – parent sends { type: 'APERIO_TOKEN', access_token: '...' } (for iframe)
+ * 3. Query – ?access_token=... (read once, then removed)
+ * 4. Cached token (from any of the above)
+ * 5. Env – VITE_APERIO_TOKEN
+ *
+ * --- If we later embed Aperio in an iframe ---
+ * Use sendAperioToken(iframeRef, token) when the iframe has loaded / user signs in, and
+ * sendAperioLogout(iframeRef) when the user signs out. See aperioIntegration.js.
+ *
+ * --- 401 / sign-out ---
+ * On 401, Aperio clears its token cache and UI can show "API not configured". For explicit
+ * logout inside Aperio, the Aperio app calls clearTokenCache(); when we embed in iframe we
+ * send APERIO_LOGOUT so the embedded app clears and re-renders.
  */
 const apiBase = import.meta.env.VITE_API_BASE_URL || '';
 const inDev = import.meta.env.DEV;
