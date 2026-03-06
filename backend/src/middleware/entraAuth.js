@@ -80,10 +80,11 @@ const TENANT_UUID_REGEX = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a
  */
 function extractTenantFromIssuer(iss) {
   if (!iss || typeof iss !== 'string') return null;
+  if (iss.length > 2048) return null; // ✅ prevent ReDoS via oversized input
   const normalized = iss.trim().replace(/\/+$/, '');
-  const loginMatch = normalized.match(/login\.microsoftonline\.com\/([^/]+)/i);
+  const loginMatch = normalized.match(/login\.microsoftonline\.com\/([^/?#]+)/i);
   if (loginMatch) return loginMatch[1];
-  const stsMatch = normalized.match(/sts\.windows\.net\/([^/]+)/i);
+  const stsMatch = normalized.match(/sts\.windows\.net\/([^/?#]+)/i);
   if (stsMatch) return stsMatch[1];
   // Fallback: issuer contains Microsoft host but path format unexpected — extract first UUID (tenant)
   if (normalized.includes('login.microsoftonline.com') || normalized.includes('sts.windows.net')) {
