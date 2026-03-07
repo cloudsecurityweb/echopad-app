@@ -123,7 +123,7 @@ router.post(
 router.post(
   "/request",
   verifyAnyAuth,
-  userLicensesLimiter
+  userLicensesLimiter,
   async (req, res) => {
     try {
       const tenantId = req.currentUser.tenantId;
