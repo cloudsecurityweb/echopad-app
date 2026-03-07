@@ -61,7 +61,7 @@ router.get(
 router.post(
   "/assign",
   verifyAnyAuth,
-  userLicensesLimiter
+  userLicensesLimiter,
   requireRole(["SuperAdmin", "ClientAdmin"], ["superAdmin", "clientAdmin"]),
   async (req, res) => {
     try {
@@ -98,7 +98,7 @@ router.post(
 router.post(
   "/revoke",
   verifyAnyAuth,
-  userLicensesLimiter
+  userLicensesLimiter,
   requireRole(["SuperAdmin", "ClientAdmin"], ["superAdmin", "clientAdmin"]),
   async (req, res) => {
     try {
