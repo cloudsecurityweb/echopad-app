@@ -24,7 +24,7 @@ const userLicensesLimiter = rateLimit({
 router.get(
   "/",
   verifyAnyAuth,
-  userLicensesLimiter
+  userLicensesLimiter,
   async (req, res) => {
     try {
       const tenantId = req.currentUser.tenantId;
