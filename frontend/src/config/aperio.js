@@ -13,9 +13,11 @@
  * --- Token sources in echopad-aperio (order) ---
  * 1. URL hash – #access_token=... (we use this for new-tab open)
  * 2. postMessage – parent sends { type: 'APERIO_TOKEN', access_token: '...' } (for iframe)
- * 3. Query – ?access_token=... (read once, then removed)
- * 4. Cached token (from any of the above)
- * 5. Env – VITE_APERIO_TOKEN
+ * 3. Request from opener – Aperio sends { type: 'APERIO_REQUEST_TOKEN' } to window.opener;
+ *    we respond with { type: 'APERIO_TOKEN', access_token } or { type: 'APERIO_TOKEN_ERROR', error } (for refresh after sign-out/sign-in)
+ * 4. Query – ?access_token=... (read once, then removed)
+ * 5. Cached token (from any of the above)
+ * 6. Env – VITE_APERIO_TOKEN
  *
  * --- If we later embed Aperio in an iframe ---
  * Use sendAperioToken(iframeRef, token) when the iframe has loaded / user signs in, and
@@ -25,6 +27,11 @@
  * On 401, Aperio clears its token cache and UI can show "API not configured". For explicit
  * logout inside Aperio, the Aperio app calls clearTokenCache(); when we embed in iframe we
  * send APERIO_LOGOUT so the embedded app clears and re-renders.
+ *
+ * --- Cross-origin dev (e.g. Aperio on :5174, app on :3000) ---
+ * Set VITE_APERIO_URL to the Aperio origin (e.g. http://localhost:5174) so that:
+ * 1) "Start using Aperio" opens that URL, and 2) the token bridge accepts postMessage from
+ * that origin. In Aperio set VITE_ECHOPAD_APP_ORIGIN to the app origin (e.g. http://localhost:3000).
  */
 const apiBase = import.meta.env.VITE_API_BASE_URL || '';
 const inDev = import.meta.env.DEV;

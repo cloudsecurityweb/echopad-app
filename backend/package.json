@@ -32,9 +32,9 @@
     "helmet": "^8.1.0",
     "html-to-text": "^9.0.5",
     "jose": "^5.2.0",
-    "nunjucks": "^3.2.4",
+    "multer": "^2.0.2",
     "node-cron": "^4.2.1",
-    "multer": "^2.0.2"
+    "nunjucks": "^3.2.4"
   },
   "engines": {
     "node": ">=18.0.0"

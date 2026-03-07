@@ -8,6 +8,7 @@ import './index.css';
 import { AuthProvider } from './contexts/AuthContext';
 import { RoleProvider } from './contexts/RoleContext';
 import { googleAuthConfig } from './config/googleAuthConfig';
+import { initAperioTokenBridge } from './utils/aperioTokenBridge';
 
 // Layout Components
 import Navigation from './components/layout/Navigation';
@@ -94,6 +95,14 @@ function ScrollToTop() {
     if (pathname === '/' && sessionStorage.getItem('homeScrollTo')) return;
     window.scrollTo(0, 0);
   }, [pathname]);
+  return null;
+}
+
+/** Listens for APERIO_REQUEST_TOKEN from Aperio tab and responds with current token (so Aperio can refresh after sign-out/sign-in). */
+function AperioTokenBridge() {
+  useEffect(() => {
+    return initAperioTokenBridge();
+  }, []);
   return null;
 }
 
@@ -306,6 +315,7 @@ function App({ msalInstance }) {
       <GoogleOAuthProvider clientId={googleAuthConfig.clientId}>
         <MsalProvider instance={msalInstance}>
           <AuthProvider>
+            <AperioTokenBridge />
             <RoleProvider>
               <BrowserRouter>
                 <ScrollToTop />

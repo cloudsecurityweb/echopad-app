@@ -8,6 +8,8 @@
  *
  * Aperio accepts:
  * - postMessage: { type: 'APERIO_TOKEN', access_token } | { type: 'APERIO_LOGOUT' }
+ * - Request token (new-tab): Aperio posts { type: 'APERIO_REQUEST_TOKEN' } to window.opener;
+ *   we respond with APERIO_TOKEN or APERIO_TOKEN_ERROR (see aperioTokenBridge.js).
  * - Direct (same-origin): contentWindow.__APERIO_SET_TOKEN__(token) | __APERIO_CLEAR_TOKEN__()
  */
 
