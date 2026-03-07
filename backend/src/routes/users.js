@@ -50,6 +50,7 @@ router.get("/profile/:tenantId/:userId", getUserProfile);
 router.get(
   "/:id/products",
   verifyAnyAuth,
+  usersLimiter,
   getUserProducts
 );
 
