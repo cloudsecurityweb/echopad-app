@@ -16,6 +16,7 @@ const userLicensesLimiter = rateLimit({
   max: 50, // 50 requests per 15 minutes per IP
   message: { success: false, error: "Too many requests, please try again later." },
 });
+router.use(userLicensesLimiter);
 
 /**
  * GET /api/user-licenses
