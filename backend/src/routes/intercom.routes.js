@@ -1,15 +1,25 @@
 import express from "express";
 import crypto from "crypto";
 import { verifyAnyAuth } from "../middleware/auth.js";
+import rateLimit from "express-rate-limit";
 
 const router = express.Router();
+const intercomLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many requests, please try again later.' }
+});
+
+router.use(intercomLimiter);
 
 /**
  * GET /api/intercom
  * Returns Intercom identity data with HMAC user_hash for Identity Verification.
  * Requires authentication — the user_hash is derived from the authenticated user's ID.
  */
-router.get("/", verifyAnyAuth, (req, res) => {
+router.get("/", verifyAnyAuth, intercomLimiter, (req, res) => {
   const { INTERCOM_APP_ID, INTERCOM_SECRET } = process.env;
 
   if (!INTERCOM_APP_ID || !INTERCOM_SECRET) {
