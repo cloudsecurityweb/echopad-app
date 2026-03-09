@@ -159,7 +159,7 @@ router.post('/sign-in', signIn);
  * Body: { provider: 'microsoft'|'google', token: string, organizationName?, organizerName?, email? }
  * Token verification is provider-driven; no Bearer header for this endpoint.
  */
-router.post('/sign-up', signUp);
+router.post('/sign-up', authLimiter, signUp);
 
 /**
  * POST /api/auth/sign-up-email
