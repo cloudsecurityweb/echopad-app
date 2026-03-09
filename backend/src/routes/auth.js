@@ -151,7 +151,7 @@ export async function detectAuthProvider(req, res, next) {
  * Body: { provider: 'microsoft'|'google', token: string } (required)
  * Token verification is provider-driven; no Bearer header for this endpoint.
  */
-router.post('/sign-in', signIn);
+router.post('/sign-in', authLimiter, signIn);
 
 /**
  * POST /api/auth/sign-up
