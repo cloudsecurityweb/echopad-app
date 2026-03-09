@@ -142,6 +142,7 @@ function getArtifactContentUrl(packageName, version, pathStyle = "universal") {
   const feed = getFeedName();
   const safeVersion = encodeURIComponent(version); // ✅ sanitize user input
   return `https://pkgs.dev.azure.com/${orgName}/${encodeURIComponent(project)}/_apis/packaging/feeds/${feed}/${pathStyle}/packages/${packageName}/versions/${safeVersion}/content?api-version=${API_VERSION}`;
+}
 
 /**
  * Recursively list all files in a directory.
@@ -563,7 +564,7 @@ router.get(
 router.get(
   "/ai-scribe/mac",
   verifyAnyAuth,
-  downloadLimiter
+  downloadLimiter,
   async (req, res) => {
     const resolved = resolveMacDownloadInfo(req) || await getLatestPackageInfo("mac", { bypassCache: false });
     const { version, packageName, filename } = resolved;
