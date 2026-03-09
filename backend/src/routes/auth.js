@@ -20,7 +20,7 @@ const authLimiter = rateLimit({
   max: 10, // only 10 login attempts per 15 minutes per IP
   message: { success: false, error: "Too many login attempts, please try again later." },
 });
-
+router.use(authLimiter);
 /**
  * Middleware to detect and route to appropriate auth middleware
  * Checks for magic tokens first, then Google, then Microsoft
@@ -188,7 +188,7 @@ router.post('/refresh', authLimiter, refreshToken);
  * Body: { oldPassword, newPassword }
  * Requires: Authorization header
  */
-router.post('/change-password', detectAuthProvider, changePassword);
+router.post('/change-password', detectAuthProvider, authLimiter, changePassword);
 
 /**
  * GET /api/auth/verify-email
@@ -225,6 +225,6 @@ router.post('/reset-password', resetPassword);
  * Supports Microsoft, Google, and Magic tokens
  * Note: detectAuthProvider handles routing to appropriate middleware
  */
-router.get('/me', detectAuthProvider, getCurrentUser);
+router.get('/me', detectAuthProvider, authLimiter, getCurrentUser);
 
 export default router;
