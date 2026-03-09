@@ -4,8 +4,18 @@ import { validateInvitation, acceptInvitationRoute, createUserInvite, acceptMagi
 import { requireRole } from "../middleware/entraAuth.js";
 import { verifyAnyAuth, optionalAuth } from "../middleware/auth.js";
 import { devOnly } from "../middleware/devOnly.js";
+import rateLimit from "express-rate-limit";
 
 const router = express.Router();
+const invitesLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many requests, please try again later.' }
+});
+
+router.use(invitesLimiter);
 
 /**
  * GET /api/invites/validate
@@ -30,7 +40,7 @@ router.get("/validate", validateInvitation);
  * Note: Authentication is optional - if a token is provided, it will be verified.
  * The controller handles Microsoft auth requirements separately.
  */
-router.post("/accept", optionalAuth, acceptInvitationRoute);
+router.post("/accept", optionalAuth, invitesLimiter, acceptInvitationRoute);
 
 /**
  * POST /api/invites/accept-magic
@@ -48,7 +58,7 @@ router.post("/accept-magic", acceptMagicInvitation);
  * Requires: ClientAdmin role
  * Supports: Microsoft, Google, Magic Link, and Email/Password authentication
  */
-router.post("/user", verifyAnyAuth, requireRole(['ClientAdmin'], ['clientAdmin']), createUserInvite);
+router.post("/user", verifyAnyAuth, invitesLimiter, requireRole(['ClientAdmin'], ['clientAdmin']), createUserInvite);
 
 /**
  * GET /api/invites/pending
@@ -56,7 +66,7 @@ router.post("/user", verifyAnyAuth, requireRole(['ClientAdmin'], ['clientAdmin']
  * Requires: Authorization header with Bearer token
  * Requires: ClientAdmin role
  */
-router.get("/pending", verifyAnyAuth, requireRole(['ClientAdmin'], ['clientAdmin']), getPendingInvites);
+router.get("/pending", verifyAnyAuth, invitesLimiter, requireRole(['ClientAdmin'], ['clientAdmin']), getPendingInvites);
 
 /**
  * POST /api/invites/:inviteId/resend
@@ -64,7 +74,7 @@ router.get("/pending", verifyAnyAuth, requireRole(['ClientAdmin'], ['clientAdmin
  * Requires: Authorization header with Bearer token
  * Requires: ClientAdmin role
  */
-router.post("/:inviteId/resend", verifyAnyAuth, requireRole(['ClientAdmin'], ['clientAdmin']), resendUserInvite);
+router.post("/:inviteId/resend", verifyAnyAuth, invitesLimiter, requireRole(['ClientAdmin'], ['clientAdmin']), resendUserInvite);
 
 /**
  * POST /api/invites/dummy
