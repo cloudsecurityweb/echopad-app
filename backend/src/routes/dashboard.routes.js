@@ -2,8 +2,18 @@ import express from "express";
 import { verifyAnyAuth } from "../middleware/auth.js";
 import { requireRole } from "../middleware/entraAuth.js";
 import { getDashboard, upsertDashboardMetric } from "../controllers/dashboard.controller.js";
+import rateLimit from "express-rate-limit";
 
 const router = express.Router();
+const dashboardLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many requests, please try again later.' }
+});
+
+router.use(dashboardLimiter);
 
 /**
  * ROLE AWARE DASHBOARD
@@ -14,7 +24,7 @@ const router = express.Router();
  * All dashboard routes require authentication (Microsoft, Google, Magic Link, or Email/Password) and appropriate role
  */
 
-router.get("/metrics/:tenantId/:role", verifyAnyAuth, getDashboard);
-router.post("/metrics/upsert", verifyAnyAuth, upsertDashboardMetric);
+router.get("/metrics/:tenantId/:role", verifyAnyAuth, dashboardLimiter, getDashboard);
+router.post("/metrics/upsert", verifyAnyAuth, dashboardLimiter, upsertDashboardMetric);
 
 export default router;
