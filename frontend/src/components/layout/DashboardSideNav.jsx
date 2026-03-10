@@ -206,16 +206,16 @@ function DashboardSideNav({ isOpen, onClose, isCollapsed, onToggleCollapse }) {
   };
 
   // Determine sidebar width based on collapsed state and screen size
-  const sidebarWidth = isCollapsed ? 'w-20' : 'w-72';
-  const effectiveWidth = isMobile ? 'w-72' : sidebarWidth;
+  const sidebarWidth = isCollapsed ? 'w-20' : 'w-64';
+  const effectiveWidth = isMobile ? 'w-64' : sidebarWidth;
 
   return (
     <>
       {/* Side Navigation - separate container with margin (matches navbar padding) */}
       <aside
-        className={`fixed top-[6rem] left-4 bottom-4 z-40 transform transition-all duration-300 ease-in-out
+        className={`fixed top-[6rem] left-[1.5%] bottom-4 z-40 transform transition-all duration-300 ease-in-out
           rounded-2xl border border-gray-200/50 bg-white/95 backdrop-blur-md shadow-lg shadow-blue-200/50
-          ${isOpen ? 'translate-x-0' : '-translate-x-full'} ${effectiveWidth}`}
+          ${isOpen ? 'translate-x-0' : '-translate-x-[150%]'} ${effectiveWidth}`}
       >
         <div className="flex flex-col h-full rounded-2xl overflow-hidden">
           {/* Navigation Items */}

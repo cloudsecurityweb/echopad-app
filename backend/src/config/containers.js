@@ -27,6 +27,7 @@ export const CONTAINERS = [
   "helpCenterDocs",
   "clientFeedback",
   "transcriptionHistory",
+  "transcriptionMetrics",
 ];
 
 /**
@@ -60,6 +61,7 @@ const CONTAINER_PARTITION_KEYS = {
   helpCenterDocs: "/tenantId",
   clientFeedback: "/tenantId",
   transcriptionHistory: "/tenantId",
+  transcriptionMetrics: "/tenantId",
 };
 
 /**

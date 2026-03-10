@@ -50,7 +50,9 @@ const EchopadAIScribeDownload = () => {
         setDownloadError(null);
         setDownloadState(platform);
         const isMac = platform === 'mac';
-        const url = isMac ? DOWNLOAD_MAC_URL : DOWNLOAD_DESKTOP_URL;
+        const manifest = isMac ? versionManifest?.mac : versionManifest?.desktop;
+        const versionParam = manifest?.version ? `?version=${encodeURIComponent(manifest.version)}` : '';
+        const url = (isMac ? DOWNLOAD_MAC_URL : DOWNLOAD_DESKTOP_URL) + versionParam;
         const defaultFilename = isMac
             ? (versionManifest?.mac?.filename || DEFAULT_MAC_FILENAME)
             : (versionManifest?.desktop?.filename || DEFAULT_DESKTOP_FILENAME);
@@ -139,7 +141,7 @@ const EchopadAIScribeDownload = () => {
                             <div className="text-xs font-normal opacity-90">Download for</div>
                             <div className="text-sm font-bold">{downloadState === 'mac' ? 'Downloading…' : versionManifest?.mac?.version ? `macOS v${versionManifest.mac.version}` : 'macOS'}</div>
                         </div>
-                    </div>
+                    </button>
 
                     <button
                         onClick={() => handleDownload('desktop')}
@@ -151,7 +153,7 @@ const EchopadAIScribeDownload = () => {
                             <div className="text-xs font-normal text-gray-500">Download for</div>
                             <div className="text-sm font-bold">{downloadState === 'desktop' ? 'Downloading…' : versionManifest?.desktop?.version ? `Windows v${versionManifest.desktop.version}` : 'Windows'}</div>
                         </div>
-                    </div>
+                    </button>
                 </div>
 
                 {downloadError && (
