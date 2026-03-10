@@ -74,7 +74,7 @@ function VerifyEmail() {
                   <h1 className="text-2xl font-bold text-gray-900 mb-2">Account Activated!</h1>
                   <p className="text-gray-600 mb-6">{message}</p>
                   <Link
-                    to="/sign-in"
+                    to={`/sign-in${searchParams.get('redirect') ? `?redirect=${encodeURIComponent(searchParams.get('redirect'))}` : ''}`}
                     className="inline-block bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-6 py-2 rounded-lg hover:from-cyan-400 hover:to-blue-500 transition-all font-medium"
                   >
                     Sign In Now
@@ -91,7 +91,7 @@ function VerifyEmail() {
                   <p className="text-gray-600 mb-6">{message}</p>
                   <div className="space-y-2">
                     <Link
-                      to="/sign-in"
+                      to={`/sign-in${searchParams.get('redirect') ? `?redirect=${encodeURIComponent(searchParams.get('redirect'))}` : ''}`}
                       className="inline-block bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-6 py-2 rounded-lg hover:from-cyan-400 hover:to-blue-500 transition-all font-medium"
                     >
                       Go to Sign In

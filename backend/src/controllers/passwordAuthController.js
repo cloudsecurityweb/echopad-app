@@ -52,7 +52,7 @@ export async function signUpEmail(req, res) {
   }
 
   try {
-    const { organizationName, organizerName, email, password } = req.body;
+    const { organizationName, organizerName, email, password, redirectUrl } = req.body;
 
     // Validate required fields
     if (!organizationName || !organizerName || !email || !password) {
@@ -196,7 +196,7 @@ export async function signUpEmail(req, res) {
 
     try {
       console.log(`📧 [SIGN-UP] Sending verification email to: ${normalizedEmail}`);
-      const emailResult = await sendVerificationEmail(normalizedEmail, verificationToken, organizerName);
+      const emailResult = await sendVerificationEmail(normalizedEmail, verificationToken, organizerName, redirectUrl);
       emailSent = true;
       console.log(`✅ [SIGN-UP] Verification email sent successfully. Message ID: ${emailResult.messageId || 'N/A'}`);
     } catch (emailError) {
