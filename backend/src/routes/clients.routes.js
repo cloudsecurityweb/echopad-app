@@ -5,8 +5,18 @@ import {
   getClients,
   addClient,
 } from "../controllers/clients.controller.js";
+import rateLimit from "express-rate-limit";
 
 const router = express.Router();
+const clientsLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many requests, please try again later.' }
+});
+
+router.use(clientsLimiter);
 
 /**
  * SUPER ADMIN ONLY
@@ -14,7 +24,7 @@ const router = express.Router();
  * - Create new client
  */
 
-router.get("/", verifyAnyAuth, requireRole(['SuperAdmin'], ['superAdmin']), getClients);
-router.post("/", verifyAnyAuth, requireRole(['SuperAdmin'], ['superAdmin']), addClient);
+router.get("/", verifyAnyAuth, clientsLimiter, requireRole(['SuperAdmin'], ['superAdmin']), getClients);
+router.post("/", verifyAnyAuth, clientsLimiter, requireRole(['SuperAdmin'], ['superAdmin']), addClient);
 
 export default router;
