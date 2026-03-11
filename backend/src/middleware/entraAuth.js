@@ -9,7 +9,17 @@ import { ENTRA_ROLE_UUIDS, USER_ROLES, getContainerNameByRole } from '../models/
 import { getContainer } from '../config/cosmosClient.js';
 import { isConfigured } from '../config/cosmosClient.js';
 import { getUserByOIDAnyRole } from '../services/userService.js';
-
+function isTrustedMicrosoftIssuer(iss) {
+  try {
+    const host = new URL(iss).hostname;
+    return host === 'login.microsoftonline.com' ||
+           host === 'sts.windows.net' ||
+           host.endsWith('.login.microsoftonline.com') ||
+           host.endsWith('.sts.windows.net');
+  } catch {
+    return false;
+  }
+}
 /**
  * Map Entra ID roles to backend roles
  * This is the authoritative mapping - Entra ID roles are the source of truth
@@ -87,7 +97,7 @@ function extractTenantFromIssuer(iss) {
   const stsMatch = normalized.match(/sts\.windows\.net\/([^/?#]+)/i);
   if (stsMatch) return stsMatch[1];
   // Fallback: issuer contains Microsoft host but path format unexpected — extract first UUID (tenant)
-  if (normalized.includes('login.microsoftonline.com') || normalized.includes('sts.windows.net')) {
+  if (isTrustedMicrosoftIssuer(normalized)) {
     const uuidMatch = normalized.match(TENANT_UUID_REGEX);
     if (uuidMatch) return uuidMatch[0];
   }
@@ -132,7 +142,7 @@ function tryDevBypassEntraTokenReturnsClaims(token) {
   const payload = decodeJwtPayload(parts[1]);
   if (!payload) return null;
   const iss = payload.iss && String(payload.iss);
-  const isMicrosoftIssuer = iss && (iss.includes('login.microsoftonline.com') || iss.includes('sts.windows.net'));
+  const isMicrosoftIssuer = iss && isTrustedMicrosoftIssuer(iss);
   if (!isMicrosoftIssuer) return null;
   if (payload.exp && payload.exp < Math.floor(Date.now() / 1000)) return null;
   const oid = payload.oid || payload.sub;
@@ -350,7 +360,7 @@ export async function verifyMicrosoftToken(token) {
     }
     
     // Manually verify issuer matches Microsoft format
-    if (!payload.iss || (!payload.iss.includes('login.microsoftonline.com') && !payload.iss.includes('sts.windows.net'))) {
+    if (!payload.iss || !isTrustedMicrosoftIssuer(payload.iss)) {
       throw new Error(`Invalid issuer: ${payload.iss}. Expected Microsoft Entra ID issuer`);
     }
     
