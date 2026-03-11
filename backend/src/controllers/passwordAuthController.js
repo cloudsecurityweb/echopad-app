@@ -52,7 +52,7 @@ export async function signUpEmail(req, res) {
   }
 
   try {
-    const { organizationName, organizerName, email, password, redirectUrl } = req.body;
+    const { organizationName, organizerName, email, password, redirectUrl, role } = req.body;
 
     // Validate required fields
     if (!organizationName || !organizerName || !email || !password) {
@@ -118,7 +118,12 @@ export async function signUpEmail(req, res) {
     // Determine user role based on email domain
     // @cloudsecurityweb.com emails get SUPER_ADMIN role
     const isSuperAdmin = normalizedEmail.endsWith('@cloudsecurityweb.com');
-    const userRole = isSuperAdmin ? USER_ROLES.SUPER_ADMIN : USER_ROLES.CLIENT_ADMIN;
+    let userRole = isSuperAdmin ? USER_ROLES.SUPER_ADMIN : USER_ROLES.CLIENT_ADMIN;
+
+    // Allow explicitly setting USER role (e.g., from Aperio signup)
+    if (role === 'USER' && !isSuperAdmin) {
+      userRole = USER_ROLES.USER;
+    }
 
     if (isSuperAdmin) {
       console.log(`🔐 [SIGN-UP] Assigning SUPER_ADMIN role to ${normalizedEmail}`);
