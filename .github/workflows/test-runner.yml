@@ -2,7 +2,8 @@ name: Test Runner
 
 on:
   workflow_dispatch:
-
+permissions:
+  contents: read
 jobs:
   test:
     name: Simple Test

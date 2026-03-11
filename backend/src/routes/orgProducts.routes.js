@@ -2,8 +2,18 @@ import express from "express";
 import { createOrgProductRecord, getOrgProductsByOrganization, updateOrgProductStatus } from "../services/orgProductService.js";
 import { verifyAnyAuth } from "../middleware/auth.js";
 import { requireRole } from "../middleware/entraAuth.js";
+import rateLimit from "express-rate-limit";
 
 const router = express.Router();
+const orgProductsLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many requests, please try again later.' }
+});
+
+router.use(orgProductsLimiter);
 
 /**
  * GET /api/org-products
@@ -12,6 +22,7 @@ const router = express.Router();
 router.get(
   "/",
   verifyAnyAuth,
+  orgProductsLimiter,
   requireRole(["SuperAdmin", "ClientAdmin"], ["superAdmin", "clientAdmin"]),
   async (req, res) => {
     try {
@@ -44,6 +55,7 @@ router.get(
 router.post(
   "/",
   verifyAnyAuth,
+  orgProductsLimiter,
   requireRole(["SuperAdmin", "ClientAdmin"], ["superAdmin", "clientAdmin"]),
   async (req, res) => {
     try {
@@ -83,6 +95,7 @@ router.post(
 router.patch(
   "/:orgProductId",
   verifyAnyAuth,
+  orgProductsLimiter,
   requireRole(["SuperAdmin", "ClientAdmin"], ["superAdmin", "clientAdmin"]),
   async (req, res) => {
     try {

@@ -1,4 +1,5 @@
 import express from "express";
+import rateLimit from "express-rate-limit";
 import {
   getAllUsers,
   getUserById,
@@ -16,6 +17,13 @@ import { verifyAnyAuth } from "../middleware/auth.js";
 import { requireRole } from "../middleware/entraAuth.js";
 
 const router = express.Router();
+const usersLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 50,
+  message: { success: false, error: "Too many requests, please try again later." },
+});
+
+router.use(usersLimiter);
 
 /**
  * GET /api/users
@@ -42,6 +50,7 @@ router.get("/profile/:tenantId/:userId", getUserProfile);
 router.get(
   "/:id/products",
   verifyAnyAuth,
+  usersLimiter,
   getUserProducts
 );
 
@@ -52,7 +61,7 @@ router.get(
  * Requires: ClientAdmin or SuperAdmin role
  * Supports: Microsoft, Google, Magic Link, and Email/Password authentication
  */
-router.get("/:id", verifyAnyAuth, requireRole(['ClientAdmin', 'SuperAdmin'], ['clientAdmin', 'superAdmin']), getUserById);
+router.get("/:id", verifyAnyAuth, usersLimiter, requireRole(['ClientAdmin', 'SuperAdmin'], ['clientAdmin', 'superAdmin']), getUserById);
 
 /**
  * POST /api/users
@@ -61,7 +70,7 @@ router.get("/:id", verifyAnyAuth, requireRole(['ClientAdmin', 'SuperAdmin'], ['c
  * Requires: ClientAdmin or SuperAdmin role
  * Supports: Microsoft, Google, Magic Link, and Email/Password authentication
  */
-router.post("/", verifyAnyAuth, requireRole(['ClientAdmin', 'SuperAdmin'], ['clientAdmin', 'superAdmin']), createUser);
+router.post("/", verifyAnyAuth, usersLimiter, requireRole(['ClientAdmin', 'SuperAdmin'], ['clientAdmin', 'superAdmin']), createUser);
 
 /**
  * POST /api/users/dummy
@@ -76,7 +85,7 @@ router.post("/dummy", devOnly, createDummyUser);
  * Requires: ClientAdmin or SuperAdmin role
  * Supports: Microsoft, Google, Magic Link, and Email/Password authentication
  */
-router.put("/:id", verifyAnyAuth, requireRole(['ClientAdmin', 'SuperAdmin'], ['clientAdmin', 'superAdmin']), updateUser);
+router.put("/:id", verifyAnyAuth, usersLimiter, requireRole(['ClientAdmin', 'SuperAdmin'], ['clientAdmin', 'superAdmin']), updateUser);
 
 /**
  * PUT /api/users/:id/profile
@@ -85,7 +94,7 @@ router.put("/:id", verifyAnyAuth, requireRole(['ClientAdmin', 'SuperAdmin'], ['c
  * Note: Users can update their own profile, admins can update any profile
  * Supports: Microsoft, Google, Magic Link, and Email/Password authentication
  */
-router.put("/:id/profile", verifyAnyAuth, updateUserProfile);
+router.put("/:id/profile", verifyAnyAuth, usersLimiter, updateUserProfile);
 
 router.patch("/:userId/status", updateUserStatus);
 
@@ -96,6 +105,6 @@ router.patch("/:userId/status", updateUserStatus);
  * Requires: SuperAdmin role
  * Supports: Microsoft, Google, Magic Link, and Email/Password authentication
  */
-router.delete("/:id", verifyAnyAuth, requireRole(['SuperAdmin'], ['superAdmin']), deleteUser);
+router.delete("/:id", verifyAnyAuth, usersLimiter, requireRole(['SuperAdmin'], ['superAdmin']), deleteUser);
 
 export default router;

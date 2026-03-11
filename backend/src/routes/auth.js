@@ -20,11 +20,19 @@ const authLimiter = rateLimit({
   max: 10, // only 10 login attempts per 15 minutes per IP
   message: { success: false, error: "Too many login attempts, please try again later." },
 });
-
+router.use(authLimiter);
 /**
  * Middleware to detect and route to appropriate auth middleware
  * Checks for magic tokens first, then Google, then Microsoft
  */
+function isTrustedIssuer(iss, trustedHosts) {
+  try {
+    const host = new URL(iss).hostname;
+    return trustedHosts.some(t => host === t || host.endsWith('.' + t));
+  } catch {
+    return false;
+  }
+}
 export async function detectAuthProvider(req, res, next) {
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -73,7 +81,7 @@ export async function detectAuthProvider(req, res, next) {
       }
       
       // Check for Google ID token (explicit check)
-      if (payload.iss && payload.iss.includes('accounts.google.com')) {
+      if (payload.iss && isTrustedIssuer(payload.iss, ['accounts.google.com'])) {
         if (process.env.NODE_ENV === 'development') {
           console.log('🔍 [AUTH-DETECT] Routing to Google token verification (ID token)');
         }
@@ -83,7 +91,7 @@ export async function detectAuthProvider(req, res, next) {
       // Check for Microsoft token (issuer contains login.microsoftonline.com or sts.windows.net)
       // Microsoft tokens are always JWTs, so check this before fallback
       // Note: Microsoft tokens can have issuer: login.microsoftonline.com or sts.windows.net
-      if (payload.iss && (payload.iss.includes('login.microsoftonline.com') || payload.iss.includes('sts.windows.net'))) {
+      if (payload.iss && isTrustedIssuer(payload.iss, ['login.microsoftonline.com', 'sts.windows.net'])) {
         if (process.env.NODE_ENV === 'development') {
           console.log('🔍 [AUTH-DETECT] Routing to Microsoft token verification');
         }
@@ -151,7 +159,7 @@ export async function detectAuthProvider(req, res, next) {
  * Body: { provider: 'microsoft'|'google', token: string } (required)
  * Token verification is provider-driven; no Bearer header for this endpoint.
  */
-router.post('/sign-in', signIn);
+router.post('/sign-in', authLimiter, signIn);
 
 /**
  * POST /api/auth/sign-up
@@ -159,7 +167,7 @@ router.post('/sign-in', signIn);
  * Body: { provider: 'microsoft'|'google', token: string, organizationName?, organizerName?, email? }
  * Token verification is provider-driven; no Bearer header for this endpoint.
  */
-router.post('/sign-up', signUp);
+router.post('/sign-up', authLimiter, signUp);
 
 /**
  * POST /api/auth/sign-up-email
@@ -188,7 +196,7 @@ router.post('/refresh', authLimiter, refreshToken);
  * Body: { oldPassword, newPassword }
  * Requires: Authorization header
  */
-router.post('/change-password', detectAuthProvider, changePassword);
+router.post('/change-password', detectAuthProvider, authLimiter, changePassword);
 
 /**
  * GET /api/auth/verify-email
@@ -225,6 +233,6 @@ router.post('/reset-password', resetPassword);
  * Supports Microsoft, Google, and Magic tokens
  * Note: detectAuthProvider handles routing to appropriate middleware
  */
-router.get('/me', detectAuthProvider, getCurrentUser);
+router.get('/me', detectAuthProvider, authLimiter, getCurrentUser);
 
 export default router;

@@ -8,8 +8,17 @@ import {
 import { verifyAnyAuth } from "../middleware/auth.js";
 import { requireRole } from "../middleware/entraAuth.js";
 import { LICENSE_STATUS } from "../models/license.js";
+import rateLimit from "express-rate-limit";
 
 const router = express.Router();
+const licenseLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+router.use(licenseLimiter);
 
 /**
  * GET /api/licenses
@@ -18,6 +27,7 @@ const router = express.Router();
 router.get(
   "/",
   verifyAnyAuth,
+  licenseLimiter,
   requireRole(["SuperAdmin", "ClientAdmin"], ["superAdmin", "clientAdmin"]),
   async (req, res) => {
     try {
@@ -62,6 +72,7 @@ router.get(
 router.post(
   "/",
   verifyAnyAuth,
+  licenseLimiter,
   requireRole(["SuperAdmin", "ClientAdmin"], ["superAdmin", "clientAdmin"]),
   async (req, res) => {
     try {
@@ -109,6 +120,7 @@ router.post(
 router.get(
   "/:licenseId",
   verifyAnyAuth,
+  licenseLimiter,
   requireRole(["SuperAdmin", "ClientAdmin"], ["superAdmin", "clientAdmin"]),
   async (req, res) => {
     try {
@@ -131,6 +143,7 @@ router.get(
 router.patch(
   "/:licenseId",
   verifyAnyAuth,
+  licenseLimiter,
   requireRole(["SuperAdmin", "ClientAdmin"], ["superAdmin", "clientAdmin"]),
   async (req, res) => {
     try {

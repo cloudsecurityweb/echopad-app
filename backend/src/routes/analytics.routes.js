@@ -3,14 +3,24 @@ import { getSuperAdminAnalytics, getOrgAnalyticsSummary, getProductUsageSummary 
 import { recordAnalyticsEvent, getAnalyticsEvents } from "../services/analytics.service.js";
 import { verifyAnyAuth } from "../middleware/auth.js";
 import { requireRole } from "../middleware/entraAuth.js";
+import rateLimit from "express-rate-limit";
 
 const router = express.Router();
+const analyticsLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many requests, please try again later.' }
+});
+
+router.use(analyticsLimiter);
 
 /**
  * ANALYTICS (SUPER ADMIN ONLY)
  */
 
-router.get("/super-admin", verifyAnyAuth, requireRole(['SuperAdmin', 'ClientAdmin', 'UserAdmin'], ['superAdmin', 'clientAdmin', 'userAdmin']), getSuperAdminAnalytics);
+router.get("/super-admin", verifyAnyAuth, analyticsLimiter, requireRole(['SuperAdmin', 'ClientAdmin', 'UserAdmin'], ['superAdmin', 'clientAdmin', 'userAdmin']), getSuperAdminAnalytics);
 
 /**
  * GET /api/analytics/org-summary
@@ -19,6 +29,7 @@ router.get("/super-admin", verifyAnyAuth, requireRole(['SuperAdmin', 'ClientAdmi
 router.get(
     "/org-summary",
     verifyAnyAuth,
+    analyticsLimiter,
     requireRole(["SuperAdmin", "ClientAdmin"], ["superAdmin", "clientAdmin"]),
     getOrgAnalyticsSummary
 );
@@ -30,6 +41,7 @@ router.get(
 router.get(
     "/usage",
     verifyAnyAuth,
+    analyticsLimiter,
     requireRole(["SuperAdmin", "ClientAdmin"], ["superAdmin", "clientAdmin"]),
     getProductUsageSummary
 );
@@ -41,6 +53,7 @@ router.get(
 router.post(
   "/events",
   verifyAnyAuth,
+  analyticsLimiter,  
   async (req, res) => {
     try {
       const tenantId = req.currentUser.tenantId;
@@ -69,6 +82,7 @@ router.post(
 router.get(
   "/events",
   verifyAnyAuth,
+  analyticsLimiter,
   requireRole(["SuperAdmin", "ClientAdmin"], ["superAdmin", "clientAdmin"]),
   async (req, res) => {
     try {

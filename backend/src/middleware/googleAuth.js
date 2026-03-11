@@ -10,7 +10,15 @@ const PLACEHOLDER_GOOGLE = /^your-google-client-id/i;
 if (!GOOGLE_CLIENT_ID) {
   console.warn('⚠️  GOOGLE_CLIENT_ID not set. Google auth middleware will fail.');
 }
-
+function isTrustedGoogleIssuer(iss) {
+  try {
+    const host = new URL(iss).hostname;
+    return host === 'accounts.google.com' ||
+           host.endsWith('.accounts.google.com');
+  } catch {
+    return false;
+  }
+}
 /**
  * Decode JWT payload without verification (handles base64url)
  * @param {string} payloadB64 - Base64url-encoded payload
@@ -36,7 +44,7 @@ function isGoogleIdToken(token) {
   const parts = token.split('.');
   if (parts.length !== 3) return false;
   const payload = decodeJwtPayload(parts[1]);
-  return payload && payload.iss && String(payload.iss).includes('accounts.google.com');
+  return payload && payload.iss && isTrustedGoogleIssuer(String(payload.iss));
 }
 
 /**
@@ -59,7 +67,7 @@ function tryDevBypassGoogleTokenReturnsClaims(token) {
   const payload = decodeJwtPayload(parts[1]);
   if (!payload) return null;
   const iss = payload.iss && String(payload.iss);
-  if (!iss || !iss.includes('accounts.google.com')) return null;
+  if (!iss || !isTrustedGoogleIssuer(iss)) return null;
   if (payload.exp && payload.exp < Math.floor(Date.now() / 1000)) return null;
   const sub = payload.sub;
   if (!sub) return null;

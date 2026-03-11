@@ -13,7 +13,17 @@ import { ORG_TYPES, ORG_STATUS } from '../models/organization.js';
 import { isConfigured } from '../config/cosmosClient.js';
 import { verifyMicrosoftToken } from '../middleware/entraAuth.js';
 import { verifyGoogleTokenStandalone } from '../middleware/googleAuth.js';
-
+function isTrustedMicrosoftIssuer(iss) {
+  try {
+    const host = new URL(iss).hostname;
+    return host === 'login.microsoftonline.com' ||
+           host === 'sts.windows.net' ||
+           host.endsWith('.login.microsoftonline.com') ||
+           host.endsWith('.sts.windows.net');
+  } catch {
+    return false;
+  }
+}
 /**
  * Map Entra ID roles to backend roles
  * Returns null if no roles are present (to preserve existing DB role)
@@ -76,7 +86,7 @@ export async function signIn(req, res) {
           const pad = b64.length % 4;
           if (pad) b64 += '='.repeat(4 - pad);
           const payload = JSON.parse(Buffer.from(b64, 'base64').toString());
-          if (payload.iss && !String(payload.iss).includes('microsoftonline.com')) {
+          if (payload.iss && !isTrustedMicrosoftIssuer(String(payload.iss))) {
             return res.status(401).json({
               success: false,
               error: 'Invalid token',
@@ -348,7 +358,7 @@ export async function signUp(req, res) {
           const pad = b64.length % 4;
           if (pad) b64 += '='.repeat(4 - pad);
           const payload = JSON.parse(Buffer.from(b64, 'base64').toString());
-          if (payload.iss && !String(payload.iss).includes('microsoftonline.com')) {
+          if (payload.iss && !isTrustedMicrosoftIssuer(String(payload.iss))) {
             return res.status(401).json({
               success: false,
               error: 'Invalid token',

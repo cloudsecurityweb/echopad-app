@@ -446,7 +446,7 @@ export async function resendVerificationEmail(req, res) {
     } catch (error) {
       emailSent = false;
       emailError = error.message || 'Failed to send verification email';
-      console.error(`❌ [RESEND-VERIFICATION] Failed to send verification email to ${normalizedEmail}:`, {
+      console.error('❌ [RESEND-VERIFICATION] Failed to send verification email to %s:', normalizedEmail, {
         error: emailError,
         email: normalizedEmail,
         tokenLength: verificationToken.length,

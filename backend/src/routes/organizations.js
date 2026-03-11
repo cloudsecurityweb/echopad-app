@@ -9,8 +9,18 @@ import {
 import { devOnly } from "../middleware/devOnly.js";
 import { verifyAnyAuth } from "../middleware/auth.js";
 import { requireRole } from "../middleware/entraAuth.js";
+import rateLimit from "express-rate-limit";
 
 const router = express.Router();
+const organizationsLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many requests, please try again later.' }
+});
+
+router.use(organizationsLimiter);
 
 /**
  * POST /api/organizations/dummy
@@ -25,6 +35,7 @@ router.post("/dummy", devOnly, createDummyOrganization);
 router.get(
   "/details",
   verifyAnyAuth,
+  organizationsLimiter,
   requireRole(["SuperAdmin"], ["superAdmin"]),
   listOrganizationsDetails
 );
@@ -36,6 +47,7 @@ router.get(
 router.get(
   "/",
   verifyAnyAuth,
+  organizationsLimiter,
   requireRole(["SuperAdmin"], ["superAdmin"]),
   listOrganizations
 );

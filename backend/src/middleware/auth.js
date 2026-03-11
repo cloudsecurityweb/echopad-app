@@ -14,7 +14,27 @@ import { verifyEmailPasswordToken, attachEmailPasswordUserFromDb } from './email
 import { verifyMagicToken, attachMagicUserFromDb } from './magicAuth.js';
 import { verifyGoogleToken } from './googleAuth.js';
 import { verifyEntraToken, attachUserFromDb } from './entraAuth.js';
+function isTrustedGoogleIssuer(iss) {
+  try {
+    const host = new URL(iss).hostname;
+    return host === 'accounts.google.com' ||
+           host.endsWith('.accounts.google.com');
+  } catch {
+    return false;
+  }
+}
 
+function isTrustedMicrosoftIssuer(iss) {
+  try {
+    const host = new URL(iss).hostname;
+    return host === 'login.microsoftonline.com' ||
+           host === 'sts.windows.net' ||
+           host.endsWith('.login.microsoftonline.com') ||
+           host.endsWith('.sts.windows.net');
+  } catch {
+    return false;
+  }
+}
 /**
  * Unified authentication middleware that tries all providers
  * 
@@ -63,7 +83,7 @@ export async function verifyAnyAuth(req, res, next) {
       }
       
       // Try Google ID tokens
-      if (payload.iss && payload.iss.includes('accounts.google.com')) {
+      if (payload.iss && isTrustedGoogleIssuer(payload.iss)) {
         return verifyGoogleToken(req, res, (err) => {
           if (err) return tryNextProvider(req, res, next, token, 'google');
           return attachUserFromDb(req, res, next);
@@ -71,7 +91,7 @@ export async function verifyAnyAuth(req, res, next) {
       }
       
       // Try Microsoft Entra ID tokens (default for unknown JWT issuers)
-      if (payload.iss && (payload.iss.includes('login.microsoftonline.com') || payload.iss.includes('sts.windows.net'))) {
+      if (payload.iss && isTrustedMicrosoftIssuer(payload.iss)) {
         return verifyEntraToken(req, res, (err) => {
           if (err) return tryNextProvider(req, res, next, token, 'microsoft');
           return attachUserFromDb(req, res, next);
@@ -224,7 +244,7 @@ export async function optionalAuth(req, res, next) {
       }
       
       // Try Microsoft Entra ID tokens (for invitation acceptance with Microsoft auth)
-      if (payload.iss && (payload.iss.includes('login.microsoftonline.com') || payload.iss.includes('sts.windows.net'))) {
+      if (payload.iss && isTrustedMicrosoftIssuer(payload.iss)) {
         try {
           // Manually verify Microsoft token using JWKS (similar to verifyEntraToken)
           const { jwtVerify, createRemoteJWKSet } = await import('jose');
@@ -274,7 +294,7 @@ export async function optionalAuth(req, res, next) {
       }
       
       // Try Google tokens (similar approach)
-      if (payload.iss && payload.iss.includes('accounts.google.com')) {
+      if (payload.iss && isTrustedGoogleIssuer(payload.iss)) {
         // Google token verification is complex (requires tokeninfo API call)
         // For now, skip - controller can handle it if needed
         // Or we could add Google verification here later

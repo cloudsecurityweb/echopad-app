@@ -115,7 +115,14 @@ test.describe('Authentication Tests', () => {
       
       // Check console for Google OAuth attempt (popup may be blocked)
       const googleAttempt = consoleMessages.some(msg => 
-        msg.includes('GSI_LOGGER') || msg.includes('accounts.google.com')
+      msg.includes('GSI_LOGGER') || (() => { 
+        try { 
+          const url = new URL(msg); 
+          return url.hostname === 'accounts.google.com' || url.hostname.endsWith('.google.com'); 
+        } catch { 
+          return false; 
+        } 
+      })()
       );
       
       // Either popup opened or was blocked (both indicate OAuth is configured)
