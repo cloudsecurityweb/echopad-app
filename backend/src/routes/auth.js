@@ -25,6 +25,14 @@ router.use(authLimiter);
  * Middleware to detect and route to appropriate auth middleware
  * Checks for magic tokens first, then Google, then Microsoft
  */
+function isTrustedIssuer(iss, trustedHosts) {
+  try {
+    const host = new URL(iss).hostname;
+    return trustedHosts.some(t => host === t || host.endsWith('.' + t));
+  } catch {
+    return false;
+  }
+}
 export async function detectAuthProvider(req, res, next) {
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -73,7 +81,7 @@ export async function detectAuthProvider(req, res, next) {
       }
       
       // Check for Google ID token (explicit check)
-      if (payload.iss && payload.iss.includes('accounts.google.com')) {
+      if (payload.iss && isTrustedIssuer(payload.iss, ['accounts.google.com'])) {
         if (process.env.NODE_ENV === 'development') {
           console.log('🔍 [AUTH-DETECT] Routing to Google token verification (ID token)');
         }
@@ -83,7 +91,7 @@ export async function detectAuthProvider(req, res, next) {
       // Check for Microsoft token (issuer contains login.microsoftonline.com or sts.windows.net)
       // Microsoft tokens are always JWTs, so check this before fallback
       // Note: Microsoft tokens can have issuer: login.microsoftonline.com or sts.windows.net
-      if (payload.iss && (payload.iss.includes('login.microsoftonline.com') || payload.iss.includes('sts.windows.net'))) {
+      if (payload.iss && isTrustedIssuer(payload.iss, ['login.microsoftonline.com', 'sts.windows.net'])) {
         if (process.env.NODE_ENV === 'development') {
           console.log('🔍 [AUTH-DETECT] Routing to Microsoft token verification');
         }
