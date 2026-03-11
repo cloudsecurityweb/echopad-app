@@ -31,7 +31,10 @@ env:
   FRONTEND_URL_DEV: 'https://polite-ground-0602c481e.2.azurestaticapps.net'
   API_URL_PROD: 'https://echopad-backend.azurewebsites.net'
   API_URL_DEV: 'https://echopad-backend.azurewebsites.net'
-
+permissions:
+  contents: read
+  actions: write
+  issues: write
 jobs:
   e2e-tests:
     name: Run E2E Tests
