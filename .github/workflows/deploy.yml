@@ -11,7 +11,9 @@ env:
   AZURE_DEVOPS_ORG: 'https://dev.azure.com/cloudsecurityweb'
   AZURE_DEVOPS_PROJECT: 'echopad'
   ARTIFACT_FEED: 'echopad-artifacts'
-
+permissions:
+  contents: read
+  id-token: write
 jobs:
   # =====================================================
   # JOB 1: Build & Security Scan
