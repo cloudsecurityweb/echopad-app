@@ -6,8 +6,13 @@ import {
   updateTranscription,
   deleteTranscription,
 } from "../controllers/transcriptionHistory.controller.js";
+import rateLimit from "express-rate-limit";
 
 const router = express.Router();
+const transcriptionHistoryLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per 15 minutes
+});
 
 /**
  * TRANSCRIPTION HISTORY
@@ -16,9 +21,9 @@ const router = express.Router();
  * - PUT /:id  : update transcription (body: { text }) — requires auth
  * - DELETE /:id : delete transcription — requires auth
  */
-router.post("/", verifyAnyAuth, createTranscription);
-router.get("/", verifyAnyAuth, getTranscriptions);
-router.put("/:id", verifyAnyAuth, updateTranscription);
-router.delete("/:id", verifyAnyAuth, deleteTranscription);
+router.post("/", verifyAnyAuth, transcriptionHistoryLimiter, createTranscription);
+router.get("/", verifyAnyAuth, transcriptionHistoryLimiter, getTranscriptions);
+router.put("/:id", verifyAnyAuth, transcriptionHistoryLimiter, updateTranscription);
+router.delete("/:id", verifyAnyAuth, transcriptionHistoryLimiter, deleteTranscription);
 
 export default router;

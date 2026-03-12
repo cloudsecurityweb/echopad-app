@@ -7,7 +7,7 @@
 export default function createLicenseAssignment(data) {
   const { tenantId, productCode, userEmail } = data;
 
-  console.log(tenantId, productCode, userEmail);
+  console.log('[LicenseAssignment] Creating assignment - tenantId: %s, productCode: %s, userEmail: %s', tenantId, productCode, userEmail);
 
   if (!tenantId) throw new Error("tenantId is required");
   if (!productCode) throw new Error("productCode is required");

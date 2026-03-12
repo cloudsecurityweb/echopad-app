@@ -12,8 +12,14 @@ import { verifyEmailPasswordToken, attachEmailPasswordUserFromDb } from '../midd
 import { signIn, signUp, getCurrentUser } from '../controllers/authController.js';
 import { signUpEmail, signInEmail, refreshToken, changePassword, forgotPassword, resetPassword } from '../controllers/passwordAuthController.js';
 import { verifyEmail, resendVerificationEmail } from '../controllers/emailVerificationController.js';
+import rateLimit from "express-rate-limit";
 
 const router = express.Router();
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 10, // only 10 login attempts per 15 minutes per IP
+  message: { success: false, error: "Too many login attempts, please try again later." },
+});
 
 /**
  * Middleware to detect and route to appropriate auth middleware
@@ -167,14 +173,14 @@ router.post('/sign-up-email', signUpEmail);
  * Sign in with email and password
  * Body: { email, password }
  */
-router.post('/sign-in-email', signInEmail);
+router.post('/sign-in-email', authLimiter, signInEmail);
 
 /**
  * POST /api/auth/refresh
  * Exchange refresh token for new access (session) token
  * Body: { refreshToken: string }
  */
-router.post('/refresh', refreshToken);
+router.post('/refresh', authLimiter, refreshToken);
 
 /**
  * POST /api/auth/change-password
