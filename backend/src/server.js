@@ -8,6 +8,7 @@ import { startWarmup } from "./services/cosmosWarmup.js";
 import routes from "./routes/index.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 import { notFound } from "./middleware/notFound.js";
+import { verifyAnyAuth } from "./middleware/auth.js";
 
 import path from "path";
 import fs from "fs";
@@ -181,7 +182,7 @@ app.use((req, res, next) => {
 app.use(cors(corsOptions));
 app.use(express.json());
 
-/** Load Aperio (backend + frontend from echopad-aperio) and mount at /aperio. Single App Service in production. */
+/** Load Aperio (backend + frontend from @echopad/aperio) and mount at /aperio. Single App Service in production. */
 async function mountAperio() {
   const publicAperio = path.join(__dirname, 'public', 'aperio');
   const aperioIndex = path.join(publicAperio, 'index.html');
@@ -198,19 +199,20 @@ async function mountAperio() {
   }
 
   try {
-    const { default: aperioRouter } = await import('echopad-aperio');
+    const { default: aperioRouter } = await import('@echopad/aperio');
 
     // Log Aperio API requests and errors so you can check backend logs for /aperio/* and /api/aperio/*
     app.use('/aperio', (req, res, next) => {
       const isApi = req.path.includes('/api') || req.path === '/health';
       if (isApi) {
+        const hasAuth = !!(req.headers.authorization && req.headers.authorization.startsWith('Bearer '));
         const start = Date.now();
         const onFinish = () => {
           res.removeListener('finish', onFinish);
           const duration = Date.now() - start;
           const status = res.statusCode;
           const level = status >= 500 ? 'error' : status >= 400 ? 'warn' : 'log';
-          console[level](`[aperio] ${req.method} ${req.originalUrl} ${status} ${duration}ms`);
+          console[level](`[aperio] ${req.method} ${req.originalUrl} ${status} ${duration}ms hasAuth=${hasAuth}`);
         };
         res.on('finish', onFinish);
       }
@@ -219,15 +221,26 @@ async function mountAperio() {
 
     app.use('/aperio', aperioRouter);
 
+    // Helper route to verify token flow: GET /api/aperio/health-auth returns current user from Bearer token (all providers)
+    app.get('/api/aperio/health-auth', verifyAnyAuth, (req, res) => {
+      const auth = req.auth || {};
+      res.json({
+        success: true,
+        userId: auth.oid || null,
+        email: auth.email || null,
+        provider: auth.provider || null,
+      });
+    });
+
     // Also serve Aperio API at /api/aperio/* so frontend can call /api/aperio/transfers (path the Aperio app expects)
     app.use('/api/aperio', (req, res, next) => {
       req.url = '/api/aperio' + (req.url || '');
       next();
     }, aperioRouter);
 
-    console.log('✅ [aperio] Mounted echopad-aperio at /aperio (API + static from package)');
+    console.log('✅ [aperio] Mounted @echopad/aperio at /aperio (API + static from package)');
   } catch (err) {
-    console.warn('[aperio] echopad-aperio not loaded, using static build + stub:', err.message);
+    console.warn('[aperio] @echopad/aperio not loaded, using static build + stub:', err.message);
     app.use('/aperio', express.static(path.join(__dirname, 'public', 'aperio')));
     const { stubRouter } = await import('./routes/aperio.js');
     app.use('/aperio', stubRouter);

@@ -46,6 +46,9 @@ export function initAperioTokenBridge() {
         event.origin
       );
     } catch (err) {
+      if (typeof import.meta !== 'undefined' && import.meta.env?.DEV) {
+        console.warn('[Aperio] Token bridge: getAccessToken failed — Aperio may show "API not configured"', err?.message || err);
+      }
       event.source.postMessage(
         { type: MESSAGE_TYPE_ERROR, error: err?.message || 'Failed to get token' },
         event.origin

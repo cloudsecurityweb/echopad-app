@@ -10,7 +10,8 @@
     "build:aperio": "node scripts/build-aperio.js",
     "update:aperio": "node scripts/update-aperio.js",
     "dev:aperio": "node scripts/run-aperio-dev.js",
-    "dev:aperio:backend": "node scripts/run-aperio-backend.js"
+    "dev:aperio:backend": "node scripts/run-aperio-backend.js",
+    "install:aperio-deps": "node scripts/install-aperio-deps.js"
   },
   "keywords": [
     "express",
@@ -27,7 +28,7 @@
     "bcrypt": "^5.1.1",
     "cors": "^2.8.6",
     "dotenv": "^16.3.1",
-    "echopad-aperio": "github:cloudsecurityweb/echopad-Aperio#dev-vk",
+    "@echopad/aperio": "1.0.1",
     "express": "^4.18.2",
     "helmet": "^8.1.0",
     "html-to-text": "^9.0.5",

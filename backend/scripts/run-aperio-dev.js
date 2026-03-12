@@ -17,7 +17,7 @@ import { fileURLToPath } from "url";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const backendRoot = path.resolve(__dirname, "..");
 const frontendEnvPath = path.join(backendRoot, "..", "frontend", ".env");
-const aperioFrontend = path.join(backendRoot, "node_modules", "echopad-aperio", "frontend");
+const aperioFrontend = path.join(backendRoot, "node_modules", "@echopad", "aperio", "frontend");
 
 function parseEnv(pathToEnv) {
   if (!fs.existsSync(pathToEnv)) return {};
@@ -54,7 +54,7 @@ const aperioEnvLines = [
   `VITE_APERIO_TOKEN=${token}`,
 ].join("\n");
 fs.writeFileSync(aperioEnvLocalPath, aperioEnvLines, "utf8");
-console.log("[run-aperio-dev] Wrote VITE_APERIO_* to echopad-aperio/frontend/.env.local");
+console.log("[run-aperio-dev] Wrote VITE_APERIO_* to @echopad/aperio/frontend/.env.local");
 
 if (!token) {
   console.warn("[run-aperio-dev] No VITE_APERIO_TOKEN in frontend/.env — Aperio may show 'API not configured'.");

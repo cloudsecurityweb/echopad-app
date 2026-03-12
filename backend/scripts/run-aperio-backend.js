@@ -30,7 +30,7 @@ process.env.PORT = "3001";
 
 const child = spawn(
   "node",
-  [path.join(backendRoot, "node_modules", "echopad-aperio", "backend", "src", "server.js")],
+  [path.join(backendRoot, "node_modules", "@echopad", "aperio", "backend", "src", "server.js")],
   {
     cwd: backendRoot,
     env: process.env,
