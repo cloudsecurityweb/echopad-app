@@ -2,16 +2,9 @@
  * Authentication Utility Functions
  * 
  * Helper functions for token management and authenticated API calls.
+ * For EchoPad Electron desktop app redirect flow, use utils/electronDesktopAuth.js.
+ * For Aperio token flow, use config/aperio.js and utils/aperioTokenBridge.js.
  */
-
-/**
- * SessionStorage key for the EchoPad Electron desktop app redirect flow only.
- * Used when the user signs in via the web app with ?redirect_uri=... (from the desktop app);
- * SignIn stores payload here, then LoginComplete reads it and redirects back to the desktop app.
- * This is separate from Aperio auth (APERIO_TOKEN, aperioTokenBridge, ProductDownloadCard, etc.).
- * Do not use this key or the redirect_uri/login-complete flow for Aperio.
- */
-export const DESKTOP_REDIRECT_KEY = 'echopad_desktop_redirect';
 
 /**
  * Get access token for API calls

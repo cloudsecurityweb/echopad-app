@@ -2,24 +2,12 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navigation from '../../components/layout/Navigation';
 import usePageTitle from '../../hooks/usePageTitle';
-import { DESKTOP_REDIRECT_KEY } from '../../utils/auth';
+import { DESKTOP_REDIRECT_KEY, isValidDesktopRedirectUri } from '../../utils/electronDesktopAuth';
 
 /**
- * EchoPad Electron desktop app callback page only.
- * After sign-in with redirect_uri (from the desktop app), SignIn stores the payload in
- * sessionStorage under DESKTOP_REDIRECT_KEY; this page reads it and redirects back to
- * the Electron app with token/name/email in the URL. Not used by Aperio (Aperio uses
- * APERIO_APP_URL, token-in-hash, and aperioTokenBridge).
+ * EchoPad Electron desktop app callback page only. Not used by Aperio.
+ * Aperio: config/aperio.js, aperioTokenBridge.js, token in hash / postMessage.
  */
-function isValidRedirectUri(uri) {
-  try {
-    const url = new URL(uri);
-    return url.hostname === 'localhost' && url.protocol === 'http:';
-  } catch {
-    return false;
-  }
-}
-
 function LoginComplete() {
   const PageTitle = usePageTitle('Login Complete');
   const navigate = useNavigate();
@@ -34,7 +22,7 @@ function LoginComplete() {
     }
     try {
       const data = JSON.parse(raw);
-      if (!data.redirectUri || !isValidRedirectUri(data.redirectUri)) {
+      if (!data.redirectUri || !isValidDesktopRedirectUri(data.redirectUri)) {
         setError('Invalid redirect. Please sign in again from the EchoPad app.');
         sessionStorage.removeItem(DESKTOP_REDIRECT_KEY);
         return;

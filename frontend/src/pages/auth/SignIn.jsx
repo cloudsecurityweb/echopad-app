@@ -6,24 +6,10 @@ import ElectronSignInModal from '../../components/auth/ElectronSignInModal';
 import Navigation from '../../components/layout/Navigation';
 import Footer from '../../components/layout/Footer';
 import usePageTitle from '../../hooks/usePageTitle';
-import { DESKTOP_REDIRECT_KEY } from '../../utils/auth';
+import { DESKTOP_REDIRECT_KEY, isValidDesktopRedirectUri } from '../../utils/electronDesktopAuth';
 
 // --- EchoPad Electron desktop app sign-in flow (separate from Aperio auth) ---
-// When the desktop app opens the web app with ?redirect_uri=http://localhost:..., we store
-// redirectUri in state and, after sign-in, save token/name/email to sessionStorage and navigate
-// to /login-complete, which redirects back to the desktop app. Aperio uses a different flow
-// (APERIO_APP_URL, token in hash, aperioTokenBridge); do not change Aperio auth here.
-
-// Security validation function (for Electron redirect_uri only)
-function isValidRedirectUri(uri) {
-  try {
-    const url = new URL(uri);
-    // Only allow localhost with http protocol
-    return url.hostname === 'localhost' && url.protocol === 'http:';
-  } catch {
-    return false;
-  }
-}
+// Aperio uses config/aperio.js, aperioTokenBridge.js, ProductDownloadCard (token in hash).
 function SignIn() {
   const PageTitle = usePageTitle('Sign In');
   const { login, loginWithGoogle, isAuthenticated, isLoading, hasTokenForElectronRedirect, account, getAccessToken, googleUser, userProfile, authProvider, logout, syncUserProfile, syncGoogleUserProfile, clearGoogleAuth, signInEmailPassword, emailPasswordRefreshToken } = useAuth();
@@ -121,7 +107,7 @@ function SignIn() {
 
     if (uri) {
       // Validate that it's a localhost URL (security check)
-      if (!isValidRedirectUri(uri)) {
+      if (!isValidDesktopRedirectUri(uri)) {
         console.error('Invalid redirect_uri: must be http://localhost');
         return;
       }

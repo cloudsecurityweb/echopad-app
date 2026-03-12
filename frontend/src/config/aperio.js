@@ -1,5 +1,6 @@
 /**
  * Aperio app URL and token integration with echopad-aperio.
+ * Aperio auth is separate from the EchoPad Electron desktop app (see utils/electronDesktopAuth.js, redirect_uri, /login-complete). Do not use this config for the desktop app.
  *
  * Aperio is served by the backend at /aperio (echopad-aperio SPA). Set VITE_APERIO_URL to
  * override (e.g. when frontend and backend are on different origins).
