@@ -35,9 +35,23 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
 
       # ----- BACKEND BUILD -----
+      - name: Configure npm auth for Azure Artifacts
+        working-directory: backend
+        env:
+          AZURE_DEVOPS_PAT: ${{ secrets.AZURE_DEVOPS_PAT }}
+        run: |
+          REGISTRY="//pkgs.dev.azure.com/cloudsecurityweb/echopad/_packaging/echopad_aperio/npm/registry"
+          echo "${REGISTRY}/:username=build" >> .npmrc
+          echo "${REGISTRY}/:_password=$(echo -n \"$AZURE_DEVOPS_PAT\" | base64 -w 0)" >> .npmrc
+          echo "${REGISTRY}/:email=ci@echopad.local" >> .npmrc
+
       - name: Install Backend Dependencies
         working-directory: backend
         run: npm install
+
+      - name: Build Aperio
+        working-directory: backend
+        run: npm run build:aperio
 
       - name: Snyk Security Scan - Backend
         uses: snyk/actions/node@master
@@ -50,8 +64,9 @@ jobs:
 
       - name: Package Backend
         working-directory: backend
+        # Include node_modules so App Service does not need AZURE_DEVOPS_PAT to run npm install
         run: |
-          zip -r ../backend-${{ steps.version.outputs.version }}.zip . -x node_modules/\* .git/\*
+          zip -r ../backend-${{ steps.version.outputs.version }}.zip . -x .git/\*
           ls -lh ../backend-${{ steps.version.outputs.version }}.zip
 
       # ----- FRONTEND BUILD -----
