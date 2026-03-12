@@ -1,5 +1,8 @@
 /**
- * Update @echopad/aperio from Azure Artifacts to latest allowed version and rebuild.
+ * Update @echopad/aperio from Azure Artifacts to the latest published version and rebuild.
+ *
+ * This installs the newest version from the feed (not just within current semver range),
+ * updates package.json and package-lock.json, then runs the Aperio build.
  *
  * Usage: from backend directory: node scripts/update-aperio.js
  * Or: npm run update:aperio
@@ -30,10 +33,10 @@ function run(cmd, args, opts = {}) {
   return result;
 }
 
-log("Updating @echopad/aperio from Azure Artifacts...");
-run("npm", ["update", "@echopad/aperio"]);
+log("Installing latest @echopad/aperio from Azure Artifacts...");
+run("npm", ["install", "@echopad/aperio@latest", "--save"]);
 
 log("Building Aperio (npm run build:aperio)...");
 run("npm", ["run", "build:aperio"]);
 
-log("Done. @echopad/aperio is updated and built.");
+log("Done. @echopad/aperio is updated to latest and built.");

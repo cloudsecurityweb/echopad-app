@@ -198,7 +198,7 @@ Ensure these are set in your deployment environment (e.g. Azure App Service appl
 | Side                | Action |
 |---------------------|--------|
 | **echopad-aperio**  | 1) Root `package.json` with `"name": "@echopad/aperio"`, version, main, build script. 2) Add `.npmrc` with feed registry. 3) Run `vsts-npm-auth -config .npmrc`. 4) `npm version patch && npm publish --access restricted`. |
-| **echopad-app**     | 1) `backend/.npmrc` with `@echopad:registry=...`. 2) `backend/package.json` has `"@echopad/aperio": "1.0.0"` (or `^1.0.0`). 3) Run `vsts-npm-auth -config .npmrc` in backend. 4) `npm install` and `npm run build:aperio`. To update: `npm run update:aperio` (runs `npm update @echopad/aperio` then `npm run build:aperio`). |
+| **echopad-app**     | 1) `backend/.npmrc` with `@echopad:registry=...`. 2) `backend/package.json` has `"@echopad/aperio": "1.0.0"` (or exact version). 3) Run `vsts-npm-auth -config .npmrc` in backend. 4) `npm install` and `npm run build:aperio`. To get the **newest** version: `npm run update:aperio` (installs `@echopad/aperio@latest` from the feed and runs `build:aperio`). Optionally enable the **Update @echopad/aperio to latest** GitHub Action (`.github/workflows/update-aperio.yml`) to open a PR when a new version is published. |
 
 ---
 
