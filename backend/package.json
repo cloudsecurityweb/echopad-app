@@ -36,6 +36,7 @@
     "multer": "^2.0.2",
     "node-cron": "^4.2.1",
     "nunjucks": "^3.2.4"
+    "express-rate-limit": "^8.2.1"
   },
   "engines": {
     "node": ">=18.0.0"

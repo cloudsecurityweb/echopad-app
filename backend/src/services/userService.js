@@ -228,7 +228,7 @@ export async function getUserByOIDAnyRole(oid, tenantId) {
     } catch (error) {
       if (error.code !== 404) {
         // Only log non-404 errors (404 is expected when user not in that container)
-        console.warn(`⚠️ [OID-LOOKUP] Error searching ${role} container for OID ${oid.substring(0, 8)}...:`, error.message);
+        console.warn('⚠️ [OID-LOOKUP] Error searching %s container for OID %s...', role, oid.substring(0, 8), error.message);
       }
       // Continue to next container
     }
