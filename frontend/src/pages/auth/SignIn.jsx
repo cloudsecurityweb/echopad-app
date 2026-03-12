@@ -8,9 +8,13 @@ import Footer from '../../components/layout/Footer';
 import usePageTitle from '../../hooks/usePageTitle';
 import { DESKTOP_REDIRECT_KEY } from '../../utils/auth';
 
+// --- EchoPad Electron desktop app sign-in flow (separate from Aperio auth) ---
+// When the desktop app opens the web app with ?redirect_uri=http://localhost:..., we store
+// redirectUri in state and, after sign-in, save token/name/email to sessionStorage and navigate
+// to /login-complete, which redirects back to the desktop app. Aperio uses a different flow
+// (APERIO_APP_URL, token in hash, aperioTokenBridge); do not change Aperio auth here.
 
-
-// Security validation function
+// Security validation function (for Electron redirect_uri only)
 function isValidRedirectUri(uri) {
   try {
     const url = new URL(uri);
@@ -19,24 +23,6 @@ function isValidRedirectUri(uri) {
   } catch {
     return false;
   }
-}
-async function encryptData(data) {
-  const encoded = new TextEncoder().encode(JSON.stringify(data));
-  const key = await window.crypto.subtle.generateKey(
-    { name: "AES-GCM", length: 256 },
-    false,
-    ["encrypt", "decrypt"]
-  );
-  const iv = window.crypto.getRandomValues(new Uint8Array(12));
-  const encrypted = await window.crypto.subtle.encrypt(
-    { name: "AES-GCM", iv },
-    key,
-    encoded
-  );
-  return {
-    iv: Array.from(iv),
-    data: Array.from(new Uint8Array(encrypted)),
-  };
 }
 function SignIn() {
   const PageTitle = usePageTitle('Sign In');
@@ -116,8 +102,7 @@ function SignIn() {
         display_name: displayName || userName,
         ...(refreshTokenForDesktop ? { refresh_token: refreshTokenForDesktop } : {}),
       };
-const encrypted = await encryptData(sensitivePayload);
-sessionStorage.setItem(DESKTOP_REDIRECT_KEY, JSON.stringify(encrypted));
+      sessionStorage.setItem(DESKTOP_REDIRECT_KEY, JSON.stringify(sensitivePayload));
       navigate('/login-complete', { replace: true });
     } catch (error) {
       console.error('[Electron Auth] Failed to redirect:', error);

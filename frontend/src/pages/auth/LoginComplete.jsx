@@ -4,6 +4,13 @@ import Navigation from '../../components/layout/Navigation';
 import usePageTitle from '../../hooks/usePageTitle';
 import { DESKTOP_REDIRECT_KEY } from '../../utils/auth';
 
+/**
+ * EchoPad Electron desktop app callback page only.
+ * After sign-in with redirect_uri (from the desktop app), SignIn stores the payload in
+ * sessionStorage under DESKTOP_REDIRECT_KEY; this page reads it and redirects back to
+ * the Electron app with token/name/email in the URL. Not used by Aperio (Aperio uses
+ * APERIO_APP_URL, token-in-hash, and aperioTokenBridge).
+ */
 function isValidRedirectUri(uri) {
   try {
     const url = new URL(uri);
