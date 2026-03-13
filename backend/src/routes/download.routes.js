@@ -6,13 +6,21 @@ import path from "path";
 import os from "os";
 import archiver from "archiver";
 import { verifyAnyAuth } from "../middleware/auth.js";
+import rateLimit from "express-rate-limit";
 
 const router = express.Router();
+const downloadLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 50, // 50 download requests per 15 minutes per IP
+  message: { success: false, error: "Too many download requests, please try again later." },
+});
 
 // Explicit OPTIONS for CORS preflight so the browser gets a clear 204 (avoids "No content for preflight" in DevTools)
 router.options("/ai-scribe/desktop", (req, res) => res.sendStatus(204));
 router.options("/ai-scribe/mac", (req, res) => res.sendStatus(204));
 router.options("/ai-scribe/version", (req, res) => res.sendStatus(204));
+router.options("/ai-scribe/update-feed/desktop/latest.yml", (req, res) => res.sendStatus(204));
+router.options("/ai-scribe/update-feed/mac/latest-mac.yml", (req, res) => res.sendStatus(204));
 
 const API_VERSION = "7.0";
 const FEEDS_API_VERSION = "7.1";
@@ -40,6 +48,27 @@ function getProject() {
 
 function getFeedName() {
   return process.env.AZURE_ARTIFACTS_FEED || "echopad-app";
+}
+
+/**
+ * Public base URL for this server (used to build full download URLs in update feed).
+ * Set DOWNLOAD_BASE_URL in env when behind a reverse proxy (e.g. https://echopad-app-service-....azurewebsites.net).
+ * If unset, falls back to req.protocol + req.get("host"). In development, if host is missing (e.g. some Electron fetch),
+ * falls back to http://127.0.0.1:PORT so the YAML path is never empty.
+ */
+function getDownloadBaseUrl(req) {
+  const fromEnv = process.env.DOWNLOAD_BASE_URL || process.env.PUBLIC_APP_URL;
+  if (fromEnv && fromEnv.trim() !== "") {
+    return fromEnv.replace(/\/$/, "");
+  }
+  const protocol = req.protocol || "http";
+  const host = req.get("host") || "";
+  if (host) {
+    return `${protocol}://${host}`;
+  }
+  // Fallback when Host header is missing (e.g. Electron in dev) so path in latest.yml is not empty
+  const port = process.env.PORT || 3000;
+  return `http://127.0.0.1:${port}`;
 }
 
 function getFeedsBaseUrl() {
@@ -134,7 +163,8 @@ function getArtifactContentUrl(packageName, version, pathStyle = "universal") {
   const orgName = pathSegments[0] || "cloudsecurityweb";
   const project = getProject();
   const feed = getFeedName();
-  return `https://pkgs.dev.azure.com/${orgName}/${encodeURIComponent(project)}/_apis/packaging/feeds/${feed}/${pathStyle}/packages/${packageName}/versions/${version}/content?api-version=${API_VERSION}`;
+  const safeVersion = encodeURIComponent(version); // ✅ sanitize user input
+  return `https://pkgs.dev.azure.com/${orgName}/${encodeURIComponent(project)}/_apis/packaging/feeds/${feed}/${pathStyle}/packages/${packageName}/versions/${safeVersion}/content?api-version=${API_VERSION}`;
 }
 
 /**
@@ -395,6 +425,25 @@ async function streamFromArtifacts(req, res, artifactUrl, filename, packageName,
   }
 
   try {
+    let parsedUrl;
+    try {
+      parsedUrl = new URL(artifactUrl);
+    } catch (e) {
+      console.error("[DOWNLOAD] Invalid artifact URL:", artifactUrl, e);
+      return res.status(400).json({
+        success: false,
+        error: "Invalid artifact URL",
+      });
+    }
+
+    if (parsedUrl.hostname !== "pkgs.dev.azure.com") {
+      console.error("[DOWNLOAD] Blocked SSRF attempt to:", parsedUrl.hostname);
+      return res.status(400).json({
+        success: false,
+        error: "Invalid artifact URL",
+      });
+    }
+
     let response = await doFetch(artifactUrl);
     const altPathStyle = artifactUrl.includes("/universal/") ? "upack" : "universal";
     const altUrl = artifactUrl.replace(`/${altPathStyle === "upack" ? "universal" : "upack"}/`, `/${altPathStyle}/`);
@@ -489,6 +538,42 @@ router.get("/ai-scribe/version", async (req, res) => {
   });
 });
 
+/**
+ * GET /api/download/ai-scribe/update-feed/desktop/latest.yml
+ * Returns electron-updater generic provider feed for Windows (latest.yml).
+ * No auth required so the desktop app can check for updates without a user token.
+ */
+router.get("/ai-scribe/update-feed/desktop/latest.yml", async (req, res) => {
+  const bypassCache = req.query.refresh === "1" || req.query.refresh === "true";
+  const info = await getLatestPackageInfo("desktop", { bypassCache });
+  const baseUrl = getDownloadBaseUrl(req);
+  const pathUrl = baseUrl ? `${baseUrl}/api/download/ai-scribe/desktop?version=${encodeURIComponent(info.version)}` : "";
+  const yaml = `version: ${info.version}
+path: "${pathUrl}"
+releaseDate: "${new Date().toISOString()}"
+`;
+  res.setHeader("Content-Type", "application/x-yaml");
+  res.send(yaml);
+});
+
+/**
+ * GET /api/download/ai-scribe/update-feed/mac/latest-mac.yml
+ * Returns electron-updater generic provider feed for macOS (latest-mac.yml).
+ * No auth required so the desktop app can check for updates without a user token.
+ */
+router.get("/ai-scribe/update-feed/mac/latest-mac.yml", async (req, res) => {
+  const bypassCache = req.query.refresh === "1" || req.query.refresh === "true";
+  const info = await getLatestPackageInfo("mac", { bypassCache });
+  const baseUrl = getDownloadBaseUrl(req);
+  const pathUrl = baseUrl ? `${baseUrl}/api/download/ai-scribe/mac?version=${encodeURIComponent(info.version)}` : "";
+  const yaml = `version: ${info.version}
+path: "${pathUrl}"
+releaseDate: "${new Date().toISOString()}"
+`;
+  res.setHeader("Content-Type", "application/x-yaml");
+  res.send(yaml);
+});
+
 // Optional query param version must look like 1.0.19 or 1.0.0 (semver-like)
 const REQUESTED_VERSION_REGEX = /^\d+\.\d+(\.\d+)?([-.].*)?$/;
 
@@ -520,6 +605,7 @@ function resolveMacDownloadInfo(req) {
 router.get(
   "/ai-scribe/desktop",
   verifyAnyAuth,
+  downloadLimiter,
   async (req, res) => {
     const resolved = resolveDesktopDownloadInfo(req) || await getLatestPackageInfo("desktop", { bypassCache: false });
     const { version, packageName, filename } = resolved;
@@ -537,6 +623,7 @@ router.get(
 router.get(
   "/ai-scribe/mac",
   verifyAnyAuth,
+  downloadLimiter,
   async (req, res) => {
     const resolved = resolveMacDownloadInfo(req) || await getLatestPackageInfo("mac", { bypassCache: false });
     const { version, packageName, filename } = resolved;

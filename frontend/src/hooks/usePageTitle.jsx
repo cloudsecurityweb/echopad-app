@@ -20,7 +20,7 @@
  *   );
  * }
  */
-export default function usePageTitle(title, suffix = ' | Echopad AI', description = 'Transform your healthcare practice with AI-powered automation. Reduce costs, increase revenue, and improve retention with Echopad AI.', image = '/assets/images/logos/EchopadAIBanner.jpeg') {
+export default function usePageTitle(title, suffix = ' | Echopad AI', description = 'Get your note done before the patient leaves. Reduce costs, increase revenue, and improve retention with Echopad AI.', image = '/assets/images/logos/EchopadAIBanner.jpeg') {
     const fullTitle = `${title}${suffix}`;
     const url = typeof window !== 'undefined' ? window.location.href : '';
     const origin = typeof window !== 'undefined' ? window.location.origin : '';

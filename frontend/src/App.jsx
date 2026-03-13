@@ -8,6 +8,7 @@ import './index.css';
 import { AuthProvider } from './contexts/AuthContext';
 import { RoleProvider } from './contexts/RoleContext';
 import { googleAuthConfig } from './config/googleAuthConfig';
+import { initAperioTokenBridge } from './utils/aperioTokenBridge';
 
 // Layout Components
 import Navigation from './components/layout/Navigation';
@@ -19,6 +20,7 @@ import TrustBar from './components/sections/TrustBar';
 import AgentsOverview from './components/sections/AgentsOverview';
 import Platform from './components/sections/Platform';
 import ROI from './components/sections/ROI';
+import Testimonial from './components/sections/Testimonial';
 import Contact from './components/sections/Contact';
 
 // Product Components
@@ -32,6 +34,7 @@ import AIReceptionist from './pages/ai-receptionist/AIReceptionist';
 import AIAdminAssistant from './pages/ai-admin-assistant/AIAdminAssistant';
 import AIReminders from './pages/ai-reminders/AIReminders';
 import EchoPadInsights from './pages/echopad-insights/EchoPadInsights';
+import EchoPadInsightsEnterprise from './pages/echopad-insights/EchoPadInsightsEnterprise';
 import Aperio from './pages/aperio/Aperio';
 import PrivacyPolicy from './pages/privacy-policy/PrivacyPolicy';
 import TermsOfService from './pages/terms-of-service/TermsOfService';
@@ -85,18 +88,27 @@ import HelpDocDetail from './pages/dashboard/HelpDocDetail';
 import ClientManagementPage from './pages/dashboard/super-admin/ClientManagementPage';
 import usePageTitle from './hooks/usePageTitle';
 
-// Scroll to top on route change
+// Scroll to top on route change (skip when returning to home products section)
 function ScrollToTop() {
   const { pathname } = useLocation();
   useEffect(() => {
+    if (pathname === '/' && sessionStorage.getItem('homeScrollTo')) return;
     window.scrollTo(0, 0);
   }, [pathname]);
   return null;
 }
 
+/** Listens for APERIO_REQUEST_TOKEN from Aperio tab and responds with current token (so Aperio can refresh after sign-out/sign-in). */
+function AperioTokenBridge() {
+  useEffect(() => {
+    return initAperioTokenBridge();
+  }, []);
+  return null;
+}
+
 function HomePage() {
   const location = useLocation();
-  const PageTitle = usePageTitle('Echopad AI - Healthcare AI Agent Platform | Reduce Costs 60%, Increase Revenue 20%', '');
+  const PageTitle = usePageTitle('Echopad AI – Less Charting, More Patients | Trusted by 50+ Practices', '');
 
   // Initialize scroll animations
   useScrollAnimations();
@@ -133,8 +145,85 @@ function HomePage() {
       return () => {
         cancelAnimationFrame(frameId);
       };
+    } else {
+      // When returning from a product page, scroll to products section
+      const scrollToSection = sessionStorage.getItem('homeScrollTo');
+      if (scrollToSection && location.pathname === '/') {
+        const scrollToElement = () => {
+          const element = document.getElementById(scrollToSection);
+          if (element) {
+            const headerOffset = 80;
+            const elementPosition = element.getBoundingClientRect().top;
+            const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+            window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
+          }
+          sessionStorage.removeItem('homeScrollTo');
+        };
+        const frameId = requestAnimationFrame(() => setTimeout(scrollToElement, 50));
+        return () => cancelAnimationFrame(frameId);
+      }
+      // No hash: try to restore last viewed section on refresh
+      const savedSectionId = sessionStorage.getItem('homeLastSectionId');
+      if (savedSectionId) {
+        const scrollToSavedSection = () => {
+          const element = document.getElementById(savedSectionId);
+          if (element) {
+            const headerOffset = 80;
+            const elementPosition = element.getBoundingClientRect().top;
+            const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+            window.scrollTo({
+              top: offsetPosition,
+              behavior: 'smooth'
+            });
+          }
+        };
+
+        const frameId = requestAnimationFrame(() => {
+          setTimeout(scrollToSavedSection, 50);
+        });
+
+        return () => {
+          cancelAnimationFrame(frameId);
+        };
+      }
     }
   }, [location.pathname, location.hash]);
+
+  // Track which section is currently in view and persist it for refresh
+  useEffect(() => {
+    const SECTION_IDS = ['hero', 'agents', 'products', 'platform', 'roi', 'testimonial', 'contact'];
+
+    const updateCurrentSection = () => {
+      const headerOffset = 80;
+      const viewportTarget = window.scrollY + headerOffset + 1;
+      let closestId = null;
+      let smallestDistance = Infinity;
+
+      SECTION_IDS.forEach((id) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const sectionTop = el.offsetTop;
+        const distance = Math.abs(sectionTop - viewportTarget);
+        if (distance < smallestDistance) {
+          smallestDistance = distance;
+          closestId = id;
+        }
+      });
+
+      if (closestId) {
+        sessionStorage.setItem('homeLastSectionId', closestId);
+      }
+    };
+
+    // Run once on mount and then on scroll
+    updateCurrentSection();
+    window.addEventListener('scroll', updateCurrentSection, { passive: true });
+
+    return () => {
+      window.removeEventListener('scroll', updateCurrentSection);
+    };
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -147,6 +236,7 @@ function HomePage() {
         <ProductDetails />
         <Platform />
         <ROI />
+        <Testimonial />
         <Contact />
       </main>
       <Footer />
@@ -163,8 +253,6 @@ function IntercomBootstrap() {
   const { isAuthenticated, userProfile } = useAuth();
 
   useEffect(() => {
-    if (!hasConsent()) return;
-
     if (isAuthenticated && userProfile?.user) {
       // Upgrade anonymous session → identity-verified session
       fetchIntercomIdentity()
@@ -186,22 +274,39 @@ function IntercomBootstrap() {
 }
 
 function App({ msalInstance }) {
-  // Initialize consent management and conditionally load analytics scripts
+  // Initialize consent management; Intercom always loads, analytics stay consent-gated
   useEffect(() => {
     initializeConsentManagement();
 
+    // Intercom must be available regardless of cookie consent choice.
+    loadIntercomScript();
+    // Boot in anonymous mode so the launcher icon is always visible.
+    bootIntercomAnonymous();
+
     if (hasConsent()) {
       initGoogleAnalytics();
-      loadIntercomScript();
-      // Boot in anonymous mode so the launcher icon is always visible
-      bootIntercomAnonymous();
     }
 
     // Deferred initialization — called by CookieConsent when user accepts
     window.initializeAnalytics = () => {
       initGoogleAnalytics();
-      loadIntercomScript();
-      bootIntercomAnonymous();
+    };
+  }, []);
+
+  // Hide scrollbar when page is idle; show only while user is scrolling
+  useEffect(() => {
+    let hideTimeout;
+    const show = () => {
+      document.documentElement.classList.add('scrollbar-visible');
+      clearTimeout(hideTimeout);
+      hideTimeout = setTimeout(() => {
+        document.documentElement.classList.remove('scrollbar-visible');
+      }, 600);
+    };
+    window.addEventListener('scroll', show, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', show);
+      clearTimeout(hideTimeout);
     };
   }, []);
 
@@ -210,6 +315,7 @@ function App({ msalInstance }) {
       <GoogleOAuthProvider clientId={googleAuthConfig.clientId}>
         <MsalProvider instance={msalInstance}>
           <AuthProvider>
+            <AperioTokenBridge />
             <RoleProvider>
               <BrowserRouter>
                 <ScrollToTop />
@@ -221,6 +327,7 @@ function App({ msalInstance }) {
                   <Route path="/ai-receptionist" element={<AIReceptionist />} />
                   <Route path="/ai-admin-assistant" element={<AIAdminAssistant />} />
                   <Route path="/ai-reminders" element={<AIReminders />} />
+                  <Route path="/echopad-insights/enterprise" element={<EchoPadInsightsEnterprise />} />
                   <Route path="/echopad-insights" element={<EchoPadInsights />} />
                   <Route path="/aperio" element={<Aperio />} />
                   <Route path="/privacy-policy" element={<PrivacyPolicy />} />

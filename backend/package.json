@@ -6,7 +6,12 @@
   "type": "module",
   "scripts": {
     "start": "node src/server.js",
-    "dev": "node --watch src/server.js"
+    "dev": "node --watch src/server.js",
+    "build:aperio": "node scripts/build-aperio.js",
+    "update:aperio": "node scripts/update-aperio.js",
+    "dev:aperio": "node scripts/run-aperio-dev.js",
+    "dev:aperio:backend": "node scripts/run-aperio-backend.js",
+    "install:aperio-deps": "node scripts/install-aperio-deps.js"
   },
   "keywords": [
     "express",
@@ -18,17 +23,25 @@
   "dependencies": {
     "@azure/communication-email": "^1.0.0",
     "@azure/cosmos": "^4.0.0",
+    "@azure/storage-blob": "^12.31.0",
     "archiver": "^7.0.1",
     "bcrypt": "^5.1.1",
     "cors": "^2.8.6",
     "dotenv": "^16.3.1",
+    "@echopad/aperio": "1.0.1",
     "express": "^4.18.2",
     "helmet": "^8.1.0",
     "html-to-text": "^9.0.5",
     "jose": "^5.2.0",
-    "nunjucks": "^3.2.4"
+    "multer": "^2.0.2",
+    "node-cron": "^4.2.1",
+    "nunjucks": "^3.2.4",
+    "express-rate-limit": "^8.2.1"
   },
   "engines": {
     "node": ">=18.0.0"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.3"
   }
 }
