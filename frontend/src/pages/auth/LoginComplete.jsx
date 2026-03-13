@@ -2,17 +2,12 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navigation from '../../components/layout/Navigation';
 import usePageTitle from '../../hooks/usePageTitle';
-import { DESKTOP_REDIRECT_KEY } from '../../utils/auth';
+import { DESKTOP_REDIRECT_KEY, isValidDesktopRedirectUri } from '../../utils/electronDesktopAuth';
 
-function isValidRedirectUri(uri) {
-  try {
-    const url = new URL(uri);
-    return url.hostname === 'localhost' && url.protocol === 'http:';
-  } catch {
-    return false;
-  }
-}
-
+/**
+ * EchoPad Electron desktop app callback page only. Not used by Aperio.
+ * Aperio: config/aperio.js, aperioTokenBridge.js, token in hash / postMessage.
+ */
 function LoginComplete() {
   const PageTitle = usePageTitle('Login Complete');
   const navigate = useNavigate();
@@ -27,7 +22,7 @@ function LoginComplete() {
     }
     try {
       const data = JSON.parse(raw);
-      if (!data.redirectUri || !isValidRedirectUri(data.redirectUri)) {
+      if (!data.redirectUri || !isValidDesktopRedirectUri(data.redirectUri)) {
         setError('Invalid redirect. Please sign in again from the EchoPad app.');
         sessionStorage.removeItem(DESKTOP_REDIRECT_KEY);
         return;

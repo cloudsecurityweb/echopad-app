@@ -1,0 +1,77 @@
+# When a new @echopad/aperio is published to Azure Artifacts, this workflow
+# installs the latest version, rebuilds Aperio, and opens a PR so you can
+# merge to get the newest version in the app.
+#
+# Requires: GitHub secret AZURE_DEVOPS_PAT with Packaging → Read scope
+# (same as deploy workflow). Run manually via "Run workflow" or on schedule.
+
+name: Update @echopad/aperio to latest
+
+on:
+  schedule:
+    # Run every Monday at 09:00 UTC
+    - cron: "0 9 * * 1"
+  workflow_dispatch:
+
+jobs:
+  update-aperio:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Configure npm auth for Azure Artifacts
+        working-directory: backend
+        env:
+          AZURE_DEVOPS_PAT: ${{ secrets.AZURE_DEVOPS_PAT }}
+        run: |
+          # Append auth so npm can pull from the feed (same PAT as deploy workflow)
+          REGISTRY="//pkgs.dev.azure.com/cloudsecurityweb/echopad/_packaging/echopad_aperio/npm/registry"
+          echo "${REGISTRY}/:username=build" >> .npmrc
+          echo "${REGISTRY}/:_password=$(echo -n \"$AZURE_DEVOPS_PAT\" | base64 -w 0)" >> .npmrc
+          echo "${REGISTRY}/:email=ci@echopad.local" >> .npmrc
+
+      - name: Update @echopad/aperio to latest and build
+        working-directory: backend
+        run: npm run update:aperio
+
+      - name: Check for changes
+        id: changes
+        run: |
+          if git diff --quiet backend/package.json backend/package-lock.json; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create branch and PR for aperio update
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          BRANCH="deps/update-aperio-$(date +%Y%m%d)"
+          git checkout -b "$BRANCH"
+          git add backend/package.json backend/package-lock.json
+          git commit -m "chore(deps): update @echopad/aperio to latest from Azure Artifacts"
+          git push origin "$BRANCH"
+          gh pr create \
+            --title "chore(deps): update @echopad/aperio to latest" \
+            --body "New version of \`@echopad/aperio\` was published to Azure Artifacts. This PR updates the dependency and runs the Aperio build. Review and merge to use the new version." \
+            --base "${{ github.ref_name }}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: No changes
+        if: steps.changes.outputs.changed != 'true'
+        run: echo "No new @echopad/aperio version; nothing to do."

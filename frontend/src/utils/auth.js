@@ -2,10 +2,9 @@
  * Authentication Utility Functions
  * 
  * Helper functions for token management and authenticated API calls.
+ * For EchoPad Electron desktop app redirect flow, use utils/electronDesktopAuth.js.
+ * For Aperio token flow, use config/aperio.js and utils/aperioTokenBridge.js.
  */
-
-/** sessionStorage key for desktop redirect payload (redirectUri, token, name, email) after sign-in */
-export const DESKTOP_REDIRECT_KEY = 'echopad_desktop_redirect';
 
 /**
  * Get access token for API calls
