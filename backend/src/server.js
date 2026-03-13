@@ -192,7 +192,12 @@ async function mountAperio() {
     process.env.JWT_SECRET = process.env.EMAIL_PASSWORD_JWT_SECRET;
   }
 
-  // Serve SPA for GET /aperio and /aperio/ so users get the app, not the API info JSON
+  // Serve static Aperio assets and SPA shell from backend/src/public/aperio.
+  // This ensures index.html, JS, and CSS under /aperio/assets/* are served
+  // even when @echopad/aperio router is mounted for API routes.
+  app.use('/aperio', express.static(publicAperio));
+
+  // Serve SPA for GET /aperio and /aperio/ so users get the app shell.
   if (fs.existsSync(aperioIndex)) {
     app.get('/aperio', (req, res) => res.sendFile(aperioIndex));
     app.get('/aperio/', (req, res) => res.sendFile(aperioIndex));
@@ -241,7 +246,6 @@ async function mountAperio() {
     console.log('✅ [aperio] Mounted @echopad/aperio at /aperio (API + static from package)');
   } catch (err) {
     console.warn('[aperio] @echopad/aperio not loaded, using static build + stub:', err.message);
-    app.use('/aperio', express.static(path.join(__dirname, 'public', 'aperio')));
     const { stubRouter } = await import('./routes/aperio.js');
     app.use('/aperio', stubRouter);
   }
