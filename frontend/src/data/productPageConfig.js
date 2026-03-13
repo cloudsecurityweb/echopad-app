@@ -28,7 +28,7 @@ export const productPageLayouts = {
     sections: ['why-it-matters', 'setup-grid', 'cta'],
     storyAngle: 'Demo first (call flow). Then why 24/7 matters, implementation, CTA. No before/after or 3-step.',
   },
-  '/aperio': {
+  '/products/aperio': {
     layout: 'split-hero',
     heroBlocks: 'minimal',
     sections: ['why-it-matters', 'how-it-works', 'setup-grid', 'cta'],

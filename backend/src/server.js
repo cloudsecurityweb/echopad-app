@@ -8,8 +8,10 @@ import { startWarmup } from "./services/cosmosWarmup.js";
 import routes from "./routes/index.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 import { notFound } from "./middleware/notFound.js";
+import { verifyAnyAuth } from "./middleware/auth.js";
 
 import path from "path";
+import fs from "fs";
 import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -20,6 +22,8 @@ const PORT = process.env.PORT || 3000;
 
 // Serve static files (email assets)
 app.use('/public', express.static(path.join(__dirname, 'public')));
+
+// Aperio: mounted after async load below (either echopad-aperio router or static + stub)
 
 // CORS Configuration
 // Allow requests from localhost (development) and production frontend URL
@@ -177,6 +181,82 @@ app.use((req, res, next) => {
 
 app.use(cors(corsOptions));
 app.use(express.json());
+
+/** Load Aperio (backend + frontend from @echopad/aperio) and mount at /aperio. Single App Service in production. */
+async function mountAperio() {
+  const publicAperio = path.join(__dirname, 'public', 'aperio');
+  const aperioIndex = path.join(publicAperio, 'index.html');
+
+  // Aperio auth middleware expects JWT_SECRET to verify email/password tokens. Use main app's secret when not set.
+  if (!process.env.JWT_SECRET && process.env.EMAIL_PASSWORD_JWT_SECRET) {
+    process.env.JWT_SECRET = process.env.EMAIL_PASSWORD_JWT_SECRET;
+  }
+
+  // Serve static Aperio assets and SPA shell from backend/src/public/aperio.
+  // This ensures index.html, JS, and CSS under /aperio/assets/* are served
+  // even when @echopad/aperio router is mounted for API routes.
+  app.use('/aperio', express.static(publicAperio));
+
+  // Serve SPA shell for GET /aperio, /aperio/, and client-side routes like /aperio/dashboard/aperio/.
+  if (fs.existsSync(aperioIndex)) {
+    app.get('/aperio', (req, res) => res.sendFile(aperioIndex));
+    app.get('/aperio/', (req, res) => res.sendFile(aperioIndex));
+    app.get('/aperio/*', (req, res, next) => {
+      // Let API routes fall through to the Aperio router; serve index.html for SPA client routes.
+      if (req.path.startsWith('/api')) return next();
+      return res.sendFile(aperioIndex);
+    });
+  }
+
+  try {
+    const { default: aperioRouter } = await import('@echopad/aperio');
+
+    // Log Aperio API requests and errors so you can check backend logs for /aperio/* and /api/aperio/*
+    app.use('/aperio', (req, res, next) => {
+      const isApi = req.path.includes('/api') || req.path === '/health';
+      if (isApi) {
+        const hasAuth = !!(req.headers.authorization && req.headers.authorization.startsWith('Bearer '));
+        const start = Date.now();
+        const onFinish = () => {
+          res.removeListener('finish', onFinish);
+          const duration = Date.now() - start;
+          const status = res.statusCode;
+          const level = status >= 500 ? 'error' : status >= 400 ? 'warn' : 'log';
+          console[level](`[aperio] ${req.method} ${req.originalUrl} ${status} ${duration}ms hasAuth=${hasAuth}`);
+        };
+        res.on('finish', onFinish);
+      }
+      next();
+    });
+
+    app.use('/aperio', aperioRouter);
+
+    // Helper route to verify token flow: GET /api/aperio/health-auth returns current user from Bearer token (all providers)
+    app.get('/api/aperio/health-auth', verifyAnyAuth, (req, res) => {
+      const auth = req.auth || {};
+      res.json({
+        success: true,
+        userId: auth.oid || null,
+        email: auth.email || null,
+        provider: auth.provider || null,
+      });
+    });
+
+    // Also serve Aperio API at /api/aperio/* so frontend can call /api/aperio/transfers (path the Aperio app expects)
+    app.use('/api/aperio', (req, res, next) => {
+      req.url = '/api/aperio' + (req.url || '');
+      next();
+    }, aperioRouter);
+
+    console.log('✅ [aperio] Mounted @echopad/aperio at /aperio (API + static from package)');
+  } catch (err) {
+    console.warn('[aperio] @echopad/aperio not loaded, using static build + stub:', err.message);
+    const { stubRouter } = await import('./routes/aperio.js');
+    app.use('/aperio', stubRouter);
+  }
+}
+
+await mountAperio();
 
 // Routes
 app.use(routes);

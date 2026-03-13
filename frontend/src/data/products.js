@@ -226,7 +226,7 @@ export const products = [
     longDescription: 'Intelligent referral tracking system that ensures seamless patient handoffs and improves care coordination across providers.',
     price: '$279',
     pricePeriod: 'per practice/month',
-    route: '/aperio',
+    route: '/products/aperio',
     icon: 'bi-arrow-left-right',
     badge: null,
     usp: 'Fewer patients fall through the cracks',
