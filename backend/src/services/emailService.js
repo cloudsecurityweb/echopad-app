@@ -157,9 +157,10 @@ export function isEmailConfigured() {
  * @param {string} email - Recipient email address
  * @param {string} token - Verification token
  * @param {string} name - Recipient name
+ * @param {string} [redirectUrl] - Optional URL to redirect to after verification and login
  * @returns {Promise<Object>} Email send result
  */
-export async function sendVerificationEmail(email, token, name = "User") {
+export async function sendVerificationEmail(email, token, name = "User", redirectUrl = null) {
   // Validate email service configuration
   if (!isEmailConfigured()) {
     throw new Error("Email service not configured. AZURE_COMMUNICATION_CONNECTION_STRING environment variable is required.");
@@ -189,7 +190,10 @@ export async function sendVerificationEmail(email, token, name = "User") {
     client = new EmailClient(CONNECTION_STRING);
   }
 
-  const verificationLink = `${FRONTEND_URL}/verify-email?email=${encodeURIComponent(email)}&token=${encodeURIComponent(token)}`;
+  let verificationLink = `${FRONTEND_URL}/verify-email?email=${encodeURIComponent(email)}&token=${encodeURIComponent(token)}`;
+  if (redirectUrl) {
+    verificationLink += `&redirect=${encodeURIComponent(redirectUrl)}`;
+  }
 
   console.log(`📧 [EMAIL] Preparing verification email for: ${email}`);
   console.log(`   Verification link: ${verificationLink.substring(0, 80)}...`);
