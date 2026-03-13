@@ -40,6 +40,10 @@ jobs:
         env:
           AZURE_DEVOPS_PAT: ${{ secrets.AZURE_DEVOPS_PAT }}
         run: |
+          if [ -z "$AZURE_DEVOPS_PAT" ]; then
+            echo "::error::AZURE_DEVOPS_PAT secret is not set. Add a PAT with Packaging (Read) scope in repo Settings → Secrets and variables → Actions."
+            exit 1
+          fi
           REGISTRY="//pkgs.dev.azure.com/cloudsecurityweb/echopad/_packaging/echopad_aperio/npm/registry"
           echo "${REGISTRY}/:username=build" >> .npmrc
           echo "${REGISTRY}/:_password=$(echo -n \"$AZURE_DEVOPS_PAT\" | base64 -w 0)" >> .npmrc
