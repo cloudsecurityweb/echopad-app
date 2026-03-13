@@ -68,6 +68,11 @@ function patchAperioBuildAssets(assetsDir, rootDir) {
       // Fix hardcoded default API URL / error message so embedded app uses same origin
       content = content.replace(/http:\/\/localhost:3001\. Check that the server/g, "the app server. Check that the server");
       content = content.replace(/http:\/\/localhost:3001/g, "");
+      // Ensure routes work when Aperio is mounted at /aperio instead of /
+      // Standalone dev uses paths like "/dashboard/aperio"; when embedded under /aperio,
+      // React Router sees "/aperio/dashboard/aperio". Patch route path literals so they
+      // include the /aperio prefix and match the embedded location.
+      content = content.replace(/"\/dashboard\//g, '"/aperio/dashboard/');
       // Optional: use token from URL hash first (only matches older echopad-aperio build output)
       if (content.includes(GET_TOKEN_ORIGINAL)) {
         content = content.replace(GET_TOKEN_ORIGINAL, GET_TOKEN_PATCHED);
