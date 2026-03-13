@@ -116,8 +116,7 @@ function SignIn() {
         display_name: displayName || userName,
         ...(refreshTokenForDesktop ? { refresh_token: refreshTokenForDesktop } : {}),
       };
-const encrypted = await encryptData(sensitivePayload);
-sessionStorage.setItem(DESKTOP_REDIRECT_KEY, JSON.stringify(encrypted));
+sessionStorage.setItem(DESKTOP_REDIRECT_KEY, JSON.stringify(sensitivePayload));
       navigate('/login-complete', { replace: true });
     } catch (error) {
       console.error('[Electron Auth] Failed to redirect:', error);
