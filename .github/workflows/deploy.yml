@@ -44,10 +44,17 @@ jobs:
             echo "::error::AZURE_DEVOPS_PAT secret is not set. Add a PAT with Packaging (Read) scope in repo Settings → Secrets and variables → Actions."
             exit 1
           fi
+          # Trim any trailing newline from the secret (e.g. when pasted in GitHub UI)
+          PAT_TRIM=$(printf '%s' "$AZURE_DEVOPS_PAT" | tr -d '\n')
+          B64=$(printf '%s' "$PAT_TRIM" | base64 -w 0)
           REGISTRY="//pkgs.dev.azure.com/cloudsecurityweb/echopad/_packaging/echopad_aperio/npm/registry"
+          NPM_ROOT="//pkgs.dev.azure.com/cloudsecurityweb/echopad/_packaging/echopad_aperio/npm"
           echo "${REGISTRY}/:username=build" >> .npmrc
-          echo "${REGISTRY}/:_password=$(echo -n \"$AZURE_DEVOPS_PAT\" | base64 -w 0)" >> .npmrc
+          echo "${REGISTRY}/:_password=${B64}" >> .npmrc
           echo "${REGISTRY}/:email=ci@echopad.local" >> .npmrc
+          echo "${NPM_ROOT}/:username=build" >> .npmrc
+          echo "${NPM_ROOT}/:_password=${B64}" >> .npmrc
+          echo "${NPM_ROOT}/:email=ci@echopad.local" >> .npmrc
 
       - name: Install Backend Dependencies
         working-directory: backend
