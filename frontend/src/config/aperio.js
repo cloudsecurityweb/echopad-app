@@ -36,8 +36,18 @@
  */
 const apiBase = import.meta.env.VITE_API_BASE_URL || '';
 const inDev = import.meta.env.DEV;
-const defaultAperioBase = inDev ? 'http://localhost:3000' : (typeof window !== 'undefined' ? window.location.origin : '');
-export const APERIO_APP_URL =
-  import.meta.env.VITE_APERIO_URL ||
-  (apiBase ? `${apiBase.replace(/\/$/, '')}/aperio` : '') ||
-  (defaultAperioBase ? `${defaultAperioBase.replace(/\/$/, '')}/aperio` : '/aperio');
+const defaultAperioBase = inDev
+  ? 'http://localhost:3000'
+  : (typeof window !== 'undefined' ? window.location.origin : '');
+
+const aperioBase =
+  import.meta.env.VITE_APERIO_URL
+    ? `${import.meta.env.VITE_APERIO_URL.replace(/\/$/, '')}/aperio`
+    : apiBase
+      ? `${apiBase.replace(/\/$/, '')}/aperio`
+      : defaultAperioBase
+        ? `${defaultAperioBase.replace(/\/$/, '')}/aperio`
+        : '/aperio';
+
+// Land on the Aperio dashboard route so the SPA router matches a route
+export const APERIO_APP_URL = `${aperioBase.replace(/\/$/, '')}/dashboard/aperio`;

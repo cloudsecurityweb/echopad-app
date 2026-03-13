@@ -197,10 +197,15 @@ async function mountAperio() {
   // even when @echopad/aperio router is mounted for API routes.
   app.use('/aperio', express.static(publicAperio));
 
-  // Serve SPA for GET /aperio and /aperio/ so users get the app shell.
+  // Serve SPA shell for GET /aperio, /aperio/, and client-side routes like /aperio/dashboard/aperio/.
   if (fs.existsSync(aperioIndex)) {
     app.get('/aperio', (req, res) => res.sendFile(aperioIndex));
     app.get('/aperio/', (req, res) => res.sendFile(aperioIndex));
+    app.get('/aperio/*', (req, res, next) => {
+      // Let API routes fall through to the Aperio router; serve index.html for SPA client routes.
+      if (req.path.startsWith('/api')) return next();
+      return res.sendFile(aperioIndex);
+    });
   }
 
   try {
