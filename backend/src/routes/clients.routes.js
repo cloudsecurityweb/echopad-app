@@ -24,7 +24,7 @@ router.use(clientsLimiter);
  * - Create new client
  */
 
-router.get("/", verifyAnyAuth, clientsLimiter, requireRole(['SuperAdmin'], ['superAdmin']), getClients);
-router.post("/", verifyAnyAuth, clientsLimiter, requireRole(['SuperAdmin'], ['superAdmin']), addClient);
+router.get("/", verifyAnyAuth, requireRole(['SuperAdmin'], ['superAdmin']), getClients);
+router.post("/", verifyAnyAuth, requireRole(['SuperAdmin'], ['superAdmin']), addClient);
 
 export default router;
