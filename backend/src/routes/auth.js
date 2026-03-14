@@ -159,7 +159,7 @@ export async function detectAuthProvider(req, res, next) {
  * Body: { provider: 'microsoft'|'google', token: string } (required)
  * Token verification is provider-driven; no Bearer header for this endpoint.
  */
-router.post('/sign-in', authLimiter, signIn);
+router.post('/sign-in', signIn);
 
 /**
  * POST /api/auth/sign-up
@@ -167,7 +167,7 @@ router.post('/sign-in', authLimiter, signIn);
  * Body: { provider: 'microsoft'|'google', token: string, organizationName?, organizerName?, email? }
  * Token verification is provider-driven; no Bearer header for this endpoint.
  */
-router.post('/sign-up', authLimiter, signUp);
+router.post('/sign-up', signUp);
 
 /**
  * POST /api/auth/sign-up-email
@@ -181,14 +181,14 @@ router.post('/sign-up-email', signUpEmail);
  * Sign in with email and password
  * Body: { email, password }
  */
-router.post('/sign-in-email', authLimiter, signInEmail);
+router.post('/sign-in-email', signInEmail);
 
 /**
  * POST /api/auth/refresh
  * Exchange refresh token for new access (session) token
  * Body: { refreshToken: string }
  */
-router.post('/refresh', authLimiter, refreshToken);
+router.post('/refresh', refreshToken);
 
 /**
  * POST /api/auth/change-password
@@ -196,7 +196,7 @@ router.post('/refresh', authLimiter, refreshToken);
  * Body: { oldPassword, newPassword }
  * Requires: Authorization header
  */
-router.post('/change-password', detectAuthProvider, authLimiter, changePassword);
+router.post('/change-password', detectAuthProvider, changePassword);
 
 /**
  * GET /api/auth/verify-email
@@ -233,6 +233,6 @@ router.post('/reset-password', resetPassword);
  * Supports Microsoft, Google, and Magic tokens
  * Note: detectAuthProvider handles routing to appropriate middleware
  */
-router.get('/me', detectAuthProvider, authLimiter, getCurrentUser);
+router.get('/me', detectAuthProvider, getCurrentUser);
 
 export default router;
