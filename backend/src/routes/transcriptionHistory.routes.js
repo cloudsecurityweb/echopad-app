@@ -21,9 +21,9 @@ router.use(transcriptionHistoryLimiter);
  * - PUT /:id  : update transcription (body: { text }) — requires auth
  * - DELETE /:id : delete transcription — requires auth
  */
-router.post("/", verifyAnyAuth, transcriptionHistoryLimiter, createTranscription);
-router.get("/", verifyAnyAuth, transcriptionHistoryLimiter, getTranscriptions);
-router.put("/:id", verifyAnyAuth, transcriptionHistoryLimiter, updateTranscription);
-router.delete("/:id", verifyAnyAuth, transcriptionHistoryLimiter, deleteTranscription);
+router.post("/", verifyAnyAuth, createTranscription);
+router.get("/", verifyAnyAuth, getTranscriptions);
+router.put("/:id", verifyAnyAuth, updateTranscription);
+router.delete("/:id", verifyAnyAuth, deleteTranscription);
 
 export default router;
