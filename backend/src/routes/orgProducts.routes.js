@@ -22,7 +22,6 @@ router.use(orgProductsLimiter);
 router.get(
   "/",
   verifyAnyAuth,
-  orgProductsLimiter,
   requireRole(["SuperAdmin", "ClientAdmin"], ["superAdmin", "clientAdmin"]),
   async (req, res) => {
     try {
@@ -55,7 +54,6 @@ router.get(
 router.post(
   "/",
   verifyAnyAuth,
-  orgProductsLimiter,
   requireRole(["SuperAdmin", "ClientAdmin"], ["superAdmin", "clientAdmin"]),
   async (req, res) => {
     try {
@@ -95,7 +93,6 @@ router.post(
 router.patch(
   "/:orgProductId",
   verifyAnyAuth,
-  orgProductsLimiter,
   requireRole(["SuperAdmin", "ClientAdmin"], ["superAdmin", "clientAdmin"]),
   async (req, res) => {
     try {
