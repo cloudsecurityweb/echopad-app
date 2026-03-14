@@ -27,7 +27,6 @@ router.use(licenseLimiter);
 router.get(
   "/",
   verifyAnyAuth,
-  licenseLimiter,
   requireRole(["SuperAdmin", "ClientAdmin"], ["superAdmin", "clientAdmin"]),
   async (req, res) => {
     try {
@@ -72,7 +71,6 @@ router.get(
 router.post(
   "/",
   verifyAnyAuth,
-  licenseLimiter,
   requireRole(["SuperAdmin", "ClientAdmin"], ["superAdmin", "clientAdmin"]),
   async (req, res) => {
     try {
@@ -120,7 +118,6 @@ router.post(
 router.get(
   "/:licenseId",
   verifyAnyAuth,
-  licenseLimiter,
   requireRole(["SuperAdmin", "ClientAdmin"], ["superAdmin", "clientAdmin"]),
   async (req, res) => {
     try {
@@ -143,7 +140,6 @@ router.get(
 router.patch(
   "/:licenseId",
   verifyAnyAuth,
-  licenseLimiter,
   requireRole(["SuperAdmin", "ClientAdmin"], ["superAdmin", "clientAdmin"]),
   async (req, res) => {
     try {
