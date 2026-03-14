@@ -20,7 +20,7 @@ router.use(analyticsLimiter);
  * ANALYTICS (SUPER ADMIN ONLY)
  */
 
-router.get("/super-admin", verifyAnyAuth, analyticsLimiter, requireRole(['SuperAdmin', 'ClientAdmin', 'UserAdmin'], ['superAdmin', 'clientAdmin', 'userAdmin']), getSuperAdminAnalytics);
+router.get("/super-admin", verifyAnyAuth, requireRole(['SuperAdmin', 'ClientAdmin', 'UserAdmin'], ['superAdmin', 'clientAdmin', 'userAdmin']), getSuperAdminAnalytics);
 
 /**
  * GET /api/analytics/org-summary
@@ -29,7 +29,6 @@ router.get("/super-admin", verifyAnyAuth, analyticsLimiter, requireRole(['SuperA
 router.get(
     "/org-summary",
     verifyAnyAuth,
-    analyticsLimiter,
     requireRole(["SuperAdmin", "ClientAdmin"], ["superAdmin", "clientAdmin"]),
     getOrgAnalyticsSummary
 );
@@ -41,7 +40,6 @@ router.get(
 router.get(
     "/usage",
     verifyAnyAuth,
-    analyticsLimiter,
     requireRole(["SuperAdmin", "ClientAdmin"], ["superAdmin", "clientAdmin"]),
     getProductUsageSummary
 );
@@ -53,7 +51,6 @@ router.get(
 router.post(
   "/events",
   verifyAnyAuth,
-  analyticsLimiter,  
   async (req, res) => {
     try {
       const tenantId = req.currentUser.tenantId;
@@ -82,7 +79,6 @@ router.post(
 router.get(
   "/events",
   verifyAnyAuth,
-  analyticsLimiter,
   requireRole(["SuperAdmin", "ClientAdmin"], ["superAdmin", "clientAdmin"]),
   async (req, res) => {
     try {
