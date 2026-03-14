@@ -24,7 +24,7 @@ router.use(dashboardLimiter);
  * All dashboard routes require authentication (Microsoft, Google, Magic Link, or Email/Password) and appropriate role
  */
 
-router.get("/metrics/:tenantId/:role", verifyAnyAuth, dashboardLimiter, getDashboard);
-router.post("/metrics/upsert", verifyAnyAuth, dashboardLimiter, upsertDashboardMetric);
+router.get("/metrics/:tenantId/:role", verifyAnyAuth, getDashboard);
+router.post("/metrics/upsert", verifyAnyAuth, upsertDashboardMetric);
 
 export default router;
