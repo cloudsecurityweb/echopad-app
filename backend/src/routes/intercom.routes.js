@@ -19,7 +19,7 @@ router.use(intercomLimiter);
  * Returns Intercom identity data with HMAC user_hash for Identity Verification.
  * Requires authentication — the user_hash is derived from the authenticated user's ID.
  */
-router.get("/", verifyAnyAuth, intercomLimiter, (req, res) => {
+router.get("/", verifyAnyAuth, (req, res) => {
   const { INTERCOM_APP_ID, INTERCOM_SECRET } = process.env;
 
   if (!INTERCOM_APP_ID || !INTERCOM_SECRET) {
