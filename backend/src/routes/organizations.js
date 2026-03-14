@@ -35,7 +35,6 @@ router.post("/dummy", devOnly, createDummyOrganization);
 router.get(
   "/details",
   verifyAnyAuth,
-  organizationsLimiter,
   requireRole(["SuperAdmin"], ["superAdmin"]),
   listOrganizationsDetails
 );
@@ -47,7 +46,6 @@ router.get(
 router.get(
   "/",
   verifyAnyAuth,
-  organizationsLimiter,
   requireRole(["SuperAdmin"], ["superAdmin"]),
   listOrganizations
 );
