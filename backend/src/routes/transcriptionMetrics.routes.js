@@ -16,6 +16,7 @@ const metricsLimiter = rateLimit({
   max: 50, // 50 requests per 15 minutes per IP
   message: { success: false, error: "Too many requests, please try again later." },
 });
+router.use(metricsLimiter);
 
 // ===== ROUTES ==================================================================
 
@@ -23,14 +24,14 @@ const metricsLimiter = rateLimit({
  * POST /api/internal/metrics
  * Record metrics from aiscribe — authenticated via user JWT
  */
-router.post("/internal/metrics", verifyAnyAuth, metricsLimiter, recordMetrics);
+router.post("/internal/metrics", verifyAnyAuth, recordMetrics);
 
 /**
  * GET /api/metrics/user
  * Returns aggregated usage for the currently logged-in user
  * Query params: ?from=<ISO>&to=<ISO>
  */
-router.get("/metrics/user", verifyAnyAuth, metricsLimiter, getMyMetrics);
+router.get("/metrics/user", verifyAnyAuth, getMyMetrics);
 
 /**
  * GET /api/metrics/client
@@ -40,7 +41,6 @@ router.get("/metrics/user", verifyAnyAuth, metricsLimiter, getMyMetrics);
 router.get(
     "/metrics/client",
     verifyAnyAuth,
-    metricsLimiter, 
     requireRole(
         ["SuperAdmin", "ClientAdmin"],
         ["superAdmin", "clientAdmin"]
@@ -56,7 +56,6 @@ router.get(
 router.get(
     "/metrics/platform",
     verifyAnyAuth,
-    metricsLimiter,
     requireRole(["SuperAdmin"], ["superAdmin"]),
     getPlatformMetrics
 );
@@ -69,7 +68,6 @@ router.get(
 router.get(
     "/metrics/user/:userId",
     verifyAnyAuth,
-    metricsLimiter,
     requireRole(
         ["SuperAdmin", "ClientAdmin"],
         ["superAdmin", "clientAdmin"]
