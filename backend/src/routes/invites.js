@@ -40,7 +40,7 @@ router.get("/validate", validateInvitation);
  * Note: Authentication is optional - if a token is provided, it will be verified.
  * The controller handles Microsoft auth requirements separately.
  */
-router.post("/accept", optionalAuth, invitesLimiter, acceptInvitationRoute);
+router.post("/accept", optionalAuth, acceptInvitationRoute);
 
 /**
  * POST /api/invites/accept-magic
@@ -58,7 +58,7 @@ router.post("/accept-magic", acceptMagicInvitation);
  * Requires: ClientAdmin role
  * Supports: Microsoft, Google, Magic Link, and Email/Password authentication
  */
-router.post("/user", verifyAnyAuth, invitesLimiter, requireRole(['ClientAdmin'], ['clientAdmin']), createUserInvite);
+router.post("/user", verifyAnyAuth, requireRole(['ClientAdmin'], ['clientAdmin']), createUserInvite);
 
 /**
  * GET /api/invites/pending
@@ -66,7 +66,7 @@ router.post("/user", verifyAnyAuth, invitesLimiter, requireRole(['ClientAdmin'],
  * Requires: Authorization header with Bearer token
  * Requires: ClientAdmin role
  */
-router.get("/pending", verifyAnyAuth, invitesLimiter, requireRole(['ClientAdmin'], ['clientAdmin']), getPendingInvites);
+router.get("/pending", verifyAnyAuth, requireRole(['ClientAdmin'], ['clientAdmin']), getPendingInvites);
 
 /**
  * POST /api/invites/:inviteId/resend
@@ -74,7 +74,7 @@ router.get("/pending", verifyAnyAuth, invitesLimiter, requireRole(['ClientAdmin'
  * Requires: Authorization header with Bearer token
  * Requires: ClientAdmin role
  */
-router.post("/:inviteId/resend", verifyAnyAuth, invitesLimiter, requireRole(['ClientAdmin'], ['clientAdmin']), resendUserInvite);
+router.post("/:inviteId/resend", verifyAnyAuth, requireRole(['ClientAdmin'], ['clientAdmin']), resendUserInvite);
 
 /**
  * POST /api/invites/dummy
