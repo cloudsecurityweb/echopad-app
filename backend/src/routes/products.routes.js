@@ -31,11 +31,11 @@ router.use(productsLimiter);
 router.get("/", getProducts); // Public product catalog
 
 // SUPER ADMIN ONLY - Product management
-router.post("/", verifyAnyAuth, productsLimiter, requireRole(['SuperAdmin'], ['superAdmin']), createProduct);
-router.patch("/:productCode", verifyAnyAuth, productsLimiter, requireRole(['SuperAdmin'], ['superAdmin']), updateProduct);
-router.delete("/:productCode", verifyAnyAuth, productsLimiter, requireRole(['SuperAdmin'], ['superAdmin']), deleteProduct);
+router.post("/", verifyAnyAuth, requireRole(['SuperAdmin'], ['superAdmin']), createProduct);
+router.patch("/:productCode", verifyAnyAuth, requireRole(['SuperAdmin'], ['superAdmin']), updateProduct);
+router.delete("/:productCode", verifyAnyAuth, requireRole(['SuperAdmin'], ['superAdmin']), deleteProduct);
 router.get("/:productCode", getProductByCode); // Public product details
-router.get("/:tenantId", verifyAnyAuth, productsLimiter, requireRole(['SuperAdmin'], ['superAdmin']), getProductsByTenant);
+router.get("/:tenantId", verifyAnyAuth, requireRole(['SuperAdmin'], ['superAdmin']), getProductsByTenant);
 
 
 export default router;
