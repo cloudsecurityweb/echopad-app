@@ -25,7 +25,6 @@ router.use(userLicensesLimiter);
 router.get(
   "/",
   verifyAnyAuth,
-  userLicensesLimiter,
   async (req, res) => {
     try {
       const tenantId = req.currentUser.tenantId;
@@ -62,7 +61,6 @@ router.get(
 router.post(
   "/assign",
   verifyAnyAuth,
-  userLicensesLimiter,
   requireRole(["SuperAdmin", "ClientAdmin"], ["superAdmin", "clientAdmin"]),
   async (req, res) => {
     try {
@@ -99,7 +97,6 @@ router.post(
 router.post(
   "/revoke",
   verifyAnyAuth,
-  userLicensesLimiter,
   requireRole(["SuperAdmin", "ClientAdmin"], ["superAdmin", "clientAdmin"]),
   async (req, res) => {
     try {
@@ -124,7 +121,6 @@ router.post(
 router.post(
   "/request",
   verifyAnyAuth,
-  userLicensesLimiter,
   async (req, res) => {
     try {
       const tenantId = req.currentUser.tenantId;
