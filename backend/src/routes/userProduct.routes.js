@@ -14,6 +14,6 @@ const userProductLimiter = rateLimit({
 
 router.use(userProductLimiter);
 
-router.get("/", detectAuthProvider, userProductLimiter, getProducts);
+router.get("/", detectAuthProvider, getProducts);
 
 export default router;
